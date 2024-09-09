@@ -4,7 +4,7 @@ from flask import render_template
 @dataclass
 class Error:
     code: int
-    message: str
+    name: str
     description: str
 
 def error_not_found(e):
