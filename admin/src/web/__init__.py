@@ -9,6 +9,9 @@ def create_app(env="development", static_folder="../../static"):
     def home():
         return render_template("home.html")
     
-    app.register_error_handler(404, error.error_not_found)
+    error_codes = [400, 401, 403, 404, 405, 500]
+
+    for code in error_codes: 
+        app.register_error_handler(code, error.handle_error)
 
     return app
