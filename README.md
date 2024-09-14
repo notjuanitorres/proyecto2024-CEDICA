@@ -25,105 +25,46 @@
 - [📝 Table of Contents](#-table-of-contents)
 - [🧐 About ](#-about-)
 - [🏁 Getting Started ](#-getting-started-)
-  - [Prerequisites](#prerequisites)
-  - [Installing](#installing)
-- [🔧 Running the tests ](#-running-the-tests-)
-  - [Break down](#break-down)
-  - [And coding style tests](#and-coding-style-tests)
 - [🎈 Usage ](#-usage-)
 - [🚀 Deployment ](#-deployment-)
-- [⛏️ Built Using ](#️-built-using-)
 - [✍️ Authors ](#️-authors-)
 - [🎉 Acknowledgements ](#-acknowledgements-)
 
 ## 🧐 About <a name = "about"></a>
+CEDICA (Centro de Equitación para Personas con Discapacidad y Carenciadas) is a non-profit organization founded in 1994 in La Plata, Buenos Aires, Argentina. It is dedicated to providing equal opportunities for individuals with disabilities through Therapies and Activities Assisted with Horses (TACAs). These therapies focus on improving the biological, psychological, and social well-being of participants, utilizing horses as mediators for therapeutic interventions. The ultimate goal is to reintegrate participants, known as Jinetes and Amazonas (riders), into their families, schools, and workplaces, while enhancing their overall quality of life.
 
-Write about 1-2 paragraphs describing the purpose of your project.
+This project aims to digitize many of the internal processes of CEDICA's work through a Web Application. The application will be composed of an internal administration system for team members, developed using Python and Flask, and a public-facing portal built with Vue.js, showcasing the institution's services. The application will be powered by a PostgreSQL database, with an API providing the necessary endpoints to integrate both applications.
+
+
+The application will allow:
+- Maintain a historical record of J&A (Jockeys and Amazons) files, including attachments of necessary documentation.
+- Maintain a record of team professionals' files.
+- Record information about the horses.
+- Generate statistical reports: The application must produce reports that present relevant statistics about the managed data.
 
 ## 🏁 Getting Started <a name = "getting_started"></a>
+This repository consists of two projects, each run separatly, corresponding to the private administration site and the public portal.
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See [deployment](#deployment) for notes on how to deploy the project on a live system.
-
-### Prerequisites
-
-You will need Python install
-```
-- Python 3.12.3
-- Poetry >= 1.8.3
-```
-
-### Installing
-
-Clone the project locally trough SSH.
-
-```
-$ git@gitlab.catedras.linti.unlp.edu.ar:proyecto2024/proyectos/grupo19/code.git
-
-$ cd admin/
-```
-
-To install the project and all its dependencies, use Poetry:
-```
-$ poetry install
-```
-
-Create a .env file in the project's root folder by copying the .env.dist file and filling in the necessary values
-```
-cp .env.dist .env
-```
-
-Now you can run the project with:
-
-```
-$ poetry run flask run --app app --debug
-```
-
-Alternatively, you can create a Poetry shell and then run the project:
-```
-$ poetry shell
-$ flask run --app app --debug
-```
-
-Now you should see a development server starting
-## 🔧 Running the tests <a name = "tests"></a>
-
-### Break down
-
-Once the project is installed and running, you can run the unit tests with:
-```
-$ poetry run pytest 
-```
-
-### And coding style tests
-Nothing to see here, yet...
-```
-Coming soon
-```
+The following image provides a high level overview of the application
+<p align="center">
+  <a href="" rel="noopener">
+ <img max-width=400px max-height="auto" src="docs/infraestructura.png" alt="Project logo"></a>
+</p>
 
 ## 🎈 Usage <a name="usage"></a>
 
-Nothing here, yet...
+Each application is run separately, follow the instructions in each app's README.md.
 
 ## 🚀 Deployment <a name = "deployment"></a>
 
 You should use a Merge Request from development to main in order to trigger the deployment pipeline.
 
-## ⛏️ Built Using <a name = "built_using"></a>
-
-- [Poetry](https://python-poetry.org/) - Package and dependency management
-- [Flask](https://flask.palletsprojects.com/en/3.0.x/) - Server Framework
-- [PostgreSQL](https://www.postgresql.org/) - DBMS  \
-- - [pgAdmin]( https://www.pgadmin.org/) - DB Administration User Interface 
-- - [SQLAlchemy](SQLAlchemy) - ORM
-
 ## ✍️ Authors <a name = "authors"></a>
 
-- [@torresjuanilp ](https://gitlab.catedras.linti.unlp.edu.ar/torresjuanilp)
-- [@eduardokusznieryk ](https://gitlab.catedras.linti.unlp.edu.ar/eduardokusznieryk )
-- [@gomezcarriquematias ](https://gitlab.catedras.linti.unlp.edu.ar/gomezcarriquematias)
-- [@nikiforovdaniel ](https://gitlab.catedras.linti.unlp.edu.ar/nikiforovdaniel)
-
-See also the list of [contributors](https://github.com/kylelobo/The-Documentation-Compendium/contributors) who participated in this project.
+- [@torresjuanilp](https://gitlab.catedras.linti.unlp.edu.ar/torresjuanilp)
+- [@eduardokusznieryk](https://gitlab.catedras.linti.unlp.edu.ar/eduardokusznieryk )
+- [@gomezcarriquematias](https://gitlab.catedras.linti.unlp.edu.ar/gomezcarriquematias)
+- [@nikiforovdaniel](https://gitlab.catedras.linti.unlp.edu.ar/nikiforovdaniel)
 
 ## 🎉 Acknowledgements <a name = "acknowledgement"></a>
 
