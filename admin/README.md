@@ -1,8 +1,8 @@
-# CECIDA's Administration
+# CEDICA's Administration
 
 ## Table of Contents
 
-- [CECIDA's Administration](#cecidas-administration)
+- [CEDICA's Administration](#cecidas-administration)
   - [Table of Contents](#table-of-contents)
   - [About ](#about-)
   - [Built Using ](#built-using-)
