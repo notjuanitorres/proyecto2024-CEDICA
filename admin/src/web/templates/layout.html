@@ -1,21 +1,24 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
+<html lang="en" class="has-navbar-fixed-top">
+  <head>
     {% block head %}
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
     <link
     rel="stylesheet"
-    href="{{ url_for('static', filename='css/style.css') }}"
+    href="{{ url_for('static', filename='css/vendor/bulma.min.css') }}"
     />
-    <meta charset="UTF-8">
+
     <title>{% block title %}{% endblock %}</title>
     {% endblock %}
-</head>
-<body>
+  </head>
+  <body class="container-fluid">
+    {% include 'partials/nav.html' %}
+
     <div>{% block navbar %}{% endblock %}</div>
-    <div id="container">
-    {% block content %}
-    {% endblock %}
-    </div>
+    <main class="container" id="container">{% block content %} {% endblock %}</main>
     <div>{% block footer %}{% endblock %}</div>
-</body>
+
+  </body>
 </html>

@@ -1,3 +1,13 @@
+:root {
+    /* domain colors */
+    --clr-dark-gray: #585859;
+    --clr-light-teal: #80B4BF;
+    --clr-light-orange: #F2BC79;
+    --clr-light-caramel: #F2B47E;
+    --clr-light-gray: #F2F2F2; 
+  }
+  
+
 /* Basic reset */
 *::before,
 *::after {
@@ -10,10 +20,8 @@ body {
     font-family: -apple-system, BlinkMacSystemFont, avenir next, avenir, segoe ui, helvetica neue, helvetica, Cantarell,
     Ubuntu, roboto, noto, arial, sans-serif;
     line-height: 1.6;
-    color: #333;
-    background-color: #f9f9f9;
+    background-color: #F2F2F2;
     padding: 2rem;
-    max-width: 800px;
     margin: auto;
 }
 
@@ -58,10 +66,4 @@ ul li, ol li {
 /* Utility classes */
 .text-center  {
     text-align: center;
-}
-
-.container {
-    max-width: 800px;
-    margin:  0 auto;
-    padding: 2rem;
 }
