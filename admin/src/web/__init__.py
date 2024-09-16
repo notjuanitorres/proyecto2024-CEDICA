@@ -1,5 +1,5 @@
 from flask import Flask
-from src.web.config import config
+from web.config import config
 from src.web.handlers import error
 from src.web.controllers.index import index_bp
 
