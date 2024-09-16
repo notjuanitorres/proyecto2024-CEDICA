@@ -4,7 +4,7 @@ from src.web.handlers import error
 from src.web.controllers.index import index_bp
 
 
-def create_app(env="development", static_folder="../../static"):
+def create_app(env="development", static_folder="static"):
     app = Flask(__name__, static_folder=static_folder)
     app.config.from_object(config[env])
 
