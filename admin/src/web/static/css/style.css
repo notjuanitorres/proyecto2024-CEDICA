@@ -1,12 +1,65 @@
 :root {
-    /* domain colors */
-    --clr-dark-gray: #585859;
-    --clr-light-teal: #80B4BF;
-    --clr-light-orange: #F2BC79;
-    --clr-light-caramel: #F2B47E;
-    --clr-light-gray: #F2F2F2; 
+    /* Light theme colors */
+    --bg-color-light: var(--bulma-background-light, #F2F2F2);
+    --text-color-light: var(--bulma-text-dark, #333333);
+    --link-color-light: var(--bulma-link, #007acc);
+    
+    /* Dark theme colors */
+    --bg-color-dark: var(--bulma-background-dark, #333333);
+    --text-color-dark: var(--bulma-text-light, #F2F2F2);
+    --link-color-dark: var(--bulma-link-hover, #80B4BF);
+    
+    /* Other colors remain the same */
+    --clr-dark-gray: var(--bulma-grey-dark, #585859);
+    --clr-light-teal: var(--bulma-primary, #80B4BF);
+    --clr-light-orange: var(--bulma-warning, #F2BC79);
+    --clr-light-caramel: var(--bulma-warning-light, #F2B47E);
   }
   
+  body {
+    transition: background-color 0.3s, color 0.3s;
+  }
+  
+  /* Styles for light theme */
+  body.light-theme {
+    background-color: var(--bg-color-light);
+    color: var(--text-color-light);
+  }
+  
+  /* Styles for dark theme */
+  body.dark-theme {
+    background-color: var(--bg-color-dark);
+    color: var(--text-color-dark);
+  }
+  
+  /* Navbar styles using Bulma classes and variables */
+  .navbar {
+    transition: background-color 0.3s, color 0.3s;
+  }
+  
+  .light-theme .navbar {
+    background-color: var(--bg-color-light);
+    color: var(--text-color-light);
+  }
+  
+  .dark-theme .navbar {
+    background-color: var(--bg-color-dark);
+    color: var(--text-color-dark);
+  }
+  
+  /* Navbar item and link styles */
+  .dark-theme .navbar-item,
+  .dark-theme .navbar-link {
+    color: var(--text-color-dark);
+  }
+  
+  .dark-theme .navbar-dropdown {
+    background-color: var(--bg-color-dark);
+  }
+  
+  .dark-theme .navbar-dropdown .navbar-item:hover {
+    background-color: var(--clr-dark-gray);
+  }
 
 /* Basic reset */
 *::before,
