@@ -1,5 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 
+
 db = SQLAlchemy()
 
 
@@ -29,6 +30,8 @@ def configure_hooks(app):
 
 
 def reset():
+    
+    from src.core.module.user.models.user import User
     """
     Resets the database by dropping and recreating all tables
     """

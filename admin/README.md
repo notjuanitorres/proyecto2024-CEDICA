@@ -31,6 +31,7 @@ You will need Python install
 ```
 - Python 3.12.3
 - Poetry >= 1.8.3
+- PostgreSQL >= 16
 ```
 
 ### Installing
@@ -52,6 +53,11 @@ Create a .env file in the project's root folder by copying the .env.dist file an
 cp .env.dist .env
 ```
 
+Install postgres with:
+- port: '5432' 
+- host: 'localhost'
+
+Make sure the .env variables are the same as the ones in the postgres configuration file
 
 Now you can run the project with:
 
