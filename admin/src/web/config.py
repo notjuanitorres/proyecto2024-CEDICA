@@ -13,8 +13,13 @@ class ProductionConfig(Config):
 
 class DevelopmentConfig(Config):
     """DEVELOPMENT CONFIGURATION"""
-
-    DEBUG = True
+    DBUSER = "postgres"
+    DBPASS = "postgres"
+    DBHOST = "localhost"
+    DBPORT = "5432"
+    DBNAME = "grupo 19"
+    SOLALCHEMY_DATABASE_URI = \
+        f"postgresql://{DBUSER}:{DBPASS}@{DBHOST}:{DBPORT}/{DBNAME}"
 
 
 class TestingConfig(Config):
