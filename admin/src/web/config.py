@@ -1,4 +1,8 @@
+import os
 from os import environ
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 class Config(object):
@@ -17,11 +21,11 @@ class ProductionConfig(Config):
 
 class DevelopmentConfig(Config):
     """DEVELOPMENT CONFIGURATION"""
-    DBUSER = "postgres"
-    DBPASS = "postgres"
+    DBUSER = environ.get("DBUSER")
+    DBPASS = environ.get("DBPASS")
     DBHOST = "localhost"
     DBPORT = "5432"
-    DBNAME = "grupo 19"
+    DBNAME = os.environ.get("DBNAME")
     SQLALCHEMY_DATABASE_URI = \
         f"postgresql://{DBUSER}:{DBPASS}@{DBHOST}:{DBPORT}/{DBNAME}"
 

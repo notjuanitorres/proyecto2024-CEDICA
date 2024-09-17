@@ -1,5 +1,3 @@
-from email.policy import default
-
 from src.core.database import db
 from datetime import datetime
 
