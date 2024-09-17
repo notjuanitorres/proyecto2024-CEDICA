@@ -25,10 +25,7 @@ class DevelopmentConfig(Config):
     DBPASS = os.getenv("DBPASS")
     DBHOST = "localhost"
     DBPORT = "5432"
-    print(DBPORT)
-    print(DBHOST)
     DBNAME = os.getenv("DBNAME")
-    print(DBNAME)
     SQLALCHEMY_DATABASE_URI = \
         f"postgresql://{DBUSER}:{DBPASS}@{DBHOST}:{DBPORT}/{DBNAME}"
 

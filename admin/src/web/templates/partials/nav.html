@@ -24,7 +24,7 @@
         <a class="navbar-link"> Areas </a>
 
         <div class="navbar-dropdown">
-          <a class="navbar-item" aria-label="Usuarios"> Usuarios </a>
+          <a href="{{ url_for('users_bp.get_users') }}" class="navbar-item" aria-label="Usuarios"> Usuarios </a>
           <a class="navbar-item is-selected" aria-label="Equipo"> Equipo </a>
           <a class="navbar-item" aria-label="Jinetes y Amazonas">
             Jinetes y Amazonas
