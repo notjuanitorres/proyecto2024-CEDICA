@@ -1,3 +1,6 @@
+from os import environ
+
+
 class Config(object):
     """BASE CONFIGURATION"""
 
@@ -9,6 +12,7 @@ class Config(object):
 
 class ProductionConfig(Config):
     """PRODUCTION CONFIGURATION"""
+    SQLALCHEMY_DATABASE_URI = environ.get("DATABASE_URL")
 
 
 class DevelopmentConfig(Config):
@@ -18,7 +22,7 @@ class DevelopmentConfig(Config):
     DBHOST = "localhost"
     DBPORT = "5432"
     DBNAME = "grupo 19"
-    SOLALCHEMY_DATABASE_URI = \
+    SQLALCHEMY_DATABASE_URI = \
         f"postgresql://{DBUSER}:{DBPASS}@{DBHOST}:{DBPORT}/{DBNAME}"
 
 
@@ -26,6 +30,7 @@ class TestingConfig(Config):
     """TESTING CONFIGURATION"""
 
     TESTING = True
+
 
 config = {
     "production": ProductionConfig,

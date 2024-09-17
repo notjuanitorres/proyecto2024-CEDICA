@@ -2,6 +2,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
+
 def init_app(app):
     """
     Initializes the database with the Flask application
@@ -11,6 +12,7 @@ def init_app(app):
     db.init_app(app)
     configure_hooks(app)
     return app
+
 
 def configure_hooks(app):
     """
@@ -24,6 +26,7 @@ def configure_hooks(app):
         db.session.close()
 
     return app
+
 
 def reset():
     """
