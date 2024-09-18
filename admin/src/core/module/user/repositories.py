@@ -1,6 +1,6 @@
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 from src.core.database import db
-from src.core.module.user.models.user import User
+from .models import User
 
 
 class AbstractUserRepository:

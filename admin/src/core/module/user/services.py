@@ -1,6 +1,6 @@
 from abc import abstractmethod
 from typing import Dict
-from core.module.user.repositories import AbstractUserRepository
+from .repositories import AbstractUserRepository
 
 
 class AbstractUserServices:
