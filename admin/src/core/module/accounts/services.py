@@ -1,35 +1,41 @@
 from abc import abstractmethod
-from typing import Dict
+from typing import Dict, List
 from .repositories import AbstractAccountsRepository
+from src.core.module.accounts.models import User
+from core.bcrypt import bcrypt
 
 
 class AbstractAccountsServices:
     @abstractmethod
-    def get_users(self, page: int = 1, per_page: int = 10):
+    def get_users(self, page: int = 1, per_page: int = 10) -> List[User]:
         pass
 
     @abstractmethod
-    def get_user(self, user_id: int):
+    def get_user(self, user_id: int) -> User :
         pass
 
     @abstractmethod
-    def get_user_by_email(self, email: str):
+    def get_user_by_email(self, email: str) -> User:
         pass
 
     @abstractmethod
-    def create_user(self, data: Dict):
+    def create_user(self, data: Dict) -> User:
         pass
 
     @abstractmethod
-    def update_user(self, user_id: int, data: Dict):
+    def update_user(self, user_id: int, data: Dict) -> User:
         pass
 
     @abstractmethod
-    def delete_user(self, user_id: int):
+    def delete_user(self, user_id: int) -> None:
         pass
 
     @abstractmethod
-    def authenticate(self, email: str, password: str):
+    def authenticate(self, email: str, password: str) -> User:
+        pass
+
+    @abstractmethod
+    def disable_user(self, user_id: int) -> User:
         pass
 
 
@@ -44,7 +50,7 @@ class AccountsServices(AbstractAccountsServices):
         pass
 
     def get_user_by_email(self, email: str):
-        pass
+        return self.accounts_repository.get_by_email(email)
 
     def create_user(self, data: Dict):
         pass
@@ -56,4 +62,13 @@ class AccountsServices(AbstractAccountsServices):
         pass
 
     def authenticate(self, email: str, password: str):
+        user = self.get_user_by_email(email)
+        password_match = bcrypt.check_password_hash(user.password, password)
+
+        if not user.email == email or not password_match:
+            return None
+
+        return user
+
+    def disable_user(self, user_id: int) -> User:
         pass

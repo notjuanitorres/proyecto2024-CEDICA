@@ -2,7 +2,10 @@ from flask import Blueprint
 from flask import render_template
 from flask import request, url_for, session, redirect, flash
 from dependency_injector.wiring import inject, Provide
+
 from src.core.container import Container
+from core.database import db
+from core.module.accounts import AccountsServices, AccountsRepository
 
 auth_bp = Blueprint("auth_bp", __name__, template_folder="../templates/accounts", url_prefix="/auth")
 
@@ -18,6 +21,8 @@ def login():
 @inject
 def authenticate(accounts_services=Provide[Container.accounts_services]):
     params = request.form
+    #accounts_services = AccountsServices(AccountsRepository(db))
+    #nota: si no pueden hacer funcionar la inyeccion de dependencias pueden descomentar la linea de arriba
     user = accounts_services.authenticate(params.get('email'), params.get('password'))
 
     if not user:

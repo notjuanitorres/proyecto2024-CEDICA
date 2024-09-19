@@ -5,15 +5,16 @@ from src.web.controllers.index import index_bp
 from src.web.controllers.user import users_bp
 from src.web.controllers.auth import auth_bp
 from src.core import database
-from src.core.container import Container
 from flask_session import Session
 from src.core.bcrypt import bcrypt
 from web.helpers.auth import is_authenticated
+from core.container import Container
 
 session = Session()
 
 
 def create_app(env="development", static_folder="../../static"):
+    container = Container()
     app = Flask(__name__, static_folder=static_folder)
 
     app.config.from_object(config[env])
@@ -23,8 +24,8 @@ def create_app(env="development", static_folder="../../static"):
     session.init_app(app)
     bcrypt.init_app(app)
 
-    container = Container()
-    container.wire(modules=[__name__])
+    container.wire(modules=["src.web.controllers"])
+    app.container = container
 
     app.register_blueprint(index_bp)
     app.register_blueprint(users_bp)
@@ -36,7 +37,7 @@ def create_app(env="development", static_folder="../../static"):
 
     @app.cli.command(name="reset-db")
     def reset_db():
-        database.reset()
+        database.reset(app)
 
     app.jinja_env.globals.update(is_authenticated=is_authenticated)
 

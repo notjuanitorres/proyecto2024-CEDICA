@@ -1,6 +1,6 @@
 from abc import abstractmethod
 from src.core.database import db
-from .models import User
+from src.core.module.accounts.models import User
 
 
 class AbstractAccountsRepository:
@@ -40,7 +40,7 @@ class AccountsRepository(AbstractAccountsRepository):
         pass
 
     def get_by_email(self, email: str):
-        pass
+        return db.session.query(User).filter(User.email == email).first()
 
     def create(self, **kwargs):
         user = User(**kwargs)
