@@ -1,0 +1,122 @@
+:root {
+    /* Light theme colors */
+    --bg-color-light: var(--bulma-background-light, #F2F2F2);
+    --text-color-light: var(--bulma-text-dark, #333333);
+    --link-color-light: var(--bulma-link, #007acc);
+    
+    /* Dark theme colors */
+    --bg-color-dark: var(--bulma-background-dark, #333333);
+    --text-color-dark: var(--bulma-text-light, #F2F2F2);
+    --link-color-dark: var(--bulma-link-hover, #80B4BF);
+    
+    /* Other colors remain the same */
+    --clr-dark-gray: var(--bulma-grey-dark, #585859);
+    --clr-light-teal: var(--bulma-primary, #80B4BF);
+    --clr-light-orange: var(--bulma-warning, #F2BC79);
+    --clr-light-caramel: var(--bulma-warning-light, #F2B47E);
+  }
+  
+  body {
+    transition: background-color 0.3s, color 0.3s;
+  }
+  
+  /* Styles for light theme */
+  body.light-theme {
+    background-color: var(--bg-color-light);
+    color: var(--text-color-light);
+  }
+  
+  /* Styles for dark theme */
+  body.dark-theme {
+    background-color: var(--bg-color-dark);
+    color: var(--text-color-dark);
+  }
+  
+  /* Navbar styles using Bulma classes and variables */
+  .navbar {
+    transition: background-color 0.3s, color 0.3s;
+  }
+  
+  .light-theme .navbar {
+    background-color: var(--bg-color-light);
+    color: var(--text-color-light);
+  }
+  
+  .dark-theme .navbar {
+    background-color: var(--bg-color-dark);
+    color: var(--text-color-dark);
+  }
+  
+  /* Navbar item and link styles */
+  .dark-theme .navbar-item,
+  .dark-theme .navbar-link {
+    color: var(--text-color-dark);
+  }
+  
+  .dark-theme .navbar-dropdown {
+    background-color: var(--bg-color-dark);
+  }
+  
+  .dark-theme .navbar-dropdown .navbar-item:hover {
+    background-color: var(--clr-dark-gray);
+  }
+
+/* Basic reset */
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, avenir next, avenir, segoe ui, helvetica neue, helvetica, Cantarell,
+    Ubuntu, roboto, noto, arial, sans-serif;
+    line-height: 1.6;
+    background-color: #F2F2F2;
+    padding: 2rem;
+    margin: auto;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+p {
+    margin-bottom: 1rem;
+}
+
+a {
+    color: #007acc;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Forms */
+input, textarea, select, button {
+    font: inherit;
+    padding: 0.5rem;
+    margin-bottom: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 100%;
+}
+
+/* Lists */
+ul, ol {
+    margin-bottom:  1rem;
+    padding-left: 1.5rem;
+}
+
+ul li, ol li {
+    margin-bottom: 0.5rem;
+}
+
+/* Utility classes */
+.text-center  {
+    text-align: center;
+}
