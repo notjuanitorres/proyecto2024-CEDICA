@@ -29,15 +29,16 @@ def configure_hooks(app):
     return app
 
 
-def reset():
+def reset(app):
     # Necessary to create the tables with create_all
     # It should have the app context
-    from .module.user.models import User 
+    from .module.accounts.models import User
     """
     Resets the database by dropping and recreating all tables
     """
-    print("Dropping the database... ")
-    db.drop_all()
-    print("Recreating the database... ")
-    db.create_all()
-    print("Done!")
+    with app.app_context():
+        print("Dropping the database... ")
+        db.drop_all()
+        print("Recreating the database... ")
+        db.create_all()
+        print("Done!")

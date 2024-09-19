@@ -1,0 +1,51 @@
+from flask import Blueprint
+from flask import render_template
+from flask import request, url_for, session, redirect, flash, current_app
+from dependency_injector.wiring import inject, Provide
+
+from src.core.container import Container
+from core.database import db
+from core.module.accounts import AccountsServices, AccountsRepository
+
+
+auth_bp = Blueprint("auth_bp", __name__, template_folder="../templates/accounts", url_prefix="/auth")
+
+
+@auth_bp.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        return authenticate()
+
+    return render_template('login.html')
+
+
+@inject
+def authenticate(accounts_services: AccountsServices = Provide[Container.accounts_services]):
+    if isinstance(accounts_services, Provide):
+        container = current_app.container
+        accounts_services = container.accounts_services()
+    params = request.form
+    #accounts_services = AccountsServices(AccountsRepository(db))
+    #nota: si no pueden hacer funcionar la inyeccion de dependencias pueden descomentar la linea de arriba
+    user = accounts_services.authenticate(params.get('email'), params.get('password'))
+
+    if not user:
+        flash('Email o contraseña inválida', 'error')
+        return redirect(url_for('auth_bp.login'))
+
+    session['user'] = user.email
+    return redirect(url_for('index_bp.home'))
+
+
+@auth_bp.post("/logout")
+def logout():
+    if session.get('user'):
+        del session['user']
+        session.clear()
+        flash('Sesión cerrada', 'success')
+
+    return redirect(url_for('index_bp.home'))
+
+
+def register():
+    pass

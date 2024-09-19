@@ -16,13 +16,11 @@ class Config(object):
 
 class ProductionConfig(Config):
     """PRODUCTION CONFIGURATION"""
-
     SQLALCHEMY_DATABASE_URI = environ.get("DATABASE_URL")
 
 
 class DevelopmentConfig(Config):
     """DEVELOPMENT CONFIGURATION"""
-
     SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL_DEVELOPMENT")
 
 
@@ -35,5 +33,5 @@ class TestingConfig(Config):
 config = {
     "production": ProductionConfig,
     "development": DevelopmentConfig,
-    "testing": TestingConfig,
+    "testing": TestingConfig
 }
