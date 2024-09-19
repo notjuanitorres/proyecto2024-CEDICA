@@ -4,13 +4,11 @@ from src.web.handlers import error
 from src.web.controllers.index import index_bp
 from src.web.controllers.user import users_bp
 from src.web.controllers.auth import auth_bp
-from src.web.controllers.user import users_bp
-from src.web.controllers.auth import auth_bp
 from src.core import database
 from flask_session import Session
 from src.core.bcrypt import bcrypt
 from web.helpers.auth import is_authenticated
-from core.container import Container
+from src.core.wiring import init_wiring
 
 session = Session()
 
@@ -24,14 +22,10 @@ def create_app(env="development", static_folder="../../static"):
     database.init_app(app)
     session.init_app(app)
     bcrypt.init_app(app)
-    container = Container()
-    container.init_resources()
-    container.wire(modules=["src.web.controllers.auth"])
-    app.container = container
-
     app.register_blueprint(index_bp)
     app.register_blueprint(users_bp)
     app.register_blueprint(auth_bp)
+    init_wiring()
 
     error_codes = [400, 401, 403, 404, 405, 500]
     for code in error_codes:

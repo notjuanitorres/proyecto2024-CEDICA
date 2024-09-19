@@ -1,15 +1,15 @@
 from dependency_injector import containers, providers
-from .module.accounts import AccountsServices, AccountsRepository
 from core.database import db
+from .module.accounts import AccountsServices, AccountsRepository
 
 
 class Container(containers.DeclarativeContainer):
-    wiring_config = containers.WiringConfiguration(modules=["src.core.module.accounts", "src.web.controllers.auth"])
     config = providers.Configuration()
 
     # Repositories
-    accounts_repository = providers.Factory(AccountsRepository, database=db)
+    accounts_repository = providers.Singleton(AccountsRepository, database=db)
 
     # Services
-    accounts_services = providers.Singleton(AccountsServices,
-                                        accounts_repository=accounts_repository)
+    accounts_services = providers.Singleton(
+        AccountsServices, accounts_repository=accounts_repository
+    )
