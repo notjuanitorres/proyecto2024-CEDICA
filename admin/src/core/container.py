@@ -12,4 +12,4 @@ class Container(containers.DeclarativeContainer):
 
     # Services
     accounts_services = providers.Singleton(AccountsServices,
-                                        accounts_repository=accounts_repository)
+                                            accounts_repository=accounts_repository)

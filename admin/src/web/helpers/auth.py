@@ -15,4 +15,3 @@ def login_required(f):
         return f(*args, **kwargs)
 
     return decorated_function
-

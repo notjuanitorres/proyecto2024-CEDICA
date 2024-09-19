@@ -4,8 +4,6 @@ from src.web.handlers import error
 from src.web.controllers.index import index_bp
 from src.web.controllers.user import users_bp
 from src.web.controllers.auth import auth_bp
-from src.web.controllers.user import users_bp
-from src.web.controllers.auth import auth_bp
 from src.core import database
 from flask_session import Session
 from src.core.bcrypt import bcrypt
@@ -20,7 +18,7 @@ def create_app(env="development", static_folder="../../static"):
 
     app.config.from_object(config[env])
 
-    #extensions
+    # extensions
     database.init_app(app)
     session.init_app(app)
     bcrypt.init_app(app)

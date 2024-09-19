@@ -11,7 +11,7 @@ class AbstractAccountsServices:
         pass
 
     @abstractmethod
-    def get_user(self, user_id: int) -> User :
+    def get_user(self, user_id: int) -> User:
         pass
 
     @abstractmethod
@@ -66,9 +66,8 @@ class AccountsServices(AbstractAccountsServices):
 
         if user is None:
             return None
-        
-        password_match = bcrypt.check_password_hash(user.password, password)
 
+        password_match = bcrypt.check_password_hash(user.password, password)
 
         if not user.email == email or not password_match:
             return None

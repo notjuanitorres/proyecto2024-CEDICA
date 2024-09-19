@@ -5,20 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Error!</title>
     {% block head %}
-    <link
-        rel="stylesheet"
-        href="{{ url_for('static', filename='css/error.css') }}"
-    />
+        <link
+                rel="stylesheet"
+                href="{{ url_for('static', filename='css/error.css') }}"
+        />
     {% endblock %}
 </head>
 <body>
-    <div class="error-container">
-        <div class="error-code">{{ error.code }}</div>
-        <div class="error-message">{{ error.name }}</div>
-        <div class="error-details">{{ error.description }}</div>
-        <div class="link-container">
-            <a href="{{ url_for('index_bp.home') }}" class="more-link">Ir a la página principal</a>
-        </div>
+<div class="error-container">
+    <div class="error-code">{{ error.code }}</div>
+    <div class="error-message">{{ error.name }}</div>
+    <div class="error-details">{{ error.description }}</div>
+    <div class="link-container">
+        <a href="{{ url_for('index_bp.home') }}" class="more-link">Ir a la página principal</a>
     </div>
+</div>
 </body>
 </html>
