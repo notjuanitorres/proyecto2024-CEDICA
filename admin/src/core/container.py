@@ -1,5 +1,5 @@
 from dependency_injector import containers, providers
-from core.database import db
+from .database import db
 from .module.accounts import AccountsServices, AccountsRepository
 
 

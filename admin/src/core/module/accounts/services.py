@@ -1,9 +1,8 @@
 from abc import abstractmethod
 from typing import Dict, List
-from .repositories import AbstractAccountsRepository
-from src.core.module.accounts.models import User
 from core.bcrypt import bcrypt
-
+from .repositories import AbstractAccountsRepository
+from .models import User
 
 class AbstractAccountsServices:
     @abstractmethod

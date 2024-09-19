@@ -1,6 +1,4 @@
-from flask import Blueprint
-from flask import render_template
-from flask import request, url_for, session, redirect, flash
+from flask import Blueprint, render_template, request, url_for, session, redirect, flash
 from dependency_injector.wiring import inject, Provide
 from src.core.container import Container
 
