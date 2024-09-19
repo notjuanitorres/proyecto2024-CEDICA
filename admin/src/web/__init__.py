@@ -4,7 +4,15 @@ from src.web.handlers import error
 from src.web.controllers.index import index_bp
 from src.web.controllers.user import users_bp
 from src.web.controllers.auth import auth_bp
+from src.web.controllers.user import users_bp
+from src.web.controllers.auth import auth_bp
 from src.core import database
+from flask_session import Session
+from src.core.bcrypt import bcrypt
+from web.helpers.auth import is_authenticated
+from core.container import Container
+
+session = Session()
 from flask_session import Session
 from src.core.bcrypt import bcrypt
 from web.helpers.auth import is_authenticated
@@ -19,6 +27,7 @@ def create_app(env="development", static_folder="../../static"):
     app.config.from_object(config[env])
 
     #extensions
+    #extensions
     database.init_app(app)
     session.init_app(app)
     bcrypt.init_app(app)
@@ -30,6 +39,7 @@ def create_app(env="development", static_folder="../../static"):
     app.register_blueprint(index_bp)
     app.register_blueprint(users_bp)
     app.register_blueprint(auth_bp)
+    app.register_blueprint(auth_bp)
 
     error_codes = [400, 401, 403, 404, 405, 500]
     for code in error_codes:
@@ -37,6 +47,9 @@ def create_app(env="development", static_folder="../../static"):
 
     @app.cli.command(name="reset-db")
     def reset_db():
+        database.reset(app)
+
+    app.jinja_env.globals.update(is_authenticated=is_authenticated)
         database.reset(app)
 
     app.jinja_env.globals.update(is_authenticated=is_authenticated)
