@@ -3,13 +3,17 @@ from src.core.database import db
 from .models import User
 
 
-class AbstractUserRepository:
+class AbstractAccountsRepository:
     @abstractmethod
     def get_all(self, page: int = 1, per_page: int = 10):
         pass
 
     @abstractmethod
     def get_by_id(self, user_id: int):
+        pass
+
+    @abstractmethod
+    def get_by_email(self, email: str):
         pass
 
     @abstractmethod
@@ -25,7 +29,7 @@ class AbstractUserRepository:
         pass
 
 
-class UserRepository(AbstractUserRepository):
+class AccountsRepository(AbstractAccountsRepository):
     def __init__(self, database):
         self.db = database
 
@@ -33,6 +37,9 @@ class UserRepository(AbstractUserRepository):
         pass
 
     def get_by_id(self, user_id: int):
+        pass
+
+    def get_by_email(self, email: str):
         pass
 
     def create(self, **kwargs):

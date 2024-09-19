@@ -1,15 +1,19 @@
 from abc import abstractmethod
 from typing import Dict
-from .repositories import AbstractUserRepository
+from .repositories import AbstractAccountsRepository
 
 
-class AbstractUserServices:
+class AbstractAccountsServices:
     @abstractmethod
     def get_users(self, page: int = 1, per_page: int = 10):
         pass
 
     @abstractmethod
     def get_user(self, user_id: int):
+        pass
+
+    @abstractmethod
+    def get_user_by_email(self, email: str):
         pass
 
     @abstractmethod
@@ -24,15 +28,22 @@ class AbstractUserServices:
     def delete_user(self, user_id: int):
         pass
 
+    @abstractmethod
+    def authenticate(self, email: str, password: str):
+        pass
 
-class UserServices(AbstractUserServices):
-    def __init__(self, user_repository: AbstractUserRepository):
-        self.user_repository = user_repository
+
+class AccountsServices(AbstractAccountsServices):
+    def __init__(self, accounts_repository: AbstractAccountsRepository):
+        self.accounts_repository = accounts_repository
 
     def get_users(self, page: int = 1, per_page: int = 10):
         pass
 
     def get_user(self, user_id: int):
+        pass
+
+    def get_user_by_email(self, email: str):
         pass
 
     def create_user(self, data: Dict):
@@ -42,4 +53,7 @@ class UserServices(AbstractUserServices):
         pass
 
     def delete_user(self, user_id: int):
+        pass
+
+    def authenticate(self, email: str, password: str):
         pass

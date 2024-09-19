@@ -32,7 +32,7 @@ def configure_hooks(app):
 def reset():
     # Necessary to create the tables with create_all
     # It should have the app context
-    from .module.user.models import User 
+    from .module.accounts.models import User
     """
     Resets the database by dropping and recreating all tables
     """
