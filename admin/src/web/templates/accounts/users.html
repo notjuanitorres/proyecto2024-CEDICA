@@ -1,19 +1,85 @@
-{% extends "layout.html" %}
+{% extends "layout.html" %} 
 
-{% block title %}CEDICA - Usuarios{% endblock %}
+{% from "macros/pagination_mock.html" import render_pagination %}
 
-{% block head %}
-    {{ super() }}
-{% endblock %}
+{% block title %}Usuarios{% endblock %} 
+
+{% block head %} 
+    {{ super() }} 
+{% endblock %} 
 
 {% block content %}
-    <section class="hero bg-gradient is-fullheight-with-navbar">
-        <div class="hero-body">
-            <div class="container is-widescreen has-text-centered glass-bg p-5">
-                <p class="title has-text-primary-light is-size-1 has-text-text-20">Modulo de usuarios</p>
-                <p class="hero-subtitle has-text-primary-light is-size-5 has-text-text-20">Estamos trabajando para
-                    usted</p>
-            </div>
-        </div>
-    </section>
+<section class="level is-fullheight-with-navbar">
+  <div class="container">
+      <div class="table-container">
+        <table class="table is-striped p-5 mt-5">
+          <thead>
+            <tr>
+              <th>Email</th>
+              <th>Usuario</th>
+              <th>Alias</th>
+              <th>Esta activo</th>
+              <th>Roles</th>
+              <th>Ingreso</th>
+              <th>Ultima actualizacion</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th>marta@email.com</th>
+              <td>MartaMartinez</td>
+              <td>Martu</td>
+              <td>Si</td>
+              <td>Voluntario</td>
+              <td>20/09/2023 14:30</td>
+              <td>15/05/2024 09:45</td>
+              <td><button class="button">Ver</button></td>
+            </tr>
+            <tr>
+              <td>juan.perez@example.com</td>
+              <td>Juan Pérez</td>
+              <td>JP</td>
+              <td>Sí</td>
+              <td>Admin, Usuario</td>
+              <td>10/09/2024 08:15</td>
+              <td>19/09/2024 12:30</td>
+              <td><button class="button">Ver</button></td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <th>Email</th>
+              <th>Usuario</th>
+              <th>Alias</th>
+              <th>Esta activo</th>
+              <th>Roles</th>
+              <th>Ingreso</th>
+              <th>Ultima actualizacion</th>
+              <th></th>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+      {{ render_pagination("", "") }}
+
+    </div>
+  </div>
+</section>
 {% endblock %}
+
+
+
+
+        <!-- <div class="container is-widescreen has-text-centered glass-bg p-5">
+          <p class="title has-text-primary-light is-size-1 has-text-text-20">
+            Modulo de usuarios
+          </p>
+          <p
+            class="hero-subtitle has-text-primary-light is-size-5 has-text-text-20"
+          >
+            Estamos trabajando para usted
+          </p> -->
+
+
+
