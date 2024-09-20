@@ -4,9 +4,15 @@ from core.bcrypt import bcrypt
 from .repositories import AbstractAccountsRepository
 from .models import User
 
+
 class AbstractAccountsServices:
+
     @abstractmethod
-    def get_users(self, page: int = 1, per_page: int = 10) -> List[User]:
+    def create_user(self, data: Dict) -> User:
+        pass
+
+    @abstractmethod
+    def get_page(self, page: int = 1, per_page: int = 10):
         pass
 
     @abstractmethod
@@ -18,15 +24,14 @@ class AbstractAccountsServices:
         pass
 
     @abstractmethod
-    def create_user(self, data: Dict) -> User:
-        pass
-
-    @abstractmethod
     def update_user(self, user_id: int, data: Dict) -> User:
         pass
 
     @abstractmethod
     def delete_user(self, user_id: int) -> None:
+        pass
+
+    def register_user(self, user: User):
         pass
 
     @abstractmethod
@@ -42,16 +47,20 @@ class AccountsServices(AbstractAccountsServices):
     def __init__(self, accounts_repository: AbstractAccountsRepository):
         self.accounts_repository = accounts_repository
 
-    def get_users(self, page: int = 1, per_page: int = 10):
+    def create_user(self, user: User):
         pass
 
+    def get_page(self, page: int = 1, per_page: int = 10):
+        max_per_page = 100
+        return self.accounts_repository.get_page(page=page, per_page=per_page, max_per_page=max_per_page)
+
     def get_user(self, user_id: int):
-        pass
+        return self.accounts_repository.get_by_id(user_id)
 
     def get_user_by_email(self, email: str):
         return self.accounts_repository.get_by_email(email)
 
-    def create_user(self, data: Dict):
+    def register_user(self, user: User):
         pass
 
     def update_user(self, user_id: int, data: Dict):
@@ -60,7 +69,7 @@ class AccountsServices(AbstractAccountsServices):
     def delete_user(self, user_id: int):
         pass
 
-    def authenticate(self, email: str, password: str):
+    def authenticate(self, email: str, password: str) -> User:
         user = self.get_user_by_email(email)
 
         if user is None:
