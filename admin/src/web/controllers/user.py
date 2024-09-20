@@ -10,8 +10,8 @@ users_bp = Blueprint(
 @users_bp.route("/")
 @inject
 def get_page(accounts_services=Provide[Container.accounts_services]):
-    page = request.args.get('page', 1, type=int)
-    per_page = request.args.get('per_page', 10)
+    page = request.args.get('page', type=int)
+    per_page = request.args.get('per_page', type=int)
     paginated_users = accounts_services.get_page(page, per_page)
     return render_template('users.html', users=paginated_users)
 
