@@ -1,16 +1,82 @@
-{% extends "layout.html" %}
+{% extends "base.html" %}
 
 {% block title %}Login{% endblock %}
 
 {% block head %}
-    {{ super() }}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/accounts/login.css') }}" />
 {% endblock %}
 
 {% block content %}
-    <h1>Iniciar sesión</h1>
+
+<div class="full-height-container">
+    <h1 class="is-size-1">Iniciar sesión</h1>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    {% for category, message in messages %}
+    <div class="notification is-{{ category }}">
+        {{ message }}
+    </div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+
     <form action="{{ url_for('auth_bp.login') }}" method="POST">
-        <input name="email" placeholder="Correo" required/>
-        <input type="password" name="password" placeholder="Clave" required/>
-        <input type="submit" value="Login"/>
+        <div class="field">
+            <p class="control has-icons-left has-icons-right">
+                <input class="input" type="email" name="email" placeholder="Email" required>
+                <span class="icon is-small is-left">
+                    <i class="fas fa-envelope"></i>
+                </span>
+                <span class="icon is-small is-right">
+                    <i class="fas fa-check"></i>
+                </span>
+            </p>
+            {% if errors and errors.email %}
+            <p class="help is-danger">{{ errors.email }}</p>
+            {% endif %}
+        </div>
+        <div class="field">
+            <p class="control has-icons-left">
+                <input class="input" type="password" name="password" placeholder="Contraseña" required>
+                <span class="icon is-small is-left">
+                    <i class="fas fa-lock"></i>
+                </span>
+            </p>
+            {% if errors and errors.password %}
+            <p class="help is-danger">{{ errors.password }}</p>
+            {% endif %}
+        </div>
+        <div class="field is-flex-direction-row is-justify-content-space-between is-flex">
+            <p class="control">
+                <button class="button is-primary" type="submit">
+                    Iniciar sesión
+                </button>
+            </p>
+            <p class="control">
+                <a href="#" class="button is-info">
+                    Registrarse
+                </a>
+            </p>
+        </div>
     </form>
+
+
+    <div class="buttons is-centered mt-5">
+        <p class="control">
+            <a href="/" class="button is-primary is-light">
+                <span class="icon">
+                    <i class="fas fa-arrow-left"></i>
+                </span>&nbsp; 
+                Volver a la página principal
+            </a>
+        </p>
+        <p class="control">
+            <a href="#" class="button is-text">
+                Olvidé mi contraseña
+            </a>
+        </p>
+    </div>
+</div>
 {% endblock %}
