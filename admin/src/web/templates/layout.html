@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="has-navbar-fixed-top">
+<html lang="es" data-theme="light" class="has-navbar-fixed-top">
 <head>
     {% block head %}
         <meta charset="UTF-8"/>
@@ -12,7 +12,7 @@
         <title>{% block title %}{% endblock %}</title>
     {% endblock %}
 </head>
-<body class="has-background-light has-text-dark">
+<body class="level">
 {% include 'partials/nav.html' %}
 <div>{% block navbar %}{% endblock %}</div>
 <main class="container" id="container">{% block content %} {% endblock %}</main>
