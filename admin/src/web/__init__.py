@@ -7,7 +7,7 @@ from src.core.bcrypt import bcrypt
 from src.core.wiring import init_wiring
 from src.web.handlers import error
 from src.web.routes import register_blueprints
-from src.web.commands import register_commands
+from src.core.commands import register_commands
 
 session = Session()
 
