@@ -6,7 +6,7 @@ from src.core.database import db as database
 class AbstractAccountsRepository:
 
     @abstractmethod
-    def create(self, **kwargs):
+    def add(self, user: User) -> None:
         pass
 
     @abstractmethod
@@ -38,8 +38,7 @@ class AccountsRepository(AbstractAccountsRepository):
     def __init__(self):
         self.db = database
 
-    def create(self, **kwargs):
-        user = User(kwargs)
+    def add(self, user: User):
         self.save(user)
 
     def get_page(self, page: int, per_page: int, max_per_page: int):
@@ -47,10 +46,10 @@ class AccountsRepository(AbstractAccountsRepository):
             page=page, per_page=per_page, error_out=False, max_per_page=max_per_page
         )
 
-    def get_by_id(self, user_id: int):
+    def get_by_id(self, user_id: int) -> User | None:
         return self.db.session.query(User).filter(User.id == user_id).first()
 
-    def get_by_email(self, email: str):
+    def get_by_email(self, email: str) -> User | None:
         return self.db.session.query(User).filter(User.email == email).first()
 
     def update(self, user):

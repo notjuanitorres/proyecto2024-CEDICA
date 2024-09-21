@@ -37,10 +37,21 @@ def create_user(accounts_services: AAS = Provide[Container.accounts_services]):
 @users_bp.route("/crear", methods=["POST"])
 @inject
 def add_user(accounts_services: AAS = Provide[Container.accounts_services]):
-    form = UserCreateForm()
-    if form.validate_on_submit():
-        pass
-    
+    create_form = UserCreateForm()
+    if not create_form.validate_on_submit():
+        print(create_form.errors)
+        return render_template("create_user.html", form=create_form)
+     
+    accounts_services.create_user({
+        'email':create_form.email.data,
+        'alias':create_form.alias.data,
+        'password':create_form.password.data,
+        'enabled':create_form.enabled.data,
+        'system_admin':create_form.system_admin.data,
+        # 'role_id':create_form.role_id.data,
+    })
+
+    # TODO: change redirect to user page when exists
     return redirect(url_for('users_bp.get_page'))
 
 

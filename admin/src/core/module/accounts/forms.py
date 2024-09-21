@@ -25,7 +25,7 @@ class UserCreateForm(FlaskForm):
         "Confirm Password",
         validators=[
             DataRequired(),
-            EqualTo("Password", message="Las contrasenas deben coincidir"),
+            EqualTo("password", message="Las contrasenas deben coincidir"),
         ],
     )
 
@@ -33,9 +33,15 @@ class UserCreateForm(FlaskForm):
 
     system_admin = BooleanField("System Admin", default=False)
 
-    # TODO: Choices should be a list of the roles stored on the DB
     role_id = SelectField(
         "Role",
-        choices=["Admin", "Voluntario", "Equestre", "Tecnico"],
+        coerce=int,
+        # TODO: Choices should be a list of the roles stored on the DB and retrieved from there
+        choices=[
+            (1, "Admin"),
+            (2, "Voluntario"),
+            (3, "Equestre"),
+            (4, "Tecnico"),
+        ],
         validators=[Optional()],
     )
