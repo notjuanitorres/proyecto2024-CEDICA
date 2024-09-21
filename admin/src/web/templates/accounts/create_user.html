@@ -44,6 +44,15 @@
                     {% endif %}
                 </div>
 
+                <div class="field">
+                    <label class="label">{{ form.confirm_password.label }}</label>
+                    <div class="control">
+                        {{ form.confirm_password(class="input", placeholder="Confirm password") }}
+                    </div>
+                    {% if form.confirm_password.errors %}
+                        <p class="help is-danger">{{ form.confirm_password.errors[0] }}</p>
+                    {% endif %}
+                </div>
 
                 <div class="field">
                     <label class="label">{{ form.role_id.label }}</label>

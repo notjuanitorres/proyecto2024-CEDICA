@@ -55,7 +55,7 @@ class AccountsServices(AbstractAccountsServices):
         new_user = User(
             email=user_data["email"],
             alias=user_data["alias"],
-            password=bcrypt.generate_password_hash(user_data["password"]),
+            password=bcrypt.generate_password_hash(user_data["password"]).decode('utf-8'),
             enabled=user_data["enabled"],
             system_admin=user_data["system_admin"],
             # role_id=user_data["role_id"],
@@ -78,7 +78,7 @@ class AccountsServices(AbstractAccountsServices):
         pass
 
     def authenticate(self, email: str, password: str) -> User:
-        user = self.accounts_repository.get_user_by_email(email)
+        user = self.accounts_repository.get_by_email(email)
 
         if user is None:
             return None
