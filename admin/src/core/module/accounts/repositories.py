@@ -1,7 +1,7 @@
 from abc import abstractmethod
 from typing import List
 from src.core.module.accounts.models import User
-
+from src.core.database import db as database
 
 class AbstractAccountsRepository:
 
@@ -35,7 +35,7 @@ class AbstractAccountsRepository:
 
 
 class AccountsRepository(AbstractAccountsRepository):
-    def __init__(self, database):
+    def __init__(self):
         self.db = database
 
     def create(self, **kwargs):
@@ -63,8 +63,3 @@ class AccountsRepository(AbstractAccountsRepository):
     def save(self, user):
         self.db.session.add(user)
         self.db.session.commit()
-
-    def seed(self):
-        self.create(email="example1@gmail.com", alias="Alias1", password="1234")
-        self.create(email="example2@gmail.com", alias="Alias2", password="1234")
-        self.create(email="example3@gmail.com", alias="Alias3", password="1234")
