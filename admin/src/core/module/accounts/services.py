@@ -35,18 +35,22 @@ class AbstractAccountsServices:
     def disable_user(self, user_id: int):
         pass
 
+    @abstractmethod
+    def is_email_used(self, email: str) -> bool:
+        pass
+
 
 class AccountsServices(AbstractAccountsServices):
     def __init__(self, accounts_repository: AbstractAccountsRepository):
         self.accounts_repository = accounts_repository
 
-    def create_user(self, user_data: Dict) -> User:
-        email_exists = (
-            self.accounts_repository.get_by_email(user_data["email"]) is not None
-        )
+    def is_email_used(self, email: str) -> bool:
+        email_exists = self.accounts_repository.get_by_email(email) is not None
 
         if email_exists:
-            return None
+            return "El email se encuentra en uso"
+
+    def create_user(self, user_data: Dict) -> User:
 
         new_user = User(
             email=user_data["email"],
@@ -56,7 +60,7 @@ class AccountsServices(AbstractAccountsServices):
             system_admin=user_data["system_admin"],
             # role_id=user_data["role_id"],
         )
-        return self.accounts_repository.add(new_user) 
+        return self.accounts_repository.add(new_user)
 
     def get_page(self, page: int = 1, per_page: int = 10):
         max_per_page = 100

@@ -26,10 +26,10 @@ def show_user(accounts_services: AAS = Provide[Container.accounts_services]):
 
 @users_bp.route("/crear")
 @inject
-def create_user(accounts_services: AAS = Provide[Container.accounts_services]):
+def create_user():
     if request.method == "POST":
         return add_user()
-    
+
     create_form = UserCreateForm()
     return render_template("create_user.html", form=create_form)
 
@@ -39,20 +39,24 @@ def create_user(accounts_services: AAS = Provide[Container.accounts_services]):
 def add_user(accounts_services: AAS = Provide[Container.accounts_services]):
     create_form = UserCreateForm()
     if not create_form.validate_on_submit():
-        print(create_form.errors)
+        email_error = accounts_services.is_email_used(create_form.email.data)
+        if email_error:
+            create_form.email.errors.append(email_error)
         return render_template("create_user.html", form=create_form)
-     
-    accounts_services.create_user({
-        'email':create_form.email.data,
-        'alias':create_form.alias.data,
-        'password':create_form.password.data,
-        'enabled':create_form.enabled.data,
-        'system_admin':create_form.system_admin.data,
-        # 'role_id':create_form.role_id.data,
-    })
+
+    accounts_services.create_user(
+        {
+            "email": create_form.email.data,
+            "alias": create_form.alias.data,
+            "password": create_form.password.data,
+            "enabled": create_form.enabled.data,
+            "system_admin": create_form.system_admin.data,
+            # 'role_id':create_form.role_id.data,
+        }
+    )
 
     # TODO: change redirect to user page when exists
-    return redirect(url_for('users_bp.get_page'))
+    return redirect(url_for("users_bp.get_page"))
 
 
 @users_bp.route("/update/<int:user_id>")
