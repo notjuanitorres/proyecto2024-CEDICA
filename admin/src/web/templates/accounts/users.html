@@ -2,6 +2,8 @@
 
 {% from "macros/pagination.html" import render_pagination %}
 {% from "macros/date_format.html" import format_date %}
+{% from "macros/natural_boolean.html" import render_natural_boolean %}
+{% from "macros/edit_menu.html" import render_edit_menu %}
 
 {% block title %}Usuarios{% endblock %} 
 
@@ -18,6 +20,7 @@
     <table class="table is-striped is-scrollable is-fullwidth p-5 mt-5">
       <thead>
         <tr>
+          <th></th>
           <th>ID</th>
           <th>Email</th>
           <th>Alias</th>
@@ -31,30 +34,43 @@
       <tbody>
         {% for user in users %}
         <tr>
-          <th>{{ user.id }}</th>
-          <th>{{ user.email }}</th>
+          <td>
+            {{ 
+              render_edit_menu(
+              field=user.id, 
+              to_left=true,
+              endpoints={
+                'show':'', 
+                'edit': '', 
+                'delete':''
+              })
+            }}
+          </td>
+          <td>{{ user.id }}</td>
+          <td>{{ user.email }}</td>
           <td>{{ user.alias }}</td>
-          <td>{{ user.enabled }}</td>
+          <td>{{ render_natural_boolean(user.enabled) }}</td>
           <td>{{ user.roles }}</td>
           <td>{{ format_date(user.inserted_at) }}</td>
           <td>{{ format_date(user.updated_at) }}</td>
           <td>
-            <a href="{{ url_for('users_bp.show_user', user_id=user.id) }}" class="button">Ver</a>
-          </td>
-        </tr>
+            {{ 
+              render_edit_menu(
+              field=user.id, 
+              to_left=false,
+              endpoints={
+                'show':'', 
+                'edit':'', 
+                'delete':''
+              })
+            }}
+          </td>       
+         </tr>
         {% endfor %}
-        <tr>
-          <th>marta@email.com</th>
-          <td>MartaMartinez</td>
-          <td>Martu</td>
-          <td>Si</td>
-          <td>Voluntario</td>
-          <td>20/09/2023 14:30</td>
-          <td>15/05/2024 09:45</td>
-          <td><button class="button">Ver</button></td>
-        </tr>
+      </tbody>
       <tfoot>
         <tr>
+          <th></th>
           <th>ID</th>
           <th>Email</th>
           <th>Alias</th>

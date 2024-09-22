@@ -1,0 +1,26 @@
+{% macro render_edit_menu(to_left, endpoints, field) %}
+    {% if to_left == true %}
+    <div class="dropdown is-left is-hoverable">        
+    {% else %}
+    <div class="dropdown is-right is-hoverable">
+    {% endif %}
+        <div class="dropdown-trigger">
+        <button class="button" aria-haspopup="true" aria-controls="dropdown-menu">
+            <span class=" is-bold">
+                {% if to_left %}
+                >
+                {% else %}
+                <
+                {% endif %}
+            </span>
+        </button>
+        </div>
+        <div class="dropdown-menu" id="dropdown-menu" role="menu"> 
+        <div class="dropdown-content">
+            <a href="" class="dropdown-item">Ver</a>
+            <a href="" class="dropdown-item">Editar</a>
+            <a href="" class="dropdown-item">Eliminar</a>
+        </div>
+        </div>
+    </div>
+{% endmacro %}
