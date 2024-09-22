@@ -1,14 +1,16 @@
 from flask import Flask
+from flask_wtf.csrf import CSRFProtect
 from flask_session import Session
-from web.helpers.auth import is_authenticated
-from src.core.config import config
 from src.core import database
+from src.core.config import config
+from src.core.commands import register_commands
 from src.core.bcrypt import bcrypt
 from src.core.wiring import init_wiring
-from src.web.handlers import error
 from src.web.routes import register_blueprints
-from src.core.commands import register_commands
+from src.web.handlers import error
+from src.web.helpers.auth import is_authenticated
 
+csrf = CSRFProtect()
 session = Session()
 
 
@@ -20,6 +22,7 @@ def create_app(env="development", static_folder="../../static"):
     database.init_app(app)
     session.init_app(app)
     bcrypt.init_app(app)
+    csrf.init_app(app)
 
     register_blueprints(app)
     register_commands(app)
