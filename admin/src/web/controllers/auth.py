@@ -11,7 +11,6 @@ auth_bp = Blueprint(
 @auth_bp.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-        print("autenticando")
         return authenticate()
 
     login_form = UserLoginForm()
@@ -20,15 +19,22 @@ def login():
 
 @inject
 def authenticate(accounts_services=Provide[Container.accounts_services]):
-    params = request.form
+    login_form = UserLoginForm()
 
-    user = accounts_services.authenticate(params.get("email"), params.get("password"))
+    user = accounts_services.authenticate(
+        login_form.email.data, login_form.password.data
+    )
 
     if not user:
         flash("Email o contraseña inválida", "error")
         return redirect(url_for("auth_bp.login"))
 
-    session["user"] = user.id
+    session["user"] = user["id"]
+    session["user_name"] = user["alias"]
+    session["is_authenticated"] = True
+
+    flash("Sesion iniciada correctamente, bienvenido/a.", "success")
+
     return redirect(url_for("index_bp.home"))
 
 
