@@ -41,7 +41,7 @@ class UserCreateForm(FlaskForm):
         validators=[Optional()],
     )
     alias = StringField("Alias", validators=[
-                        DataRequired(), Length(min=3, max=15)])
+        DataRequired(), Length(min=3, max=15)])
 
     enabled = BooleanField("Enabled", default=True)
 
@@ -67,16 +67,17 @@ class UserEditForm(FlaskForm):
         validators=[Optional()],
     )
     alias = StringField("Alias", validators=[
-                        DataRequired(), Length(min=3, max=15)])
+        DataRequired(), Length(min=3, max=15)])
 
     enabled = BooleanField("Enabled", default=True)
 
     system_admin = BooleanField("System Admin", default=False)
 
-    class UserLoginForm(FlaskForm):
-        email = StringField(
-            "Email",
-            validators=[DataRequired(), Email(
+
+class UserLoginForm(FlaskForm):
+    email = StringField(
+        "Email",
+        validators=[DataRequired(), Email(
             message="Email invalido"), Length(max=100)],
     )
 
