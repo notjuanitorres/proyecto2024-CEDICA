@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="has-navbar-fixed-top">
 <head>
     {% block head %}
         <meta charset="UTF-8"/>
@@ -9,13 +9,15 @@
                 rel="stylesheet"
                 href="{{ url_for('static', filename='css/vendor/bulma.min.css') }}"
         />
+        {% block extra_styles %}{% endblock %}
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" /> 
         <title>{% block title %}{% endblock %}</title>
     {% endblock %}
 </head>
-<body class="{% block body_class %} has-background-light has-text-dark {% endblock %}" ></body>
-    {% block navbar %}{% endblock %}
-    <main class="container" id="container">{% block content %}{% endblock %}</main>
+<body class="{% block body_class %}{% endblock %}">
+    <header>{% block header %}{% endblock %}</header>
+    {% block content %}{% endblock %}
     {% block footer %}{% endblock %}
+    {% block extra_scripts %}{% endblock %}
 </body>
 </html>
