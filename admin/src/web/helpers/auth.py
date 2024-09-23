@@ -14,3 +14,11 @@ def login_required(f):
         return f(*args, **kwargs)
 
     return decorated_function
+
+
+def inject_session_data():
+    return dict(
+        user_id=session.get("user"),
+        user_name=session.get("user_name"),
+        is_authenticated=is_authenticated(session),
+    )
