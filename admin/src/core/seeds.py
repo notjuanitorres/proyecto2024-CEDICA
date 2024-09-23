@@ -138,7 +138,9 @@ def seed_users():
         User(email="voluntariado@gmail.com", alias="falso3",
              password=encrypt("Voluntariado123"), role_id=3),
         User(email="administracion@gmail.com", alias="falso3",
-             password=encrypt("Administracion123"), role_id=4)
+             password=encrypt("Administracion123"), role_id=4),
+        User(email="sysadmin@gmail.com", alias="sysadmin",
+             password=encrypt("Sysadmin123"), system_admin=True)
     ]
 
     db.session.add_all(users)
