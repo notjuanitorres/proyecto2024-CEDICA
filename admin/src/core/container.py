@@ -7,9 +7,10 @@ class Container(containers.DeclarativeContainer):
     config = providers.Configuration()
 
     # Repositories
-    accounts_repository = providers.Singleton(AccountsRepository, database=db)
+    # TODO: Initialize the db in the container so it can be injected into the repository
+    accounts_repository = providers.Factory(AccountsRepository)
 
     # Services
-    accounts_services = providers.Singleton(
+    accounts_services = providers.Factory(
         AccountsServices, accounts_repository=accounts_repository
     )

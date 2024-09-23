@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from typing import Dict, List
+from typing import Dict
 from core.bcrypt import bcrypt
 from .repositories import AbstractAccountsRepository
 from .models import User
@@ -8,7 +8,7 @@ from .models import User
 class AbstractAccountsServices:
 
     @abstractmethod
-    def create_user(self, data: Dict) -> User:
+    def create_user(self, user_data: Dict) -> User | None:
         pass
 
     @abstractmethod
@@ -16,30 +16,27 @@ class AbstractAccountsServices:
         pass
 
     @abstractmethod
-    def get_user(self, user_id: int) -> User:
+    def get_user(self, user_id: int):
         pass
 
     @abstractmethod
-    def get_user_by_email(self, email: str) -> User:
+    def update_user(self, user_id: int, data: Dict):
         pass
 
     @abstractmethod
-    def update_user(self, user_id: int, data: Dict) -> User:
+    def delete_user(self, user_id: int):
         pass
 
     @abstractmethod
-    def delete_user(self, user_id: int) -> None:
-        pass
-
-    def register_user(self, user: User):
+    def authenticate(self, email: str, password: str):
         pass
 
     @abstractmethod
-    def authenticate(self, email: str, password: str) -> User:
+    def disable_user(self, user_id: int):
         pass
 
     @abstractmethod
-    def disable_user(self, user_id: int) -> User:
+    def is_email_used(self, email: str) -> bool:
         pass
 
 
@@ -47,21 +44,32 @@ class AccountsServices(AbstractAccountsServices):
     def __init__(self, accounts_repository: AbstractAccountsRepository):
         self.accounts_repository = accounts_repository
 
-    def create_user(self, user: User):
-        pass
+    def is_email_used(self, email: str) -> bool:
+        email_exists = self.accounts_repository.get_by_email(email) is not None
+
+        if email_exists:
+            return "El email se encuentra en uso"
+
+    def create_user(self, user_data: Dict) -> User:
+
+        new_user = User(
+            email=user_data["email"],
+            alias=user_data["alias"],
+            password=bcrypt.generate_password_hash(user_data["password"]).decode('utf-8'),
+            enabled=user_data["enabled"],
+            system_admin=user_data["system_admin"],
+            # role_id=user_data["role_id"],
+        )
+        return self.accounts_repository.add(new_user)
 
     def get_page(self, page: int = 1, per_page: int = 10):
         max_per_page = 100
-        return self.accounts_repository.get_page(page=page, per_page=per_page, max_per_page=max_per_page)
+        return self.accounts_repository.get_page(
+            page=page, per_page=per_page, max_per_page=max_per_page
+        )
 
     def get_user(self, user_id: int):
         return self.accounts_repository.get_by_id(user_id)
-
-    def get_user_by_email(self, email: str):
-        return self.accounts_repository.get_by_email(email)
-
-    def register_user(self, user: User):
-        pass
 
     def update_user(self, user_id: int, data: Dict):
         pass
@@ -70,7 +78,7 @@ class AccountsServices(AbstractAccountsServices):
         pass
 
     def authenticate(self, email: str, password: str) -> User:
-        user = self.get_user_by_email(email)
+        user = self.accounts_repository.get_by_email(email)
 
         if user is None:
             return None

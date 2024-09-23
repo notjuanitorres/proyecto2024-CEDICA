@@ -1,6 +1,9 @@
 {% extends "layout.html" %} 
 
-{% from "macros/pagination_mock.html" import render_pagination %}
+{% from "macros/pagination.html" import render_pagination %}
+{% from "macros/date_format.html" import format_date %}
+{% from "macros/natural_boolean.html" import render_natural_boolean %}
+{% from "macros/edit_menu.html" import render_edit_menu %}
 
 {% block title %}Usuarios{% endblock %} 
 
@@ -9,79 +12,78 @@
 {% endblock %} 
 
 {% block content %}
-<section class="level is-fullheight-with-navbar">
-  <div class="container">
-      <div class="table-container">
-        <table class="table is-striped is-fullwidth p-5 mt-5">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Email</th>
-              <th>Alias</th>
-              <th>Esta activo</th>
-              <th>Roles</th>
-              <th>Ingreso</th>
-              <th>Ultima actualizacion</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for user in users %}
-            <tr>
-              <th>{{ user.id }}</th>
-              <th>{{ user.email }}</th>
-              <td>{{ user.alias }}</td>
-              <td>{{ user.enabled }}</td>
-              <td>{{ user.roles }}</td>
-              <td>{{ user.inserted_at }}</td>
-              <td>{{ user.updated_at }}</td>
-              <td><a href="{{ url_for(accounts_bp.get_user, id=user.id )}}" class="button">Ver</button></td>
-            </tr>
-            {% endfor %}
-            <tr>
-              <th>marta@email.com</th>
-              <td>MartaMartinez</td>
-              <td>Martu</td>
-              <td>Si</td>
-              <td>Voluntario</td>
-              <td>20/09/2023 14:30</td>
-              <td>15/05/2024 09:45</td>
-              <td><button class="button">Ver</button></td>
-            </tr>
-          <tfoot>
-            <tr>
-              <th>ID</th>
-              <th>Email</th>
-              <th>Alias</th>
-              <th>Esta activo</th>
-              <th>Roles</th>
-              <th>Ingreso</th>
-              <th>Ultima actualizacion</th>
-              <th></th>
-            </tr>
-          </tfoot>
-        </table>
-        {{ render_pagination("", "") }}
-
-      </div>
-
+<section class="is-fullheight-with-navbar"">
+  <div class="table-container">
+    <div class="box">
+      <a class="button" href="{{ url_for('users_bp.create_user')}}">Crear usuario</a>
     </div>
+    <table class="table is-striped is-scrollable is-fullwidth p-5 mt-5">
+      <thead>
+        <tr>
+          <th></th>
+          <th>ID</th>
+          <th>Email</th>
+          <th>Alias</th>
+          <th>Esta activo</th>
+          <th>Roles</th>
+          <th>Ingreso</th>
+          <th>Ultima actualizacion</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for user in users %}
+        <tr>
+          <td>
+            {{ 
+              render_edit_menu(
+              field=user.id, 
+              to_left=true,
+              endpoints={
+                'show':'', 
+                'edit': '', 
+                'delete':''
+              })
+            }}
+          </td>
+          <td>{{ user.id }}</td>
+          <td>{{ user.email }}</td>
+          <td>{{ user.alias }}</td>
+          <td>{{ render_natural_boolean(user.enabled) }}</td>
+          <td>{{ user.roles }}</td>
+          <td>{{ format_date(user.inserted_at) }}</td>
+          <td>{{ format_date(user.updated_at) }}</td>
+          <td>
+            {{ 
+              render_edit_menu(
+              field=user.id, 
+              to_left=false,
+              endpoints={
+                'show':'', 
+                'edit':'', 
+                'delete':''
+              })
+            }}
+          </td>       
+         </tr>
+        {% endfor %}
+      </tbody>
+      <tfoot>
+        <tr>
+          <th></th>
+          <th>ID</th>
+          <th>Email</th>
+          <th>Alias</th>
+          <th>Esta activo</th>
+          <th>Roles</th>
+          <th>Ingreso</th>
+          <th>Ultima actualizacion</th>
+          <th></th>
+        </tr>
+      </tfoot>
+    </table>
+    <div class="container px-5">{{ render_pagination(users, 'users_bp.get_page') }}</div>
   </div>
 </section>
 {% endblock %}
-
-
-
-
-        <!-- <div class="container is-widescreen has-text-centered glass-bg p-5">
-          <p class="title has-text-primary-light is-size-1 has-text-text-20">
-            Modulo de usuarios
-          </p>
-          <p
-            class="hero-subtitle has-text-primary-light is-size-5 has-text-text-20"
-          >
-            Estamos trabajando para usted
-          </p> -->
-
-
 

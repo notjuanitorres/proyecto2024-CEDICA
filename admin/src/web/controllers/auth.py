@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, url_for, session, redirect, flash
 from dependency_injector.wiring import inject, Provide
 from src.core.container import Container
-
+from src.core.module.accounts import UserLoginForm
 
 auth_bp = Blueprint(
     "auth_bp", __name__, template_folder="../templates/accounts", url_prefix="/auth"
@@ -14,7 +14,8 @@ def login():
         print("autenticando")
         return authenticate()
 
-    return render_template("login.html")
+    login_form = UserLoginForm()
+    return render_template("login.html", form=login_form)
 
 
 @inject

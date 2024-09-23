@@ -1,0 +1,91 @@
+{% extends "layout.html" %}
+
+{% block title %} Usuarios - Crear usuario {% endblock %}
+
+{% block head %}
+    {{ super() }}
+{% endblock %}
+
+{% block content %}
+    <section class="section">
+        <div class="container">
+            <h1 class="title">Crear usuario</h1>
+            <form method="POST">
+                {{ form.csrf_token }}
+                {{ form.hidden_tag() }}
+                
+                <div class="field">
+                    <label class="label">{{ form.email.label }}</label>
+                    <div class="control">
+                        {{ form.email(class="input", type="email", placeholder="Enter email") }}
+                    </div>
+                    {% if form.email.errors %}
+                        <p class="help is-danger">{{ form.email.errors[0] }}</p>
+                    {% endif %}
+                </div>
+
+                <div class="field">
+                    <label class="label">{{ form.alias.label }}</label>
+                    <div class="control">
+                        {{ form.alias(class="input", placeholder="Enter alias") }}
+                    </div>
+                    {% if form.alias.errors %}
+                        <p class="help is-danger">{{ form.alias.errors[0] }}</p>
+                    {% endif %}
+                </div>
+
+                <div class="field">
+                    <label class="label">{{ form.password.label }}</label>
+                    <div class="control">
+                        {{ form.password(class="input", placeholder="Enter password") }}
+                    </div>
+                    {% if form.password.errors %}
+                        <p class="help is-danger">{{ form.password.errors[0] }}</p>
+                    {% endif %}
+                </div>
+
+                <div class="field">
+                    <label class="label">{{ form.confirm_password.label }}</label>
+                    <div class="control">
+                        {{ form.confirm_password(class="input", placeholder="Confirm password") }}
+                    </div>
+                    {% if form.confirm_password.errors %}
+                        <p class="help is-danger">{{ form.confirm_password.errors[0] }}</p>
+                    {% endif %}
+                </div>
+
+                <div class="field">
+                    <label class="label">{{ form.role_id.label }}</label>
+                    <div class="control">
+                        <div class="select">
+                            {{ form.role_id() }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <div class="control">
+                        <label class="checkbox">
+                            {{ form.enabled() }} {{ form.enabled.label }}
+                        </label>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <div class="control">
+                        <label class="checkbox">
+                            {{ form.system_admin() }} {{ form.system_admin.label }}
+                        </label>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <div class="control">
+                        <button class="button is-primary" type="submit">Submit</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </section>
+{% endblock %}
+
