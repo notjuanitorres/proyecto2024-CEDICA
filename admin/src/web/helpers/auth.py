@@ -6,6 +6,10 @@ def is_authenticated(user_session):
     return user_session.get("user") is not None
 
 
+def is_logged_in():
+    return is_authenticated(session)
+
+
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
