@@ -6,10 +6,9 @@ from wtforms.validators import DataRequired, Email, Length, EqualTo, Optional
 class UserCreateForm(FlaskForm):
     email = StringField(
         "Email",
-        validators=[DataRequired(), Email(message="Email invalido"), Length(max=100)],
+        validators=[DataRequired(), Email(
+            message="Email invalido"), Length(max=100)],
     )
-
-    alias = StringField("Alias", validators=[DataRequired(), Length(min=3, max=15)])
 
     password = PasswordField(
         "Password",
@@ -29,10 +28,6 @@ class UserCreateForm(FlaskForm):
         ],
     )
 
-    enabled = BooleanField("Enabled", default=True)
-
-    system_admin = BooleanField("System Admin", default=False)
-
     role_id = SelectField(
         "Role",
         coerce=int,
@@ -45,12 +40,44 @@ class UserCreateForm(FlaskForm):
         ],
         validators=[Optional()],
     )
+    alias = StringField("Alias", validators=[
+                        DataRequired(), Length(min=3, max=15)])
+
+    enabled = BooleanField("Enabled", default=True)
+
+    system_admin = BooleanField("System Admin", default=False)
 
 
-class UserLoginForm(FlaskForm):
+class UserEditForm(FlaskForm):
     email = StringField(
         "Email",
-        validators=[DataRequired(), Email(message="Email invalido"), Length(max=100)],
+        validators=[DataRequired(), Email(
+            message="Email invalido"), Length(max=100)],
+    )
+    role_id = SelectField(
+        "Role",
+        coerce=int,
+        # TODO: Choices should be a list of the roles stored on the DB and retrieved from there
+        choices=[
+            (1, "Admin"),
+            (2, "Voluntario"),
+            (3, "Equestre"),
+            (4, "Tecnico"),
+        ],
+        validators=[Optional()],
+    )
+    alias = StringField("Alias", validators=[
+                        DataRequired(), Length(min=3, max=15)])
+
+    enabled = BooleanField("Enabled", default=True)
+
+    system_admin = BooleanField("System Admin", default=False)
+
+    class UserLoginForm(FlaskForm):
+        email = StringField(
+            "Email",
+            validators=[DataRequired(), Email(
+            message="Email invalido"), Length(max=100)],
     )
 
     password = PasswordField(
@@ -62,3 +89,4 @@ class UserLoginForm(FlaskForm):
             ),
         ],
     )
+

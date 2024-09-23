@@ -3,7 +3,7 @@
 {% from "macros/pagination.html" import render_pagination %}
 {% from "macros/date_format.html" import format_date %}
 {% from "macros/natural_boolean.html" import render_natural_boolean %}
-{% from "macros/edit_menu.html" import render_edit_menu %}
+{% from "macros/edit_menu.html" import render_actions_menu %}
 
 {% block title %}Usuarios{% endblock %} 
 
@@ -36,12 +36,12 @@
         <tr>
           <td>
             {{ 
-              render_edit_menu(
-              field=user.id, 
+              render_actions_menu(
+              value=user.id,
               to_left=true,
               endpoints={
                 'show':'', 
-                'edit': '', 
+                'edit': 'users_bp.edit_user', 
                 'delete':''
               })
             }}
@@ -55,12 +55,12 @@
           <td>{{ format_date(user.updated_at) }}</td>
           <td>
             {{ 
-              render_edit_menu(
-              field=user.id, 
+              render_actions_menu(
+              value=user.id,
               to_left=false,
               endpoints={
                 'show':'', 
-                'edit':'', 
+                'edit':'users_bp.edit_user', 
                 'delete':''
               })
             }}

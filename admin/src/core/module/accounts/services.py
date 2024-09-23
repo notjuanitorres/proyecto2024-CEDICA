@@ -8,7 +8,7 @@ from .models import User
 class AbstractAccountsServices:
 
     @abstractmethod
-    def create_user(self, user_data: Dict) -> User | None:
+    def create_user(self, user_data: Dict) -> Dict | None:
         pass
 
     @abstractmethod
@@ -16,7 +16,7 @@ class AbstractAccountsServices:
         pass
 
     @abstractmethod
-    def get_user(self, user_id: int):
+    def get_user(self, user_id: int) -> Dict:
         pass
 
     @abstractmethod
@@ -36,7 +36,7 @@ class AbstractAccountsServices:
         pass
 
     @abstractmethod
-    def is_email_used(self, email: str) -> bool:
+    def validate_email(self, email: str) -> bool:
         pass
 
 
@@ -44,14 +44,13 @@ class AccountsServices(AbstractAccountsServices):
     def __init__(self, accounts_repository: AbstractAccountsRepository):
         self.accounts_repository = accounts_repository
 
-    def is_email_used(self, email: str) -> bool:
+    def validate_email(self, email: str) -> bool:
         email_exists = self.accounts_repository.get_by_email(email) is not None
 
         if email_exists:
             return "El email se encuentra en uso"
 
     def create_user(self, user_data: Dict) -> User:
-
         new_user = User(
             email=user_data["email"],
             alias=user_data["alias"],
@@ -68,16 +67,31 @@ class AccountsServices(AbstractAccountsServices):
             page=page, per_page=per_page, max_per_page=max_per_page
         )
 
-    def get_user(self, user_id: int):
-        return self.accounts_repository.get_by_id(user_id)
+    def get_user(self, user_id: int) -> Dict | None:
+        user = self.accounts_repository.get_by_id(user_id)
+        if not user:
+            return None
+        
+        user_dict = {
+            "id": user.id,
+            "email": user.email,
+            "alias": user.alias,
+            "password": user.password,
+            "enabled": user.enabled,
+            "system_admin": user.system_admin,
+            # 'role_id':create_form.role_id.data,
+        }
+        
+        return user_dict
 
     def update_user(self, user_id: int, data: Dict):
-        pass
+        return self.accounts_repository.update(user_id, data)
+        
 
     def delete_user(self, user_id: int):
         pass
 
-    def authenticate(self, email: str, password: str) -> User:
+    def authenticate(self, email: str, password: str):
         user = self.accounts_repository.get_by_email(email)
 
         if user is None:

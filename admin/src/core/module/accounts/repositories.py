@@ -1,7 +1,8 @@
 from abc import abstractmethod
-from typing import List
+from typing import List, Dict
 from src.core.module.accounts.models import User
 from src.core.database import db as database
+
 
 class AbstractAccountsRepository:
 
@@ -20,13 +21,9 @@ class AbstractAccountsRepository:
     @abstractmethod
     def get_by_email(self, email: str) -> User:
         pass
-
+    
     @abstractmethod
-    def save(self, user):
-        pass
-
-    @abstractmethod
-    def update(self, user):
+    def update(self, user_id: int, data: Dict):
         pass
 
     @abstractmethod
@@ -39,7 +36,8 @@ class AccountsRepository(AbstractAccountsRepository):
         self.db = database
 
     def add(self, user: User):
-        self.save(user)
+        self.db.session.add(user)
+        self.save()
 
     def get_page(self, page: int, per_page: int, max_per_page: int):
         return User.query.paginate(
@@ -52,13 +50,15 @@ class AccountsRepository(AbstractAccountsRepository):
     def get_by_email(self, email: str) -> User | None:
         return self.db.session.query(User).filter(User.email == email).first()
 
-    def update(self, user):
-        pass
+    def update(self, user_id: int, data: Dict):
+        user = User.query.filter_by(id=user_id)
+        updated_user = user.update(data)
+        self.save()
+        return updated_user
 
     # TODO: select between logic and physical erase
     def delete(self):
         pass
 
-    def save(self, user):
-        self.db.session.add(user)
+    def save(self):
         self.db.session.commit()
