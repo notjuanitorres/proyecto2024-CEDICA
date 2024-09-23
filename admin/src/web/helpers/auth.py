@@ -10,7 +10,7 @@ def is_authenticated(user_session):
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if is_authenticated(session):
+        if not is_authenticated(session):
             return abort(401)
         return f(*args, **kwargs)
 
