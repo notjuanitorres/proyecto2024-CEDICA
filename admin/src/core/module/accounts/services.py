@@ -71,17 +71,7 @@ class AccountsServices(AbstractAccountsServices):
         if not user:
             return None
         
-        user_dict = {
-            "id": user.id,
-            "email": user.email,
-            "alias": user.alias,
-            "password": user.password,
-            "enabled": user.enabled,
-            "system_admin": user.system_admin,
-            # 'role_id':create_form.role_id.data,
-        }
-        
-        return user_dict
+        return self.to_dict(user)
 
     def update_user(self, user_id: int, data: Dict):
         return self.accounts_repository.update(user_id, data)
@@ -101,7 +91,23 @@ class AccountsServices(AbstractAccountsServices):
         if not user.email == email or not password_match:
             return None
 
-        return user
+        return self.to_dict(user)
 
     def disable_user(self, user_id: int) -> User:
         pass
+    
+    def to_dict(self, user: User) -> Dict:
+        # TODO: Implement User DTO to transfer users between service and presentation layer
+        # The DTO is a dataclass with methods for passing from entity to dto and viceversa
+        # It is possible to also add a to_dict method
+        # It is easier to handle an object than a dict
+        user_dict = {
+            "id": user.id,
+            "email": user.email,
+            "alias": user.alias,
+            "enabled": user.enabled,
+            "system_admin": user.system_admin,
+            # TODO: Insert roles and permissions into the db
+            # 'role_id':create_form.role_id.data,
+        }
+        return user_dict

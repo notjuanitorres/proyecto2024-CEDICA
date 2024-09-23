@@ -8,7 +8,7 @@ from src.core.bcrypt import bcrypt
 from src.core.wiring import init_wiring
 from src.web.routes import register_blueprints
 from src.web.handlers import error
-from src.web.helpers.auth import is_authenticated
+from src.web.helpers.auth import is_authenticated, inject_session_data
 
 csrf = CSRFProtect()
 session = Session()
@@ -31,7 +31,8 @@ def create_app(env="development", static_folder="../../static"):
     error_codes = [400, 401, 403, 404, 405, 500]
     for code in error_codes:
         app.register_error_handler(code, error.handle_error)
-
+    
+    app.context_processor(inject_session_data)
     app.jinja_env.globals.update(is_authenticated=is_authenticated)
 
     return app
