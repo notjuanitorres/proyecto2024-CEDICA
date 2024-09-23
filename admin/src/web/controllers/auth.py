@@ -27,7 +27,7 @@ def authenticate(accounts_services=Provide[Container.accounts_services]):
         flash("Email o contraseña inválida", "error")
         return redirect(url_for("auth_bp.login"))
 
-    session["user"] = user.email
+    session["user"] = user.id
     return redirect(url_for("index_bp.home"))
 
 
