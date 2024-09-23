@@ -20,7 +20,7 @@ class AbstractAccountsServices:
         pass
 
     @abstractmethod
-    def update_user(self, user_id: int, data: Dict) -> None:
+    def update_user(self, user_id: int, data: Dict):
         pass
 
     @abstractmethod
@@ -46,10 +46,11 @@ class AccountsServices(AbstractAccountsServices):
 
     def validate_email(self, email: str) -> bool:
         email_exists = self.accounts_repository.get_by_email(email) is not None
-        
-        return email_exists
 
-    def create_user(self, user_data: Dict):
+        if email_exists:
+            return "El email se encuentra en uso"
+
+    def create_user(self, user_data: Dict) -> User:
         new_user = User(
             email=user_data["email"],
             alias=user_data["alias"],

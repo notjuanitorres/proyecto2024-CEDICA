@@ -38,8 +38,11 @@ def create_user():
 @inject
 def add_user(accounts_services: AAS = Provide[Container.accounts_services]):
     create_form = UserCreateForm()
+    email_error = accounts_services.validate_email(create_form.email.data)
 
-    if not create_form.validate_on_submit():
+    if not create_form.validate_on_submit() or email_error:
+        if email_error:
+            create_form.email.errors.append(email_error)
         return render_template("create_user.html", form=create_form)
 
     accounts_services.create_user(
@@ -76,12 +79,19 @@ def edit_user(user_id: int, accounts_services: AAS = Provide[Container.accounts_
 @users_bp.route("/editar/<int:user_id>", methods=["POST", "PUT"])
 @inject
 def update_user(user_id: int, accounts_services: AAS = Provide[Container.accounts_services]):
+    edit_form = UserEditForm()
+    email_error = None
     user = accounts_services.get_user(user_id=user_id)
-    edit_form = UserEditForm(current_email=user['email'])
+    
+    if user['email'] is not edit_form.email.data:
+        email_error = accounts_services.validate_email(email=edit_form.email.data)
+        
     if not edit_form.validate_on_submit():
+        if email_error:
+            edit_form.email.errors.append(email_error)
         return render_template("edit_user.html", form=edit_form)
 
-    accounts_services.update_user(
+    updated_user = accounts_services.update_user(
         user_id=user_id,
         data={
             "email": edit_form.email.data,
