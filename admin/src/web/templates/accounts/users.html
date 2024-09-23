@@ -24,10 +24,11 @@
             <th>ID</th>
             <th>Email</th>
             <th>Alias</th>
-            <th>Esta activo</th>
+            <th>Activo</th>
             <th>Roles</th>
+            <th>Admin</th>
             <th>Ingreso</th>
-            <th>Ultima actualizacion</th>
+            <th>Actualizado</th>
             <th></th>
           </tr>
         </thead>
@@ -51,6 +52,7 @@
             <td>{{ user.alias }}</td>
             <td>{{ render_natural_boolean(user.enabled) }}</td>
             <td>{{ user.roles }}</td>
+            <td>{{ render_natural_boolean(user.system_admin) }}</td>
             <td>{{ format_date(user.inserted_at) }}</td>
             <td>{{ format_date(user.updated_at) }}</td>
             <td>
@@ -74,10 +76,11 @@
             <th>ID</th>
             <th>Email</th>
             <th>Alias</th>
-            <th>Esta activo</th>
+            <th>Activo</th>
             <th>Roles</th>
+            <th>Admin</th>
             <th>Ingreso</th>
-            <th>Ultima actualizacion</th>
+            <th>Actualizado</th>
             <th></th>
           </tr>
         </tfoot>
