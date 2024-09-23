@@ -67,6 +67,12 @@ class UserEditForm(FlaskForm):
         validators=[Optional()],
     )
 
+    alias = StringField("Alias", validators=[DataRequired(), Length(min=3, max=15)])
+
+    enabled = BooleanField("Enabled", default=True)
+
+    system_admin = BooleanField("System Admin", default=False)
+
 
 class UserLoginForm(FlaskForm):
     email = StringField(
