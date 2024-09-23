@@ -4,13 +4,15 @@
 
 {% block head %}
     {{ super() }}
+    {% block extra_styles %}
     <link
-            rel="stylesheet"
-            href="{{ url_for('static', filename='css/home.css') }}"
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/home.css') }}"
     />
+    {% endblock %}
 {% endblock %}
 
-{% block content %}
+{% block main_content %}
     <section class="hero bg-gradient is-fullheight-with-navbar">
         <div class="hero-body">
             <div class="container is-widescreen has-text-centered glass-bg p-5">
