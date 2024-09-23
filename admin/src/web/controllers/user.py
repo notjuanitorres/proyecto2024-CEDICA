@@ -80,8 +80,12 @@ def edit_user(user_id: int, accounts_services: AAS = Provide[Container.accounts_
 @inject
 def update_user(user_id: int, accounts_services: AAS = Provide[Container.accounts_services]):
     edit_form = UserEditForm()
-    email_error = accounts_services.validate_email(edit_form.email.data)
-
+    email_error = None
+    user = accounts_services.get_user(user_id=user_id)
+    
+    if user['email'] is not edit_form.email.data:
+        email_error = accounts_services.validate_email(email=edit_form.email.data)
+        
     if not edit_form.validate_on_submit():
         if email_error:
             edit_form.email.errors.append(email_error)
