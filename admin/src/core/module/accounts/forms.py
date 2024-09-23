@@ -66,19 +66,6 @@ class UserEditForm(FlaskForm):
         ],
         validators=[Optional()],
     )
-<<<<<<< HEAD
-    
-class UserLoginForm(FlaskForm):
-    email = StringField(
-        "Email",
-        validators=[DataRequired(), Email(message="Email invalido"), Length(max=100)],
-=======
-    alias = StringField("Alias", validators=[
-        DataRequired(), Length(min=3, max=15)])
-
-    enabled = BooleanField("Enabled", default=True)
-
-    system_admin = BooleanField("System Admin", default=False)
 
 
 class UserLoginForm(FlaskForm):
@@ -86,7 +73,6 @@ class UserLoginForm(FlaskForm):
         "Email",
         validators=[DataRequired(), Email(
             message="Email invalido"), Length(max=100)],
->>>>>>> 32b678c289415911730937486771ac894260e081
     )
 
     password = PasswordField(
