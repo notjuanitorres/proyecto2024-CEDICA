@@ -45,3 +45,20 @@ class UserCreateForm(FlaskForm):
         ],
         validators=[Optional()],
     )
+
+
+class UserLoginForm(FlaskForm):
+    email = StringField(
+        "Email",
+        validators=[DataRequired(), Email(message="Email invalido"), Length(max=100)],
+    )
+
+    password = PasswordField(
+        "Password",
+        validators=[
+            DataRequired(),
+            Length(
+                min=8, max=255, message="La contrasena debe tener mas de 8 caracteres"
+            ),
+        ],
+    )
