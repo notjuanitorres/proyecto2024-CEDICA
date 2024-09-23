@@ -1,6 +1,5 @@
 from functools import wraps
-from flask import session
-from flask import abort
+from flask import session, redirect, url_for
 
 
 def is_authenticated(user_session):
@@ -11,7 +10,7 @@ def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if not is_authenticated(session):
-            return abort(401)
+            return redirect(url_for('auth_bp.login'))
         return f(*args, **kwargs)
 
     return decorated_function
