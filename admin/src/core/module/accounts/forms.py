@@ -9,8 +9,6 @@ class UserCreateForm(FlaskForm):
         validators=[DataRequired(), Email(message="Email invalido"), Length(max=100)],
     )
 
-    alias = StringField("Alias", validators=[DataRequired(), Length(min=3, max=15)])
-
     password = PasswordField(
         "Password",
         validators=[
@@ -29,10 +27,6 @@ class UserCreateForm(FlaskForm):
         ],
     )
 
-    enabled = BooleanField("Enabled", default=True)
-
-    system_admin = BooleanField("System Admin", default=False)
-
     role_id = SelectField(
         "Role",
         coerce=int,
@@ -45,3 +39,32 @@ class UserCreateForm(FlaskForm):
         ],
         validators=[Optional()],
     )
+    alias = StringField("Alias", validators=[DataRequired(), Length(min=3, max=15)])
+
+    enabled = BooleanField("Enabled", default=True)
+
+    system_admin = BooleanField("System Admin", default=False)
+
+
+class UserEditForm(FlaskForm):
+    email = StringField(
+        "Email",
+        validators=[DataRequired(), Email(message="Email invalido"), Length(max=100)],
+    )
+    role_id = SelectField(
+        "Role",
+        coerce=int,
+        # TODO: Choices should be a list of the roles stored on the DB and retrieved from there
+        choices=[
+            (1, "Admin"),
+            (2, "Voluntario"),
+            (3, "Equestre"),
+            (4, "Tecnico"),
+        ],
+        validators=[Optional()],
+    )
+    alias = StringField("Alias", validators=[DataRequired(), Length(min=3, max=15)])
+
+    enabled = BooleanField("Enabled", default=True)
+
+    system_admin = BooleanField("System Admin", default=False)
