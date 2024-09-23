@@ -1,27 +1,29 @@
 from abc import abstractmethod
-from src.core.database import db
+from typing import List, Dict
 from src.core.module.accounts.models import User
+from src.core.database import db as database
 
 
 class AbstractAccountsRepository:
+
     @abstractmethod
-    def get_all(self, page: int = 1, per_page: int = 10):
+    def add(self, user: User) -> None:
         pass
 
     @abstractmethod
-    def get_by_id(self, user_id: int):
+    def get_page(self, page: int, per_page: int, max_per_page: int) -> List[User]:
         pass
 
     @abstractmethod
-    def get_by_email(self, email: str):
+    def get_by_id(self, user_id: int) -> User:
         pass
 
     @abstractmethod
-    def create(self, **kwargs):
+    def get_by_email(self, email: str) -> User:
         pass
-
+    
     @abstractmethod
-    def update(self):
+    def update(self, user_id: int, data: Dict):
         pass
 
     @abstractmethod
@@ -30,30 +32,33 @@ class AbstractAccountsRepository:
 
 
 class AccountsRepository(AbstractAccountsRepository):
-    def __init__(self, database):
+    def __init__(self):
         self.db = database
 
-    def get_all(self, page: int = 1, per_page: int = 10):
-        pass
+    def add(self, user: User):
+        self.db.session.add(user)
+        self.save()
 
-    def get_by_id(self, user_id: int):
-        pass
+    def get_page(self, page: int, per_page: int, max_per_page: int):
+        return User.query.paginate(
+            page=page, per_page=per_page, error_out=False, max_per_page=max_per_page
+        )
 
-    def get_by_email(self, email: str):
-        return db.session.query(User).filter(User.email == email).first()
+    def get_by_id(self, user_id: int) -> User | None:
+        return self.db.session.query(User).filter(User.id == user_id).first()
 
-    def create(self, **kwargs):
-        user = User(**kwargs)
-        db.session.add(user)
-        db.session.commit()
+    def get_by_email(self, email: str) -> User | None:
+        return self.db.session.query(User).filter(User.email == email).first()
 
-    def update(self):
-        pass
+    def update(self, user_id: int, data: Dict):
+        user = User.query.filter_by(id=user_id)
+        updated_user = user.update(data)
+        self.save()
+        return updated_user
 
+    # TODO: select between logic and physical erase
     def delete(self):
         pass
 
-    def seed(self):
-        self.create(email="example1@gmail.com", alias="Alias1", password="1234")
-        self.create(email="example2@gmail.com", alias="Alias2", password="1234")
-        self.create(email="example3@gmail.com", alias="Alias3", password="1234")
+    def save(self):
+        self.db.session.commit()
