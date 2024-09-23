@@ -6,7 +6,8 @@ from wtforms.validators import DataRequired, Email, Length, EqualTo, Optional
 class UserCreateForm(FlaskForm):
     email = StringField(
         "Email",
-        validators=[DataRequired(), Email(message="Email invalido"), Length(max=100)],
+        validators=[DataRequired(), Email(
+            message="Email invalido"), Length(max=100)],
     )
 
     password = PasswordField(
@@ -39,7 +40,8 @@ class UserCreateForm(FlaskForm):
         ],
         validators=[Optional()],
     )
-    alias = StringField("Alias", validators=[DataRequired(), Length(min=3, max=15)])
+    alias = StringField("Alias", validators=[
+                        DataRequired(), Length(min=3, max=15)])
 
     enabled = BooleanField("Enabled", default=True)
 
@@ -49,7 +51,8 @@ class UserCreateForm(FlaskForm):
 class UserEditForm(FlaskForm):
     email = StringField(
         "Email",
-        validators=[DataRequired(), Email(message="Email invalido"), Length(max=100)],
+        validators=[DataRequired(), Email(
+            message="Email invalido"), Length(max=100)],
     )
     role_id = SelectField(
         "Role",
@@ -63,8 +66,26 @@ class UserEditForm(FlaskForm):
         ],
         validators=[Optional()],
     )
-    alias = StringField("Alias", validators=[DataRequired(), Length(min=3, max=15)])
+    alias = StringField("Alias", validators=[
+                        DataRequired(), Length(min=3, max=15)])
 
     enabled = BooleanField("Enabled", default=True)
 
     system_admin = BooleanField("System Admin", default=False)
+
+    class UserLoginForm(FlaskForm):
+        email = StringField(
+            "Email",
+            validators=[DataRequired(), Email(
+            message="Email invalido"), Length(max=100)],
+    )
+
+    password = PasswordField(
+        "Password",
+        validators=[
+            DataRequired(),
+            Length(
+                min=8, max=255, message="La contrasena debe tener mas de 8 caracteres"
+            ),
+        ],
+    )
