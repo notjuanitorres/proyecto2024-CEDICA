@@ -21,16 +21,8 @@ class ProductionConfig(Config):
 
 class DevelopmentConfig(Config):
     """DEVELOPMENT CONFIGURATION"""
-    DBUSER = os.getenv("DBUSER")
-    DBPASS = os.getenv("DBPASS")
-    DBHOST = "localhost"
-    DBPORT = "5432"
-    print(DBPORT)
-    print(DBHOST)
-    DBNAME = os.getenv("DBNAME")
-    print(DBNAME)
-    SQLALCHEMY_DATABASE_URI = \
-        f"postgresql://{DBUSER}:{DBPASS}@{DBHOST}:{DBPORT}/{DBNAME}"
+
+    SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URI_DEVELOPMENT")
 
 
 class TestingConfig(Config):

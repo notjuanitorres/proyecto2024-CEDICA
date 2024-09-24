@@ -3,20 +3,27 @@
 {% block title %}Home{% endblock %}
 
 {% block head %}
-{{ super() }}
-<link
-rel="stylesheet"
-href="{{ url_for('static', filename='css/home.css') }}"
-/>
+    {{ super() }}
+    {% block extra_styles %}
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/home.css') }}"
+    />
+    {% endblock %}
 {% endblock %}
 
-{% block content %}
-<section class="hero bg-gradient is-fullheight-with-navbar">
-    <div class="hero-body">
-        <div class="container is-widescreen has-text-centered glass-bg p-5">
-            <p class="title is-size-1 has-text-text-20">Pagina de Inicio</p>
-            <p class="hero-subtitle is-size-5 has-text-text-20">Estamos trabajando para usted</p>
+{% block main_content %}
+    <section class="hero bg-gradient is-fullheight-with-navbar">
+        <div class="hero-body">
+            <div class="container is-widescreen has-text-centered glass-bg p-5">
+                {% if is_authenticated %}
+                    <h2 class="title is-size-1 has-text-text-20">Bienvenido, {{ user_name }}</h2>
+                    <p class="hero-subtitle is-size-5 has-text-text-20">¿En qué estás trabajando hoy?"</p>
+                {% else %}
+                    <h2 class="title is-size-1 has-text-text-20">Pagina de Inicio</h2>
+                    <p class="hero-subtitle is-size-5 has-text-text-20">Estamos trabajando para usted</p>
+                {% endif %}
+            </div>            
         </div>
-    </div>
-</section>
+    </section>
 {% endblock %}
