@@ -1,4 +1,4 @@
-{% extends "layout.html" %}
+{% extends "base.html" %}
 
 {% block title %}Inicio - CEDICA{% endblock %}
 
@@ -12,7 +12,11 @@
     {% endblock %}
 {% endblock %}
 
-{% block hero %}
+{% block header %}
+    {% include 'partials/nav.html' %}
+{% endblock %}
+
+{% block content %}
 <main class="hero bg-gradient is-fullheight-with-navbar">
     {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
