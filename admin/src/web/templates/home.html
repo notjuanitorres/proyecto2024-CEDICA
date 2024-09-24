@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 
-{% block title %}Home{% endblock %}
+{% block title %}Inicio - CEDICA{% endblock %}
 
 {% block head %}
     {{ super() }}
@@ -12,31 +12,51 @@
     {% endblock %}
 {% endblock %}
 
-{% block main_content %}
-    <section class="hero bg-gradient is-fullheight-with-navbar">
-        {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-        {% for category, message in messages %}
-        <ul>
-            <li class="notification is-{{ category }} mt-4 mx-2">
-                <button class="delete"></button>
-                {{ message }}
-            </li>
-        </ul>
-        {% endfor %}
-        {% endif %}
-        {% endwith %}
-    
-        <div class="hero-body">
-            <div class="container is-widescreen has-text-centered glass-bg p-5">
-                {% if is_authenticated %}
-                    <h2 class="title is-size-1 has-text-text-20">Bienvenido, {{ user_name }}</h2>
-                    <p class="hero-subtitle is-size-5 has-text-text-20">¿En qué estás trabajando hoy?"</p>
-                {% else %}
-                    <h2 class="title is-size-1 has-text-text-20">Pagina de Inicio</h2>
-                    <p class="hero-subtitle is-size-5 has-text-text-20">Estamos trabajando para usted</p>
-                {% endif %}
-            </div>            
-        </div>
-    </section>
+{% block hero %}
+<main class="hero bg-gradient is-fullheight-with-navbar">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    {% for category, message in messages %}
+    <ul>
+        <li class="notification is-{{ category }} mt-4 mx-2">
+            <button class="delete"></button>
+            {{ message }}
+        </li>
+    </ul>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+
+    <div class="hero-body">
+        <article class="container has-text-centered glass-bg p-6">
+
+            {% if is_authenticated %}
+            <h2 class="title is-size-1 has-text-text-20">Bienvenido, {{ user_name }}</h2>
+            <p class="hero-subtitle is-size-5 has-text-text-20">¿En qué estás trabajando hoy?"</p>
+            {% else %}
+            <figure class="image is-3by1 container" style="max-width: 900px; height:auto;"">
+                <img
+                src="{{ url_for('static', filename="assets/logo_cedica.jpeg")}}"
+                alt="CEDICA isologotipo"
+                class=""
+                />
+            </figure>
+            <div class="mt-5">
+                <p class="subtitle is-size-4 has-text-text-20">Tenes que estar registrado y loguearte para poder utilizar el sistema</p>
+            </div>
+            <div class="block"></div>
+
+            <div class="buttons are-medium level">
+                <a href="{{ url_for("auth_bp.login") }}" class="button is-primary level-item" aria-label="Iniciar Sesion">
+                    Iniciar Sesion
+                </a>
+
+                <a href="{{ url_for("auth_bp.register") }}" class="button is-info level-item" aria-label="Registrarse">
+                    Registrarse
+                </a>
+            </div>
+            {% endif %}
+        </article>            
+    </div>
+</main>
 {% endblock %}

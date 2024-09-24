@@ -10,7 +10,8 @@
 {% endblock %}
 
 {% block content %}
-    <main class="container" >
+    {% block hero %} {% endblock %}
+    <main class="container is-desktop">
         {% block main_content %} {% endblock %}
     </main>
 {% endblock %}
