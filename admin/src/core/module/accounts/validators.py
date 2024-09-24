@@ -9,7 +9,7 @@ class EmailExistence(object):
         self.message = message
 
     def __call__(self, form, email):
-        is_edit = form.current_email != None
+        is_edit = form.current_email is not None
         is_user = email.data == form.current_email
         if is_edit and is_user:
             return

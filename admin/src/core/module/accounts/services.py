@@ -51,11 +51,11 @@ class AccountsServices(AbstractAccountsServices):
 
     def create_user(self, user_data: Dict):
         new_user = User(
-            email=user_data["email"],
-            alias=user_data["alias"],
-            password=bcrypt.generate_password_hash(user_data["password"]).decode('utf-8'),
-            enabled=user_data["enabled"],
-            system_admin=user_data["system_admin"],
+            email=user_data.get("email"),
+            alias=user_data.get("alias"),
+            password=bcrypt.generate_password_hash(user_data.get("password")).decode('utf-8'),
+            enabled=user_data.get("enabled", False),
+            system_admin=user_data.get("system_admin", False),
             # role_id=user_data["role_id"],
         )
         return self.accounts_repository.add(new_user)
