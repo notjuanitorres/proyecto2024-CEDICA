@@ -24,7 +24,7 @@ class AbstractAccountsServices:
         pass
 
     @abstractmethod
-    def delete_user(self, user_id: int):
+    def delete_user(self, user_id: int) -> bool:
         pass
 
     @abstractmethod
@@ -46,7 +46,7 @@ class AccountsServices(AbstractAccountsServices):
 
     def validate_email(self, email: str) -> bool:
         email_exists = self.accounts_repository.get_by_email(email) is not None
-        
+
         return email_exists
 
     def create_user(self, user_data: Dict):
@@ -70,15 +70,14 @@ class AccountsServices(AbstractAccountsServices):
         user = self.accounts_repository.get_by_id(user_id)
         if not user:
             return None
-        
+
         return self.to_dict(user)
 
     def update_user(self, user_id: int, data: Dict):
         return self.accounts_repository.update(user_id, data)
-        
 
     def delete_user(self, user_id: int):
-        pass
+        return self.accounts_repository.delete(user_id)
 
     def authenticate(self, email: str, password: str):
         user = self.accounts_repository.get_by_email(email)
@@ -95,7 +94,7 @@ class AccountsServices(AbstractAccountsServices):
 
     def disable_user(self, user_id: int) -> User:
         pass
-    
+
     def to_dict(self, user: User) -> Dict:
         # TODO: Implement User DTO to transfer users between service and presentation layer
         # The DTO is a dataclass with methods for passing from entity to dto and viceversa

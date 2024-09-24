@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for
+from flask import Blueprint, render_template, request, redirect, url_for, flash
 from dependency_injector.wiring import inject, Provide
 from src.core.module.accounts import UserCreateForm, UserEditForm
 from src.core.container import Container
@@ -96,7 +96,13 @@ def update_user(user_id: int, accounts_services: AAS = Provide[Container.account
     return redirect(url_for("users_bp.get_page"))
 
 
-@users_bp.route("/delete/<int:user_id>")
+@users_bp.route("/delete/", methods=["POST"])
 @inject
 def delete_user(accounts_services: AAS = Provide[Container.accounts_services]):
-    pass
+    user_id = request.form["item_id"]
+    deleted = accounts_services.delete_user(user_id)
+    if not deleted:
+        flash("El usuario no ha podido ser eliminado, intentelo nuevamente", "danger")
+
+    flash("El usuario ha sido eliminado correctamente", "success")
+    return get_page()
