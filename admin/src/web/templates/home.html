@@ -14,6 +14,19 @@
 
 {% block main_content %}
     <section class="hero bg-gradient is-fullheight-with-navbar">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <ul>
+            <li class="notification is-{{ category }} mt-4 mx-2">
+                <button class="delete"></button>
+                {{ message }}
+            </li>
+        </ul>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+    
         <div class="hero-body">
             <div class="container is-widescreen has-text-centered glass-bg p-5">
                 {% if is_authenticated %}

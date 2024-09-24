@@ -18,5 +18,6 @@
 {% block footer %}{% endblock %}
 
 {% block extra_scripts %}
+    {{ super() }}
     <script src="{{ url_for('static', filename='js/modal.js') }}"></script>
 {% endblock %}
