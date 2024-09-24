@@ -16,7 +16,7 @@ class AbstractAccountsServices:
         pass
 
     @abstractmethod
-    def get_user(self, user_id: int) -> Dict:
+    def get_user(self, user_id: int) -> Dict | None:
         pass
 
     @abstractmethod
@@ -28,11 +28,11 @@ class AbstractAccountsServices:
         pass
 
     @abstractmethod
-    def authenticate(self, email: str, password: str):
+    def authenticate(self, email: str, password: str) -> Dict | None:
         pass
 
     @abstractmethod
-    def disable_user(self, user_id: int):
+    def disable_user(self, user_id: int) -> None:
         pass
 
     @abstractmethod
@@ -82,7 +82,7 @@ class AccountsServices(AbstractAccountsServices):
     def authenticate(self, email: str, password: str):
         user = self.accounts_repository.get_by_email(email)
 
-        if user is None:
+        if user is None or not user.enabled:
             return None
 
         password_match = bcrypt.check_password_hash(user.password, password)
