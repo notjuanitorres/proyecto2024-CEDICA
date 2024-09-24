@@ -82,5 +82,5 @@ def register_user(accounts_services: AAS = Provide[Container.accounts_services])
         }
     )
     flash("Registro exitoso.", "success")
-    flash("Tienes que esperar a que el system admin te habilite el acceso para ingresar", "warning")
+    flash("Tienes que esperar a que el administrador del sistema te habilite el acceso para ingresar", "warning")
     return redirect(url_for("index_bp.home"))
