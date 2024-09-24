@@ -23,9 +23,12 @@ def login():
 
 
 @inject
-def authenticate(accounts_services=Provide[Container.accounts_services]):
+def authenticate(accounts_services: AAS = Provide[Container.accounts_services]):
     login_form = UserLoginForm()
-
+    
+    if not login_form.validate_on_submit():
+        return render_template("login.html", form=login_form)
+    
     user = accounts_services.authenticate(
         login_form.email.data, login_form.password.data
     )
