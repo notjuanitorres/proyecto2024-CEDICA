@@ -9,6 +9,7 @@ from src.core.wiring import init_wiring
 from src.web.routes import register_blueprints
 from src.web.handlers import error
 from src.web.helpers.auth import is_authenticated, inject_session_data
+from src.web.helpers.filters import register_filters
 
 csrf = CSRFProtect()
 session = Session()
@@ -26,6 +27,7 @@ def create_app(env="development", static_folder="../../static"):
 
     register_blueprints(app)
     register_commands(app)
+    register_filters(app)
     init_wiring()
 
     error_codes = [400, 401, 403, 404, 405, 500]
