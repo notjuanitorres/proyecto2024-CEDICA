@@ -40,10 +40,13 @@
             {% endif %}
         </div>
         <div class="field">
-            <p class="control has-icons-left">
-                <input class="input" type="password" name="password" placeholder="Contraseña" required>
+            <p class="control has-icons-left has-icons-right">
+                <input aria-label="Contraseña" class="input password" type="password" id="password" name="password" placeholder="Contraseña" required>
                 <span class="icon is-small is-left">
                     <i class="fas fa-lock"></i>
+                </span>
+                <span class="icon is-small is-right toggle-password">
+                    <i class="fa fa-eye"></i>
                 </span>
             </p>
             {% if errors and errors.password %}
@@ -81,4 +84,8 @@
         </p>
     </div>
 </div>
+{% endblock %}
+{% block extra_scripts %}
+    {{ super() }}
+    <script src="{{ url_for('static', filename='js/toggle-password.js') }}"></script>
 {% endblock %}
