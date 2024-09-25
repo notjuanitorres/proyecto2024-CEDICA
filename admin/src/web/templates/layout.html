@@ -1,22 +1,23 @@
-<!DOCTYPE html>
-<html lang="en" class="has-navbar-fixed-top">
-<head>
-  {% block head %}
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="color-scheme" content="light dark" />
-  <link
-    rel="stylesheet"
-    href="{{ url_for('static', filename='css/vendor/bulma.min.css') }}"
-  />
-  <title>{% block title %}{% endblock %}</title>
-  {% endblock %}
-</head>
-<body class="has-background-light has-text-dark">
-  {% include 'partials/nav.html' %}
-  <div>{% block navbar %}{% endblock %}</div>
-  <main class="container" id="container">{% block content %} {% endblock %}</main>
-  <div>{% block footer %}{% endblock %}</div>
-  <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
-</body>
-</html>
+{% extends 'base.html' %}
+
+{% block head %}
+    {{ super() }}
+    <!-- Add extra styles with block extra_styles -->
+{% endblock %}
+
+{% block header %}
+    {% include 'partials/nav.html' %}
+{% endblock %}
+
+{% block content %}
+    <main class="container is-desktop">
+        {% block main_content %} {% endblock %}
+    </main>
+{% endblock %}
+
+{% block footer %}{% endblock %}
+
+{% block extra_scripts %}
+    {{ super() }}
+    <script src="{{ url_for('static', filename='js/modal.js') }}"></script>
+{% endblock %}
