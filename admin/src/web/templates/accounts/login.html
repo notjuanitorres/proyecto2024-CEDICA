@@ -26,7 +26,7 @@
         {{ form.hidden_tag() }}
         <div class="field">
             <p class="control has-icons-left has-icons-right">
-                <input class="input" type="email" name="email" placeholder="Correo" required>
+                {{ form.email(class="input", type="email", placeholder="Correo") }}
                 <span class="icon is-small is-left">
                     <i class="fas fa-envelope"></i>
                 </span>
@@ -34,8 +34,8 @@
                     <i class="fas fa-check"></i>
                 </span>
             </p>
-            {% if errors and errors.email %}
-            <p class="help is-danger">{{ errors.email }}</p>
+            {% if form.errors.email %}
+            <p class="help is-danger">{{ form.errors.email[0] }}</p>
             {% endif %}
         </div>
         <div class="field">
@@ -48,8 +48,8 @@
                     <i class="fa fa-eye"></i>
                 </span>
             </p>
-            {% if errors and errors.password %}
-            <p class="help is-danger">{{ errors.password }}</p>
+            {% if form.password.errors %}
+            <p class="help is-danger">{{ form.errors.password[0] }}</p>
             {% endif %}
         </div>
         <div class="field is-flex-direction-row is-justify-content-space-between is-flex">
