@@ -61,7 +61,7 @@ def add_user(create_form: UserCreateForm, accounts_services: AAS = Provide[Conta
     return redirect(url_for("users_bp.get_page"))
 
 
-@users_bp.route("/editar/<int:user_id>", methods=["GET", "POST"])
+@users_bp.route("/editar/<int:user_id>", methods=["GET", "POST", "PUT"])
 @inject
 def edit_user(user_id: int, accounts_services: AAS = Provide[Container.accounts_services]):
     user = accounts_services.get_user(user_id)
