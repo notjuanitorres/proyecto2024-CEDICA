@@ -1,6 +1,6 @@
 <p align="center">
   <a href="" rel="noopener">
- <img width=200px height=200px src="https://i.imgur.com/6wj0hh6.jpg" alt="Project logo"></a>
+ <img width=500px height="auto" src="/admin/static/assets/cedica_isologotipo.png" alt="Project logo" style="margin-right: auto; margin-left: auto"></a>
 </p>
 
 <h3 align="center">Grupo 19</h3>

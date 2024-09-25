@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 from dependency_injector.wiring import inject, Provide
 from src.core.module.accounts import UserCreateForm, UserEditForm
 from src.core.container import Container
@@ -7,6 +7,13 @@ from src.core.module.accounts import AbstractAccountsServices as AAS
 users_bp = Blueprint(
     "users_bp", __name__, template_folder="./accounts/user", url_prefix="/usuarios"
 )
+
+
+@users_bp.before_request
+@inject
+def require_login_and_sys_admin(accounts_services=Provide[Container.accounts_services]):
+    if not accounts_services.is_sys_admin(session.get("user")):
+        return redirect(url_for("auth_bp.login"))
 
 
 @users_bp.route("/")

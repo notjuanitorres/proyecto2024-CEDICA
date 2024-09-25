@@ -28,8 +28,16 @@
 
         <div class="field">
             <label class="label">{{ form.email.label }}</label>
+<<<<<<< HEAD
             <div class="control">
                 {{ form.email(class="input", type="email", placeholder="Ingrese su correo") }}
+=======
+            <div class="control has-icons-left">
+                {{ form.email(class="input", type="email", placeholder="Ingrese email") }}
+                <span class="icon is-small is-left">
+                    <i class="fas fa-envelope"></i>
+                </span>
+>>>>>>> c634ce5e7892379d894501b48c15ff86dd7fa94e
             </div>
             {% if form.email.errors %}
                 <p class="help is-danger">{{ form.email.errors[0] }}</p>
@@ -38,18 +46,28 @@
 
         <div class="field">
             <label class="label">{{ form.alias.label }}</label>
-            <div class="control">
+            <div class="control has-icons-left">
                 {{ form.alias(class="input", placeholder="Ingrese su alias") }}
+                <span class="icon is-small is-left">
+                    <i class="fa-solid fa-address-card"></i>
+                </span>
             </div>
             {% if form.alias.errors %}
                 <p class="help is-danger">{{ form.alias.errors[0] }}</p>
             {% endif %}
+
         </div>
 
         <div class="field">
             <label class="label">{{ form.password.label }}</label>
-            <div class="control">
-                {{ form.password(class="input", placeholder="Ingrese una contraseña") }}
+            <div class="control has-icons-left has-icons-right">
+                {{ form.password(class="input password", placeholder="Ingrese una contraseña") }}
+                <span class="icon is-small is-left">
+                    <i class="fas fa-lock"></i>
+                </span>
+                <span class="icon is-small is-right toggle-password">
+                    <i class="fa fa-eye"></i>
+                </span>
             </div>
             {% if form.password.errors %}
                 <p class="help is-danger">{{ form.password.errors[0] }}</p>
@@ -58,8 +76,14 @@
 
         <div class="field">
             <label class="label">{{ form.confirm_password.label }}</label>
-            <div class="control">
-                {{ form.confirm_password(class="input", placeholder="Repita la contraseña") }}
+            <div class="control has-icons-left has-icons-right">
+                {{ form.confirm_password(class="input password", placeholder="Repita la contraseña") }}
+                <span class="icon is-small is-left">
+                    <i class="fas fa-lock"></i>
+                </span>
+                <span class="icon is-small is-right toggle-password">
+                    <i class="fa fa-eye"></i>
+                </span>
             </div>
             {% if form.confirm_password.errors %}
                 <p class="help is-danger">{{ form.confirm_password.errors[0] }}</p>
@@ -88,4 +112,8 @@
         </p>
     </div>
 </div>
+{% endblock %}
+{% block extra_scripts %}
+    {{ super() }}
+    <script src="{{ url_for('static', filename='js/toggle-password.js') }}"></script>
 {% endblock %}
