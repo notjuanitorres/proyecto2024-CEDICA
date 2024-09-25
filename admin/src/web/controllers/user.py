@@ -53,7 +53,7 @@ def add_user(create_form: UserCreateForm, accounts_services: AAS = Provide[Conta
             "password": create_form.password.data,
             "enabled": create_form.enabled.data,
             "system_admin": create_form.system_admin.data,
-            # 'role_id':create_form.role_id.data,
+            'role_id': create_form.role_id.data,
         }
     )
 
@@ -62,6 +62,7 @@ def add_user(create_form: UserCreateForm, accounts_services: AAS = Provide[Conta
 
 
 @users_bp.route("/editar/<int:user_id>", methods=["GET", "POST"])
+@inject
 def edit_user(user_id: int, accounts_services: AAS = Provide[Container.accounts_services]):
     user = accounts_services.get_user(user_id)
 
@@ -88,7 +89,7 @@ def update_user(user_id: int, edit_form: UserEditForm, accounts_services: AAS = 
             "alias": edit_form.alias.data,
             "enabled": edit_form.enabled.data,
             "system_admin": edit_form.system_admin.data,
-            # 'role_id':create_form.role_id.data,
+            'role_id': edit_form.role_id.data,
         },
     )
 

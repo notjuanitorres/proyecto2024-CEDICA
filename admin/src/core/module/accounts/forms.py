@@ -14,7 +14,7 @@ class UserCreateForm(FlaskForm):
         "Email",
         validators=[
             DataRequired(),
-            Email(message="Email invalido"),
+            Email(message="Email inválido"),
             email_existence,
             Length(max=100),
         ],
@@ -25,7 +25,7 @@ class UserCreateForm(FlaskForm):
         validators=[
             DataRequired(),
             Length(
-                min=8, max=255, message="La contrasena debe tener mas de 8 caracteres"
+                min=8, max=255, message="La contraseña debe tener más de 8 caracteres"
             ),
         ],
     )
@@ -34,7 +34,7 @@ class UserCreateForm(FlaskForm):
         "Confirm Password",
         validators=[
             DataRequired(),
-            EqualTo("password", message="Las contrasenas deben coincidir"),
+            EqualTo("password", message="Las contraseñas deben coincidir"),
         ],
     )
 
@@ -45,8 +45,8 @@ class UserCreateForm(FlaskForm):
         choices=[
             (1, "Admin"),
             (2, "Voluntario"),
-            (3, "Equestre"),
-            (4, "Tecnico"),
+            (3, "Ecuestre"),
+            (4, "Técnico"),
         ],
         validators=[Optional()],
     )
@@ -64,12 +64,11 @@ class UserEditForm(FlaskForm):
         self.current_email = kwargs.pop('current_email', None)
         super(UserEditForm, self).__init__(*args, **kwargs)
 
-
     email = StringField(
         "Email",
         validators=[
             DataRequired(),
-            Email(message="Email invalido"),
+            Email(message="Email inválido"),
             email_existence,
             Length(max=100)
         ],
@@ -81,8 +80,8 @@ class UserEditForm(FlaskForm):
         choices=[
             (1, "Admin"),
             (2, "Voluntario"),
-            (3, "Equestre"),
-            (4, "Tecnico"),
+            (3, "Ecuestre"),
+            (4, "Técnico"),
         ],
         validators=[Optional()],
     )
@@ -99,7 +98,7 @@ class UserLoginForm(FlaskForm):
         "Email",
         validators=[
             DataRequired(),
-            Email(message="Email invalido"),
+            Email(message="Email inválido"),
             Length(max=100)],
     )
 
@@ -108,7 +107,7 @@ class UserLoginForm(FlaskForm):
         validators=[
             DataRequired(),
             Length(
-                min=8, max=255, message="La contraseña debe tener mas de 8 caracteres"
+                min=8, max=255, message="La contraseña debe tener más de 8 caracteres"
             ),
         ],
     )
@@ -121,7 +120,7 @@ class UserRegisterForm(FlaskForm):
         "Email",
         validators=[
             DataRequired(),
-            Email(message="Email invalido"),
+            Email(message="Email inválido"),
             email_existence,
             Length(max=100),
         ],
@@ -132,7 +131,7 @@ class UserRegisterForm(FlaskForm):
         validators=[
             DataRequired(),
             Length(
-                min=8, max=255, message="La contraseña debe tener mas de 8 caracteres"
+                min=8, max=255, message="La contraseña debe tener más de 8 caracteres"
             ),
         ],
     )
@@ -144,7 +143,6 @@ class UserRegisterForm(FlaskForm):
             EqualTo("password", message="Las contraseñas deben coincidir"),
         ],
     )
-
 
     alias = StringField(
         "Alias",

@@ -60,7 +60,7 @@ class AccountsServices(AbstractAccountsServices):
             password=bcrypt.generate_password_hash(user_data.get("password")).decode('utf-8'),
             enabled=user_data.get("enabled", False),
             system_admin=user_data.get("system_admin", False),
-            # role_id=user_data["role_id"],
+            role_id=user_data.get("role_id", None),
         )
         return self.accounts_repository.add(new_user)
 
@@ -111,8 +111,7 @@ class AccountsServices(AbstractAccountsServices):
             "alias": user.alias,
             "enabled": user.enabled,
             "system_admin": user.system_admin,
-            # TODO: Insert roles and permissions into the db
-            # 'role_id':create_form.role_id.data,
+            'role_id': user.role_id
         }
         return user_dict
 
