@@ -3,7 +3,6 @@ from dependency_injector.wiring import inject, Provide
 from src.core.module.accounts import UserCreateForm, UserEditForm
 from src.core.container import Container
 from src.core.module.accounts import AbstractAccountsServices as AAS
-from src.web.helpers.auth import is_logged_in
 
 users_bp = Blueprint(
     "users_bp", __name__, template_folder="./accounts/user", url_prefix="/usuarios"
@@ -13,10 +12,8 @@ users_bp = Blueprint(
 @users_bp.before_request
 @inject
 def require_login_and_sys_admin(accounts_services=Provide[Container.accounts_services]):
-    if not is_logged_in():
-        return redirect(url_for("auth_bp.login"))
     if not accounts_services.is_sys_admin(session.get("user")):
-        return redirect(url_for("index_bp.home"))
+        return redirect(url_for("auth_bp.login"))
 
 
 @users_bp.route("/")

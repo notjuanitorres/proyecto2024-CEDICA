@@ -117,5 +117,7 @@ class AccountsServices(AbstractAccountsServices):
         return user_dict
 
     def is_sys_admin(self, user_id: int) -> bool:
+        if not user_id:
+            return False
         user = self.accounts_repository.get_by_id(user_id)
         return user.system_admin
