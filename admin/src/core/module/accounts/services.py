@@ -39,6 +39,10 @@ class AbstractAccountsServices:
     def validate_email(self, email: str) -> bool:
         pass
 
+    @abstractmethod
+    def is_sys_admin(self, user_id: int) -> bool:
+        pass
+
 
 class AccountsServices(AbstractAccountsServices):
     def __init__(self, accounts_repository: AbstractAccountsRepository):
@@ -111,3 +115,9 @@ class AccountsServices(AbstractAccountsServices):
             # 'role_id':create_form.role_id.data,
         }
         return user_dict
+
+    def is_sys_admin(self, user_id: int) -> bool:
+        if not user_id:
+            return False
+        user = self.accounts_repository.get_by_id(user_id)
+        return user.system_admin
