@@ -1,9 +1,8 @@
 {% extends "layout.html" %} 
 
 {% from "macros/pagination.html" import render_pagination %}
-{% from "macros/date_format.html" import format_date %}
-{% from "macros/natural_boolean.html" import render_natural_boolean %}
 {% from "macros/edit_menu.html" import render_actions_menu %}
+{% from "macros/delete_modal.html" import render_delete_modal %}
 
 {% block title %}Usuarios{% endblock %} 
 
@@ -14,7 +13,7 @@
 {% block main_content %}
   <section class="is-fullheight-with-navbar"">
     <div class="table-container">
-      <div class="box">
+      <div class="box m-5">
         <a class="button" href="{{ url_for('users_bp.create_user')}}">Crear usuario</a>
       </div>
       <table class="table is-striped is-scrollable is-fullwidth p-5 mt-5">
@@ -24,10 +23,11 @@
             <th>ID</th>
             <th>Email</th>
             <th>Alias</th>
-            <th>Esta activo</th>
+            <th>Activo</th>
             <th>Roles</th>
+            <th>Admin</th>
             <th>Ingreso</th>
-            <th>Ultima actualizacion</th>
+            <th>Actualizado</th>
             <th></th>
           </tr>
         </thead>
@@ -49,10 +49,11 @@
             <td>{{ user.id }}</td>
             <td>{{ user.email }}</td>
             <td>{{ user.alias }}</td>
-            <td>{{ render_natural_boolean(user.enabled) }}</td>
+            <td>{{ user.enabled | natural_boolean }}</td>
             <td>{{ user.roles }}</td>
-            <td>{{ format_date(user.inserted_at) }}</td>
-            <td>{{ format_date(user.updated_at) }}</td>
+            <td>{{ user.system_admin | natural_boolean }}</td>
+            <td>{{ user.inserted_at | format_date }}</td>
+            <td>{{ user.updated_at | format_date }}</td>
             <td>
               {{ 
                 render_actions_menu(
@@ -74,15 +75,25 @@
             <th>ID</th>
             <th>Email</th>
             <th>Alias</th>
-            <th>Esta activo</th>
+            <th>Activo</th>
             <th>Roles</th>
+            <th>Admin</th>
             <th>Ingreso</th>
-            <th>Ultima actualizacion</th>
+            <th>Actualizado</th>
             <th></th>
           </tr>
         </tfoot>
       </table>
       <div class="container px-5">{{ render_pagination(users, 'users_bp.get_page') }}</div>
+
+      {{ 
+        render_delete_modal(
+          endpoint="users_bp.delete_user", 
+          title="Eliminar", 
+          msg="¿Está seguro de que desea eliminar al usuario?", 
+          msg_sub="Luego de confirmar, no se podrán revertir los cambios"
+        ) 
+      }}
     </div>
   </section>
 {% endblock %}

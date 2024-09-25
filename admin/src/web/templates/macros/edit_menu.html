@@ -18,8 +18,8 @@
         <div class="dropdown-menu" id="dropdown-menu" role="menu"> 
         <div class="dropdown-content">
             <a href="" class="dropdown-item">Ver</a>
-            <a href="{{ url_for(endpoints.edit, user_id=value) }}" class="dropdown-item">Editar</a>
-            <a href="" class="dropdown-item">Eliminar</a>
+            <a href="{{ url_for(endpoints.edit, user_id=value) }}" class="dropdown-item has-text-warning">Editar</a>
+            <button class="dropdown-item has-text-danger modal-trigger" data-id="{{ value }}" data-target="user-delete-modal">Eliminar</button>
         </div>
         </div>
     </div>

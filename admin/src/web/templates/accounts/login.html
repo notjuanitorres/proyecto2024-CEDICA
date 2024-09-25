@@ -4,12 +4,12 @@
 
 {% block head %}
 {{ super() }}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/accounts/login.css') }}" />
+<link rel="stylesheet" href="{{ url_for('static', filename='css/accounts/auth.css') }}" />
 {% endblock %}
 
 {% block content %}
 
-<div class="full-height-container">
+<div class="container is-max-desktop full-height-container">
     <h1 class="is-size-1">Iniciar sesión</h1>
 
     {% with messages = get_flashed_messages(with_categories=true) %}
@@ -40,10 +40,13 @@
             {% endif %}
         </div>
         <div class="field">
-            <p class="control has-icons-left">
-                <input class="input" type="password" name="password" placeholder="Contraseña" required>
+            <p class="control has-icons-left has-icons-right">
+                <input aria-label="Contraseña" class="input password" type="password" id="password" name="password" placeholder="Contraseña" required>
                 <span class="icon is-small is-left">
                     <i class="fas fa-lock"></i>
+                </span>
+                <span class="icon is-small is-right toggle-password">
+                    <i class="fa fa-eye"></i>
                 </span>
             </p>
             {% if errors and errors.password %}
@@ -57,7 +60,7 @@
                 </button>
             </p>
             <p class="control">
-                <a href="#" class="button is-info">
+                <a href="/auth/registrarse" class="button is-info">
                     Registrarse
                 </a>
             </p>
@@ -81,4 +84,8 @@
         </p>
     </div>
 </div>
+{% endblock %}
+{% block extra_scripts %}
+    {{ super() }}
+    <script src="{{ url_for('static', filename='js/toggle-password.js') }}"></script>
 {% endblock %}

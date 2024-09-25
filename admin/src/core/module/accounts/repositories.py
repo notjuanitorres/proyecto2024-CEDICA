@@ -21,13 +21,13 @@ class AbstractAccountsRepository:
     @abstractmethod
     def get_by_email(self, email: str) -> User:
         pass
-    
+
     @abstractmethod
-    def update(self, user_id: int, data: Dict):
+    def update(self, user_id: int, data: Dict) -> None:
         pass
 
     @abstractmethod
-    def delete(self):
+    def delete(self, user_id: int) -> bool:
         pass
 
 
@@ -52,13 +52,19 @@ class AccountsRepository(AbstractAccountsRepository):
 
     def update(self, user_id: int, data: Dict):
         user = User.query.filter_by(id=user_id)
-        updated_user = user.update(data)
+        if not user:
+            return False
+        user.update(data)
         self.save()
-        return updated_user
+        return True
 
-    # TODO: select between logic and physical erase
-    def delete(self):
-        pass
+    def delete(self, user_id):
+        user = User.query.get(user_id)
+        if not user:
+            return False
+        self.db.session.delete(user)
+        self.save()
+        return True
 
     def save(self):
         self.db.session.commit()

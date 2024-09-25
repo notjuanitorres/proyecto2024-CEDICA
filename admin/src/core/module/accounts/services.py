@@ -12,11 +12,11 @@ class AbstractAccountsServices:
         pass
 
     @abstractmethod
-    def get_page(self, page: int = 1, per_page: int = 10):
+    def get_page(self, page: int, per_page: int):
         pass
 
     @abstractmethod
-    def get_user(self, user_id: int) -> Dict:
+    def get_user(self, user_id: int) -> Dict | None:
         pass
 
     @abstractmethod
@@ -24,15 +24,15 @@ class AbstractAccountsServices:
         pass
 
     @abstractmethod
-    def delete_user(self, user_id: int):
+    def delete_user(self, user_id: int) -> bool:
         pass
 
     @abstractmethod
-    def authenticate(self, email: str, password: str):
+    def authenticate(self, email: str, password: str) -> Dict | None:
         pass
 
     @abstractmethod
-    def disable_user(self, user_id: int):
+    def disable_user(self, user_id: int) -> None:
         pass
 
     @abstractmethod
@@ -50,22 +50,23 @@ class AccountsServices(AbstractAccountsServices):
 
     def validate_email(self, email: str) -> bool:
         email_exists = self.accounts_repository.get_by_email(email) is not None
-        
+
         return email_exists
 
     def create_user(self, user_data: Dict):
         new_user = User(
-            email=user_data["email"],
-            alias=user_data["alias"],
-            password=bcrypt.generate_password_hash(user_data["password"]).decode('utf-8'),
-            enabled=user_data["enabled"],
-            system_admin=user_data["system_admin"],
+            email=user_data.get("email"),
+            alias=user_data.get("alias"),
+            password=bcrypt.generate_password_hash(user_data.get("password")).decode('utf-8'),
+            enabled=user_data.get("enabled", False),
+            system_admin=user_data.get("system_admin", False),
             # role_id=user_data["role_id"],
         )
         return self.accounts_repository.add(new_user)
 
-    def get_page(self, page: int = 1, per_page: int = 10):
+    def get_page(self, page: int, per_page: int):
         max_per_page = 100
+        per_page = 20
         return self.accounts_repository.get_page(
             page=page, per_page=per_page, max_per_page=max_per_page
         )
@@ -74,19 +75,19 @@ class AccountsServices(AbstractAccountsServices):
         user = self.accounts_repository.get_by_id(user_id)
         if not user:
             return None
-        
+
         return self.to_dict(user)
 
     def update_user(self, user_id: int, data: Dict):
         return self.accounts_repository.update(user_id, data)
 
     def delete_user(self, user_id: int):
-        pass
+        return self.accounts_repository.delete(user_id)
 
     def authenticate(self, email: str, password: str):
         user = self.accounts_repository.get_by_email(email)
 
-        if user is None:
+        if user is None or not user.enabled:
             return None
 
         password_match = bcrypt.check_password_hash(user.password, password)
@@ -98,7 +99,7 @@ class AccountsServices(AbstractAccountsServices):
 
     def disable_user(self, user_id: int) -> User:
         pass
-    
+
     def to_dict(self, user: User) -> Dict:
         # TODO: Implement User DTO to transfer users between service and presentation layer
         # The DTO is a dataclass with methods for passing from entity to dto and viceversa
