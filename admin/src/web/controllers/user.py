@@ -91,7 +91,7 @@ def update_user(user_id: int, accounts_services: AAS = Provide[Container.account
             # 'role_id':create_form.role_id.data,
         },
     )
-    
+
     # TODO: change redirect to user page when exists
     return redirect(url_for("users_bp.get_page"))
 
@@ -105,4 +105,4 @@ def delete_user(accounts_services: AAS = Provide[Container.accounts_services]):
         flash("El usuario no ha podido ser eliminado, intentelo nuevamente", "danger")
 
     flash("El usuario ha sido eliminado correctamente", "success")
-    return get_page()
+    return redirect(url_for("users_bp.get_page"))
