@@ -10,6 +10,30 @@ def email_existence(form, field):
 
 
 class UserCreateForm(FlaskForm):
+
+    def __init__(self, *args, **kwargs):
+        super(UserCreateForm, self).__init__(*args, **kwargs)
+
+        self.role_id.choices = self.get_role_choices()
+
+    def get_role_choices(self):
+        return [(role.id, role.name) for role in self.import_validator().get_roles()]
+
+    def import_validator(self):
+        # Needed to import the container dynamically at run time
+        # It is in order to work along with WTForms instantiation at definition
+        # pylint: disable="C0415"
+        from src.core.container import Container
+
+        container = Container()
+        return container.accounts_services()
+
+    role_id = SelectField(
+        "Role",
+        coerce=int,
+        validators=[Optional()],
+    )
+
     email = StringField(
         "Email",
         validators=[
@@ -38,18 +62,6 @@ class UserCreateForm(FlaskForm):
         ],
     )
 
-    role_id = SelectField(
-        "Role",
-        coerce=int,
-        # TODO: Choices should be a list of the roles stored on the DB and retrieved from there
-        choices=[
-            (1, "Admin"),
-            (2, "Voluntario"),
-            (3, "Ecuestre"),
-            (4, "Técnico"),
-        ],
-        validators=[Optional()],
-    )
     alias = StringField("Alias", validators=[
         DataRequired(), Length(min=3, max=15)])
 
@@ -60,9 +72,30 @@ class UserCreateForm(FlaskForm):
 
 
 class UserEditForm(FlaskForm):
+
     def __init__(self, *args, **kwargs):
         self.current_email = kwargs.pop('current_email', None)
         super(UserEditForm, self).__init__(*args, **kwargs)
+
+        self.role_id.choices = self.get_role_choices()
+
+    def get_role_choices(self):
+        return [(role.id, role.name) for role in self.import_validator().get_roles()]
+
+    def import_validator(self):
+        # Needed to import the container dynamically at run time
+        # It is in order to work along with WTForms instantiation at definition
+        # pylint: disable="C0415"
+        from src.core.container import Container
+
+        container = Container()
+        return container.accounts_services()
+
+    role_id = SelectField(
+        "Role",
+        coerce=int,
+        validators=[Optional()],
+    )
 
     email = StringField(
         "Email",
@@ -73,19 +106,6 @@ class UserEditForm(FlaskForm):
             Length(max=100)
         ],
     )
-    role_id = SelectField(
-        "Rol",
-        coerce=int,
-        # TODO: Choices should be a list of the roles stored on the DB and retrieved from there
-        choices=[
-            (1, "Admin"),
-            (2, "Voluntario"),
-            (3, "Ecuestre"),
-            (4, "Técnico"),
-        ],
-        validators=[Optional()],
-    )
-
     alias = StringField("Alias", validators=[DataRequired(), Length(min=3, max=15)])
 
     enabled = BooleanField("Habilitado", default=True)
