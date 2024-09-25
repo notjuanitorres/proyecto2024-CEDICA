@@ -1,7 +1,6 @@
-<p align="center">
-  <a href="" rel="noopener">
- <img width=500px height="auto" src="/admin/static/assets/cedica_isologotipo.png" alt="Project logo" style="margin-right: auto; margin-left: auto"></a>
-</p>
+<div style="display:flex;justify-content: center">
+ <img width=500px height="auto" src="/admin/static/assets/cedica_isologotipo.png" alt="Project logo" >
+</div>
 
 <h3 align="center">Grupo 19</h3>
 
