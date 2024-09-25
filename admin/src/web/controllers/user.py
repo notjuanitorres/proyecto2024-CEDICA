@@ -31,21 +31,18 @@ def show_user(accounts_services: AAS = Provide[Container.accounts_services]):
     pass
 
 
-@users_bp.route("/crear")
-@inject
+@users_bp.route("/crear", methods=["GET", "POST"])
 def create_user():
-    if request.method == "POST":
-        return add_user()
-
     create_form = UserCreateForm()
+
+    if request.method == "POST":
+        return add_user(create_form=create_form)
+
     return render_template("create_user.html", form=create_form)
 
 
-@users_bp.route("/crear", methods=["POST"])
 @inject
-def add_user(accounts_services: AAS = Provide[Container.accounts_services]):
-    create_form = UserCreateForm()
-
+def add_user(create_form: UserCreateForm, accounts_services: AAS = Provide[Container.accounts_services]):
     if not create_form.validate_on_submit():
         return render_template("create_user.html", form=create_form)
 
@@ -64,27 +61,23 @@ def add_user(accounts_services: AAS = Provide[Container.accounts_services]):
     return redirect(url_for("users_bp.get_page"))
 
 
-@users_bp.route("/editar/<int:user_id>")
-@inject
+@users_bp.route("/editar/<int:user_id>", methods=["GET", "POST"])
 def edit_user(user_id: int, accounts_services: AAS = Provide[Container.accounts_services]):
-    if request.method in ["POST", "PUT"]:
-        return update_user(user_id)
-
     user = accounts_services.get_user(user_id)
-    
+
     if not user:
-        redirect(url_for("users_bp.get_page"))
-        
-    edit_form = UserEditForm(data=user)
+        return redirect(url_for("users_bp.get_page"))
+
+    edit_form = UserEditForm(data=user, current_email=user['email'])
+
+    if request.method in ["POST", "PUT"]:
+        return update_user(user_id=user_id, edit_form=edit_form)
 
     return render_template("edit_user.html", form=edit_form)
 
 
-@users_bp.route("/editar/<int:user_id>", methods=["POST", "PUT"])
 @inject
-def update_user(user_id: int, accounts_services: AAS = Provide[Container.accounts_services]):
-    user = accounts_services.get_user(user_id=user_id)
-    edit_form = UserEditForm(current_email=user['email'])
+def update_user(user_id: int, edit_form: UserEditForm, accounts_services: AAS = Provide[Container.accounts_services]):
     if not edit_form.validate_on_submit():
         return render_template("edit_user.html", form=edit_form)
 
