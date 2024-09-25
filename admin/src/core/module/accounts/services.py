@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from typing import Dict
+from typing import Dict, List
 from core.bcrypt import bcrypt
 from .repositories import AbstractAccountsRepository
 from .models import User
@@ -41,6 +41,10 @@ class AbstractAccountsServices:
 
     @abstractmethod
     def is_sys_admin(self, user_id: int) -> bool:
+        pass
+
+    @abstractmethod
+    def get_roles(self) -> List:
         pass
 
 
@@ -120,3 +124,6 @@ class AccountsServices(AbstractAccountsServices):
             return False
         user = self.accounts_repository.get_by_id(user_id)
         return user.system_admin
+
+    def get_roles(self) -> List:
+        return self.accounts_repository.get_roles()
