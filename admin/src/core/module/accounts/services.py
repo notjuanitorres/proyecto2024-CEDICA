@@ -12,7 +12,7 @@ class AbstractAccountsServices:
         pass
 
     @abstractmethod
-    def get_page(self, page: int = 1, per_page: int = 10):
+    def get_page(self, page: int, per_page: int):
         pass
 
     @abstractmethod
@@ -60,8 +60,9 @@ class AccountsServices(AbstractAccountsServices):
         )
         return self.accounts_repository.add(new_user)
 
-    def get_page(self, page: int = 1, per_page: int = 10):
+    def get_page(self, page: int, per_page: int):
         max_per_page = 100
+        per_page = 20
         return self.accounts_repository.get_page(
             page=page, per_page=per_page, max_per_page=max_per_page
         )

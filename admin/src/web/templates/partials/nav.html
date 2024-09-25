@@ -1,7 +1,13 @@
 <nav class="navbar is-fixed-top" role="navigation" aria-label="main navigation">
     <div class="navbar-brand">
         <a class="navbar-item" href="{{ url_for("index_bp.home") }}">
-            <strong>CEDICA</strong>
+            <figure class="level">
+                <img
+                src="{{ url_for('static', filename="assets/cedica_isologotipo.png")}}"
+                alt="CEDICA isologotipo"
+                class="level-item"
+                />
+            </figure>
         </a>
         <a
                 role="button"
