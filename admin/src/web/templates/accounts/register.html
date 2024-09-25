@@ -23,7 +23,6 @@
     {% endwith %}
 
     <form action="{{ url_for('auth_bp.register') }}" method="POST">
-        {{ form.csrf_token }}
         {{ form.hidden_tag() }}
 
         <div class="field">
@@ -42,7 +41,7 @@
         <div class="field">
             <label class="label">{{ form.alias.label }}</label>
             <div class="control has-icons-left">
-                {{ form.alias(class="input", placeholder="Ingrese alias") }}
+                {{ form.alias(class="input", placeholder="Ingrese su alias") }}
                 <span class="icon is-small is-left">
                     <i class="fa-solid fa-address-card"></i>
                 </span>
@@ -56,7 +55,7 @@
         <div class="field">
             <label class="label">{{ form.password.label }}</label>
             <div class="control has-icons-left has-icons-right">
-                {{ form.password(class="input password", placeholder="Ingrese contraseña") }}
+                {{ form.password(class="input password", placeholder="Ingrese una contraseña") }}
                 <span class="icon is-small is-left">
                     <i class="fas fa-lock"></i>
                 </span>
@@ -72,7 +71,7 @@
         <div class="field">
             <label class="label">{{ form.confirm_password.label }}</label>
             <div class="control has-icons-left has-icons-right">
-                {{ form.confirm_password(class="input password", placeholder="Confirme contraseña") }}
+                {{ form.confirm_password(class="input password", placeholder="Repita la contraseña") }}
                 <span class="icon is-small is-left">
                     <i class="fas fa-lock"></i>
                 </span>

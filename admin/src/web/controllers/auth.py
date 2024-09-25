@@ -13,20 +13,19 @@ auth_bp = Blueprint(
 
 @auth_bp.route("/login", methods=["GET", "POST"])
 def login():
-    if request.method == "POST":
-        return authenticate()
-
     if is_authenticated(session):
         return redirect(url_for("index_bp.home"))
 
     login_form = UserLoginForm()
+
+    if request.method == "POST":
+        return authenticate(login_form=login_form)
+
     return render_template("login.html", form=login_form)
 
 
 @inject
-def authenticate(accounts_services: AAS = Provide[Container.accounts_services]):
-    login_form = UserLoginForm()
-
+def authenticate(login_form: UserLoginForm, accounts_services: AAS = Provide[Container.accounts_services]):
     if not login_form.validate_on_submit():
         return render_template("login.html", form=login_form)
 
@@ -36,7 +35,7 @@ def authenticate(accounts_services: AAS = Provide[Container.accounts_services]):
 
     if not user:
         flash("Email o contraseña inválida", "danger")
-        return redirect(url_for("auth_bp.login"))
+        return render_template("login.html", form=login_form)
 
     session["user"] = user["id"]
     session["user_name"] = user["alias"]
@@ -59,18 +58,16 @@ def logout():
 
 @auth_bp.route("/registrarse", methods=["GET", "POST"])
 def register():
-    if request.method == "POST":
-        return register_user()
-
     registration_form = UserRegisterForm()
+
+    if request.method == "POST":
+        return register_user(registration_form=registration_form)
 
     return render_template("register.html", form=registration_form)
 
 
 @inject
-def register_user(accounts_services: AAS = Provide[Container.accounts_services]):
-    registration_form = UserRegisterForm()
-
+def register_user(registration_form: UserRegisterForm, accounts_services: AAS = Provide[Container.accounts_services]):
     if not registration_form.validate_on_submit():
         return render_template("register.html", form=registration_form)
 
