@@ -3,13 +3,19 @@ from wtforms import StringField, PasswordField, BooleanField, SelectField
 from wtforms.validators import DataRequired, Email, Length, EqualTo, Optional
 from .validators import EmailExistence
 
+
+def email_existence(form, field):
+    validator = EmailExistence(message="Email en uso")
+    validator(form, field)
+
+
 class UserCreateForm(FlaskForm):
     email = StringField(
         "Email",
         validators=[
             DataRequired(),
             Email(message="Email invalido"),
-            EmailExistence("El email se encuentra en uso"),
+            email_existence,
             Length(max=100),
         ],
     )
@@ -53,10 +59,6 @@ class UserCreateForm(FlaskForm):
     current_email = None
 
 
-def email_existence(form, field):
-    validator = EmailExistence("Email en uso")
-    validator(form, field)
-
 class UserEditForm(FlaskForm):
     def __init__(self, *args, **kwargs):
         self.current_email = kwargs.pop('current_email', None)
@@ -73,7 +75,7 @@ class UserEditForm(FlaskForm):
         ],
     )
     role_id = SelectField(
-        "Role",
+        "Rol",
         coerce=int,
         # TODO: Choices should be a list of the roles stored on the DB and retrieved from there
         choices=[
@@ -87,7 +89,7 @@ class UserEditForm(FlaskForm):
 
     alias = StringField("Alias", validators=[DataRequired(), Length(min=3, max=15)])
 
-    enabled = BooleanField("Enabled", default=True)
+    enabled = BooleanField("Habilitado", default=True)
 
     system_admin = BooleanField("System Admin", default=False)
 
@@ -95,16 +97,59 @@ class UserEditForm(FlaskForm):
 class UserLoginForm(FlaskForm):
     email = StringField(
         "Email",
-        validators=[DataRequired(), Email(
-            message="Email invalido"), Length(max=100)],
+        validators=[
+            DataRequired(),
+            Email(message="Email invalido"),
+            Length(max=100)],
     )
 
     password = PasswordField(
-        "Password",
+        "Contraseña",
         validators=[
             DataRequired(),
             Length(
-                min=8, max=255, message="La contrasena debe tener mas de 8 caracteres"
+                min=8, max=255, message="La contraseña debe tener mas de 8 caracteres"
             ),
         ],
+    )
+
+
+class UserRegisterForm(FlaskForm):
+    current_email = None
+
+    email = StringField(
+        "Email",
+        validators=[
+            DataRequired(),
+            Email(message="Email invalido"),
+            email_existence,
+            Length(max=100),
+        ],
+    )
+
+    password = PasswordField(
+        "Contraseña",
+        validators=[
+            DataRequired(),
+            Length(
+                min=8, max=255, message="La contraseña debe tener mas de 8 caracteres"
+            ),
+        ],
+    )
+
+    confirm_password = PasswordField(
+        "Confirmar contraseña",
+        validators=[
+            DataRequired(),
+            EqualTo("password", message="Las contraseñas deben coincidir"),
+        ],
+    )
+
+
+    alias = StringField(
+        "Alias",
+        validators=[
+            DataRequired(),
+            Length(min=3, max=15)
+        ]
     )

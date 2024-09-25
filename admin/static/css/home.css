@@ -11,32 +11,14 @@
       hsl(32deg 82% 78%) 87%,
       hsl(33deg 82% 71%) 100%
     );
-  }
-
-.glass-bg {
-    background: rgba(0, 0, 0, 0.192);
-    backdrop-filter: blur(30px);
-    border-radius: 15px;
-    border: 1px solid rgba(43, 43, 43, 0.568);
 }
 
-.box {
-    margin: auto;
-    z-index: 10;
-    width: 150px;
-    height: 150px;
-    border-radius: 50%;
-    box-shadow:
-      inset 0 0 50px #fff,
-      inset 20px 0 80px #f0f,
-      inset -20px 0 80px #0ff,
-      inset 20px 0 300px #f0f,
-      inset -20px 0 300px #0ff,
-      0 0 50px #fff,
-      -100px 0 200px #f0f, 
-      100px 0 100px #0ff;
-    transition: box-shadow 4s ease-out;
-    animation: spin 16s linear infinite, fade-in 3s linear
+.glass-bg {
+    background: #F6F6F6; 
+    backdrop-filter: blur(30px);
+    border-radius: 15px;
+    border: 0px solid rgba(43, 43, 43, 0.568);
+    box-shadow: 4px 4px 4px 1px rgba(0, 0, 0, 0.2);
 }
 
 @keyframes fade-in {

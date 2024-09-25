@@ -6,11 +6,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     setTheme(currentTheme);
   
-    $themeToggle.addEventListener('click', () => {
-      const newTheme = $html.getAttribute('data-theme')
-      setTheme(newTheme);
-      localStorage.setItem('theme', newTheme);
-    });
+    if ($themeToggle) {
+      $themeToggle.addEventListener('click', () => {
+        const newTheme = $html.getAttribute('data-theme')
+        setTheme(newTheme);
+        localStorage.setItem('theme', newTheme);
+      });
+    }
   
     function setTheme(theme) {
       if (theme === 'dark') {
@@ -18,7 +20,9 @@ document.addEventListener('DOMContentLoaded', () => {
       } else {
         $html.setAttribute('data-theme', "dark")
       }
-      updateButtonAppearance(theme);
+      if ($themeToggle) { 
+        updateButtonAppearance(theme);
+      }
     }
   
     function updateButtonAppearance(theme) {
