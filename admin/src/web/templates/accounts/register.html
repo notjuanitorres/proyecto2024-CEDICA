@@ -29,7 +29,7 @@
         <div class="field">
             <label class="label">{{ form.email.label }}</label>
             <div class="control">
-                {{ form.email(class="input", type="email", placeholder="Ingrese email") }}
+                {{ form.email(class="input", type="email", placeholder="Ingrese su correo") }}
             </div>
             {% if form.email.errors %}
                 <p class="help is-danger">{{ form.email.errors[0] }}</p>
@@ -39,7 +39,7 @@
         <div class="field">
             <label class="label">{{ form.alias.label }}</label>
             <div class="control">
-                {{ form.alias(class="input", placeholder="Ingrese alias") }}
+                {{ form.alias(class="input", placeholder="Ingrese su alias") }}
             </div>
             {% if form.alias.errors %}
                 <p class="help is-danger">{{ form.alias.errors[0] }}</p>
@@ -49,7 +49,7 @@
         <div class="field">
             <label class="label">{{ form.password.label }}</label>
             <div class="control">
-                {{ form.password(class="input", placeholder="Ingrese contraseña") }}
+                {{ form.password(class="input", placeholder="Ingrese una contraseña") }}
             </div>
             {% if form.password.errors %}
                 <p class="help is-danger">{{ form.password.errors[0] }}</p>
@@ -59,7 +59,7 @@
         <div class="field">
             <label class="label">{{ form.confirm_password.label }}</label>
             <div class="control">
-                {{ form.confirm_password(class="input", placeholder="Confirme contraseña") }}
+                {{ form.confirm_password(class="input", placeholder="Repita la contraseña") }}
             </div>
             {% if form.confirm_password.errors %}
                 <p class="help is-danger">{{ form.confirm_password.errors[0] }}</p>
