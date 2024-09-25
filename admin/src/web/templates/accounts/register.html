@@ -23,21 +23,15 @@
     {% endwith %}
 
     <form action="{{ url_for('auth_bp.register') }}" method="POST">
-        {{ form.csrf_token }}
         {{ form.hidden_tag() }}
 
         <div class="field">
             <label class="label">{{ form.email.label }}</label>
-<<<<<<< HEAD
-            <div class="control">
-                {{ form.email(class="input", type="email", placeholder="Ingrese su correo") }}
-=======
             <div class="control has-icons-left">
                 {{ form.email(class="input", type="email", placeholder="Ingrese email") }}
                 <span class="icon is-small is-left">
                     <i class="fas fa-envelope"></i>
                 </span>
->>>>>>> c634ce5e7892379d894501b48c15ff86dd7fa94e
             </div>
             {% if form.email.errors %}
                 <p class="help is-danger">{{ form.email.errors[0] }}</p>
