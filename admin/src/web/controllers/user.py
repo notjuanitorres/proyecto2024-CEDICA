@@ -49,7 +49,7 @@ def add_user(create_form: UserCreateForm, accounts_services: AAS = Provide[Conta
     if not create_form.validate_on_submit():
         return render_template("create_user.html", form=create_form)
 
-    accounts_services.create_user(
+    user = accounts_services.create_user(
         {
             "email": create_form.email.data,
             "alias": create_form.alias.data,
@@ -60,8 +60,7 @@ def add_user(create_form: UserCreateForm, accounts_services: AAS = Provide[Conta
         }
     )
 
-    # TODO: change redirect to user page when exists
-    return redirect(url_for("users_bp.get_page"))
+    return redirect(url_for("users_bp.show_user", user_id=user["id"]))
 
 
 @users_bp.route("/editar/<int:user_id>", methods=["GET", "POST", "PUT"])
@@ -96,8 +95,7 @@ def update_user(user_id: int, edit_form: UserEditForm, accounts_services: AAS = 
         },
     )
 
-    # TODO: change redirect to user page when exists
-    return redirect(url_for("users_bp.get_page"))
+    return redirect(url_for("users_bp.show_user", user_id=user_id))
 
 
 @users_bp.route("/delete/", methods=["POST"])

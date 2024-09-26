@@ -6,7 +6,7 @@ from src.core.database import db as database
 
 class AbstractAccountsRepository:
     @abstractmethod
-    def add(self, user: User) -> None:
+    def add(self, user: User) -> User | None:
         pass
 
     @abstractmethod
@@ -40,7 +40,10 @@ class AccountsRepository(AbstractAccountsRepository):
 
     def add(self, user: User):
         self.db.session.add(user)
+        self.db.session.flush()
         self.save()
+        
+        return user
 
     def get_page(self, page: int, per_page: int, max_per_page: int):
         return User.query.paginate(

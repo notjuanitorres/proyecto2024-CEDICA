@@ -62,7 +62,8 @@ class AccountsServices(AbstractAccountsServices):
             system_admin=user_data.get("system_admin", False),
             # role_id=user_data["role_id"],
         )
-        return self.accounts_repository.add(new_user)
+        created_user = self.accounts_repository.add(new_user)
+        return self.to_dict(created_user)
 
     def get_page(self, page: int, per_page: int):
         max_per_page = 100
