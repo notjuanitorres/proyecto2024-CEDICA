@@ -29,16 +29,28 @@
             <div class="navbar-item has-dropdown is-hoverable">
                 <a class="navbar-link"> Áreas </a>
                 <div class="navbar-dropdown">
-                    <a href="{{ url_for('users_bp.get_page') }}" class="navbar-item" aria-label="Usuarios">
-                        Usuarios </a>
-                    <a class="navbar-item is-selected" aria-label="Equipo"> Equipo </a>
-                    <a class="navbar-item" aria-label="Jinetes y Amazonas">
-                        Jinetes y Amazonas
-                    </a>
-                    <a class="navbar-item" aria-label="Ecuestres"> Ecuestres </a>
+                    {% if is_admin %}
+                        <a href="{{ url_for('users_bp.get_page') }}" class="navbar-item" aria-label="Usuarios">
+                            Usuarios </a>
+                    {% endif %}
+                    {% if role in ["Administración"]  %}
+                        <a class="navbar-item is-selected" aria-label="Equipo"> Equipo </a>
+                    {% endif %}
+                    {% if role in ["Administración", "Técnico", "Ecuestre"]  %}
+                        <a class="navbar-item" aria-label="Jinetes y Amazonas">
+                            Jinetes y Amazonas
+                        </a>
+                    {% endif %}
+                    {% if role in ["Administración", "Técnico", "Ecuestre"]  %}
+                        <a class="navbar-item" aria-label="Ecuestres"> Ecuestres </a>
+                    {% endif %}
                     <hr class="navbar-divider" aria-hidden="true"/>
-                    <a class="navbar-item" aria-label="Pagos"> Pagos </a>
-                    <a class="navbar-item" aria-label="Cobros"> Cobros </a>
+                    {% if role in ["Administración"]  %}
+                        <a class="navbar-item" aria-label="Pagos"> Pagos </a>
+                    {% endif %}
+                    {% if role in ["Administración", "Técnico"]  %}
+                        <a class="navbar-item" aria-label="Cobros"> Cobros </a>
+                    {% endif %}
                 </div>
             </div>
             {% endif %}

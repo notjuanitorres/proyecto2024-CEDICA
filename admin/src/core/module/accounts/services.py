@@ -2,7 +2,7 @@ from abc import abstractmethod
 from typing import Dict
 from core.bcrypt import bcrypt
 from .repositories import AbstractAccountsRepository
-from .models import User
+from .models import User, Role
 
 
 class AbstractAccountsServices:
@@ -41,6 +41,10 @@ class AbstractAccountsServices:
 
     @abstractmethod
     def is_sys_admin(self, user_id: int) -> bool:
+        pass
+
+    @abstractmethod
+    def get_role(self, role_id: int) -> Role:
         pass
 
 
@@ -112,7 +116,7 @@ class AccountsServices(AbstractAccountsServices):
             "enabled": user.enabled,
             "system_admin": user.system_admin,
             # TODO: Insert roles and permissions into the db
-            # 'role_id':create_form.role_id.data,
+            'role_id': user.role_id,
         }
         return user_dict
 
@@ -121,3 +125,6 @@ class AccountsServices(AbstractAccountsServices):
             return False
         user = self.accounts_repository.get_by_id(user_id)
         return user.system_admin
+
+    def get_role(self, role_id: int) -> Role:
+        return self.accounts_repository.get_role(role_id)

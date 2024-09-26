@@ -40,8 +40,10 @@ def authenticate(login_form: UserLoginForm, accounts_services: AAS = Provide[Con
     session["user"] = user["id"]
     session["user_name"] = user["alias"]
     session["is_authenticated"] = True
+    session["is_admin"] = user["system_admin"]
+    session["role"] = accounts_services.get_role(user["role_id"]).name
 
-    flash("Sesion iniciada correctamente, bienvenido/a.", "success")
+    flash("Sesión iniciada correctamente, bienvenido/a.", "success")
 
     return redirect(url_for("index_bp.home"))
 

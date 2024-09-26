@@ -1,6 +1,6 @@
 from abc import abstractmethod
 from typing import List, Dict
-from src.core.module.accounts.models import User
+from src.core.module.accounts.models import User, Role
 from src.core.database import db as database
 
 
@@ -28,6 +28,10 @@ class AbstractAccountsRepository:
 
     @abstractmethod
     def delete(self, user_id: int) -> bool:
+        pass
+
+    @abstractmethod
+    def get_role(self, role_id: int) -> Role:
         pass
 
 
@@ -68,3 +72,6 @@ class AccountsRepository(AbstractAccountsRepository):
 
     def save(self):
         self.db.session.commit()
+
+    def get_role(self, role_id: int) -> Role:
+        return self.db.session.query(Role).filter(Role.id == role_id).first()
