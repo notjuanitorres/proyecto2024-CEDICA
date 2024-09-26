@@ -19,34 +19,28 @@ def login_required(f):
     return decorated_function
 
 
-# @inject
-# def check_user_permissions_decorator(permissions_required: List[str], accounts_services=Provide[Container.accounts_services]):
-#     def decorator(f):  # need extra decorator because im passing an argument
-#         @wraps(f)
-#         def decorated_function(*args, **kwargs):
-#             if not is_authenticated(session):
-#                 return redirect(url_for("auth_bp.login"))
-#             user_permissions = accounts_services.get_permissions_of(session.get("user"))
-#             for permission in permissions_required:
-#                 if permission not in user_permissions:
-#                     return redirect(url_for("auth_bp.login"))
-#             return f(*args, **kwargs)
-#         return decorated_function
-#     return decorator
+def check_user_permissions(permissions_required: List[str]):
+    def decorator(f):  # need extra decorator because im passing an argument
+        @wraps(f)
+        @inject
+        def decorated_function(*args,
+                               accounts_services=Provide[Container.accounts_services],
+                               **kwargs):
 
-def check_user_permissions(permissions_required, accounts_services=Provide[Container.accounts_services]):
-    if not is_authenticated(session):
-        return False
+            if not is_authenticated(session):
+                return redirect(url_for("auth_bp.login"))
 
-    if accounts_services.is_sys_admin(session.get("user")):
-        return True
+            if accounts_services.is_sys_admin(session.get("user")):
+                return f(*args, **kwargs)
 
-    user_permissions = accounts_services.get_permissions_of(session.get("user"))
-    for permission in permissions_required:
-        if permission not in user_permissions:
-            return False
-    
-    return True
+            user_permissions = accounts_services.get_permissions_of(session.get("user"))
+            for permission in permissions_required:
+                if permission not in user_permissions:
+                    return redirect(url_for("auth_bp.login"))
+
+            return f(*args, **kwargs)
+        return decorated_function
+    return decorator
 
 
 def inject_session_data():

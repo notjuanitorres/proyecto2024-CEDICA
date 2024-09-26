@@ -10,6 +10,7 @@ equestrian_bp = Blueprint(
 
 
 @equestrian_bp.route("/")
+@check_user_permissions(permissions_required=["ecuestre_index"])
 def get_page():
     return render_template("horses.html")
 
@@ -20,10 +21,11 @@ def show_horse():
 
 
 @equestrian_bp.route("/crear", methods=["GET", "POST"])
+@check_user_permissions(permissions_required=["ecuestre_new"])
 def create_horse():
     # create_form = EquestrianCreateForm()
-    if not check_user_permissions(permissions_required=["ecuestre_new"]):
-        return redirect(url_for("index_bp.home"))
+    # if not check_user_permissions(permissions_required=["ecuestre_new"]):
+    #     return redirect(url_for("index_bp.home"))
 
     if request.method == "POST":
         return add_horse()
