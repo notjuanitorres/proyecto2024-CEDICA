@@ -5,19 +5,15 @@
     <div class="dropdown is-right is-hoverable">
     {% endif %}
         <div class="dropdown-trigger">
-        <button class="button" aria-haspopup="true" aria-controls="dropdown-menu">
+        <a href="{{ url_for(endpoints.show, user_id=value)}}" class="button" aria-haspopup="true" aria-controls="dropdown-menu">
             <span class=" is-bold">
-                {% if to_left %}
-                >
-                {% else %}
-                <
-                {% endif %}
+                <i class="fa-regular fa-eye"></i>
             </span>
-        </button>
+        </a>
         </div>
         <div class="dropdown-menu" id="dropdown-menu" role="menu"> 
         <div class="dropdown-content">
-            <a href="" class="dropdown-item">Ver</a>
+            <a href="{{ url_for(endpoints.show, user_id=value) }}" class="dropdown-item">Ver</a>
             <a href="{{ url_for(endpoints.edit, user_id=value) }}" class="dropdown-item has-text-warning">Editar</a>
             <button class="dropdown-item has-text-danger modal-trigger" data-id="{{ value }}" data-target="user-delete-modal">Eliminar</button>
         </div>

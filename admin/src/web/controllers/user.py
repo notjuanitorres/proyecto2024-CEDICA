@@ -27,9 +27,12 @@ def get_page(accounts_services: AAS = Provide[Container.accounts_services]):
 
 @users_bp.route("/<int:user_id>")
 @inject
-def show_user(accounts_services: AAS = Provide[Container.accounts_services]):
-    pass
-
+def show_user(user_id: int, accounts_services: AAS = Provide[Container.accounts_services]):
+    user = accounts_services.get_user(user_id)
+    if not user:
+        flash(f"El usuario con ID = {user_id} no existe", "danger")
+        return get_page()
+    return render_template('user.html', user=user)
 
 @users_bp.route("/crear", methods=["GET", "POST"])
 def create_user():

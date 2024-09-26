@@ -1,0 +1,108 @@
+{% extends 'layout.html' %} 
+
+{% from "macros/delete_modal.html" import render_delete_modal %} 
+
+{% block title %} Usuario {{ user.alias }} - CEDICA {% endblock %} 
+
+{% block head %} {{ super() }} {% endblock %} 
+
+{% block main_content%}
+
+<nav class="breadcrumb" aria-label="breadcrumbs">
+  <ul>
+    <li>
+      <a href="{{ url_for('index_bp.home')}}">
+        <span class="icon is-small">
+          <i class="fas fa-home" aria-hidden="true"></i>
+        </span>
+        <span>Inicio</span>
+      </a>
+    </li>
+    <li>
+      <a href="{{ url_for('users_bp.get_page' )}}">
+        <span class="icon is-small">
+          <i class="fas fa-users" aria-hidden="true"></i>
+        </span>
+        <span>Usuarios</span>
+      </a>
+    </li>
+    <li>
+      <a href="">
+        <span class="icon is-small">
+          <i class="fa-solid fa-user" aria-hidden="true"></i>
+        </span>
+        <span>{{ user.alias }}</span>
+      </a>
+    </li>
+  </ul>
+</nav>
+
+<section class="container is-fullheight-with-navbar">
+  <div class="card">
+    <header class="card-header has-text-centered">
+      <p class="card-header-title is-size-4">Usuario: JuanaG</p>
+    </header>
+    <div class="card-content">
+      <div class="content">
+        <ul>
+          <li><strong>ID: </strong> {{ user.id }}</li>
+          <li><strong>Email: </strong>{{ user.email }}</li>
+          <li><strong>Alias: </strong>{{ user.alias }}</li>
+          <li>
+            <strong>Esta habilitado: </strong> {{ user.enabled | natural_boolean
+            }}
+          </li>
+          <li>
+            <strong>Es administrador de sistema: </strong>{{ user.enabled |
+            natural_boolean }}
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <footer class="card-footer">
+      <a
+        href="{{ url_for('users_bp.edit_user', user_id=user.id)}}"
+        class="card-footer-item has-text-warning"
+        >Editar</a
+      >
+      {% if user.enabled %}
+      <a href="" class="card-footer-item">Deshabilitar</a>
+      {% else %}
+      <a href="" class="card-footer-item">Habilitar</a>
+      {% endif %}
+      <button 
+        href="" 
+        class="card-footer-item has-text-danger modal-trigger" 
+        data-id="{{ user.id }}" 
+        data-target="user-delete-modal">
+        Eliminar
+      </button>
+    </footer>
+  </div>
+
+  <div class="card">
+    <header class="card-header">
+      <p class="card-header-title is-size-4">Miembro del equipo asociado</p>
+    </header>
+    <div class="card-content">
+      <div class="content"></div>
+    </div>
+    <footer class="card-footer">
+      <a
+        href="{{ url_for('users_bp.delete_user', user_id=user.id)}}"
+        class="card-footer-item"
+        >Ver</a
+      >
+    </footer>
+  </div>
+</section>
+
+{{ render_delete_modal(
+    endpoint="users_bp.delete_user", 
+    title="Eliminar", 
+    msg="¿Está seguro de que desea eliminar al usuario?", 
+    msg_sub="Luego de confirmar, no se podrán revertir los cambios" ) }} 
+{% endblock %}
