@@ -18,7 +18,7 @@ def require_login_and_sys_admin(accounts_services=Provide[Container.accounts_ser
 
 @users_bp.route("/")
 @inject
-def get_page(accounts_services: AAS = Provide[Container.accounts_services]):
+def get_users(accounts_services: AAS = Provide[Container.accounts_services]):
     page = request.args.get("page", type=int)
     per_page = request.args.get("per_page", type=int)
     paginated_users = accounts_services.get_page(page, per_page)
@@ -31,7 +31,7 @@ def show_user(user_id: int, accounts_services: AAS = Provide[Container.accounts_
     user = accounts_services.get_user(user_id)
     if not user:
         flash(f"El usuario con ID = {user_id} no existe", "danger")
-        return get_page()
+        return get_users()
     return render_template('user.html', user=user)
 
 @users_bp.route("/crear", methods=["GET", "POST"])
@@ -69,7 +69,7 @@ def edit_user(user_id: int, accounts_services: AAS = Provide[Container.accounts_
     user = accounts_services.get_user(user_id)
 
     if not user:
-        return redirect(url_for("users_bp.get_page"))
+        return redirect(url_for("users_bp.get_users"))
 
     edit_form = UserEditForm(data=user, current_email=user['email'])
 
@@ -107,7 +107,7 @@ def delete_user(accounts_services: AAS = Provide[Container.accounts_services]):
         flash("El usuario no ha podido ser eliminado, intentelo nuevamente", "danger")
 
     flash("El usuario ha sido eliminado correctamente", "success")
-    return redirect(url_for("users_bp.get_page"))
+    return redirect(url_for("users_bp.get_users"))
 
 
 @users_bp.route("/toggle-activation/<int:user_id>")
