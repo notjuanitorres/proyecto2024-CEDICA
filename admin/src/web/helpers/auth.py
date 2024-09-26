@@ -37,11 +37,15 @@ def login_required(f):
 def check_user_permissions(permissions_required, accounts_services=Provide[Container.accounts_services]):
     if not is_authenticated(session):
         return False
+
+    if accounts_services.is_sys_admin(session.get("user")):
+        return True
+
     user_permissions = accounts_services.get_permissions_of(session.get("user"))
     for permission in permissions_required:
-        print(f"is {permission} in {user_permissions}? {permission in user_permissions}")
         if permission not in user_permissions:
             return False
+    
     return True
 
 
