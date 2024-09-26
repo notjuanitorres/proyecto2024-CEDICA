@@ -32,7 +32,7 @@ class AbstractAccountsServices:
         pass
 
     @abstractmethod
-    def disable_user(self, user_id: int) -> None:
+    def toggle_activation(self, user_id: int) -> bool:
         pass
 
     @abstractmethod
@@ -97,8 +97,19 @@ class AccountsServices(AbstractAccountsServices):
 
         return self.to_dict(user)
 
-    def disable_user(self, user_id: int) -> User:
-        pass
+    def is_sys_admin(self, user_id: int) -> bool:
+        if not user_id:
+            return False
+        user = self.accounts_repository.get_by_id(user_id)
+        return user.system_admin
+
+    def toggle_activation(self, user_id: int) -> bool:
+        if self.is_sys_admin(user_id):
+            return False
+
+        self.accounts_repository.toggle_activation(user_id)
+
+        return True
 
     def to_dict(self, user: User) -> Dict:
         # TODO: Implement User DTO to transfer users between service and presentation layer
@@ -115,9 +126,3 @@ class AccountsServices(AbstractAccountsServices):
             # 'role_id':create_form.role_id.data,
         }
         return user_dict
-
-    def is_sys_admin(self, user_id: int) -> bool:
-        if not user_id:
-            return False
-        user = self.accounts_repository.get_by_id(user_id)
-        return user.system_admin

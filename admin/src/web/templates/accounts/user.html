@@ -37,6 +37,19 @@
   </ul>
 </nav>
 
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+{% for category, message in messages %}
+<ul>
+    <li class="notification is-{{ category }} mt-4 mx-2">
+        <button class="delete"></button>
+        {{ message }}
+    </li>
+</ul>
+{% endfor %}
+{% endif %}
+{% endwith %}
+
 <section class="container is-fullheight-with-navbar">
   <div class="card">
     <header class="card-header has-text-centered">
@@ -49,12 +62,10 @@
           <li><strong>Email: </strong>{{ user.email }}</li>
           <li><strong>Alias: </strong>{{ user.alias }}</li>
           <li>
-            <strong>Esta habilitado: </strong> {{ user.enabled | natural_boolean
-            }}
+            <strong>Esta habilitado: </strong> {{ user.enabled | natural_boolean }}
           </li>
           <li>
-            <strong>Es administrador de sistema: </strong>{{ user.enabled |
-            natural_boolean }}
+            <strong>Es administrador de sistema: </strong>{{ user.system_admin | natural_boolean }}
           </li>
         </ul>
       </div>
@@ -68,11 +79,14 @@
         class="card-footer-item has-text-warning"
         >Editar</a
       >
-      {% if user.enabled %}
-      <a href="" class="card-footer-item">Deshabilitar</a>
-      {% else %}
-      <a href="" class="card-footer-item">Habilitar</a>
+
+      <a href="{{ url_for('users_bp.toggle_activation', user_id=user.id)}}" class="card-footer-item">
+      {% if user.enabled %}      
+        Deshabilitar
+      {% else %}       
+        Habilitar
       {% endif %}
+      </a>
       <button 
         href="" 
         class="card-footer-item has-text-danger modal-trigger" 
@@ -92,7 +106,7 @@
     </div>
     <footer class="card-footer">
       <a
-        href="{{ url_for('users_bp.delete_user', user_id=user.id)}}"
+        href=""
         class="card-footer-item"
         >Ver</a
       >

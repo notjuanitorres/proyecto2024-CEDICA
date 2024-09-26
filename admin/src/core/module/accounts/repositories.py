@@ -5,7 +5,6 @@ from src.core.database import db as database
 
 
 class AbstractAccountsRepository:
-
     @abstractmethod
     def add(self, user: User) -> None:
         pass
@@ -28,6 +27,10 @@ class AbstractAccountsRepository:
 
     @abstractmethod
     def delete(self, user_id: int) -> bool:
+        pass
+
+    @abstractmethod
+    def toggle_activation(self, user_id: int) -> None:
         pass
 
 
@@ -65,6 +68,11 @@ class AccountsRepository(AbstractAccountsRepository):
         self.db.session.delete(user)
         self.save()
         return True
+
+    def toggle_activation(self, user_id: int) -> None:
+        user = self.get_by_id(user_id)
+        user.enabled = not user.enabled
+        self.save()
 
     def save(self):
         self.db.session.commit()

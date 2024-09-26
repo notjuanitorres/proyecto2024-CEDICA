@@ -110,3 +110,15 @@ def delete_user(accounts_services: AAS = Provide[Container.accounts_services]):
 
     flash("El usuario ha sido eliminado correctamente", "success")
     return redirect(url_for("users_bp.get_page"))
+
+
+@users_bp.route("/toggle-activation/<int:user_id>")
+@inject
+def toggle_activation(user_id: int, accounts_services: AAS = Provide[Container.accounts_services]):
+    toggled = accounts_services.toggle_activation(user_id)
+
+    if not toggled:
+        flash("No se puede desactivar a un administrador del sistema", "danger")
+
+    flash("La operacion fue un exito", "success")
+    return redirect(request.referrer or url_for("index_bp.home"))
