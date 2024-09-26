@@ -21,7 +21,13 @@ def require_login_and_sys_admin(accounts_services=Provide[Container.accounts_ser
 def get_users(accounts_services: AAS = Provide[Container.accounts_services]):
     page = request.args.get("page", type=int)
     per_page = request.args.get("per_page", type=int)
-    paginated_users = accounts_services.get_page(page, per_page)
+    sort_by = request.args.get("sort_by", "id")
+    order = request.args.get("order", "asc")
+
+    order_by = [(sort_by, order)]
+
+    paginated_users = accounts_services.get_page(page, per_page, order_by)
+
     return render_template("users.html", users=paginated_users)
 
 

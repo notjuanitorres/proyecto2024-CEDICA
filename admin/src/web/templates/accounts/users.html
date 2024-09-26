@@ -45,11 +45,44 @@
   {% endif %}
   {% endwith %}
 
-  <section class="is-fullheight-with-navbar">
+  <section class="is-fullheight-with-navbar mt-4">
     <div class="table-container p-2">
-      <div class="box">
-        <a class="button" href="{{ url_for('users_bp.create_user')}}">Crear usuario</a>
+      <div class="box level mx-2">
+        <a class="button is-primary" href="{{ url_for('users_bp.create_user')}}">Crear usuario</a>
+
+        <form class="form level" method="GET">
+          <div class="field mr-3">
+            <label class="label">Ordenar por</label>
+            <div class="control">
+                <div class="select">
+                    <select name="sort_by">
+                        <option value="inserted_at">Fecha de creacion</option>
+                        <option value="email">Email</option>
+                    </select>
+                </div>
+            </div>
+          </div>
+          <div class="field">
+              <label class="label">En orden</label>
+              <div class="control">
+                  <div class="select">
+                      <select name="order">
+                          <option value="asc">Ascendente</option>
+                          <option value="desc">Descendente</option>
+                      </select>
+                  </div>
+              </div>
+          </div>
+          <div class="field">
+              <div class="control">
+                  <button class="button mr-2" type="submit">Aplicar</button>
+                  <a href="{{ url_for("users_bp.get_users") }}" class="button" type="submit">Limpiar</a>
+              </div>
+          </div>
+        </form>     
+  
       </div>
+
       <table class="table is-striped is-scrollable is-fullwidth ">
         <thead>
           <tr>
