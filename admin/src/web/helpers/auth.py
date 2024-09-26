@@ -22,5 +22,5 @@ def inject_session_data():
         user_name=session.get("user_name"),
         is_authenticated=is_authenticated(session),
         is_admin=session.get("is_admin"),
-        role=session.get("role")
+        permissions=session.get("permissions")
     )

@@ -41,7 +41,8 @@ def authenticate(login_form: UserLoginForm, accounts_services: AAS = Provide[Con
     session["user_name"] = user["alias"]
     session["is_authenticated"] = True
     session["is_admin"] = user["system_admin"]
-    session["role"] = accounts_services.get_role(user["role_id"]).name
+    permissions = accounts_services.get_permissions_of(user["id"])
+    session["permissions"] = permissions
 
     flash("Sesión iniciada correctamente, bienvenido/a.", "success")
 

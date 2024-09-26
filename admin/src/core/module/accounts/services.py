@@ -51,6 +51,10 @@ class AbstractAccountsServices:
     def get_roles(self) -> List:
         pass
 
+    @abstractmethod
+    def get_permissions_of(self, user_id: int) -> List:
+        pass
+
 
 class AccountsServices(AbstractAccountsServices):
     def __init__(self, accounts_repository: AbstractAccountsRepository):
@@ -134,3 +138,10 @@ class AccountsServices(AbstractAccountsServices):
 
     def get_roles(self) -> List:
         return self.accounts_repository.get_roles()
+
+    def get_permissions_of(self, user_id: int) -> List:
+        user = self.accounts_repository.get_by_id(user_id)
+        if not user:
+            return ["NO_PERMISSIONS"]
+        permissions = self.accounts_repository.get_permissions_of_role(user.role_id)
+        return [p.name for p in permissions]

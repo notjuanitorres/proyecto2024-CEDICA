@@ -33,23 +33,25 @@
                         <a href="{{ url_for('users_bp.get_page') }}" class="navbar-item" aria-label="Usuarios">
                             Usuarios </a>
                     {% endif %}
-                    {% if role in ["Administración"]  %}
+                    {% if "equipo_index" in permissions %}
                         <a class="navbar-item is-selected" aria-label="Equipo"> Equipo </a>
                     {% endif %}
-                    {% if role in ["Administración", "Técnico", "Ecuestre"]  %}
+                    {% if "jya_index" in permissions %}
                         <a class="navbar-item" aria-label="Jinetes y Amazonas">
                             Jinetes y Amazonas
                         </a>
                     {% endif %}
-                    {% if role in ["Administración", "Técnico", "Ecuestre"]  %}
+                    {% if "ecuestre_index" in permissions %}
                         <a class="navbar-item" aria-label="Ecuestres"> Ecuestres </a>
                     {% endif %}
-                    <hr class="navbar-divider" aria-hidden="true"/>
-                    {% if role in ["Administración"]  %}
-                        <a class="navbar-item" aria-label="Pagos"> Pagos </a>
-                    {% endif %}
-                    {% if role in ["Administración", "Técnico"]  %}
-                        <a class="navbar-item" aria-label="Cobros"> Cobros </a>
+                    {% if "pagos_index" in permissions or "cobros_index" in permissions %}
+                        <hr class="navbar-divider" aria-hidden="true"/>
+                        {% if "pagos_index" in permissions %}
+                            <a class="navbar-item" aria-label="Pagos"> Pagos </a>
+                        {% endif %}
+                        {% if "cobros_index" in pemissions  %}
+                            <a class="navbar-item" aria-label="Cobros"> Cobros </a>
+                        {% endif %}
                     {% endif %}
                 </div>
             </div>
