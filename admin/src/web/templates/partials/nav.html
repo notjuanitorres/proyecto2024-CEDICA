@@ -42,7 +42,7 @@
                         </a>
                     {% endif %}
                     {% if "ecuestre_index" in permissions %}
-                        <a class="navbar-item" aria-label="Ecuestres"> Ecuestres </a>
+                        <a href="{{ url_for('equestrian_bp.get_page') }}" class="navbar-item" aria-label="Ecuestres"> Ecuestres </a>
                     {% endif %}
                     {% if "pagos_index" in permissions or "cobros_index" in permissions %}
                         <hr class="navbar-divider" aria-hidden="true"/>
