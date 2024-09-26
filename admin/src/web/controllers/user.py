@@ -123,6 +123,7 @@ def toggle_activation(user_id: int, accounts_services: AAS = Provide[Container.a
 
     if not toggled:
         flash("No se puede desactivar a un administrador del sistema", "danger")
+    else:
+        flash("La operacion fue un exito", "success")
 
-    flash("La operacion fue un exito", "success")
     return redirect(request.referrer or url_for("index_bp.home"))
