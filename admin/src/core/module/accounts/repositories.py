@@ -34,6 +34,10 @@ class AbstractAccountsRepository:
     def get_role(self, role_id: int) -> Role:
         pass
 
+    @abstractmethod
+    def get_roles(self) -> List[Role]:
+        pass
+
 
 class AccountsRepository(AbstractAccountsRepository):
     def __init__(self):
@@ -75,3 +79,6 @@ class AccountsRepository(AbstractAccountsRepository):
 
     def get_role(self, role_id: int) -> Role:
         return self.db.session.query(Role).filter(Role.id == role_id).first()
+
+    def get_roles(self) -> List[Role]:
+        return self.db.session.query(Role).all()

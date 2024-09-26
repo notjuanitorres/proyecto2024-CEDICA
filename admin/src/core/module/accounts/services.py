@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from typing import Dict
+from typing import Dict, List
 from core.bcrypt import bcrypt
 from .repositories import AbstractAccountsRepository
 from .models import User, Role
@@ -47,6 +47,10 @@ class AbstractAccountsServices:
     def get_role(self, role_id: int) -> Role:
         pass
 
+    @abstractmethod
+    def get_roles(self) -> List:
+        pass
+
 
 class AccountsServices(AbstractAccountsServices):
     def __init__(self, accounts_repository: AbstractAccountsRepository):
@@ -64,7 +68,7 @@ class AccountsServices(AbstractAccountsServices):
             password=bcrypt.generate_password_hash(user_data.get("password")).decode('utf-8'),
             enabled=user_data.get("enabled", False),
             system_admin=user_data.get("system_admin", False),
-            # role_id=user_data["role_id"],
+            role_id=user_data.get("role_id", None),
         )
         return self.accounts_repository.add(new_user)
 
@@ -115,8 +119,7 @@ class AccountsServices(AbstractAccountsServices):
             "alias": user.alias,
             "enabled": user.enabled,
             "system_admin": user.system_admin,
-            # TODO: Insert roles and permissions into the db
-            'role_id': user.role_id,
+            'role_id': user.role_id
         }
         return user_dict
 
@@ -128,3 +131,6 @@ class AccountsServices(AbstractAccountsServices):
 
     def get_role(self, role_id: int) -> Role:
         return self.accounts_repository.get_role(role_id)
+
+    def get_roles(self) -> List:
+        return self.accounts_repository.get_roles()
