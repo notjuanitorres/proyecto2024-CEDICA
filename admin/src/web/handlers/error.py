@@ -25,4 +25,4 @@ def handle_error(e):
     name, description = error_map.get(code, ("Error desconocido", "Ocurrió un error inesperado."))
 
     error = Error(code, name, description)
-    return render_template("error.html", error=error), code
+    return render_template("error/error.html", error=error), code
