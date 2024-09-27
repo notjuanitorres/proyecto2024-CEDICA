@@ -61,6 +61,10 @@ def logout():
 
 @auth_bp.route("/registrarse", methods=["GET", "POST"])
 def register():
+    if is_authenticated(session):
+        flash("Ya estás autenticado", "info")
+        return redirect(url_for("index_bp.home"))
+
     registration_form = UserRegisterForm()
 
     if request.method == "POST":

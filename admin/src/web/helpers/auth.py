@@ -27,7 +27,8 @@ def check_user_permissions(permissions_required: List[str]):
                                accounts_services=Provide[Container.accounts_services],
                                **kwargs):
 
-            if not is_authenticated(session):
+            if (not is_authenticated(session) or
+                    not accounts_services.is_user_enabled(session.get("user"))):
                 return redirect(url_for("auth_bp.login"))
 
             if accounts_services.is_sys_admin(session.get("user")):
