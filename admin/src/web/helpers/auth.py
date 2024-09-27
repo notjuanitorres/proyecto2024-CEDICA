@@ -1,8 +1,8 @@
+from typing import List
 from functools import wraps
 from flask import session, redirect, url_for
-from src.core.container import Container
 from dependency_injector.wiring import inject, Provide
-from typing import List
+from src.core.container import Container
 
 
 def is_authenticated(user_session):
