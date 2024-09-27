@@ -1,0 +1,88 @@
+{% extends "layout.html" %}
+
+{% block title %}Caballos{% endblock %}
+
+{% block head %}
+    {{ super() }}
+{% endblock %}
+
+{% block main_content %}
+  <section class="is-fullheight-with-navbar">
+    <div class="table-container">
+      <div class="box m-5">
+        <a class="button" href="{{ url_for("equestrian_bp.create_horse") }}">Crear caballo</a>
+      </div>
+      <table class="table is-striped is-scrollable is-fullwidth p-5 mt-5">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Nombre</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+{#          {% for horse in horses %}#}
+{#          <tr>#}
+{#            <td>#}
+{#              {{#}
+{#                render_actions_menu(#}
+{#                value=horse.id,#}
+{#                to_left=true,#}
+{#                endpoints={#}
+{#                  'show':'',#}
+{#                  'edit': 'horses_bp.edit_horse',#}
+{#                  'delete':''#}
+{#                })#}
+{#              }}#}
+{#            </td>#}
+{#            <td>{{ horse.id }}</td>#}
+{#            <td>{{ horse.name }}</td>#}
+{#            <td>{{ horse.alias }}</td>#}
+{#            <td>{{ horse.enabled | natural_boolean }}</td>#}
+{#            <td>{{ horse.role_id | role}}</td>#}
+{#            <td>{{ horse.system_admin | natural_boolean }}</td>#}
+{#            <td>{{ horse.inserted_at | format_date }}</td>#}
+{#            <td>{{ horse.updated_at | format_date }}</td>#}
+{#            <td>#}
+{#              {{#}
+{#                render_actions_menu(#}
+{#                value=horse.id,#}
+{#                to_left=false,#}
+{#                endpoints={#}
+{#                  'show':'',#}
+{#                  'edit': 'horses_bp.edit_horse',#}
+{#                  'delete':''#}
+{#                })#}
+{#              }}#}
+{#            </td>#}
+{#          </tr>#}
+{#          {% endfor %}#}
+        </tbody>
+      </table>
+    {% if "ecuestre_show" in permissions %}
+        <p> solo visible si tiene permiso de vista</p>
+    {% endif %}
+    {% if "ecuestre_update" in permissions %}
+        <p> solo visible si tiene permiso de edición</p>
+    {% endif %}
+    {% if "ecuestre_destroy" in permissions %}
+        <p> solo visible si tiene permiso de eliminación</p>
+    {% endif %}
+    {% if "ecuestre_new" in permissions %}
+        <p> solo visible si tiene permiso de creación</p>
+    {% endif %}
+    </div>
+  </section>
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+{% endblock %}
+
+{% block footer %}
+    {{ super() }}
+{% endblock %}
+
+{#{% block pagination %}#}
+{#    {{ render_pagination(horses) }}#}
+{#{% endblock %}#}

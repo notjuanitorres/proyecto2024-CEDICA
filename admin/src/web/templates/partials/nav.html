@@ -29,16 +29,30 @@
             <div class="navbar-item has-dropdown is-hoverable">
                 <a class="navbar-link"> Áreas </a>
                 <div class="navbar-dropdown">
-                    <a href="{{ url_for('users_bp.get_page') }}" class="navbar-item" aria-label="Usuarios">
-                        Usuarios </a>
-                    <a class="navbar-item is-selected" aria-label="Equipo"> Equipo </a>
-                    <a class="navbar-item" aria-label="Jinetes y Amazonas">
-                        Jinetes y Amazonas
-                    </a>
-                    <a class="navbar-item" aria-label="Ecuestres"> Ecuestres </a>
-                    <hr class="navbar-divider" aria-hidden="true"/>
-                    <a class="navbar-item" aria-label="Pagos"> Pagos </a>
-                    <a class="navbar-item" aria-label="Cobros"> Cobros </a>
+                    {% if is_admin %}
+                        <a href="{{ url_for('users_bp.get_page') }}" class="navbar-item" aria-label="Usuarios">
+                            Usuarios </a>
+                    {% endif %}
+                    {% if "equipo_index" in permissions or is_admin %}
+                        <a class="navbar-item is-selected" aria-label="Equipo"> Equipo </a>
+                    {% endif %}
+                    {% if "jya_index" in permissions or is_admin %}
+                        <a class="navbar-item" aria-label="Jinetes y Amazonas">
+                            Jinetes y Amazonas
+                        </a>
+                    {% endif %}
+                    {% if "ecuestre_index" in permissions or is_admin %}
+                        <a href="{{ url_for('equestrian_bp.get_page') }}" class="navbar-item" aria-label="Ecuestres"> Ecuestres </a>
+                    {% endif %}
+                    {% if "pagos_index" in permissions or "cobros_index" in permissions or is_admin %}
+                        <hr class="navbar-divider" aria-hidden="true"/>
+                        {% if "pagos_index" in permissions %}
+                            <a class="navbar-item" aria-label="Pagos"> Pagos </a>
+                        {% endif %}
+                        {% if "cobros_index" in pemissions or is_admin %}
+                            <a class="navbar-item" aria-label="Cobros"> Cobros </a>
+                        {% endif %}
+                    {% endif %}
                 </div>
             </div>
             {% endif %}

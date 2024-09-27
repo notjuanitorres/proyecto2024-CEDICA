@@ -2,7 +2,7 @@ from abc import abstractmethod
 from typing import Dict, List
 from core.bcrypt import bcrypt
 from .repositories import AbstractAccountsRepository
-from .models import User
+from .models import User, Role
 
 
 class AbstractAccountsServices:
@@ -44,7 +44,19 @@ class AbstractAccountsServices:
         pass
 
     @abstractmethod
+    def get_role(self, role_id: int) -> Role:
+        pass
+
+    @abstractmethod
     def get_roles(self) -> List:
+        pass
+
+    @abstractmethod
+    def get_permissions_of(self, user_id: int) -> List:
+        pass
+
+    @abstractmethod
+    def is_user_enabled(self, user_id: int) -> bool:
         pass
 
 
@@ -125,5 +137,19 @@ class AccountsServices(AbstractAccountsServices):
         user = self.accounts_repository.get_by_id(user_id)
         return user.system_admin
 
+    def get_role(self, role_id: int) -> Role:
+        return self.accounts_repository.get_role(role_id)
+
     def get_roles(self) -> List:
         return self.accounts_repository.get_roles()
+
+    def get_permissions_of(self, user_id: int) -> List:
+        user = self.accounts_repository.get_by_id(user_id)
+        if not user:
+            return ["NO_PERMISSIONS"]
+        permissions = self.accounts_repository.get_permissions_of_role(user.role_id)
+        return [p.name for p in permissions]
+
+    def is_user_enabled(self, user_id: int) -> bool:
+        user = self.accounts_repository.get_by_id(user_id)
+        return user.enabled
