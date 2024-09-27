@@ -30,7 +30,7 @@
                 <a class="navbar-link"> Áreas </a>
                 <div class="navbar-dropdown">
                     {% if is_admin %}
-                        <a href="{{ url_for('users_bp.get_page') }}" class="navbar-item" aria-label="Usuarios">
+                        <a href="{{ url_for('users_bp.get_users') }}" class="navbar-item" aria-label="Usuarios">
                             Usuarios </a>
                     {% endif %}
                     {% if "equipo_index" in permissions or is_admin %}
@@ -42,7 +42,7 @@
                         </a>
                     {% endif %}
                     {% if "ecuestre_index" in permissions or is_admin %}
-                        <a href="{{ url_for('equestrian_bp.get_page') }}" class="navbar-item" aria-label="Ecuestres"> Ecuestres </a>
+                        <a href="{{ url_for('equestrian_bp.get_users') }}" class="navbar-item" aria-label="Ecuestres"> Ecuestres </a>
                     {% endif %}
                     {% if "pagos_index" in permissions or "cobros_index" in permissions or is_admin %}
                         <hr class="navbar-divider" aria-hidden="true"/>
