@@ -1,6 +1,24 @@
 from src.core.database import db
 from src.core.module.accounts.models import User, Role, Permission, RolePermission
 from src.core.bcrypt import bcrypt
+from src.core.module.equestrian.models import Horse, JAEnum, HorseTrainers
+from datetime import date
+
+
+def seed_all():
+    seed_accounts()
+    seed_equestrian_module()
+    print("Commiting")
+    db.session.commit()
+
+
+def seed_equestrian_module():
+    print("Seeding horses")
+    seed_horses()
+    # TODO: uncomment this when members table is created
+    # print("Seeding HorseTrainers")
+    # seed_horse_trainers()
+
 
 def seed_accounts():
     print("Seeding roles")
@@ -11,8 +29,6 @@ def seed_accounts():
     seed_role_permissions()
     print("Seeding users")
     seed_users()
-    print("Commiting")
-    db.session.commit()
 
 
 def seed_roles():
@@ -144,3 +160,76 @@ def seed_users():
     ]
 
     db.session.add_all(users)
+
+
+def seed_horses():
+    horses = [
+        Horse(
+            name="Caballito blanco",
+            birth_date=date(2015, 5, 14),
+            sex="M",
+            breed="Thoroughbred",
+            coat="Bay",
+            is_donation=False,
+            admission_date=date(2020, 8, 20),
+            assigned_facility="Equestrian Center A",
+            ja_type=JAEnum.RECREATIONAL_ACTIVITIES
+        ),
+        Horse(
+            name="Bella",
+            birth_date=date(2013, 7, 2),
+            sex="F",
+            breed="Arabian",
+            coat="Grey",
+            is_donation=True,
+            admission_date=date(2021, 4, 10),
+            assigned_facility="Equestrian Center B",
+            ja_type=JAEnum.HIPOTHERAPY
+        ),
+        Horse(
+            name="Spirit",
+            birth_date=date(2017, 3, 11),
+            sex="M",
+            breed="Morgan",
+            coat="Chestnut",
+            is_donation=False,
+            admission_date=date(2022, 2, 5),
+            assigned_facility="Therapeutic Riding School",
+            ja_type=JAEnum.THERAPEUTIC_RIDING
+        ),
+        Horse(
+            name="Star",
+            birth_date=date(2014, 11, 30),
+            sex="F",
+            breed="Quarter Horse",
+            coat="Palomino",
+            is_donation=False,
+            admission_date=date(2019, 9, 15),
+            assigned_facility="Equestrian Center C",
+            ja_type=JAEnum.ADAPTED_SPORTS
+        ),
+        Horse(
+            name="Shadow",
+            birth_date=date(2016, 10, 18),
+            sex="M",
+            breed="Appaloosa",
+            coat="Leopard",
+            is_donation=True,
+            admission_date=date(2023, 1, 7),
+            assigned_facility="Equestrian Center A",
+            ja_type=JAEnum.RIDING
+        )
+    ]
+    print("Horses added")
+    db.session.add_all(horses)
+
+
+def seed_horse_trainers():
+    horse_trainers = [
+        HorseTrainers(id_horse=1, id_trainer=1),
+        HorseTrainers(id_horse=2, id_trainer=2),
+        HorseTrainers(id_horse=3, id_trainer=3),
+        HorseTrainers(id_horse=4, id_trainer=4),
+        HorseTrainers(id_horse=5, id_trainer=5)
+    ]
+    db.session.add_all(horse_trainers)
