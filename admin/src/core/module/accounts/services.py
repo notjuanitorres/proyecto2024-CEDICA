@@ -1,8 +1,8 @@
 from abc import abstractmethod
-from typing import Dict
+from typing import Dict, List
 from core.bcrypt import bcrypt
 from .repositories import AbstractAccountsRepository
-from .models import User
+from .models import User, Role
 
 
 class AbstractAccountsServices:
@@ -43,6 +43,22 @@ class AbstractAccountsServices:
     def is_sys_admin(self, user_id: int) -> bool:
         pass
 
+    @abstractmethod
+    def get_role(self, role_id: int) -> Role:
+        pass
+
+    @abstractmethod
+    def get_roles(self) -> List:
+        pass
+
+    @abstractmethod
+    def get_permissions_of(self, user_id: int) -> List:
+        pass
+
+    @abstractmethod
+    def is_user_enabled(self, user_id: int) -> bool:
+        pass
+
 
 class AccountsServices(AbstractAccountsServices):
     def __init__(self, accounts_repository: AbstractAccountsRepository):
@@ -60,7 +76,7 @@ class AccountsServices(AbstractAccountsServices):
             password=bcrypt.generate_password_hash(user_data.get("password")).decode('utf-8'),
             enabled=user_data.get("enabled", False),
             system_admin=user_data.get("system_admin", False),
-            # role_id=user_data["role_id"],
+            role_id=user_data.get("role_id", None),
         )
         created_user = self.accounts_repository.add(new_user)
         return self.to_dict(created_user)
@@ -121,7 +137,29 @@ class AccountsServices(AbstractAccountsServices):
             "alias": user.alias,
             "enabled": user.enabled,
             "system_admin": user.system_admin,
-            # TODO: Insert roles and permissions into the db
-            # 'role_id':create_form.role_id.data,
+            'role_id': user.role_id
         }
         return user_dict
+
+    def is_sys_admin(self, user_id: int) -> bool:
+        if not user_id:
+            return False
+        user = self.accounts_repository.get_by_id(user_id)
+        return user.system_admin
+
+    def get_role(self, role_id: int) -> Role:
+        return self.accounts_repository.get_role(role_id)
+
+    def get_roles(self) -> List:
+        return self.accounts_repository.get_roles()
+
+    def get_permissions_of(self, user_id: int) -> List:
+        user = self.accounts_repository.get_by_id(user_id)
+        if not user:
+            return ["NO_PERMISSIONS"]
+        permissions = self.accounts_repository.get_permissions_of_role(user.role_id)
+        return [p.name for p in permissions]
+
+    def is_user_enabled(self, user_id: int) -> bool:
+        user = self.accounts_repository.get_by_id(user_id)
+        return user.enabled

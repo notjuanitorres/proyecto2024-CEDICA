@@ -40,8 +40,11 @@ def authenticate(login_form: UserLoginForm, accounts_services: AAS = Provide[Con
     session["user"] = user["id"]
     session["user_name"] = user["alias"]
     session["is_authenticated"] = True
+    session["is_admin"] = user["system_admin"]
+    permissions = accounts_services.get_permissions_of(user["id"])
+    session["permissions"] = permissions
 
-    flash("Sesion iniciada correctamente, bienvenido/a.", "success")
+    flash("Sesión iniciada correctamente, bienvenido/a.", "success")
 
     return redirect(url_for("index_bp.home"))
 
@@ -58,6 +61,10 @@ def logout():
 
 @auth_bp.route("/registrarse", methods=["GET", "POST"])
 def register():
+    if is_authenticated(session):
+        flash("Ya estás autenticado", "info")
+        return redirect(url_for("index_bp.home"))
+
     registration_form = UserRegisterForm()
 
     if request.method == "POST":
