@@ -3,6 +3,7 @@
 {% from "macros/pagination.html" import render_pagination %}
 {% from "macros/edit_menu.html" import render_actions_menu %}
 {% from "macros/delete_modal.html" import render_delete_modal %}
+{% from "macros/flash_message.html" import render_flash_messages %}
 
 {% block title %}{% block page_title %}{% endblock %}{% endblock %}
 
@@ -26,18 +27,7 @@
     </ul>
   </nav>
 
-  {% with messages = get_flashed_messages(with_categories=true) %}
-  {% if messages %}
-  {% for category, message in messages %}
-  <ul>
-      <li class="notification is-{{ category }} mt-4 mx-2">
-          <button class="delete"></button>
-          {{ message }}
-      </li>
-  </ul>
-  {% endfor %}
-  {% endif %}
-  {% endwith %}
+  {{ render_flash_messages(messages) }}
 
   <section class="is-fullheight-with-navbar mt-4">
     <div class="table-container p-2">
