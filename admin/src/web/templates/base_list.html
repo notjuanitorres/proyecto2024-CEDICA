@@ -5,12 +5,10 @@
 {% from "macros/delete_modal.html" import render_delete_modal %}
 {% from "macros/flash_message.html" import render_flash_messages %}
 
-{% block title %}{% block page_title %}{% endblock %}{% endblock %}
-
-{% block head %}
-    {{ super() }}
-    {% block additional_head %}{% endblock %}
-{% endblock %}
+{% block extra_styles %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/components/table.css' )}}">
+{% endblock%}
 
 {% block main_content %}
   <nav class="breadcrumb mb-2" aria-label="breadcrumbs">
@@ -59,4 +57,9 @@
       {% block delete_modal %}{% endblock %}
     </div>
   </section>
+{% endblock %}
+
+
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/table-row-toggle.js') }}"></script>
 {% endblock %}

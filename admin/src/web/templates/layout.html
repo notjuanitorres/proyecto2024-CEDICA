@@ -2,7 +2,6 @@
 
 {% block head %}
     {{ super() }}
-    <!-- Add extra styles with block extra_styles -->
 {% endblock %}
 
 {% block header %}
@@ -10,7 +9,7 @@
 {% endblock %}
 
 {% block content %}
-    <main class="container is-desktop">
+    <main class="container is-desktop px-3">
         {% block main_content %} {% endblock %}
     </main>
 {% endblock %}

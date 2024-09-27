@@ -1,6 +1,10 @@
 {% extends "base_list.html" %}
 
-{% block page_title %}Usuarios{% endblock %}
+{% block title %}Usuarios - CEDICA{% endblock %}
+
+{% block extra_styles %}
+{{ super() }}
+{% endblock %}
 
 {% block breadcrumb_items %}
   <li>

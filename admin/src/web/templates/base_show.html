@@ -3,15 +3,6 @@
 {% from "macros/delete_modal.html" import render_delete_modal %}
 {% from "macros/flash_message.html" import render_flash_messages %}
 
-{% block title %}
-    {% block page_title %}{% endblock %} - CEDICA
-{% endblock %}
-
-{% block head %}
-    {{ super() }}
-    {% block additional_head %}{% endblock %}
-{% endblock %}
-
 {% block main_content %}
     <nav class="breadcrumb" aria-label="breadcrumbs">
         <ul>
