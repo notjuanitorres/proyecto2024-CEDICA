@@ -5,13 +5,12 @@ from src.core.database import db as database
 
 
 class AbstractAccountsRepository:
-
     @abstractmethod
-    def add(self, user: User) -> None:
+    def add(self, user: User) -> User | None:
         pass
 
     @abstractmethod
-    def get_page(self, page: int, per_page: int, max_per_page: int) -> List[User]:
+    def get_page(self, page: int, per_page: int, max_per_page: int, order_by: list):
         pass
 
     @abstractmethod
@@ -28,6 +27,10 @@ class AbstractAccountsRepository:
 
     @abstractmethod
     def delete(self, user_id: int) -> bool:
+        pass
+
+    @abstractmethod
+    def toggle_activation(self, user_id: int) -> None:
         pass
 
     @abstractmethod
@@ -49,10 +52,21 @@ class AccountsRepository(AbstractAccountsRepository):
 
     def add(self, user: User):
         self.db.session.add(user)
+        self.db.session.flush()
         self.save()
+        
+        return user
 
-    def get_page(self, page: int, per_page: int, max_per_page: int):
-        return User.query.paginate(
+    def get_page(self, page: int, per_page: int, max_per_page: int, order_by: list):
+        query = User.query
+        if order_by:
+            for field, direction in order_by:
+                if direction == 'asc':
+                    query = query.order_by(getattr(User, field).asc())
+                elif direction == 'desc':
+                    query = query.order_by(getattr(User, field).desc())
+
+        return query.paginate(
             page=page, per_page=per_page, error_out=False, max_per_page=max_per_page
         )
 
@@ -77,6 +91,11 @@ class AccountsRepository(AbstractAccountsRepository):
         self.db.session.delete(user)
         self.save()
         return True
+
+    def toggle_activation(self, user_id: int) -> None:
+        user = self.get_by_id(user_id)
+        user.enabled = not user.enabled
+        self.save()
 
     def save(self):
         self.db.session.commit()

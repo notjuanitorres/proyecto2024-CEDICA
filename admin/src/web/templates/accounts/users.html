@@ -1,100 +1,131 @@
-{% extends "layout.html" %} 
+{% extends "base_list_template.html" %}
 
-{% from "macros/pagination.html" import render_pagination %}
-{% from "macros/edit_menu.html" import render_actions_menu %}
-{% from "macros/delete_modal.html" import render_delete_modal %}
+{% block page_title %}Usuarios{% endblock %}
 
-{% block title %}Usuarios{% endblock %} 
-
-{% block head %} 
-    {{ super() }} 
-{% endblock %} 
-
-{% block main_content %}
-  <section class="is-fullheight-with-navbar">
-    <div class="table-container">
-      <div class="box m-5">
-        <a class="button" href="{{ url_for('users_bp.create_user')}}">Crear usuario</a>
-      </div>
-      <table class="table is-striped is-scrollable is-fullwidth p-5 mt-5">
-        <thead>
-          <tr>
-            <th></th>
-            <th>ID</th>
-            <th>Correo</th>
-            <th>Alias</th>
-            <th>Activo</th>
-            <th>Roles</th>
-            <th>Admin</th>
-            <th>Ingreso</th>
-            <th>Actualizado</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for user in users %}
-          <tr>
-            <td>
-              {{ 
-                render_actions_menu(
-                value=user.id,
-                to_left=true,
-                endpoints={
-                  'show':'', 
-                  'edit': 'users_bp.edit_user', 
-                  'delete':''
-                })
-              }}
-            </td>
-            <td>{{ user.id }}</td>
-            <td>{{ user.email }}</td>
-            <td>{{ user.alias }}</td>
-            <td>{{ user.enabled | natural_boolean }}</td>
-            <td>{{ user.role_id | role}}</td>
-            <td>{{ user.system_admin | natural_boolean }}</td>
-            <td>{{ user.inserted_at | format_date }}</td>
-            <td>{{ user.updated_at | format_date }}</td>
-            <td>
-              {{ 
-                render_actions_menu(
-                value=user.id,
-                to_left=false,
-                endpoints={
-                  'show':'', 
-                  'edit':'users_bp.edit_user', 
-                  'delete':''
-                })
-              }}
-            </td>       
-          </tr>
-          {% endfor %}
-        </tbody>
-        <tfoot>
-          <tr>
-            <th></th>
-            <th>ID</th>
-            <th>Email</th>
-            <th>Alias</th>
-            <th>Activo</th>
-            <th>Roles</th>
-            <th>Admin</th>
-            <th>Ingreso</th>
-            <th>Actualizado</th>
-            <th></th>
-          </tr>
-        </tfoot>
-      </table>
-      <div class="container px-5">{{ render_pagination(users, 'users_bp.get_page') }}</div>
-
-      {{ 
-        render_delete_modal(
-          endpoint="users_bp.delete_user", 
-          title="Eliminar", 
-          msg="¿Está seguro de que desea eliminar al usuario?", 
-          msg_sub="Luego de confirmar, no se podrán revertir los cambios"
-        ) 
-      }}
-    </div>
-  </section>
+{% block breadcrumb_items %}
+  <li>
+    <a href="">
+      <span class="icon is-small">
+        <i class="fas fa-users" aria-hidden="true"></i>
+      </span>
+      <span>Usuarios</span>
+    </a>
+  </li>
 {% endblock %}
 
+{% block create_button %}
+  <a class="button is-primary" href="{{ url_for('users_bp.create_user')}}">Crear usuario</a>
+{% endblock %}
+
+{% block filter_form %}
+  <form class="form level" method="GET">
+    <div class="field mr-3">
+      <label class="label">Ordenar por</label>
+      <div class="control">
+          <div class="select">
+              <select name="sort_by">
+                  <option value="inserted_at">Fecha de creacion</option>
+                  <option value="email">Email</option>
+              </select>
+          </div>
+      </div>
+    </div>
+    <div class="field">
+        <label class="label">En orden</label>
+        <div class="control">
+            <div class="select">
+                <select name="order">
+                    <option value="asc">Ascendente</option>
+                    <option value="desc">Descendente</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="field">
+        <div class="control">
+            <button class="button mr-2" type="submit">Aplicar</button>
+            <a href="{{ url_for("users_bp.get_users") }}" class="button" type="submit">Limpiar</a>
+        </div>
+    </div>
+  </form>
+{% endblock %}
+
+{% block table_header %}
+  <th></th>
+  <th>ID</th>
+  <th>Correo</th>
+  <th>Alias</th>
+  <th>Activo</th>
+  <th>Roles</th>
+  <th>Admin</th>
+  <th>Ingreso</th>
+  <th>Actualizado</th>
+  <th></th>
+{% endblock %}
+
+{% block table_body %}
+  {% for user in users %}
+  <tr>
+    <td>
+      {{
+        render_actions_menu(
+        value=user.id,
+        to_left=true,
+        endpoints={
+          'show':'users_bp.show_user',
+          'edit': 'users_bp.edit_user',
+          'delete':''
+        })
+      }}
+    </td>
+    <td>{{ user.id }}</td>
+    <td>{{ user.email }}</td>
+    <td>{{ user.alias }}</td>
+    <td>{{ user.enabled | natural_boolean }}</td>
+    <td>{{ user.roles }}</td>
+    <td>{{ user.system_admin | natural_boolean }}</td>
+    <td>{{ user.inserted_at | format_date }}</td>
+    <td>{{ user.updated_at | format_date }}</td>
+    <td>
+      {{
+        render_actions_menu(
+        value=user.id,
+        to_left=false,
+        endpoints={
+          'show':'users_bp.show_user',
+          'edit':'users_bp.edit_user',
+          'delete':''
+        })
+      }}
+    </td>
+  </tr>
+  {% endfor %}
+{% endblock %}
+
+{% block table_footer %}
+  <th></th>
+  <th>ID</th>
+  <th>Email</th>
+  <th>Alias</th>
+  <th>Activo</th>
+  <th>Roles</th>
+  <th>Admin</th>
+  <th>Ingreso</th>
+  <th>Actualizado</th>
+  <th></th>
+{% endblock %}
+
+{% block pagination %}
+  {{ render_pagination(users, 'users_bp.get_users') }}
+{% endblock %}
+
+{% block delete_modal %}
+  {{
+    render_delete_modal(
+      endpoint="users_bp.delete_user",
+      title="Eliminar",
+      msg="¿Está seguro de que desea eliminar al usuario?",
+      msg_sub="Luego de confirmar, no se podrán revertir los cambios"
+    )
+  }}
+{% endblock %}
