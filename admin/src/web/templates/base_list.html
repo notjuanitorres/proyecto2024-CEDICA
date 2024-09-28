@@ -10,7 +10,9 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/components/table.css' )}}">
 {% endblock%}
 
+
 {% block main_content %}
+
   <nav class="breadcrumb mb-2" aria-label="breadcrumbs">
     <ul>
       <li>
@@ -27,14 +29,16 @@
 
   {{ render_flash_messages(messages) }}
 
-  <section class="is-fullheight-with-navbar mt-4">
-    <div class="table-container p-2">
-      <div class="box level mx-2">
-        {% block create_button %}{% endblock %}
-
-        {% block filter_form %}{% endblock %}
-      </div>
-
+  <section class="is-fullheight-with-navbar pt-4">
+    <h2 class="title is-size-3 has-text-centered">
+      {% block inner_title %}  
+      {% endblock %}
+    </h2>
+    <div class="px-3">
+      {% block create_button %}{% endblock %}
+      {% block filter_form %}{% endblock %}
+    </div>
+    <div class="table-container p-2 mt-5">
       <table class="table is-striped is-scrollable is-fullwidth">
         <thead>
           <tr>
@@ -53,7 +57,6 @@
       <div class="container px-5">
         {% block pagination %}{% endblock %}
       </div>
-
       {% block delete_modal %}{% endblock %}
     </div>
   </section>
@@ -61,5 +64,6 @@
 
 
 {% block extra_scripts %}
-<script src="{{ url_for('static', filename='js/table-row-toggle.js') }}"></script>
+  {{ super() }}
+  <script src="{{ url_for('static', filename='js/table-row-toggle.js') }}"></script>
 {% endblock %}
