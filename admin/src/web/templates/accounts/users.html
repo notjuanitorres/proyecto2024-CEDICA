@@ -64,7 +64,6 @@
               </div>
             </div>
           </div>
-      
           <div class="field card-footer">
             <div class="control card-footer-item">
               <a href="{{ url_for("users_bp.get_users") }}">
@@ -75,15 +74,10 @@
               <button class="is-flex-grow-1" type="submit">Aplicar</button>
             </div>
           </div>
-      
         </form>
       </div>
     </div>
-
   </div>
-
-
-
 {% endblock %}
 
 {% block table_header %}
@@ -97,6 +91,10 @@
   <th>Ingreso</th>
   <th>Actualizado</th>
   <th></th>
+{% endblock %}
+
+{% block top_pagination %}
+  {{ render_pagination(users, 'users_bp.get_users') }}
 {% endblock %}
 
 {% block table_body %}
@@ -127,7 +125,6 @@
       <a href="{{ url_for('users_bp.show_user', user_id=user.id)}}" class="button  is-flex-grow-1 ">
         <span class=" is-bold ">
             Ver usuario
-
             <i class="fa-regular fa-eye ml-2"></i>
         </span>
       </a>
@@ -149,7 +146,7 @@
   <th></th>
 {% endblock %}
 
-{% block pagination %}
+{% block bottom_pagination %}
   {{ render_pagination(users, 'users_bp.get_users') }}
 {% endblock %}
 

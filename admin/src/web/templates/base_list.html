@@ -38,8 +38,11 @@
       {% block create_button %}{% endblock %}
       {% block filter_form %}{% endblock %}
     </div>
-    <div class="table-container p-2 mt-5">
+    <div class="table-container p-2 mt-2">
       <table class="table is-striped is-scrollable is-fullwidth">
+        <div class="container p-5">
+          {% block top_pagination %}{% endblock %}
+        </div>
         <thead>
           <tr>
             {% block table_header %}{% endblock %}
@@ -54,8 +57,8 @@
           </tr>
         </tfoot>
       </table>
-      <div class="container px-5">
-        {% block pagination %}{% endblock %}
+      <div class="container p-5">
+        {% block bottom_pagination %}{% endblock %}
       </div>
       {% block delete_modal %}{% endblock %}
     </div>
