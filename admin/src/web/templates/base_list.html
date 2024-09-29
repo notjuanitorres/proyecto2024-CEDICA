@@ -3,15 +3,16 @@
 {% from "macros/pagination.html" import render_pagination %}
 {% from "macros/edit_menu.html" import render_actions_menu %}
 {% from "macros/delete_modal.html" import render_delete_modal %}
+{% from "macros/flash_message.html" import render_flash_messages %}
 
-{% block title %}{% block page_title %}{% endblock %}{% endblock %}
+{% block extra_styles %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/components/table.css' )}}">
+{% endblock%}
 
-{% block head %}
-    {{ super() }}
-    {% block additional_head %}{% endblock %}
-{% endblock %}
 
 {% block main_content %}
+
   <nav class="breadcrumb mb-2" aria-label="breadcrumbs">
     <ul>
       <li>
@@ -26,28 +27,22 @@
     </ul>
   </nav>
 
-  {% with messages = get_flashed_messages(with_categories=true) %}
-  {% if messages %}
-  {% for category, message in messages %}
-  <ul>
-      <li class="notification is-{{ category }} mt-4 mx-2">
-          <button class="delete"></button>
-          {{ message }}
-      </li>
-  </ul>
-  {% endfor %}
-  {% endif %}
-  {% endwith %}
+  {{ render_flash_messages(messages) }}
 
-  <section class="is-fullheight-with-navbar mt-4">
-    <div class="table-container p-2">
-      <div class="box level mx-2">
-        {% block create_button %}{% endblock %}
-
-        {% block filter_form %}{% endblock %}
-      </div>
-
+  <section class="is-fullheight-with-navbar pt-4">
+    <h2 class="title is-size-3 has-text-centered">
+      {% block inner_title %}  
+      {% endblock %}
+    </h2>
+    <div class="px-3">
+      {% block create_button %}{% endblock %}
+      {% block filter_form %}{% endblock %}
+    </div>
+    <div class="table-container p-2 mt-2">
       <table class="table is-striped is-scrollable is-fullwidth">
+        <div class="container p-5">
+          {% block top_pagination %}{% endblock %}
+        </div>
         <thead>
           <tr>
             {% block table_header %}{% endblock %}
@@ -62,11 +57,16 @@
           </tr>
         </tfoot>
       </table>
-      <div class="container px-5">
-        {% block pagination %}{% endblock %}
+      <div class="container p-5">
+        {% block bottom_pagination %}{% endblock %}
       </div>
-
       {% block delete_modal %}{% endblock %}
     </div>
   </section>
+{% endblock %}
+
+
+{% block extra_scripts %}
+  {{ super() }}
+  <script src="{{ url_for('static', filename='js/table-row-toggle.js') }}"></script>
 {% endblock %}

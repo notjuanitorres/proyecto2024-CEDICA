@@ -1,6 +1,8 @@
 {% extends "base.html" %}
 
-{% block title %}Login{% endblock %}
+{% from "macros/flash_message.html" import render_flash_messages %}
+
+{% block title %}Iniciar sesion - CEDICA{% endblock %}
 
 {% block head %}
 {{ super() }}
@@ -12,15 +14,7 @@
 <div class="container is-max-desktop full-height-container">
     <h1 class="is-size-1">Iniciar sesión</h1>
 
-    {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-    {% for category, message in messages %}
-    <div class="notification is-{{ category }}">
-        {{ message }}
-    </div>
-    {% endfor %}
-    {% endif %}
-    {% endwith %}
+    {{ render_flash_messages(messages) }}
 
     <form action="{{ url_for('auth_bp.login') }}" method="POST">
         {{ form.hidden_tag() }}

@@ -1,5 +1,8 @@
 {% extends "base.html" %}
 
+{% from "macros/flash_message.html" import render_flash_messages %}
+
+
 {% block title %}Inicio - CEDICA{% endblock %}
 
 {% block head %}
@@ -18,18 +21,8 @@
 
 {% block content %}
 <main class="hero bg-gradient is-fullheight-with-navbar">
-    {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-    {% for category, message in messages %}
-    <ul>
-        <li class="notification is-{{ category }} mt-4 mx-2">
-            <button class="delete"></button>
-            {{ message }}
-        </li>
-    </ul>
-    {% endfor %}
-    {% endif %}
-    {% endwith %}
+
+    {{ render_flash_messages(messages) }}
 
     <div class="hero-body">
         <article class="container has-text-centered glass-bg p-6">

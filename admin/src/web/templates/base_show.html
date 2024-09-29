@@ -1,14 +1,7 @@
-{% extends 'layout.html' %}
+{% extends "layout.html" %}
+
 {% from "macros/delete_modal.html" import render_delete_modal %}
-
-{% block title %}
-    {% block page_title %}{% endblock %} - CEDICA
-{% endblock %}
-
-{% block head %}
-    {{ super() }}
-    {% block additional_head %}{% endblock %}
-{% endblock %}
+{% from "macros/flash_message.html" import render_flash_messages %}
 
 {% block main_content %}
     <nav class="breadcrumb" aria-label="breadcrumbs">
@@ -25,18 +18,7 @@
         </ul>
     </nav>
 
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            {% for category, message in messages %}
-                <ul>
-                    <li class="notification is-{{ category }} mt-4 mx-2">
-                        <button class="delete"></button>
-                        {{ message }}
-                    </li>
-                </ul>
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
+    {{ render_flash_messages(messages) }}
 
     <section class="container is-fullheight-with-navbar">
         <div class="card">

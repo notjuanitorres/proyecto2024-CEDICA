@@ -1,6 +1,6 @@
-{% extends "base_list_template.html" %}
+{% extends "base_list.html" %}
 
-{% block page_title %}Usuarios{% endblock %}
+{% block title %}Usuarios - CEDICA{% endblock %}
 
 {% block breadcrumb_items %}
   <li>
@@ -13,41 +13,71 @@
   </li>
 {% endblock %}
 
+{% block inner_title %}  
+  Usuarios
+{% endblock %}
+
+
 {% block create_button %}
-  <a class="button is-primary" href="{{ url_for('users_bp.create_user')}}">Crear usuario</a>
+  <a class="button is-primary level-item" href="{{ url_for('users_bp.create_user')}}">Crear usuario</a>
 {% endblock %}
 
 {% block filter_form %}
-  <form class="form level" method="GET">
-    <div class="field mr-3">
-      <label class="label">Ordenar por</label>
-      <div class="control">
-          <div class="select">
-              <select name="sort_by">
-                  <option value="inserted_at">Fecha de creacion</option>
-                  <option value="email">Email</option>
-              </select>
-          </div>
-      </div>
-    </div>
-    <div class="field">
-        <label class="label">En orden</label>
-        <div class="control">
-            <div class="select">
-                <select name="order">
+  <div class="card">
+    <header class="card-header">
+      <p class="card-header-title is-size-4">
+        <span class="icon mr-3">
+          <i class="fa-solid fa-filter"></i>
+        </span>
+        Filtrar      
+      </p>
+      <button class="card-header-icon" aria-label="more options">
+        <span class="icon">
+          <i class="fas fa-angle-down" aria-hidden="true"></i>
+        </span>
+      </button>
+    </header>
+    <div class="card-content">
+      <div class="content">
+        <form class="form" method="GET">
+          <div class="is-flex is-justify-content-start is-flex-wrap-wrap pb-5" >
+            <div class="field mr-5">
+              <label class="label">Ordenar por</label>
+              <div class="control">
+                <div class="select">
+                  <select name="sort_by">
+                    <option value="inserted_at">Fecha de creacion</option>
+                    <option value="email">Email</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="field">
+              <label class="label">En orden</label>
+              <div class="control">
+                <div class="select">
+                  <select name="order">
                     <option value="asc">Ascendente</option>
                     <option value="desc">Descendente</option>
-                </select>
+                  </select>
+                </div>
+              </div>
             </div>
-        </div>
+          </div>
+          <div class="field card-footer">
+            <div class="control card-footer-item">
+              <a href="{{ url_for("users_bp.get_users") }}">
+                Limpiar
+              </a>
+            </div>
+            <div class="control card-footer-item">
+              <button class="is-flex-grow-1" type="submit">Aplicar</button>
+            </div>
+          </div>
+        </form>
+      </div>
     </div>
-    <div class="field">
-        <div class="control">
-            <button class="button mr-2" type="submit">Aplicar</button>
-            <a href="{{ url_for("users_bp.get_users") }}" class="button" type="submit">Limpiar</a>
-        </div>
-    </div>
-  </form>
+  </div>
 {% endblock %}
 
 {% block table_header %}
@@ -63,10 +93,14 @@
   <th></th>
 {% endblock %}
 
+{% block top_pagination %}
+  {{ render_pagination(users, 'users_bp.get_users') }}
+{% endblock %}
+
 {% block table_body %}
   {% for user in users %}
-  <tr>
-    <td>
+  <tr class="">
+    <td class="is-hidden-mobile">
       {{
         render_actions_menu(
         value=user.id,
@@ -78,25 +112,22 @@
         })
       }}
     </td>
-    <td>{{ user.id }}</td>
-    <td>{{ user.email }}</td>
-    <td>{{ user.alias }}</td>
-    <td>{{ user.enabled | natural_boolean }}</td>
-    <td>{{ user.roles }}</td>
-    <td>{{ user.system_admin | natural_boolean }}</td>
-    <td>{{ user.inserted_at | format_date }}</td>
-    <td>{{ user.updated_at | format_date }}</td>
-    <td>
-      {{
-        render_actions_menu(
-        value=user.id,
-        to_left=false,
-        endpoints={
-          'show':'users_bp.show_user',
-          'edit':'users_bp.edit_user',
-          'delete':''
-        })
-      }}
+    <td><span class="is-hidden-tablet has-text-weight-bold">ID: </span>{{ user.id }}</td>
+    <td><span class="is-hidden-tablet has-text-weight-bold">Email: </span>{{ user.email }}</td>
+    <td><span class="is-hidden-tablet has-text-weight-bold">Alias: </span>{{ user.alias }}</td>
+    <td><span class="is-hidden-tablet has-text-weight-bold">Habilitado: </span>{{ user.enabled | natural_boolean }}</td>
+    <td><span class="is-hidden-tablet has-text-weight-bold">Roles: </span>{{ user.roles }}</td>
+    <td><span class="is-hidden-tablet has-text-weight-bold">Administrador del Sistema: </span>{{ user.system_admin | natural_boolean }}</td>
+    <td><span class="is-hidden-tablet has-text-weight-bold">Creado: </span>{{ user.inserted_at | format_date }}</td>
+    <td><span class="is-hidden-tablet has-text-weight-bold">Actualizado: </span>{{ user.updated_at | format_date }}</td>
+    
+    <td class="is-hidden-tablet is-flex">
+      <a href="{{ url_for('users_bp.show_user', user_id=user.id)}}" class="button  is-flex-grow-1 ">
+        <span class=" is-bold ">
+            Ver usuario
+            <i class="fa-regular fa-eye ml-2"></i>
+        </span>
+      </a>
     </td>
   </tr>
   {% endfor %}
@@ -115,7 +146,7 @@
   <th></th>
 {% endblock %}
 
-{% block pagination %}
+{% block bottom_pagination %}
   {{ render_pagination(users, 'users_bp.get_users') }}
 {% endblock %}
 

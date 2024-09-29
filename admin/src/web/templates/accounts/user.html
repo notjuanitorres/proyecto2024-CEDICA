@@ -1,6 +1,6 @@
-{% extends 'base_show_template.html' %}
+{% extends "base_show.html" %}
 
-{% block page_title %}Usuario {{ user.alias }}{% endblock %}
+{% block title %}Usuario {{ user.alias }} - CEDICA{% endblock %}
 
 {% block breadcrumb_items %}
     <li>
@@ -34,13 +34,13 @@
 {% endblock %}
 
 {% block card_footer %}
-    <a href="{{ url_for('users_bp.edit_user', user_id=user.id)}}" class="card-footer-item has-text-warning">Editar</a>
-    <a href="{{ url_for('users_bp.toggle_activation', user_id=user.id)}}" class="card-footer-item">
-        {% if user.enabled %}Deshabilitar{% else %}Habilitar{% endif %}
-    </a>
     <button href="" class="card-footer-item has-text-danger modal-trigger" data-id="{{ user.id }}" data-target="user-delete-modal">
         Eliminar
     </button>
+    <a href="{{ url_for('users_bp.toggle_activation', user_id=user.id)}}" class="card-footer-item">
+        {% if user.enabled %}Deshabilitar{% else %}Habilitar{% endif %}
+    </a>
+    <a href="{{ url_for('users_bp.edit_user', user_id=user.id)}}" class="card-footer-item has-text-warning">Editar</a>
 {% endblock %}
 
 {% block additional_cards %}
