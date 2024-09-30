@@ -86,7 +86,7 @@
   <th>Correo</th>
   <th>Alias</th>
   <th>Activo</th>
-  <th>Roles</th>
+  <th>Rol</th>
   <th>Admin</th>
   <th>Ingreso</th>
   <th>Actualizado</th>
@@ -116,7 +116,7 @@
     <td><span class="is-hidden-tablet has-text-weight-bold">Email: </span>{{ user.email }}</td>
     <td><span class="is-hidden-tablet has-text-weight-bold">Alias: </span>{{ user.alias }}</td>
     <td><span class="is-hidden-tablet has-text-weight-bold">Habilitado: </span>{{ user.enabled | natural_boolean }}</td>
-    <td><span class="is-hidden-tablet has-text-weight-bold">Roles: </span>{{ user.roles }}</td>
+    <td><span class="is-hidden-tablet has-text-weight-bold">Rol: </span>{{ user.role_id | role }}</td>
     <td><span class="is-hidden-tablet has-text-weight-bold">Administrador del Sistema: </span>{{ user.system_admin | natural_boolean }}</td>
     <td><span class="is-hidden-tablet has-text-weight-bold">Creado: </span>{{ user.inserted_at | format_date }}</td>
     <td><span class="is-hidden-tablet has-text-weight-bold">Actualizado: </span>{{ user.updated_at | format_date }}</td>
@@ -139,7 +139,7 @@
   <th>Email</th>
   <th>Alias</th>
   <th>Activo</th>
-  <th>Roles</th>
+  <th>Rol</th>
   <th>Admin</th>
   <th>Ingreso</th>
   <th>Actualizado</th>
