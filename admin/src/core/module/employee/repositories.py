@@ -58,9 +58,11 @@ class EmployeeRepository(AbstractEmployeeRepository):
         return query.paginate(
             page=page, per_page=per_page, error_out=False, max_per_page=max_per_page
         )
-
-    def get_by_id(self, employee_id: int) -> Employee:
+    def add(self, employee: Employee) -> Employee | None:
         pass
+    
+    def get_by_id(self, employee_id: int) -> Employee:
+        return self.db.session.query(Employee).filter(Employee.id == employee_id).first()
 
     def update(self, employee_id: int, data: Dict) -> None:
         pass

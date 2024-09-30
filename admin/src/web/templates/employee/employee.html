@@ -1,0 +1,106 @@
+{% extends "base_show.html" %}
+
+{% block title %}Miembro {{ employee.name }} - CEDICA{% endblock %}
+
+{% block breadcrumb_items %}
+    <li>
+        <a href="{{ url_for('employee_bp.get_employees' )}}">
+            <span class="icon is-small">
+                <i class="fas fa-users" aria-hidden="true"></i>
+            </span>
+            <span>Equipo</span>
+        </a>
+    </li>
+    <li>
+        <a href="">
+            <span class="icon is-small">
+                <i class="fa-solid fa-user" aria-hidden="true"></i>
+            </span>
+            <span>{{ employee.fullname }}</span>
+        </a>
+    </li>
+{% endblock %}
+
+{% block card_title %}Miembro: {{ employee.fullname }}{% endblock %}
+
+{% block card_content %}
+
+<div class="grid is-col-min-16">
+    <div id="basic-info" class="cell">
+        <h3>Informacion general</h3>
+        <ul>
+            <li><strong>ID: </strong> {{ employee.id }}</li>
+            <li><strong>Nombre: </strong>{{ employee.name }}</li>
+            <li><strong>Apellido: </strong> {{ employee.lastname }}</li>
+            <li><strong>Email: </strong>{{ employee.email }}</li>
+            <li><strong>Telefono: </strong>{{ employee.phone }}</li>
+            <li><strong>DNI: </strong>{{ employee.dni }}</li>
+        </ul>
+        <h4>Contacto de emergencia</h4>
+        <ul id="emergency-contact">
+            <li><strong>Nombre completo: </strong>{{ employee.emergency_contact_name }}</li>
+            <li><strong>Telefono: </strong>{{ employee.emergency_contact_phone }}</li>
+        </ul>
+    </div>
+    <div id="job-info" class="cell">
+        <h3>Datos laborales</h3>
+        <ul>
+            <li><strong>Profesion: </strong> {{ employee.profession }}</li>
+            <li><strong>Cargo: </strong>{{ employee.position }}</li>
+            <li><strong>Condicion laboral: </strong>{{ employee.job_condition }}</li>
+            <li><strong>Comienzo de actividades: </strong> {{ employee.start_date }}</li>
+            {% if employee.end_date %}
+                <li><strong>Finalizacion de actividades: </strong>{{ employee.end_date }}</li>
+            {% endif %}
+            <li><strong>Esta activo: </strong> {{ employee.is_active | natural_boolean }}</li>
+                <li><strong>Obra Social: </strong>{{ employee.health_insurance }}</li>
+            <li><strong>Numero de afiliado: #</strong>{{ employee.affiliate_number }}</li>
+        </ul>
+    </div>
+    <div id="system-info" class="cell">
+        <h4>Estampas</h4>
+        <ul>
+            <li><strong>Dado de alta: </strong>{{ employee.inserted_at | format_date }}</li>
+            <li><strong>Ultima modificacion: </strong>{{ employee.updated_at | format_date }}</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}
+
+{% block card_actions %}
+    <button href="" class="card-footer-item has-text-danger modal-trigger" data-id="{{ employee.id }}" data-target="employee-delete-modal">
+        Eliminar
+    </button>
+    <a href="" class="card-footer-item has-text-warning">Editar</a>
+{% endblock %}
+
+{% block additional_cards %}
+    <div class="card">
+        <header class="card-header">
+            <p class="card-header-title is-size-4">Documentos anexos</p>
+        </header>
+        <div class="card-content">
+            <div class="content">
+                
+            </div>
+        </div>
+        <footer class="card-footer">
+            <a href="" class="card-footer-item has-text-warning">Editar</a>
+        </footer>
+    </div>
+    <div class="card">
+        <header class="card-header">
+            <p class="card-header-title is-size-4">Usuario asociado a {{ employee.fullname }}</p>
+        </header>
+        <div class="card-content">
+            <div class="content">
+                <p>No existe un usuario asociado a este integrante</p>
+            </div>
+        </div>
+        <footer class="card-footer">
+            <a href="" class="card-footer-item">Ver</a>
+        </footer>
+    </div>
+{% endblock %}
+
+
