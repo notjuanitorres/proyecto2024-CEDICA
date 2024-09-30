@@ -56,11 +56,9 @@ def add_employee(
 ):
     if not create_form.validate_on_submit():
         return render_template("./employee/create_employee.html", form=create_form)
-
     created_employee = employees.create_employee(
-        EmployeeDTO.from_dict(create_form.data)
+        EmployeeDTO.from_form(create_form.data)
     )
-
     return redirect(
         url_for("employee_bp.show_employee", employee_id=created_employee.id)
     )

@@ -65,7 +65,7 @@ class EmployeeCreateForm(EmployeeManagementForm):
 
 class EmployeeEditForm(EmployeeManagementForm):
     basic_information = FormField(BasicInformationForm)
-    employee_information = FormField(EmploymentInformationForm)
+    employment_information = FormField(EmploymentInformationForm)
     address = FormField(AddressForm)
     emergency_contact = FormField(EmergencyContactForm)
     email = StringField(
