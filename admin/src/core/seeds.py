@@ -220,7 +220,6 @@ def seed_horses():
             ja_type=JAEnum.RIDING
         )
     ]
-    print("Horses added")
     db.session.add_all(horses)
 
 
