@@ -1,9 +1,13 @@
 from datetime import datetime
+from datetime import datetime
 from src.core.database import db
 from src.core.module.accounts.models import User, Role, Permission, RolePermission
 from src.core.module.employee.models import Employee
 from src.core.module.employee.data import PositionEnum, ConditionEnum, ProfessionsEnum
+from src.core.module.employee.models import Employee
+from src.core.module.employee.data import PositionEnum, ConditionEnum, ProfessionsEnum
 from src.core.bcrypt import bcrypt
+
 
 
 def seed_accounts():
@@ -56,6 +60,7 @@ def seed_permissions():
         Permission(name="ecuestre_new"),
         Permission(name="ecuestre_update"),
         Permission(name="ecuestre_destroy"),
+        Permission(name="ecuestre_show"),
         Permission(name="ecuestre_show"),
     ]
 
@@ -112,6 +117,7 @@ def seed_role_permissions():
         # Técnica - Ecuestre
         RolePermission(role_id=1, permission_id=21),  # ecuestre_index
         RolePermission(role_id=1, permission_id=25),  # ecuestre_show
+        RolePermission(role_id=1, permission_id=25),  # ecuestre_show
     ]
 
     db.session.add_all(role_permissions)
@@ -121,7 +127,38 @@ def seed_users():
     def encrypt(password):
         return bcrypt.generate_password_hash(password).decode("utf-8")
 
+
     users = [
+        User(
+            email="tecnica@gmail.com",
+            alias="falso1",
+            password=encrypt("Tecnica123"),
+            role_id=1,
+        ),
+        User(
+            email="ecuestre@gmail.com",
+            alias="falso2",
+            password=encrypt("Ecuestre123"),
+            role_id=2,
+        ),
+        User(
+            email="voluntariado@gmail.com",
+            alias="falso3",
+            password=encrypt("Voluntariado123"),
+            role_id=3,
+        ),
+        User(
+            email="administracion@gmail.com",
+            alias="falso3",
+            password=encrypt("Administracion123"),
+            role_id=4,
+        ),
+        User(
+            email="sysadmin@gmail.com",
+            alias="sysadmin",
+            password=encrypt("Sysadmin123"),
+            system_admin=True,
+        ),
         User(
             email="tecnica@gmail.com",
             alias="falso1",

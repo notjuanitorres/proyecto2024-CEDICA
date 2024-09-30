@@ -34,7 +34,7 @@
                             Usuarios </a>
                     {% endif %}
                     {% if "equipo_index" in permissions or is_admin %}
-                        <a class="navbar-item is-selected" aria-label="Equipo"> Equipo </a>
+                        <a href="{{ url_for('employee_bp.get_employees') }}" class="navbar-item is-selected" aria-label="Equipo"> Equipo </a>
                     {% endif %}
                     {% if "jya_index" in permissions or is_admin %}
                         <a class="navbar-item" aria-label="Jinetes y Amazonas">
