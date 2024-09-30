@@ -61,7 +61,6 @@ def seed_permissions():
         Permission(name="ecuestre_update"),
         Permission(name="ecuestre_destroy"),
         Permission(name="ecuestre_show"),
-        Permission(name="ecuestre_show"),
     ]
 
     db.session.add_all(permissions)
@@ -117,7 +116,6 @@ def seed_role_permissions():
         # Técnica - Ecuestre
         RolePermission(role_id=1, permission_id=21),  # ecuestre_index
         RolePermission(role_id=1, permission_id=25),  # ecuestre_show
-        RolePermission(role_id=1, permission_id=25),  # ecuestre_show
     ]
 
     db.session.add_all(role_permissions)
@@ -126,7 +124,6 @@ def seed_role_permissions():
 def seed_users():
     def encrypt(password):
         return bcrypt.generate_password_hash(password).decode("utf-8")
-
 
     users = [
         User(

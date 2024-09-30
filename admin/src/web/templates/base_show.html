@@ -23,18 +23,16 @@
     <section class="container is-fullheight-with-navbar">
         <div class="card">
             <header class="card-header has-text-centered">
-                <p class="card-header-title is-size-4">{% block card_title %}{% endblock %}</p>
+                <h2 class="card-header-title is-size-4">{% block card_title %}{% endblock %}</h2>
             </header>
             <div class="card-content">
                 <div class="content">
                     {% block card_content %}{% endblock %}
                 </div>
             </div>
-        </div>
-
-        <div class="card">
             <footer class="card-footer">
-                {% block card_footer %}{% endblock %}
+                <!-- TODO: Show only if the user has permissions -->
+                {% block card_actions %}{% endblock %}
             </footer>
         </div>
 
