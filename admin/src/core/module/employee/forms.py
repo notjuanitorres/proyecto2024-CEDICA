@@ -22,14 +22,7 @@ class EmployeeManagementForm(FlaskForm):
         super(EmployeeManagementForm, self).__init__(*args, **kwargs)
 
 
-class EmployeeCreateForm(EmployeeManagementForm):
-    basic_information = FormField(BasicInformationForm)
-    address = FormField(AddressForm)
-    emergency_contact = FormField(EmergencyContactForm)
-    email = StringField(
-        "Email",
-        validators=[DataRequired(), Email(message="Email inválido"), Length(max=100)],
-    )
+class EmploymentInformationForm(FlaskForm):
     profession = SelectField(
         "Profesion",
         choices=[(e.name, e.value) for e in ProfessionsEnum],
@@ -50,16 +43,32 @@ class EmployeeCreateForm(EmployeeManagementForm):
         validators=[DataRequired()],
         default=datetime.today,
     )
-    end_date = DateField(
-        "Finalizacion de actividades", validators=[Optional()]
-    )
+    end_date = DateField("Finalizacion de actividades", validators=[Optional()])
+    is_active = BooleanField("Activo en la organizacion")
+
+
+
+class EmployeeCreateForm(EmployeeManagementForm):
+    basic_information = FormField(BasicInformationForm)
+    employment_information = FormField(EmploymentInformationForm)
+    address = FormField(AddressForm)
+    emergency_contact = FormField(EmergencyContactForm)
     health_insurance = TextAreaField("Obra Social", validators=[Optional()])
     affiliate_number = StringField("Numero de afiliado", validators=[Optional()])
-    is_active = BooleanField(
-        "Activo en la organizacion", default=True, validators=[DataRequired()]
+    email = StringField(
+        "Email",
+        validators=[DataRequired(), Email(message="Email inválido"), Length(max=100)],
     )
+
     # user_id = IntegerField("", validators=[DataRequired()])
 
 
 class EmployeeEditForm(EmployeeManagementForm):
-    pass
+    basic_information = FormField(BasicInformationForm)
+    employee_information = FormField(EmploymentInformationForm)
+    address = FormField(AddressForm)
+    emergency_contact = FormField(EmergencyContactForm)
+    email = StringField(
+        "Email",
+        validators=[DataRequired(), Email(message="Email inválido"), Length(max=100)],
+    )

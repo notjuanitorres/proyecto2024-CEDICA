@@ -119,57 +119,57 @@
                     <label class="label is-size-4 pt-5">Datos laborales</label>
                     <div class="field-body">
                         <div class="field">
-                            <label class="label">{{ form.profession.label }}</label>
+                            <label class="label">{{ form.employment_information.profession.label }}</label>
                             <div class="control">
                                 <div class="select">
-                                    {{ form.profession() }}
+                                    {{ form.employment_information.profession() }}
                                 </div>
                             </div>
-                            {% if form.profession.errors %}
-                                <p class="help is-danger">{{ form.profession.errors[0] }}</p>
+                            {% if form.employment_information.errors %}
+                                <p class="help is-danger">{{ form.employment_information.errors[0] }}</p>
                             {% endif %}
                         </div>
                         <div class="field">
-                            <label class="label">{{ form.position.label }}</label>
+                            <label class="label">{{ form.employment_information.label }}</label>
                             <div class="control">
                                 <div class="select">
-                                    {{ form.position() }}
+                                    {{ form.employment_information.position() }}
                                 </div>
                             </div>
-                            {% if form.position.errors %}
-                                <p class="help is-danger">{{ form.position.errors[0] }}</p>
+                            {% if form.employment_information.position.errors %}
+                                <p class="help is-danger">{{ form.employment_information.position.errors[0] }}</p>
                             {% endif %}
                         </div>
                         <div class="field">
-                            <label class="label">{{ form.job_condition.label }}</label>
+                            <label class="label">{{ form.employment_information.job_condition.label }}</label>
                             <div class="control">
                                 <div class="select">
-                                    {{ form.job_condition() }}
+                                    {{ form.employment_information.job_condition() }}
                                 </div>
                             </div>
-                            {% if form.job_condition.errors %}
-                                <p class="help is-danger">{{ form.job_condition.errors[0] }}</p>
+                            {% if form.employment_information.job_condition.errors %}
+                                <p class="help is-danger">{{ form.employment_information.job_condition.errors[0] }}</p>
                             {% endif %}
                         </div>
                     </div>
 
                     <div class="field-body pt-4">
                         <div class="field">
-                            <label class="label">{{ form.start_date.label }}</label>
+                            <label class="label">{{ form.employment_information.start_date.label }}</label>
                             <div class="control">
-                                {{ form.start_date(class="input", type="date") }}
+                                {{ form.employment_information.start_date(class="input", type="date") }}
                             </div>
-                            {% if form.start_date.errors %}
-                                <p class="help is-danger">{{ form.start_date.errors[0] }}</p>
+                            {% if form.employment_information.start_date.errors %}
+                                <p class="help is-danger">{{ form.employment_information.start_date.errors[0] }}</p>
                             {% endif %}
                         </div>
                         <div class="field">
-                            <label class="label">{{ form.end_date.label }}</label>
+                            <label class="label">{{ form.employment_information.end_date.label }}</label>
                             <div class="control">
-                                {{ form.end_date(class="input", type="date") }}
+                                {{ form.employment_information.end_date(class="input", type="date") }}
                             </div>
-                            {% if form.end_date.errors %}
-                                <p class="help is-danger">{{ form.end_date.errors[0] }}</p>
+                            {% if form.employment_information.end_date.errors %}
+                                <p class="help is-danger">{{ form.employment_information.end_date.errors[0] }}</p>
                             {% endif %}
                         </div>
                     </div>
@@ -177,11 +177,12 @@
                     <div class="field pt-4">
                         <div class="control">
                             <label class="checkbox">
-                                {{ form.is_active.label(class="has-text-weight-bold is-size-5") }} {{ form.is_active(class="ml-1", type="checkbox") }}
+                                {{ form.employment_information.is_active.label(class="has-text-weight-bold is-size-5") }} 
+                                {{ form.employment_information.is_active(class="ml-1", type="checkbox") }}
                             </label>
                         </div>
-                        {% if form.is_active.errors %}
-                            <p class="help is-danger">{{ form.is_active.errors[0] }}</p>
+                        {% if form.employment_information.is_active.errors %}
+                            <p class="help is-danger">{{ form.employment_information.is_active.errors[0] }}</p>
                         {% endif %}
                     </div>
 
@@ -288,7 +289,7 @@
 
                 <div class="field mt-5">
                     <div class="control">
-                        <button class="button is-primary" type="submit">Crear Empleado</button>
+                        <button class="button is-primary is-medium is-fullwidth" type="submit">Agregar Empleado</button>
                     </div>
                 </div>
             </form>
