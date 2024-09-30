@@ -32,6 +32,7 @@ def reset(app):
     # Necessary to create the tables with create_all
     # It should have the app context
     from .module.accounts.models import User
+    from .module.employee.models import Employee
     """
     Resets the database by dropping and recreating all tables
     """
