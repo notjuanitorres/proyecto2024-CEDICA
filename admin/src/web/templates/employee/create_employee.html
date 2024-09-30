@@ -1,0 +1,298 @@
+{% extends "layout.html" %}
+
+{% block title %} Equipo - Agregar miembro {% endblock %}
+
+{% block main_content %}
+
+    <nav class="breadcrumb" aria-label="breadcrumbs">
+        <ul>
+            <li>
+                <a href="{{ url_for('index_bp.home')}}">
+                    <span class="icon is-small">
+                        <i class="fas fa-home" aria-hidden="true"></i>
+                    </span>
+                    <span>Inicio</span>
+                </a>
+            </li>
+            <li>
+                <a href="{{ url_for('employee_bp.get_employees') }}">
+                <span class="icon is-small">
+                    <i class="fas fa-users" aria-hidden="true"></i>
+                </span>
+                <span>Miembros</span>
+            </a>
+            </li>
+            <li>
+                <a href="">
+                <span class="icon is-small">
+                    <i class="fas fa-users" aria-hidden="true"></i>
+                </span>
+                <span>Agregar miembro</span>
+            </a>
+            </li>
+        </ul>
+    </nav>
+
+    <section class="section pt-4">
+        <div class="container">
+            <h1 class="title">Agregar miembro</h1>
+            <form method="POST">
+                {{ form.hidden_tag() }}
+
+                <div id="basic-information" class="field pt-4">
+                    <label class="label is-size-4">Información Básica</label>
+                    <div class="field-body">
+                        <div class="field">
+                            <label class="label">{{ form.basic_information.first_name.label }}</label>
+                            <div class="control">
+                                {{ form.basic_information.first_name(class="input", placeholder="Ingrese el nombre") }}
+                            </div>
+                            {% if form.basic_information.first_name.errors %}
+                                <p class="help is-danger">{{ form.basic_information.first_name.errors[0] }}</p>
+                            {% endif %}
+                        </div>
+                        <div class="field">
+                            <label class="label">{{ form.basic_information.last_name.label }}</label>
+                            <div class="control">
+                                {{ form.basic_information.last_name(class="input", placeholder="Ingrese el apellido") }}
+                            </div>
+                            {% if form.basic_information.last_name.errors %}
+                                <p class="help is-danger">{{ form.basic_information.last_name.errors[0] }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="field pt-3">
+                        <label class="label">{{ form.basic_information.dni.label }}</label>
+                        <div class="control">
+                            {{ form.basic_information.dni(class="input", placeholder="Ingrese el DNI") }}
+                        </div>
+                        {% if form.basic_information.dni.errors %}
+                            <p class="help is-danger">{{ form.basic_information.dni.errors[0] }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+
+                <div id="contact-info" class="field">
+                    <label class="label is-size-4 pt-5">Informacion de Contacto</label>
+                    <div class="field-body">
+                        <div class="field">
+                            <label class="label">{{ form.basic_information.phone.country_code.label }}</label>
+                            <div class="control">
+                                {{ form.basic_information.phone.country_code(class="input", placeholder="Código de país") }}
+                            </div>
+                            {% if form.basic_information.phone.country_code.errors %}
+                                <p class="help is-danger">{{ form.basic_information.phone.country_code.errors[0] }}</p>
+                            {% endif %}
+                        </div>
+                        <div class="field">
+                            <label class="label">{{ form.basic_information.phone.area_code.label }}</label>
+                            <div class="control">
+                                {{ form.basic_information.phone.area_code(class="input", placeholder="Código de área") }}
+                            </div>
+                            {% if form.basic_information.phone.area_code.errors %}
+                                <p class="help is-danger">{{ form.basic_information.phone.area_code.errors[0] }}</p>
+                            {% endif %}
+                        </div>
+                        <div class="field">
+                            <label class="label">{{ form.basic_information.phone.number.label }}</label>
+                            <div class="control">
+                                {{ form.basic_information.phone.number(class="input", placeholder="Número") }}
+                            </div>
+                            {% if form.basic_information.phone.number.errors %}
+                                <p class="help is-danger">{{ form.basic_information.phone.number.errors[0] }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="field mt-2">
+                        <label class="label">{{ form.email.label }}</label>
+                        <div class="control">
+                            {{ form.email(class="input", type="email", placeholder="Ingrese el correo") }}
+                        </div>
+                        {% if form.email.errors %}
+                            <p class="help is-danger">{{ form.email.errors[0] }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div id="job-info" class="field">
+                    <label class="label is-size-4 pt-5">Datos laborales</label>
+                    <div class="field-body">
+                        <div class="field">
+                            <label class="label">{{ form.profession.label }}</label>
+                            <div class="control">
+                                <div class="select">
+                                    {{ form.profession() }}
+                                </div>
+                            </div>
+                            {% if form.profession.errors %}
+                                <p class="help is-danger">{{ form.profession.errors[0] }}</p>
+                            {% endif %}
+                        </div>
+                        <div class="field">
+                            <label class="label">{{ form.position.label }}</label>
+                            <div class="control">
+                                <div class="select">
+                                    {{ form.position() }}
+                                </div>
+                            </div>
+                            {% if form.position.errors %}
+                                <p class="help is-danger">{{ form.position.errors[0] }}</p>
+                            {% endif %}
+                        </div>
+                        <div class="field">
+                            <label class="label">{{ form.job_condition.label }}</label>
+                            <div class="control">
+                                <div class="select">
+                                    {{ form.job_condition() }}
+                                </div>
+                            </div>
+                            {% if form.job_condition.errors %}
+                                <p class="help is-danger">{{ form.job_condition.errors[0] }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="field-body pt-4">
+                        <div class="field">
+                            <label class="label">{{ form.start_date.label }}</label>
+                            <div class="control">
+                                {{ form.start_date(class="input", type="date") }}
+                            </div>
+                            {% if form.start_date.errors %}
+                                <p class="help is-danger">{{ form.start_date.errors[0] }}</p>
+                            {% endif %}
+                        </div>
+                        <div class="field">
+                            <label class="label">{{ form.end_date.label }}</label>
+                            <div class="control">
+                                {{ form.end_date(class="input", type="date") }}
+                            </div>
+                            {% if form.end_date.errors %}
+                                <p class="help is-danger">{{ form.end_date.errors[0] }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="field pt-4">
+                        <div class="control">
+                            <label class="checkbox">
+                                {{ form.is_active.label(class="has-text-weight-bold is-size-5") }} {{ form.is_active(class="ml-1", type="checkbox") }}
+                            </label>
+                        </div>
+                        {% if form.is_active.errors %}
+                            <p class="help is-danger">{{ form.is_active.errors[0] }}</p>
+                        {% endif %}
+                    </div>
+
+                </div>
+
+                <div id="address-info" class="field">
+                    <label class="label is-size-4 pt-5">Dirección</label>
+                    <div class="field">
+                        <div class="field-body">
+                            <div class="field">
+                                <label class="label">{{ form.address.province.label }}</label>
+                                <div class="control">
+                                    {{ form.address.province(class="input", placeholder="Ingrese la provincia") }}
+                                </div>
+                                {% if form.address.province.errors %}
+                                    <p class="help is-danger">{{ form.address.province.errors[0] }}</p>
+                                {% endif %}
+                            </div>
+                            <div class="field">
+                                <label class="label">{{ form.address.locality.label }}</label>
+                                <div class="control">
+                                    {{ form.address.locality(class="input", placeholder="Ingrese la localidad") }}
+                                </div>
+                                {% if form.address.locality.errors %}
+                                    <p class="help is-danger">{{ form.address.locality.errors[0] }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="field-body">
+                        <div class="field">
+                            <label class="label">{{ form.address.department.label }}</label>
+                            <div class="control">
+                                {{ form.address.department(class="input", placeholder="Ingrese el departamento") }}
+                            </div>
+                            {% if form.address.department.errors %}
+                                <p class="help is-danger">{{ form.address.department.errors[0] }}</p>
+                            {% endif %}
+                        </div>
+                        <div class="field">
+                            <label class="label">{{ form.address.street.label }}</label>
+                            <div class="control">
+                                {{ form.address.street(class="input", placeholder="Ingrese la calle") }}
+                            </div>
+                            {% if form.address.street.errors %}
+                                <p class="help is-danger">{{ form.address.street.errors[0] }}</p>
+                            {% endif %}
+                        </div>
+                        <div class="field">
+                            <label class="label">{{ form.address.number.label }}</label>
+                            <div class="control">
+                                {{ form.address.number(class="input", placeholder="Ingrese el número") }}
+                            </div>
+                            {% if form.address.number.errors %}
+                                <p class="help is-danger">{{ form.address.number.errors[0] }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+
+                <div id="health-info" class="field">
+                    <label class="label is-size-4 pt-5">Cobertura medica</label>
+                    <div class="field-body">
+                       <div class="field">
+                        <label class="label">{{ form.emergency_contact.emergency_contact_name.label }}</label>
+                        <div class="control">
+                            {{ form.emergency_contact.emergency_contact_name(class="input", placeholder="Ingrese el nombre del contacto de emergencia")}}
+                        </div>
+                        {% if form.address.number.errors %}
+                        <p class="help is-danger">{{ form.emergency_contact.emergency_contact_name.errors[0] }}</p>
+                        {% endif %}
+                       </div> 
+                       <div class="field">
+                        <label class="label">{{ form.emergency_contact.emergency_contact_phone.label }}</label>
+
+                        <div class="control">
+                            {{ form.emergency_contact.emergency_contact_phone(class="input", placeholder="Ingrese el nombre del contacto de emergencia")}}
+                        </div>
+                        {% if form.address.number.errors %}
+                            <p class="help is-danger">{{ form.emergency_contact.emergency_contact_phone.errors[0] }}</p>
+                        {% endif %}
+                       </div> 
+                    </div>
+                    <div class="field pt-3">
+                        <label class="label">{{ form.health_insurance.label }}</label>
+                        <div class="control">
+                            {{ form.health_insurance(class="textarea") }}
+                        </div>
+                        {% if form.health_insurance.errors %}
+                            <p class="help is-danger">{{ form.health_insurance.errors[0] }}</p>
+                        {% endif %}
+                    </div>
+                    <div class="field">
+                        <label class="label">{{ form.affiliate_number.label }}</label>
+                        <div class="control">
+                            {{ form.affiliate_number(class="input", placeholder="Ingrese el número de afiliado") }}
+                        </div>
+                        {% if form.affiliate_number.errors %}
+                            <p class="help is-danger">{{ form.affiliate_number.errors[0] }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="field mt-5">
+                    <div class="control">
+                        <button class="button is-primary" type="submit">Crear Empleado</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </section>
+{% endblock %}
+
