@@ -1,11 +1,10 @@
 from datetime import datetime
 from sqlalchemy.orm import column_property
 from src.core.database import db
+from src.core.module.common import AddressMixin, EmergencyContactMixin
 from src.core.module.employee.data import ProfessionsEnum, PositionEnum, ConditionEnum
-from src.core.module.common import AddressMixin, EmergencyContactMixin, PhoneMixin
 
-
-class Employee(db.Model, AddressMixin, PhoneMixin, EmergencyContactMixin):
+class Employee(db.Model, AddressMixin, EmergencyContactMixin):
     __tablename__ = "employees"
 
     id = db.Column(db.Integer, primary_key=True)
