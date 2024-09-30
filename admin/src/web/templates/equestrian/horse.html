@@ -1,0 +1,89 @@
+{% extends "base_show.html" %}
+
+{% block title %}Caballo {{ horse.name }} - CEDICA{% endblock %}
+
+{% block breadcrumb_items %}
+    <li>
+        <a href="{{ url_for('equestrian_bp.get_horses') }}">
+            <span class="icon is-small">
+                <i class="fa-solid fa-horse" aria-hidden="true"></i>
+            </span>
+            <span>Caballos</span>
+        </a>
+    </li>
+    <li>
+        <a href="">
+            <span class="icon is-small">
+                <i class="fa-solid fa-horse-head" aria-hidden="true"></i>
+            </span>
+            <span>{{ horse.name }}</span>
+        </a>
+    </li>
+{% endblock %}
+
+{% block card_title %}Caballo: {{ horse.name }}{% endblock %}
+
+{% block card_content %}
+<ul class="grid is-col-min-16">
+    <div class="cell">
+        <h4>Información general</h4>
+        <li><strong>ID: </strong> {{ horse.id }}</li>
+        <li><strong>Nombre: </strong>{{ horse.name }}</li>
+        <li><strong>Raza: </strong>{{ horse.breed }}</li>
+        <li><strong>Fecha de nacimiento: </strong>{{ horse.birth_date | format_date }}</li>
+        <li><strong>Pelaje: </strong>{{ horse.coat }}</li>
+        <li><strong>Sexo: </strong>{{ horse.sex }}</li>
+    </div>
+
+    <div class="cell">
+        <h4>Información adicional</h4>
+        <li><strong>Es donación: </strong>{{ horse.is_donation | natural_boolean }}</li>
+        <li><strong>Fecha de admisión: </strong>{{ horse.admission_date | format_date }}</li>
+        <li><strong>Sede asignada: </strong>{{ horse.assigned_facility }}</li>
+        <li><strong>Tipo de actividad: </strong>{{ horse.ja_type.value }}</li>
+    </div>
+
+    <div class="cell">
+        <h4>Estampas</h4>
+        <li><strong>Dado de alta: </strong>{{ horse.inserted_at | format_date }}</li>
+        <li><strong>Última modificación: </strong>{{ horse.updated_at | format_date }}</li>
+    </div>
+</ul>
+{% endblock %}
+
+{% block card_footer %}
+    <p></p>
+    <button class="card-footer-item has-text-danger modal-trigger" data-id="{{ horse.id }}" data-target="horse-delete-modal">
+        Eliminar
+    </button>
+    <a href="{{ url_for('equestrian_bp.edit_horse', horse_id=horse.id) }}" class="card-footer-item has-text-warning">Editar</a>
+{% endblock %}
+
+{% block additional_cards %}
+    <div class="card">
+        <header class="card-header">
+            <p class="card-header-title is-size-4">Documentos anexos</p>
+        </header>
+        <div class="card-content">
+            <div class="content">
+
+            </div>
+        </div>
+        <footer class="card-footer">
+            <a href="" class="card-footer-item has-text-warning">Editar documentos</a>
+        </footer>
+    </div>
+{% endblock %}
+
+{% block modal %}
+  {{
+    render_delete_modal(
+      field="horse",
+      endpoint="equestrian_bp.delete_horse",
+      title="Eliminar",
+      msg="¿Está seguro de que desea eliminar al caballo?",
+      msg_sub="Luego de confirmar, no se podrán revertir los cambios"
+    )
+  }}
+{% endblock %}
+
