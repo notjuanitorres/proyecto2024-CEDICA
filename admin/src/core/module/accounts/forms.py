@@ -28,13 +28,13 @@ class UserManagementForm(FlaskForm):
         return container.accounts_services()
 
     role_id = SelectField(
-        "Role",
+        "Rol",
         coerce=int,
         validators=[Optional()],
     )
 
     email = StringField(
-        "Email",
+        "Correo",
         validators=[
             DataRequired(),
             Email(message="Email inválido"),
@@ -52,7 +52,7 @@ class UserManagementForm(FlaskForm):
 class UserCreateForm(UserManagementForm):
 
     password = PasswordField(
-        "Password",
+        "Contraseña",
         validators=[
             DataRequired(),
             Length(
@@ -62,7 +62,7 @@ class UserCreateForm(UserManagementForm):
     )
 
     confirm_password = PasswordField(
-        "Confirm Password",
+        "Confirmar contraseña",
         validators=[
             DataRequired(),
             EqualTo("password", message="Las contraseñas deben coincidir"),

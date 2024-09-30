@@ -33,10 +33,10 @@ def seed_accounts():
 
 def seed_roles():
     roles = [
-        Role(name="tecnica"),
-        Role(name="ecuestre"),
-        Role(name="voluntariado"),
-        Role(name="administracion")
+        Role(name="Técnico"),
+        Role(name="Ecuestre"),
+        Role(name="Voluntario"),
+        Role(name="Administración")
     ]
 
     db.session.add_all(roles)
