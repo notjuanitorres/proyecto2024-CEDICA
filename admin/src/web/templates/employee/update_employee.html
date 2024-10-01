@@ -57,7 +57,7 @@
 <section class="section pt-4">
     <form method="POST">
       {{ form.hidden_tag() }}
-      <div id="basic-information" class="field">
+      <div id="general-information" class="field">
         <label class="label is-size-4">Información General</label>
         <div class="field-body">
             <div class="field">
@@ -79,49 +79,18 @@
                 {% endif %}
             </div>
         </div>
-        <div class="field pt-3">
-            <label class="label">{{ form.basic_information.dni.label }}</label>
-            <div class="control">
-                {{ form.basic_information.dni(class="input", placeholder="Ingrese el DNI") }}
-            </div>
-            {% if form.basic_information.dni.errors %}
-                <p class="help is-danger">{{ form.basic_information.dni.errors[0] }}</p>
-            {% endif %}
-        </div>
-      </div>
-  
-      <div id="contact-info" class="field">
-        <label class="label is-size-4 pt-5">Informacion de Contacto</label>
-          <div class="field-body">
-            <div class="field">
-              <label class="label">{{ form.basic_information.phone.country_code.label }}</label>
+
+        <div class="field-body pt-2">
+          <div class="field">
+              <label class="label">{{ form.basic_information.dni.label }}</label>
               <div class="control">
-                  {{ form.basic_information.phone.country_code(class="input", placeholder="Código de país") }}
+                  {{ form.basic_information.dni(class="input", placeholder="Ingrese el DNI") }}
               </div>
-              {% if form.basic_information.phone.country_code.errors %}
-                  <p class="help is-danger">{{ form.basic_information.phone.country_code.errors[0] }}</p>
+              {% if form.basic_information.dni.errors %}
+                  <p class="help is-danger">{{ form.basic_information.dni.errors[0] }}</p>
               {% endif %}
-            </div>
-            <div class="field">
-                <label class="label">{{ form.basic_information.phone.area_code.label }}</label>
-                <div class="control">
-                    {{ form.basic_information.phone.area_code(class="input", placeholder="Código de área") }}
-                </div>
-                {% if form.basic_information.phone.area_code.errors %}
-                    <p class="help is-danger">{{ form.basic_information.phone.area_code.errors[0] }}</p>
-                {% endif %}
-            </div>
-            <div class="field">
-                <label class="label">{{ form.basic_information.phone.number.label }}</label>
-                <div class="control">
-                    {{ form.basic_information.phone.number(class="input", placeholder="Número") }}
-                </div>
-                {% if form.basic_information.phone.number.errors %}
-                    <p class="help is-danger">{{ form.basic_information.phone.number.errors[0] }}</p>
-                {% endif %}
-            </div>
           </div>
-          <div class="field mt-2">
+          <div class="field">
             <label class="label">{{ form.email.label }}</label>
             <div class="control">
               {{ form.email(class="input", type="email", placeholder="Ingrese el correo") }}
@@ -130,82 +99,40 @@
               <p class="help is-danger">{{ form.email.errors[0] }}</p>
             {% endif %}
           </div>
-      </div>
-  
-      <div id="job-info" class="field">
-        <label class="label is-size-4 pt-5">Datos laborales</label>
-        <div class="field-body">
-          <div class="field">
-            <label class="label">{{ form.employment_information.profession.label }}</label>
-            <div class="control">
-              <div class="select">
-                {{ form.employment_information.profession() }}
-              </div>
-            </div>
-            {% if form.employment_information.errors %}
-              <p class="help is-danger">{{ form.employment_information.errors[0] }}</p>
-            {% endif %}
-          </div>
-          <div class="field">
-            <label class="label">{{ form.employment_information.label }}</label>
-            <div class="control">
-              <div class="select">
-                {{ form.employment_information.position() }}
-              </div>
-            </div>
-            {% if form.employment_information.position.errors %}
-              <p class="help is-danger">{{ form.employment_information.position.errors[0] }}</p>
-            {% endif %}
-          </div>
-          <div class="field">
-            <label class="label">{{ form.employment_information.job_condition.label }}</label>
-            <div class="control">
-              <div class="select">
-                {{ form.employment_information.job_condition() }}
-              </div>
-            </div>
-            {% if form.employment_information.job_condition.errors %}
-              <p class="help is-danger">{{ form.employment_information.job_condition.errors[0] }}</p>
-            {% endif %}
-          </div>
         </div>
 
-        <div class="field-body pt-4">
+        <div class="field-body pt-2">
           <div class="field">
-            <label class="label">{{ form.employment_information.start_date.label }}</label>
+            <label class="label">{{ form.basic_information.phone.country_code.label }}</label>
             <div class="control">
-              {{ form.employment_information.start_date(class="input", type="date") }}
+                {{ form.basic_information.phone.country_code(class="input", placeholder="Código de país") }}
             </div>
-            {% if form.employment_information.start_date.errors %}
-              <p class="help is-danger">{{ form.employment_information.start_date.errors[0] }}</p>
+            {% if form.basic_information.phone.country_code.errors %}
+                <p class="help is-danger">{{ form.basic_information.phone.country_code.errors[0] }}</p>
             {% endif %}
           </div>
           <div class="field">
-            <label class="label">{{ form.employment_information.end_date.label }}</label>
-            <div class="control">
-              {{ form.employment_information.end_date(class="input", type="date") }}
-            </div>
-            {% if form.employment_information.end_date.errors %}
-              <p class="help is-danger">{{ form.employment_information.end_date.errors[0] }}</p>
-            {% endif %}
+              <label class="label">{{ form.basic_information.phone.area_code.label }}</label>
+              <div class="control">
+                  {{ form.basic_information.phone.area_code(class="input", placeholder="Código de área") }}
+              </div>
+              {% if form.basic_information.phone.area_code.errors %}
+                  <p class="help is-danger">{{ form.basic_information.phone.area_code.errors[0] }}</p>
+              {% endif %}
           </div>
-        </div>
-
-        <div class="field pt-4">
-          <div class="control">
-            <label class="checkbox">
-                {{ form.employment_information.is_active.label(class="has-text-weight-bold is-size-5") }} 
-                {{ form.employment_information.is_active(class="ml-1", type="checkbox") }}
-            </label>
+          <div class="field">
+              <label class="label">{{ form.basic_information.phone.number.label }}</label>
+              <div class="control">
+                  {{ form.basic_information.phone.number(class="input", placeholder="Número") }}
+              </div>
+              {% if form.basic_information.phone.number.errors %}
+                  <p class="help is-danger">{{ form.basic_information.phone.number.errors[0] }}</p>
+              {% endif %}
           </div>
-          {% if form.employment_information.is_active.errors %}
-              <p class="help is-danger">{{ form.employment_information.is_active.errors[0] }}</p>
-          {% endif %}
         </div>
       </div>
-
-      <div id="address-info" class="field">
-        <label class="label is-size-4 pt-5">Dirección</label>
+      <div id="address-info" class="field pt-3">
+        <label class="label is-size-4">Dirección</label>
         <div class="field">
           <div class="field-body">
             <div class="field">
@@ -258,9 +185,81 @@
           </div>
         </div>
       </div>
+  
+      <div id="job-info" class="field pt-3">
+        <label class="label is-size-4">Datos laborales</label>
+        <div class="field">
+          <div class="control">
+            <label class="checkbox">
+                {{ form.employment_information.is_active.label(class="has-text-weight-bold is-size-5") }} 
+                {{ form.employment_information.is_active(class="ml-1", type="checkbox") }}
+            </label>
+          </div>
+          {% if form.employment_information.is_active.errors %}
+              <p class="help is-danger">{{ form.employment_information.is_active.errors[0] }}</p>
+          {% endif %}
+        </div>
+        
+        <div class="field-body">
+          <div class="field">
+            <label class="label">{{ form.employment_information.profession.label }}</label>
+            <div class="control">
+              <div class="select">
+                {{ form.employment_information.profession() }}
+              </div>
+            </div>
+            {% if form.employment_information.errors %}
+              <p class="help is-danger">{{ form.employment_information.errors[0] }}</p>
+            {% endif %}
+          </div>
+          <div class="field">
+            <label class="label">{{ form.employment_information.label }}</label>
+            <div class="control">
+              <div class="select">
+                {{ form.employment_information.position() }}
+              </div>
+            </div>
+            {% if form.employment_information.position.errors %}
+              <p class="help is-danger">{{ form.employment_information.position.errors[0] }}</p>
+            {% endif %}
+          </div>
+          <div class="field">
+            <label class="label">{{ form.employment_information.job_condition.label }}</label>
+            <div class="control">
+              <div class="select">
+                {{ form.employment_information.job_condition() }}
+              </div>
+            </div>
+            {% if form.employment_information.job_condition.errors %}
+              <p class="help is-danger">{{ form.employment_information.job_condition.errors[0] }}</p>
+            {% endif %}
+          </div>
+        </div>
 
-      <div id="health-info" class="field">
-      <label class="label is-size-4 pt-5">Cobertura medica</label>
+        <div class="field-body pt-2">
+          <div class="field">
+            <label class="label">{{ form.employment_information.start_date.label }}</label>
+            <div class="control">
+              {{ form.employment_information.start_date(class="input", type="date") }}
+            </div>
+            {% if form.employment_information.start_date.errors %}
+              <p class="help is-danger">{{ form.employment_information.start_date.errors[0] }}</p>
+            {% endif %}
+          </div>
+          <div class="field">
+            <label class="label">{{ form.employment_information.end_date.label }}</label>
+            <div class="control">
+              {{ form.employment_information.end_date(class="input", type="date") }}
+            </div>
+            {% if form.employment_information.end_date.errors %}
+              <p class="help is-danger">{{ form.employment_information.end_date.errors[0] }}</p>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <div id="health-info" class="field pt-3">
+      <label class="label is-size-4">Cobertura medica</label>
       <div class="field-body">
         <div class="field">
           <label class="label">{{ form.emergency_contact.emergency_contact_name.label }}</label>
