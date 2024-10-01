@@ -19,7 +19,7 @@
                 <span class="icon is-small">
                     <i class="fas fa-users" aria-hidden="true"></i>
                 </span>
-                <span>Miembros</span>
+                <span>Equipo</span>
             </a>
             </li>
             <li>
@@ -42,33 +42,33 @@
                   <label class="label is-size-4">Información General</label>
                   <div class="field-body">
                       <div class="field">
-                          <label class="label">{{ form.basic_information.first_name.label }}</label>
+                          <label class="label">{{ form.first_name.label }}</label>
                           <div class="control">
-                              {{ form.basic_information.first_name(class="input", placeholder="Ingrese el nombre") }}
+                              {{ form.first_name(class="input", placeholder="Ingrese el nombre") }}
                           </div>
-                          {% if form.basic_information.first_name.errors %}
-                              <p class="help is-danger">{{ form.basic_information.first_name.errors[0] }}</p>
+                          {% if form.first_name.errors %}
+                              <p class="help is-danger">{{ form.first_name.errors[0] }}</p>
                           {% endif %}
                       </div>
                       <div class="field">
-                          <label class="label">{{ form.basic_information.last_name.label }}</label>
+                          <label class="label">{{ form.last_name.label }}</label>
                           <div class="control">
-                              {{ form.basic_information.last_name(class="input", placeholder="Ingrese el apellido") }}
+                              {{ form.last_name(class="input", placeholder="Ingrese el apellido") }}
                           </div>
-                          {% if form.basic_information.last_name.errors %}
-                              <p class="help is-danger">{{ form.basic_information.last_name.errors[0] }}</p>
+                          {% if form.last_name.errors %}
+                              <p class="help is-danger">{{ form.last_name.errors[0] }}</p>
                           {% endif %}
                       </div>
                   </div>
           
                   <div class="field-body pt-2">
                     <div class="field">
-                        <label class="label">{{ form.basic_information.dni.label }}</label>
+                        <label class="label">{{ form.dni.label }}</label>
                         <div class="control">
-                            {{ form.basic_information.dni(class="input", placeholder="Ingrese el DNI") }}
+                            {{ form.dni(class="input", placeholder="Ingrese el DNI") }}
                         </div>
-                        {% if form.basic_information.dni.errors %}
-                            <p class="help is-danger">{{ form.basic_information.dni.errors[0] }}</p>
+                        {% if form.dni.errors %}
+                            <p class="help is-danger">{{ form.dni.errors[0] }}</p>
                         {% endif %}
                     </div>
                     <div class="field">
@@ -84,30 +84,30 @@
           
                   <div class="field-body pt-2">
                     <div class="field">
-                      <label class="label">{{ form.basic_information.phone.country_code.label }}</label>
+                      <label class="label">{{ form.phone.country_code.label }}</label>
                       <div class="control">
-                          {{ form.basic_information.phone.country_code(class="input", placeholder="Código de país") }}
+                          {{ form.phone.country_code(class="input", placeholder="Código de país") }}
                       </div>
-                      {% if form.basic_information.phone.country_code.errors %}
-                          <p class="help is-danger">{{ form.basic_information.phone.country_code.errors[0] }}</p>
+                      {% if form.phone.country_code.errors %}
+                          <p class="help is-danger">{{ form.phone.country_code.errors[0] }}</p>
                       {% endif %}
                     </div>
                     <div class="field">
-                        <label class="label">{{ form.basic_information.phone.area_code.label }}</label>
+                        <label class="label">{{ form.phone.area_code.label }}</label>
                         <div class="control">
-                            {{ form.basic_information.phone.area_code(class="input", placeholder="Código de área") }}
+                            {{ form.phone.area_code(class="input", placeholder="Código de área") }}
                         </div>
-                        {% if form.basic_information.phone.area_code.errors %}
-                            <p class="help is-danger">{{ form.basic_information.phone.area_code.errors[0] }}</p>
+                        {% if form.phone.area_code.errors %}
+                            <p class="help is-danger">{{ form.phone.area_code.errors[0] }}</p>
                         {% endif %}
                     </div>
                     <div class="field">
-                        <label class="label">{{ form.basic_information.phone.number.label }}</label>
+                        <label class="label">{{ form.phone.number.label }}</label>
                         <div class="control">
-                            {{ form.basic_information.phone.number(class="input", placeholder="Número") }}
+                            {{ form.phone.number(class="input", placeholder="Número") }}
                         </div>
-                        {% if form.basic_information.phone.number.errors %}
-                            <p class="help is-danger">{{ form.basic_information.phone.number.errors[0] }}</p>
+                        {% if form.phone.number.errors %}
+                            <p class="help is-danger">{{ form.phone.number.errors[0] }}</p>
                         {% endif %}
                     </div>
                   </div>

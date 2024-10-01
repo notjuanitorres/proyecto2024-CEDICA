@@ -21,7 +21,7 @@
     </li>
 {% endblock %}
 
-{% block card_title %}Miembro: {{ employee.fullname }}{% endblock %}
+{% block card_title %}Miembro: {{ employee.first_name + " " + employee.last_name }}{% endblock %}
 
 {% block card_content %}
 

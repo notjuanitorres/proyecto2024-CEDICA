@@ -10,16 +10,7 @@ from wtforms.fields import (
     TextAreaField,
 )
 from src.core.module.employee.data import ProfessionsEnum, PositionEnum, ConditionEnum
-from src.core.module.common import (
-    AddressForm,
-    EmergencyContactForm,
-    BasicInformationForm,
-)
-
-
-class EmployeeManagementForm(FlaskForm):
-    def __init__(self, *args, **kwargs):
-        super(EmployeeManagementForm, self).__init__(*args, **kwargs)
+from src.core.module.common import AddressForm, EmergencyContactForm, PhoneForm
 
 
 class EmploymentInformationForm(FlaskForm):
@@ -47,29 +38,28 @@ class EmploymentInformationForm(FlaskForm):
     is_active = BooleanField("Activo en la organizacion")
 
 
-
-class EmployeeCreateForm(EmployeeManagementForm):
-    basic_information = FormField(BasicInformationForm)
-    employment_information = FormField(EmploymentInformationForm)
+class EmployeeManagementForm(FlaskForm):
+    first_name = StringField("Nombre", validators=[DataRequired()])
+    last_name = StringField("Apellido", validators=[DataRequired()])
     address = FormField(AddressForm)
-    emergency_contact = FormField(EmergencyContactForm)
+    phone = FormField(PhoneForm)
+    employment_information = FormField(EmploymentInformationForm)
     health_insurance = TextAreaField("Obra Social", validators=[Optional()])
     affiliate_number = StringField("Numero de afiliado", validators=[Optional()])
+    emergency_contact = FormField(EmergencyContactForm)
+    # user_id = IntegerField("", validators=[DataRequired()])
+
+
+class EmployeeCreateForm(EmployeeManagementForm):
+    dni = StringField("DNI", validators=[DataRequired(), Length(min=8, max=8)])
     email = StringField(
         "Email",
         validators=[DataRequired(), Email(message="Email inválido"), Length(max=100)],
     )
 
-    # user_id = IntegerField("", validators=[DataRequired()])
-
 
 class EmployeeEditForm(EmployeeManagementForm):
-    basic_information = FormField(BasicInformationForm)
-    employment_information = FormField(EmploymentInformationForm)
-    address = FormField(AddressForm)
-    emergency_contact = FormField(EmergencyContactForm)
-    health_insurance = TextAreaField("Obra Social", validators=[Optional()])
-    affiliate_number = StringField("Numero de afiliado", validators=[Optional()])
+    dni = StringField("DNI", validators=[DataRequired(), Length(min=8, max=8)])
     email = StringField(
         "Email",
         validators=[DataRequired(), Email(message="Email inválido"), Length(max=100)],
