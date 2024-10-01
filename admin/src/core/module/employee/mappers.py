@@ -218,3 +218,40 @@ class EmployeeDTO:
             inserted_at=data.get("inserted_at"),
             updated_at=data.get("updated_at"),
         )
+
+    def to_form(self) -> Dict:
+        return {
+            "basic_information": {
+                "first_name": self.first_name,
+                "last_name": self.last_name,
+                "dni": self.dni,
+                "phone": {
+                    "country_code": self.phone_country_code,
+                    "area_code": self.phone_area_code,
+                    "number": self.phone_number
+                }
+            },
+            "employment_information": {
+                "profession": self.profession,
+                "position": self.position,
+                "job_condition": self.job_condition,
+                "start_date": self.start_date,
+                "end_date": self.end_date,
+                "is_active": self.is_active
+            },
+            "address": {
+                "street": self.street,
+                "number": self.number,
+                "department": self.department,
+                "locality": self.locality,
+                "province": self.province
+            },
+            "emergency_contact": {
+                "emergency_contact_name": self.emergency_contact_name,
+                "emergency_contact_phone": self.emergency_contact_phone
+            },
+            "health_insurance": self.health_insurance,
+            "affiliate_number": self.affiliate_number,
+            "email": self.email,
+            "user_id": self.user_id,
+        }

@@ -56,6 +56,7 @@ def add_employee(
 ):
     if not create_form.validate_on_submit():
         return render_template("./employee/create_employee.html", form=create_form)
+    
     created_employee = employees.create_employee(
         EmployeeDTO.from_form(create_form.data)
     )
@@ -72,29 +73,42 @@ def show_employee(
     employees: AbstractEmployeeServices = Provide[Container.employee_services],
 ):
     employee = employees.get_employee(employee_id=employee_id)
+
     if not employee:
         return redirect(url_for("employee_bp.get_employees"))
 
     return render_template("./employee/employee.html", employee=employee)
 
 
-@employee_bp.route("/editar/<int:employee_id>")
+@employee_bp.route("/editar/<int:employee_id>", methods=["GET", "POST"])
 @check_user_permissions(permissions_required=["equipo_update"])
+@inject
 def edit_employee(
     employee_id: int,
+    employees: AbstractEmployeeServices = Provide[Container.employee_services],
 ):
-    update_form = EmployeeEditForm()
+    employee = employees.get_employee(employee_id)
+
+    if not employee:
+        return redirect(url_for("employee_bp.get_employees"))
+
+    update_form = EmployeeEditForm(data=employee.to_form())
 
     if request.method == "POST":
-        return update_employee(update_form=update_form)
+        return update_employee(update_form=update_form, employee_id=employee_id)
 
-    return render_template("./employee/edit_employee.html", form=update_form)
+    return render_template(
+        "./employee/update_employee.html", form=update_form, employee=employee
+    )
 
 
 @inject
 def update_employee(
+    employee_id: int,
     update_form,
     employees: AbstractEmployeeServices = Provide[Container.employee_services],
 ):
     if not update_form.validate_on_submit():
-        return render_template("./employee/edit_employee.html", form=update_form)
+        return render_template("./employee/update_employee.html", form=update_form)
+
+    return redirect(url_for("employee_bp.show_employee", employee_id=employee_id))

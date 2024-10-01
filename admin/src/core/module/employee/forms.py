@@ -68,6 +68,8 @@ class EmployeeEditForm(EmployeeManagementForm):
     employment_information = FormField(EmploymentInformationForm)
     address = FormField(AddressForm)
     emergency_contact = FormField(EmergencyContactForm)
+    health_insurance = TextAreaField("Obra Social", validators=[Optional()])
+    affiliate_number = StringField("Numero de afiliado", validators=[Optional()])
     email = StringField(
         "Email",
         validators=[DataRequired(), Email(message="Email inválido"), Length(max=100)],
