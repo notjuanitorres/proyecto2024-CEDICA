@@ -28,7 +28,7 @@ class Employee(db.Model, AddressMixin, PhoneMixin, EmergencyContactMixin):
     updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
 
     # One to one
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True)
     user = db.relationship("User", backref=db.backref("employee"), uselist=False)
 
     # TODO: Add references to multiple uploaded files on each field

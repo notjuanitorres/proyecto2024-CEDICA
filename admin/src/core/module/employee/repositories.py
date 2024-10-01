@@ -27,7 +27,7 @@ class AbstractEmployeeRepository:
         raise NotImplementedError
 
     @abstractmethod
-    def update(self, employee_id: int, data: Dict) -> None:
+    def update(self, employee_id: int, data: Dict) -> bool:
         raise NotImplementedError
 
     @abstractmethod
@@ -74,8 +74,14 @@ class EmployeeRepository(AbstractEmployeeRepository):
             self.db.session.query(Employee).filter(Employee.id == employee_id).first()
         )
 
-    def update(self, employee_id: int, data: Dict) -> None:
-        pass
+    def update(self, employee_id: int, data: Dict) -> bool:
+        employee = Employee.query.filter_by(id=employee_id)
+        if not employee:
+            return False
+        employee.update(data)
+
+        self.save()
+        return True
 
     def delete(self, employee_id: int) -> bool:
         pass

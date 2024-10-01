@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, url_for, redirect
+from flask import Blueprint, render_template, request, url_for, redirect, flash
 from dependency_injector.wiring import inject, Provide
 from src.web.helpers.auth import check_user_permissions
 from src.core.container import Container
@@ -56,7 +56,7 @@ def add_employee(
 ):
     if not create_form.validate_on_submit():
         return render_template("./employee/create_employee.html", form=create_form)
-    
+
     created_employee = employees.create_employee(
         EmployeeDTO.from_form(create_form.data)
     )
@@ -76,7 +76,6 @@ def show_employee(
 
     if not employee:
         return redirect(url_for("employee_bp.get_employees"))
-
     return render_template("./employee/employee.html", employee=employee)
 
 
@@ -88,7 +87,6 @@ def edit_employee(
     employees: AbstractEmployeeServices = Provide[Container.employee_services],
 ):
     employee = employees.get_employee(employee_id)
-
     if not employee:
         return redirect(url_for("employee_bp.get_employees"))
 
@@ -110,5 +108,12 @@ def update_employee(
 ):
     if not update_form.validate_on_submit():
         return render_template("./employee/update_employee.html", form=update_form)
+ 
+    if not employees.update_employee(
+        employee_id, EmployeeDTO.from_form(update_form.data)
+    ):
+        flash("No se ha podido actualizar al miembro del equipo", "success")
+        return render_template("./employee/update_employee.html", form=update_form)
 
+    flash("El miembro del equipo ha sido actualizado exitosamente ")
     return redirect(url_for("employee_bp.show_employee", employee_id=employee_id))

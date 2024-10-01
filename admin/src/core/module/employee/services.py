@@ -47,9 +47,9 @@ class EmployeeServices(AbstractEmployeeServices):
             return None
         return EmployeeDTO.from_entity(employee)
 
-    def update_employee(self, employee_id: int, data: Dict) -> None:
-        pass
+    def update_employee(self, employee_id: int, data: EmployeeDTO) -> None:
+        data.id = employee_id
+        return self.employee_repository.update(employee_id, data.to_dict(timestamps=False))
 
     def delete_employee(self, employee_id: int) -> bool:
         pass
-

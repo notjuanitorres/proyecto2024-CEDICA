@@ -29,8 +29,8 @@ class EmployeeDTO:
         affiliate_number: Optional[str],
         email: Optional[str],
         user_id: Optional[int],
-        inserted_at: Optional[datetime],
-        updated_at: Optional[datetime],
+        inserted_at: Optional[datetime] = None,
+        updated_at: Optional[datetime] = None,
     ):
         self.id = employee_id
         self.first_name = first_name
@@ -58,6 +58,7 @@ class EmployeeDTO:
         self.user_id = user_id
         self.inserted_at = inserted_at
         self.updated_at = updated_at
+
 
     @classmethod
     def from_entity(cls, employee: "Employee") -> "EmployeeDTO":
@@ -112,54 +113,22 @@ class EmployeeDTO:
             department=self.department,
             locality=self.locality,
             province=self.province,
-            inserted_at=self.inserted_at,
-            updated_at=self.updated_at,
             emergency_contact_name=self.emergency_contact_name,
             emergency_contact_phone=self.emergency_contact_phone,
             health_insurance=self.health_insurance,
             affiliate_number=self.affiliate_number,
         )
 
-    @classmethod
-    def from_dict(cls, data: Dict) -> "EmployeeDTO":
-        return cls(
-            employee_id=data.get("id"),
-            first_name=data.get("first_name"),
-            last_name=data.get("last_name"),
-            phone_country_code=data.get("phone_country_code"),
-            phone_area_code=data.get("phone_area_code"),
-            phone_number=data.get("phone_number"),
-            dni=data.get("dni"),
-            profession=data.get("profession"),
-            position=data.get("position"),
-            job_condition=data.get("job_condition"),
-            start_date=data.get("start_date"),
-            end_date=data.get("end_date"),
-            is_active=data.get("is_active"),
-            street=data.get("street"),
-            number=data.get("number"),
-            department=data.get("department"),
-            locality=data.get("locality"),
-            province=data.get("province"),
-            emergency_contact_name=data.get("emergency_contact_name"),
-            emergency_contact_phone=data.get("emergency_contact_phone"),
-            health_insurance=data.get("health_insurance"),
-            affiliate_number=data.get("affiliate_number"),
-            email=data.get("email"),
-            user_id=data.get("user_id"),
-            inserted_at=data.get("inserted_at"),
-            updated_at=data.get("updated_at"),
-        )
 
 
-    def to_dict(self) -> Dict:
-        return {
+    def to_dict(self, timestamps = True) -> Dict:
+        result = {
             "id": self.id,
-            "first_name": self.first_name,
-            "last_name": self.last_name,
-            "phone_country_code": self.phone_country_code,
-            "phone_area_code": self.phone_area_code,
-            "phone_number": self.phone_number,
+            "name": self.first_name,
+            "lastname": self.last_name,
+            "country_code": self.phone_country_code,
+            "area_code": self.phone_area_code,
+            "phone": self.phone_number,
             "dni": self.dni,
             "profession": self.profession,
             "position": self.position,
@@ -178,9 +147,11 @@ class EmployeeDTO:
             "affiliate_number": self.affiliate_number,
             "email": self.email,
             "user_id": self.user_id,
-            "inserted_at": self.inserted_at,
-            "updated_at": self.updated_at,
         }
+        if timestamps:
+            result["inserted_at"] = self.inserted_at
+            result["updated_at"] = self.updated_at
+        return result
 
     @classmethod
     def from_form(cls, data: Dict) -> "EmployeeDTO":
