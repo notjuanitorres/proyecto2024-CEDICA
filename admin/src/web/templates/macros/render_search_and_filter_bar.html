@@ -1,0 +1,76 @@
+{% macro render_search_and_filter_bar(title="Buscar y Filtrar", search_fields=[], sort_options=[], current_sort_by='', current_order='') %}
+<div class="card mb-4">
+  <header class="card-header">
+    <p class="card-header-title is-size-4">
+      <span class="icon mr-3">
+        <i class="fa-solid fa-search"></i>
+      </span>
+      {{ title }}
+    </p>
+    <button class="card-header-icon" aria-label="more options">
+      <span class="icon">
+        <i class="fas fa-angle-down" aria-hidden="true"></i>
+      </span>
+    </button>
+  </header>
+  <div class="card-content">
+    <div class="content">
+      <form class="form" method="GET">
+        {% for field in search_fields %}
+          <div class="field">
+            <label class="label">{{ field.label }}</label>
+            <div class="control">
+              {% if field.type == 'text' %}
+                <input class="input" type="text" name="{{ field.name }}" placeholder="{{ field.placeholder }}" value="{{ request.args.get(field.name, '') }}">
+              {% elif field.type == 'select' %}
+                <div class="select">
+                  <select name="{{ field.name }}">
+                    {% for option in field.options %}
+                      <option value="{{ option.value }}" {% if request.args.get(field.name) == option.value %}selected{% endif %}>{{ option.label }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        {% endfor %}
+
+        {% if sort_options %}
+          <div class="field">
+            <label class="label">Ordenar por</label>
+            <div class="control">
+              <div class="select">
+                <select name="sort_by">
+                  {% for option in sort_options %}
+                    <option value="{{ option.value }}" {% if current_sort_by == option.value %}selected{% endif %}>{{ option.label }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="field">
+            <label class="label">En orden</label>
+            <div class="control">
+              <div class="select">
+                <select name="order">
+                  <option value="asc" {% if current_order == 'asc' %}selected{% endif %}>Ascendente</option>
+                  <option value="desc" {% if current_order == 'desc' %}selected{% endif %}>Descendente</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        {% endif %}
+
+        <div class="field is-grouped">
+          <div class="control">
+            <button class="button is-primary" type="submit">Aplicar</button>
+          </div>
+          <div class="control">
+            <a class="button is-light" href="{{ url_for(request.endpoint) }}">Limpiar</a>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endmacro %}

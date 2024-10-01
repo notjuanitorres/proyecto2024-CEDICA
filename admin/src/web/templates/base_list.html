@@ -4,6 +4,7 @@
 {% from "macros/edit_menu.html" import render_actions_menu %}
 {% from "macros/delete_modal.html" import render_delete_modal %}
 {% from "macros/flash_message.html" import render_flash_messages %}
+{% from "macros/render_search_and_filter_bar.html" import render_search_and_filter_bar %}
 
 {% block extra_styles %}
 {{ super() }}
@@ -36,7 +37,7 @@
     </h2>
     <div class="px-3">
       {% block create_button %}{% endblock %}
-      {% block filter_form %}{% endblock %}
+      {% block search_and_filter %} {% endblock %}
     </div>
     <div class="table-container p-2 mt-2">
       <table class="table is-striped is-scrollable is-fullwidth">

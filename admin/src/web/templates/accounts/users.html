@@ -22,62 +22,46 @@
   <a class="button is-primary level-item" href="{{ url_for('users_bp.create_user')}}">Crear usuario</a>
 {% endblock %}
 
-{% block filter_form %}
-  <div class="card">
-    <header class="card-header">
-      <p class="card-header-title is-size-4">
-        <span class="icon mr-3">
-          <i class="fa-solid fa-filter"></i>
-        </span>
-        Filtrar      
-      </p>
-      <button class="card-header-icon" aria-label="more options">
-        <span class="icon">
-          <i class="fas fa-angle-down" aria-hidden="true"></i>
-        </span>
-      </button>
-    </header>
-    <div class="card-content">
-      <div class="content">
-        <form class="form" method="GET">
-          <div class="is-flex is-justify-content-start is-flex-wrap-wrap pb-5" >
-            <div class="field mr-5">
-              <label class="label">Ordenar por</label>
-              <div class="control">
-                <div class="select">
-                  <select name="sort_by">
-                    <option value="inserted_at">Fecha de creacion</option>
-                    <option value="email">Email</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-            <div class="field">
-              <label class="label">En orden</label>
-              <div class="control">
-                <div class="select">
-                  <select name="order">
-                    <option value="asc">Ascendente</option>
-                    <option value="desc">Descendente</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="field card-footer">
-            <div class="control card-footer-item">
-              <a href="{{ url_for("users_bp.get_users") }}">
-                Limpiar
-              </a>
-            </div>
-            <div class="control card-footer-item">
-              <button class="is-flex-grow-1" type="submit">Aplicar</button>
-            </div>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
+{% block search_and_filter %}
+    {{ render_search_and_filter_bar(
+     title="Buscar y Filtrar",
+     search_fields=[
+       {
+         'type': 'text',
+         'name': 'search_email',
+         'label': 'Buscar por email',
+         'placeholder': 'Email del usuario'
+       },
+       {
+         'type': 'select',
+         'name': 'search_active',
+         'label': 'Buscar por estado',
+         'options': [
+           {'value': '', 'label': 'Todos'},
+           {'value': 'true', 'label': 'Activo'},
+           {'value': 'false', 'label': 'Inactivo'}
+         ]
+       },
+       {
+         'type': 'select',
+         'name': 'search_role_id',
+         'label': 'Buscar por rol',
+         'options': [
+           {'value': '', 'label': 'Todos'},
+           {'value': '1', 'label': 'Técnica'},
+           {'value': '2', 'label': 'Ecuestre'},
+           {'value': '3', 'label': 'Voluntariado'},
+           {'value': '4', 'label': 'Administración'}
+         ]
+       }
+     ],
+     sort_options=[
+       {'value': 'inserted_at', 'label': 'Fecha de creación'},
+       {'value': 'email', 'label': 'Email'}
+     ],
+     current_sort_by=request.args.get('sort_by', 'inserted_at'),
+     current_order=request.args.get('order', 'asc')
+   ) }}
 {% endblock %}
 
 {% block table_header %}

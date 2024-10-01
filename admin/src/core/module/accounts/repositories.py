@@ -1,5 +1,8 @@
 from abc import abstractmethod
 from typing import List, Dict
+
+from sqlalchemy import inspect
+
 from src.core.module.accounts.models import User, Role, RolePermission, Permission
 from src.core.database import db as database
 
@@ -10,7 +13,7 @@ class AbstractAccountsRepository:
         pass
 
     @abstractmethod
-    def get_page(self, page: int, per_page: int, max_per_page: int, order_by: list):
+    def get_page(self, page: int, per_page: int, max_per_page: int, order_by: list, filters: dict):
         pass
 
     @abstractmethod
@@ -57,14 +60,27 @@ class AccountsRepository(AbstractAccountsRepository):
         
         return user
 
-    def get_page(self, page: int, per_page: int, max_per_page: int, order_by: list):
+    def get_page(self, page: int, per_page: int, max_per_page: int, order_by: list, filters: Dict):
         query = User.query
+
+        valid_columns = [column.key for column in inspect(User).columns]
+
+        if filters['email']:
+            query = query.filter(User.email.contains(filters['email']))
+
+        if filters['enabled']:
+            query = query.filter(User.enabled == filters['enabled'])
+
+        if filters['role_id']:
+            query = query.filter(User.role_id == int(filters['role_id']))
+
         if order_by:
             for field, direction in order_by:
-                if direction == 'asc':
-                    query = query.order_by(getattr(User, field).asc())
-                elif direction == 'desc':
-                    query = query.order_by(getattr(User, field).desc())
+                if field in valid_columns:
+                    if direction == 'asc':
+                        query = query.order_by(getattr(User, field).asc())
+                    elif direction == 'desc':
+                        query = query.order_by(getattr(User, field).desc())
 
         return query.paginate(
             page=page, per_page=per_page, error_out=False, max_per_page=max_per_page

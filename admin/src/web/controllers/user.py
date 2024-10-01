@@ -23,10 +23,15 @@ def get_users(accounts_services: AAS = Provide[Container.accounts_services]):
     per_page = request.args.get("per_page", type=int)
     sort_by = request.args.get("sort_by", "id")
     order = request.args.get("order", "asc")
+    search_email = request.args.get('search_email', '')
+    search_active = request.args.get('search_active', '')
+    search_role_id = request.args.get('search_role_id', '')
 
     order_by = [(sort_by, order)]
 
-    paginated_users = accounts_services.get_page(page, per_page, order_by)
+    paginated_users = (accounts_services
+                       .get_page(page, per_page, order_by,
+                                 {'email': search_email, 'enabled': search_active, 'role_id': search_role_id}))
 
     return render_template("users.html", users=paginated_users)
 
@@ -39,6 +44,7 @@ def show_user(user_id: int, accounts_services: AAS = Provide[Container.accounts_
         flash(f"El usuario con ID = {user_id} no existe", "danger")
         return get_users()
     return render_template('user.html', user=user)
+
 
 @users_bp.route("/crear", methods=["GET", "POST"])
 def create_user():
