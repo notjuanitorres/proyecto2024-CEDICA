@@ -34,7 +34,7 @@ class Horse(db.Model):
 class HorseTrainers(db.Model):
     __tablename__ = 'horse_trainers'
 
-    id = db.Column(db.Integer, primary_key=True)
-    id_horse = db.Column(db.Integer, db.ForeignKey('horses.id'))
-    # TODO: uncomment this when members table is created
-    # id_trainer = db.Column(db.Integer, db.ForeignKey('members.id'))
+    id_horse = db.Column(db.Integer, db.ForeignKey('horses.id'), primary_key=True)
+    id_trainer = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
+    # TODO: delete upper line and uncomment when employees module is implemented
+    # id_trainer = db.Column(db.Integer, db.ForeignKey('employees.id'), primary_key=True)

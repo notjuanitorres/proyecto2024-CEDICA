@@ -34,10 +34,13 @@ def get_horses(equestrian_services: AES = Provide[Container.equestrian_services]
 @inject
 def show_horse(horse_id: int, equestrian_services: AES = Provide[Container.equestrian_services]):
     horse = equestrian_services.get_horse(horse_id)
+
     if not horse:
         flash(f"El caballo con ID = {horse_id} no existe", "danger")
         return get_horses()
-    return render_template('horse.html', horse=horse)
+
+    trainers = equestrian_services.get_trainers_of_horse(horse_id)
+    return render_template('horse.html', horse=horse, horse_trainers=trainers)
 
 
 @equestrian_bp.route("/crear", methods=["GET", "POST"])
@@ -112,7 +115,7 @@ def update_horse(horse_id: int, edit_form: HorseEditForm,
             "sex": edit_form.sex.data,
         },
     )
-    # equestrian_services.set_horse_trainers(horse_id, edit_form.trainers.data)
+    equestrian_services.set_horse_trainers(horse_id, edit_form.trainers.data)
 
     return redirect(url_for("equestrian_bp.show_horse", horse_id=horse_id))
 

@@ -127,7 +127,7 @@ class EquestrianRepository(AbstractEquestrianRepository):
 
         horse_trainers = (self.db.session.query(HorseTrainers)
                           .filter(HorseTrainers.id_horse == horse_id).all())
-        return [ht.id_trainer for ht in horse_trainers]
+        return horse_trainers
 
         # return (self.db.session.query(Employee)
         #         .filter(Employee.id.in_([ht.id_trainer for ht in horse_trainers])).all())

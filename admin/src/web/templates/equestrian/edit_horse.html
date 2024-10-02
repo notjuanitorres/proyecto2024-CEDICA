@@ -86,21 +86,40 @@
                     {% endif %}
                 </div>
 
+                {#TODO: make this look better#}
                 <div class="field">
-                    <label class="label">{{ form.ja_type.label }}</label>
-                    <div class="control">
-                        <div class="select">
-                            {{ form.ja_type() }}
+                    <div class="dropdown-toggle">
+                        <label class="label">{{ form.trainers.label }}</label>
+                        <div class="dropdown-content" id="trainers-content">
+                            {% for choice in form.trainers %}
+                                <div class="checkbox-item">
+                                    {{ choice }}
+                                    {{ choice.label }}
+                                </div>
+                            {% endfor %}
                         </div>
                     </div>
-                </div>
 
-                <div class="field">
-                    <div class="control">
-                        <button class="button is-primary" type="submit">Guardar cambios</button>
+
+                    <div class="field">
+                        <label class="label">{{ form.ja_type.label }}</label>
+                        <div class="control">
+                            <div class="select">
+                                {{ form.ja_type() }}
+                            </div>
+                        </div>
                     </div>
-                </div>
+
+                    <div class="field">
+                        <div class="control">
+                            <button class="button is-primary" type="submit">Guardar cambios</button>
+                        </div>
+                    </div>
             </form>
         </div>
     </section>
+{% endblock %}
+{% block extra_scripts %}
+    {{ super() }}
+    <script src="{{ url_for('static', filename='js/toggle-trainers.js') }}"></script>
 {% endblock %}

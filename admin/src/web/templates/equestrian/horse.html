@@ -1,4 +1,5 @@
 {% extends "base_show.html" %}
+{% from "macros/edit_menu.html" import render_actions_menu %}
 
 {% block title %}Caballo {{ horse.name }} - CEDICA{% endblock %}
 
@@ -24,42 +25,109 @@
 {% block card_title %}Caballo: {{ horse.name }}{% endblock %}
 
 {% block card_content %}
-<ul class="grid is-col-min-16">
-    <div class="cell">
-        <h4>Información general</h4>
-        <li><strong>ID: </strong> {{ horse.id }}</li>
-        <li><strong>Nombre: </strong>{{ horse.name }}</li>
-        <li><strong>Raza: </strong>{{ horse.breed }}</li>
-        <li><strong>Fecha de nacimiento: </strong>{{ horse.birth_date | format_date }}</li>
-        <li><strong>Pelaje: </strong>{{ horse.coat }}</li>
-        <li><strong>Sexo: </strong>{{ horse.sex }}</li>
-    </div>
+    <ul class="grid is-col-min-16">
+        <div class="cell">
+            <h4>Información general</h4>
+            <li><strong>ID: </strong> {{ horse.id }}</li>
+            <li><strong>Nombre: </strong>{{ horse.name }}</li>
+            <li><strong>Raza: </strong>{{ horse.breed }}</li>
+            <li><strong>Fecha de nacimiento: </strong>{{ horse.birth_date | format_date }}</li>
+            <li><strong>Pelaje: </strong>{{ horse.coat }}</li>
+            <li><strong>Sexo: </strong>{{ horse.sex }}</li>
+        </div>
 
-    <div class="cell">
-        <h4>Información adicional</h4>
-        <li><strong>Es donación: </strong>{{ horse.is_donation | natural_boolean }}</li>
-        <li><strong>Fecha de admisión: </strong>{{ horse.admission_date | format_date }}</li>
-        <li><strong>Sede asignada: </strong>{{ horse.assigned_facility }}</li>
-        <li><strong>Tipo de actividad: </strong>{{ horse.ja_type.value }}</li>
-    </div>
+        <div class="cell">
+            <h4>Información adicional</h4>
+            <li><strong>Es donación: </strong>{{ horse.is_donation | natural_boolean }}</li>
+            <li><strong>Fecha de admisión: </strong>{{ horse.admission_date | format_date }}</li>
+            <li><strong>Sede asignada: </strong>{{ horse.assigned_facility }}</li>
+            <li><strong>Tipo de actividad: </strong>{{ horse.ja_type.value }}</li>
+        </div>
 
-    <div class="cell">
-        <h4>Estampas</h4>
-        <li><strong>Dado de alta: </strong>{{ horse.inserted_at | format_date }}</li>
-        <li><strong>Última modificación: </strong>{{ horse.updated_at | format_date }}</li>
-    </div>
-</ul>
+        <div class="cell">
+            <h4>Estampas</h4>
+            <li><strong>Dado de alta: </strong>{{ horse.inserted_at | format_date }}</li>
+            <li><strong>Última modificación: </strong>{{ horse.updated_at | format_date }}</li>
+        </div>
+    </ul>
 {% endblock %}
 
 {% block card_footer %}
     <p></p>
-    <button class="card-footer-item has-text-danger modal-trigger" data-id="{{ horse.id }}" data-target="horse-delete-modal">
+    <button class="card-footer-item has-text-danger modal-trigger" data-id="{{ horse.id }}"
+            data-target="horse-delete-modal">
         Eliminar
     </button>
     <a href="{{ url_for('equestrian_bp.edit_horse', horse_id=horse.id) }}" class="card-footer-item has-text-warning">Editar</a>
 {% endblock %}
 
 {% block additional_cards %}
+
+    <div class="card">
+        <header class="card-header">
+            <p class="card-header-title is-size-4">Entrenadores asociados</p>
+        </header>
+        <div class="card-content">
+            <div class="content">
+
+                <table class="table is-striped is-scrollable is-fullwidth">
+                    <thead>
+                    <tr>
+                        <th></th>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for horse_trainer in horse_trainers %}
+                            <tr class="">
+                                <td class="is-hidden-mobile">
+                                    {{ render_actions_menu(
+                                        field="user_id",
+                                        value=horse_trainer.id_trainer,
+                                        to_left=true,
+                                        endpoints={
+                                            'show':'users_bp.show_user',
+                                            'edit': 'users_bp.edit_user',
+                                          'delete':''
+                                        }) }}
+                                    {# TODO: add lines when employees controllers are implemented #}
+                                    {# field="user_id",#}
+                                    {# 'show':'employees_bp.show_employee',#}
+                                    {#'edit': 'employees_bp.edit_employee',#}
+                                </td>
+                                <td><span class="is-hidden-tablet has-text-weight-bold">ID: </span>{{ horse_trainer.id_trainer }}</td>
+{#                                <td><span class="is-hidden-tablet has-text-weight-bold">Nombre: </span>{{ trainer.name }}</td>#}
+
+                                <td class="is-hidden-tablet is-flex">
+{#                                    <a href="{{ url_for('employee_bp', employee_id = horse_trainer.id_trainer) }}"#}
+                                       class="button is-flex-grow-1 ">
+                                        <span class="is-bold">
+                                            Ver en detalle
+                                            <i class="fa-regular fa-eye ml-2"></i>
+                                        </span>
+{#                                    </a>#}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+
+                    <tfoot>
+                    <tr>
+                        <th></th>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th></th>
+                    </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
     <div class="card">
         <header class="card-header">
             <p class="card-header-title is-size-4">Documentos anexos</p>
@@ -76,14 +144,12 @@
 {% endblock %}
 
 {% block modal %}
-  {{
-    render_delete_modal(
+    {{ render_delete_modal(
       field="horse",
       endpoint="equestrian_bp.delete_horse",
       title="Eliminar",
       msg="¿Está seguro de que desea eliminar al caballo?",
       msg_sub="Luego de confirmar, no se podrán revertir los cambios"
-    )
-  }}
+    ) }}
 {% endblock %}
 

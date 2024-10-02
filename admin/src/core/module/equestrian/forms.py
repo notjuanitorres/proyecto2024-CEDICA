@@ -1,7 +1,19 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, BooleanField, SelectField, DateField
+from wtforms import StringField, BooleanField, SelectField, DateField, SelectMultipleField, widgets
 from wtforms.validators import DataRequired, Length
 from src.core.module.equestrian.models import JAEnum
+
+
+class MultiCheckboxField(SelectMultipleField):
+    """
+    https://wtforms.readthedocs.io/en/3.0.x/specific_problems/?highlight=listwidget#specialty-field-tricks
+    A multiple-select, except displays a list of checkboxes.
+
+    Iterating the field will produce subfields, allowing custom rendering of
+    the enclosed checkbox fields.
+    """
+    widget = widgets.ListWidget(prefix_label=False)
+    option_widget = widgets.CheckboxInput()
 
 
 class HorseManagementForm(FlaskForm):
@@ -81,4 +93,26 @@ class HorseCreateForm(HorseManagementForm):
 
 
 class HorseEditForm(HorseManagementForm):
-    pass
+    def __init__(self, *args, **kwargs):
+        super(HorseEditForm, self).__init__(*args, **kwargs)
+        self.trainers.choices = self.get_trainers_choices()
+
+    def import_validator(self):
+        # Needed to import the container dynamically at run time
+        # It is in order to work along with WTForms instantiation at definition
+        # pylint: disable="C0415"
+        from src.core.container import Container
+
+        container = Container()
+        return container.employee_services()
+
+    def get_trainers_choices(self):
+        return [(1, 'Trainer 1'), (2, 'Trainer 2'), (3, 'Trainer 3'), (4, 'Trainer 4'), (5, 'Trainer 5'), (6, 'Trainer 6')]
+        # TODO: uncomment this method when the employee service is implemented
+        # return [(trainer.id, trainer.name) for trainer in self.import_validator().get_trainers()]
+
+    trainers = MultiCheckboxField(
+        "Entrenadores y conductores",
+        choices=[],
+        # TODO: get the horse trainers and set them as checked
+    )
