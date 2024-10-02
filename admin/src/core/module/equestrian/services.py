@@ -10,7 +10,7 @@ class AbstractEquestrianServices:
         pass
 
     @abstractmethod
-    def get_page(self, page: int, per_page: int, order_by: list):
+    def get_page(self, page: int, per_page: int, order_by: list, filters: Dict):
         pass
 
     @abstractmethod
@@ -23,6 +23,14 @@ class AbstractEquestrianServices:
 
     @abstractmethod
     def delete_horse(self, horse_id: int) -> bool:
+        pass
+
+    @abstractmethod
+    def set_horse_trainers(self, horse_id: int, trainers_ids: List[int]):
+        pass
+
+    @abstractmethod
+    def get_trainers_of_horse(self, horse_id: int) -> List:
         pass
 
 
@@ -46,10 +54,10 @@ class EquestrianServices(AbstractEquestrianServices):
 
         return self.to_dict(created_horse)
 
-    def get_page(self, page: int, per_page: int, order_by: list):
+    def get_page(self, page: int, per_page: int, order_by: list, filters: Dict):
         max_per_page = 100
         per_page = 20
-        return self.equestrian_repository.get_page(page, per_page, max_per_page, order_by)
+        return self.equestrian_repository.get_page(page, per_page, max_per_page, order_by, filters)
 
     def get_horse(self, horse_id: int):
         horse = self.equestrian_repository.get_by_id(horse_id)
@@ -79,3 +87,9 @@ class EquestrianServices(AbstractEquestrianServices):
             "updated_at": horse.updated_at,
             "sex": horse.sex
         }
+
+    def set_horse_trainers(self, horse_id: int, trainers_ids: List[int]):
+        self.equestrian_repository.set_horse_trainers(horse_id, trainers_ids)
+
+    def get_trainers_of_horse(self, horse_id: int) -> List:
+        return self.equestrian_repository.get_trainers_of_horse(horse_id)

@@ -18,10 +18,13 @@ def get_horses(equestrian_services: AES = Provide[Container.equestrian_services]
     per_page = request.args.get("per_page", type=int)
     sort_by = request.args.get("sort_by", "id")
     order = request.args.get("order", "asc")
+    search_name = request.args.get('search_name', '')
+    search_ja_type = request.args.get('search_ja_type', '')
 
     order_by = [(sort_by, order)]
 
-    paginated_horses = equestrian_services.get_page(page, per_page, order_by)
+    paginated_horses = (equestrian_services.
+                        get_page(page, per_page, order_by, {'name': search_name, 'ja_type': search_ja_type}))
 
     return render_template("horses.html", horses=paginated_horses)
 
@@ -95,7 +98,6 @@ def update_horse(horse_id: int, edit_form: HorseEditForm,
     if not edit_form.validate_on_submit():
         return render_template("edit_horse.html", form=edit_form)
 
-    print(edit_form.ja_type.data)
     equestrian_services.update_horse(
         horse_id=horse_id,
         data={
@@ -110,6 +112,7 @@ def update_horse(horse_id: int, edit_form: HorseEditForm,
             "sex": edit_form.sex.data,
         },
     )
+    # equestrian_services.set_horse_trainers(horse_id, edit_form.trainers.data)
 
     return redirect(url_for("equestrian_bp.show_horse", horse_id=horse_id))
 
