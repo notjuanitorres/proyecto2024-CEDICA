@@ -32,7 +32,7 @@
 </nav>
 
 <div class="container">
-  <h4 class="title is-fullwidth has-text-centered">Actualizando a {{ employee.first_name + " " + employee.last_name }}</h4>
+  <h4 class="title is-fullwidth has-text-centered">Actualizando a {{ employee.name + " " + employee.lastname }}</h4>
   <div class="tabs is-toggle is-fullwidth is-toggle-rounded is-centered is-medium">
     <ul>
       <li class="is-active">
@@ -66,7 +66,7 @@
                     {{ form.first_name(class="input", placeholder="Ingrese el nombre") }}
                 </div>
                 {% if form.first_name.errors %}
-                    <p class="help is-danger">{{ form.first_name.errors[0] }}</p>
+                    <p class="help is-danger">{{ form.name.errors[0] }}</p>
                 {% endif %}
             </div>
             <div class="field">

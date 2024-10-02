@@ -3,7 +3,7 @@ from dependency_injector.wiring import inject, Provide
 from src.web.helpers.auth import check_user_permissions
 from src.core.container import Container
 from src.core.module.employee import (
-    EmployeeDTO,
+    EmployeeMapper as Mapper,
     AbstractEmployeeServices,
     EmployeeCreateForm,
     EmployeeEditForm,
@@ -56,12 +56,13 @@ def add_employee(
 ):
     if not create_form.validate_on_submit():
         return render_template("./employee/create_employee.html", form=create_form)
-
+    
     created_employee = employees.create_employee(
-        EmployeeDTO.from_form(create_form.data)
+        Mapper.from_form(create_form.data)
     )
+
     return redirect(
-        url_for("employee_bp.show_employee", employee_id=created_employee.id)
+        url_for("employee_bp.show_employee", employee_id=created_employee["id"])
     )
 
 
@@ -90,7 +91,7 @@ def edit_employee(
     if not employee:
         return redirect(url_for("employee_bp.get_employees"))
 
-    update_form = EmployeeEditForm(data=employee.to_form())
+    update_form = EmployeeEditForm(data=Mapper.to_form(employee))
 
     if request.method == "POST":
         return update_employee(update_form=update_form, employee_id=employee_id)
@@ -110,7 +111,7 @@ def update_employee(
         return render_template("./employee/update_employee.html", form=update_form)
  
     if not employees.update_employee(
-        employee_id, EmployeeDTO.from_form(update_form.data)
+        employee_id, Mapper.from_form(update_form.data)
     ):
         flash("No se ha podido actualizar al miembro del equipo", "success")
         return render_template("./employee/update_employee.html", form=update_form)

@@ -1,6 +1,6 @@
 {% extends "base_show.html" %}
 
-{% block title %}Miembro {{ employee.name }} - CEDICA{% endblock %}
+{% block title %}Miembro {{ employee.name + " " + employee.lastname }} - CEDICA{% endblock %}
 
 {% block breadcrumb_items %}
     <li>
@@ -16,12 +16,12 @@
             <span class="icon is-small">
                 <i class="fa-solid fa-user" aria-hidden="true"></i>
             </span>
-            <span>{{ employee.fullname }}</span>
+            <span>{{ employee.name + " " + employee.lastname }}</span>
         </a>
     </li>
 {% endblock %}
 
-{% block card_title %}Miembro: {{ employee.first_name + " " + employee.last_name }}{% endblock %}
+{% block card_title %}Miembro: {{ employee.name + " " + employee.lastname }}{% endblock %}
 
 {% block card_content %}
 
@@ -30,8 +30,8 @@
         <h3>Informacion general</h3>
         <ul>
             <li><strong>ID: </strong> {{ employee.id }}</li>
-            <li><strong>Nombre: </strong>{{ employee.first_name }}</li>
-            <li><strong>Apellido: </strong> {{ employee.last_name }}</li>
+            <li><strong>Nombre: </strong>{{ employee.name }}</li>
+            <li><strong>Apellido: </strong> {{ employee.lastname }}</li>
             <li><strong>Email: </strong>{{ employee.email }}</li>
             <li><strong>Telefono: </strong>{{ employee.phone }}</li>
             <li><strong>DNI: </strong>{{ employee.dni }}</li>
