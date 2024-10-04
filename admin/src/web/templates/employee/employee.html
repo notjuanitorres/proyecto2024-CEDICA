@@ -1,6 +1,6 @@
 {% extends "base_show.html" %}
 
-{% block title %}Miembro {{ employee.name + " " + employee.lastname }} - CEDICA{% endblock %}
+{% block title %}Miembro {{ employee.name }} - CEDICA{% endblock %}
 
 {% block breadcrumb_items %}
     <li>
@@ -16,12 +16,12 @@
             <span class="icon is-small">
                 <i class="fa-solid fa-user" aria-hidden="true"></i>
             </span>
-            <span>{{ employee.name + " " + employee.lastname }}</span>
+            <span>{{ employee.fullname }}</span>
         </a>
     </li>
 {% endblock %}
 
-{% block card_title %}Miembro: {{ employee.name + " " + employee.lastname }}{% endblock %}
+{% block card_title %}Miembro: {{ employee.fullname }}{% endblock %}
 
 {% block card_content %}
 
@@ -35,11 +35,12 @@
             <li><strong>Email: </strong>{{ employee.email }}</li>
             <li><strong>Telefono: </strong>{{ employee.phone }}</li>
             <li><strong>DNI: </strong>{{ employee.dni }}</li>
-            <li><strong>Dado de alta: </strong>{{ employee.inserted_at | format_date }}</li>
-            <li><strong>Ultima modificacion: </strong>{{ employee.updated_at | format_date }}</li>
-
         </ul>
-
+        <h4>Contacto de emergencia</h4>
+        <ul id="emergency-contact">
+            <li><strong>Nombre completo: </strong>{{ employee.emergency_contact_name }}</li>
+            <li><strong>Telefono: </strong>{{ employee.emergency_contact_phone }}</li>
+        </ul>
     </div>
     <div id="job-info" class="cell">
         <h3>Datos laborales</h3>
@@ -56,13 +57,13 @@
             <li><strong>Numero de afiliado: #</strong>{{ employee.affiliate_number }}</li>
         </ul>
     </div>
-</div>
-<div id="emergency-contact-info has-bab" class="cell box">
-    <h4>Contacto de emergencia</h4>
-    <ul id="emergency-contact">
-        <li><strong>Nombre completo: </strong>{{ employee.emergency_contact_name }}</li>
-        <li><strong>Telefono: </strong>{{ employee.emergency_contact_phone }}</li>
-    </ul>
+    <div id="system-info" class="cell">
+        <h4>Estampas</h4>
+        <ul>
+            <li><strong>Dado de alta: </strong>{{ employee.inserted_at | format_date }}</li>
+            <li><strong>Ultima modificacion: </strong>{{ employee.updated_at | format_date }}</li>
+        </ul>
+    </div>
 </div>
 {% endblock %}
 
@@ -70,7 +71,7 @@
     <button href="" class="card-footer-item has-text-danger modal-trigger" data-id="{{ employee.id }}" data-target="employee-delete-modal">
         Eliminar
     </button>
-    <a href="{{ url_for( "employee_bp.edit_employee", employee_id=employee.id )}}" class="card-footer-item has-text-warning">Editar</a>
+    <a href="" class="card-footer-item has-text-warning">Editar</a>
 {% endblock %}
 
 {% block additional_cards %}

@@ -21,9 +21,4 @@ class EmergencyContactMixin:
 class PhoneMixin:
     country_code = db.Column(db.String(5))
     area_code = db.Column(db.String(5))
-    phone = db.Column(db.String(15))
-    
-    # @declared_attr
-    # from sqlalchemy.orm import declared_attr
-    # def phone_number(self):
-    #     return db.column_property(self.country_code + self.area_code + self.phone)
+    phone_number = db.Column(db.String(15))

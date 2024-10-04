@@ -1,13 +1,6 @@
-from .models import AddressMixin, EmergencyContactMixin, PhoneMixin
-from .forms import AddressForm, EmergencyContactForm, PhoneForm
-
+from .models import AddressMixin, EmergencyContactMixin
 
 __all__ = [
     "AddressMixin",
-    "EmergencyContactMixin",
-    "PhoneMixin",
-
-    "AddressForm",
-    "EmergencyContactForm",
-    "PhoneForm",
+    "EmergencyContactMixin"
 ]

@@ -27,14 +27,7 @@ class AbstractEmployeeRepository:
         raise NotImplementedError
 
     @abstractmethod
-    def get_by_email(self, email: str) -> Employee:
-        raise NotImplementedError
-    
-    def get_by_dni(self, dni: str) -> Employee:
-        raise NotImplementedError
-
-    @abstractmethod
-    def update(self, employee_id: int, data: Dict) -> bool:
+    def update(self, employee_id: int, data: Dict) -> None:
         raise NotImplementedError
 
     @abstractmethod
@@ -45,16 +38,6 @@ class AbstractEmployeeRepository:
 class EmployeeRepository(AbstractEmployeeRepository):
     def __init__(self):
         self.db: SQLAlchemy = database
-
-    def save(self):
-        self.db.session.commit()
-
-    def add(self, employee: Employee):
-        self.db.session.add(employee)
-        self.db.session.flush()
-        self.save()
-
-        return employee
 
     def get_page(
         self,
@@ -75,26 +58,14 @@ class EmployeeRepository(AbstractEmployeeRepository):
         return query.paginate(
             page=page, per_page=per_page, error_out=False, max_per_page=max_per_page
         )
-
+    def add(self, employee: Employee) -> Employee | None:
+        pass
+    
     def get_by_id(self, employee_id: int) -> Employee:
-        return (
-            self.db.session.query(Employee).filter(Employee.id == employee_id).first()
-        )
-        
-    def get_by_email(self, email: str) -> Employee | None:
-        return self.db.session.query(Employee).filter(Employee.email == email).first()
+        return self.db.session.query(Employee).filter(Employee.id == employee_id).first()
 
-    def get_by_dni(self, dni: str) -> Employee | None:
-        return self.db.session.query(Employee).filter(Employee.dni == dni).first()
-
-    def update(self, employee_id: int, data: Dict) -> bool:
-        employee = Employee.query.filter_by(id=employee_id)
-        if not employee:
-            return False
-        employee.update(data)
-
-        self.save()
-        return True
+    def update(self, employee_id: int, data: Dict) -> None:
+        pass
 
     def delete(self, employee_id: int) -> bool:
         pass
