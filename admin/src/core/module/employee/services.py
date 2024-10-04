@@ -2,11 +2,12 @@ from abc import abstractmethod
 from typing import Dict
 from .repositories import AbstractEmployeeRepository
 from .models import Employee
+from .mappers import EmployeeMapper as Mapper
 
 
 class AbstractEmployeeServices:
     @abstractmethod
-    def create_employee(self, employee_data: Dict) -> Dict | None:
+    def create_employee(self, employee: Dict) -> Dict | None:
         raise NotImplementedError
 
     @abstractmethod
@@ -24,50 +25,51 @@ class AbstractEmployeeServices:
     @abstractmethod
     def delete_employee(self, employee_id: int) -> bool:
         raise NotImplementedError
+
+    @abstractmethod
+    def is_email_used(self, email: str) -> bool:
+        raise NotImplementedError
+
+    @abstractmethod
+    def is_dni_used(self, dni: str) -> bool:
+        raise NotImplementedError
+
 
 class EmployeeServices(AbstractEmployeeServices):
     def __init__(self, employee_repository: AbstractEmployeeRepository):
         self.employee_repository = employee_repository
 
-    def create_employee(self, employee_data: Dict) -> Dict | None:
-        pass
+    def create_employee(self, employee: Dict) -> Dict | None:
+        created_user = self.employee_repository.add(Mapper.to_entity(employee))
+
+        return Mapper.from_entity(created_user)
 
     def get_page(self, page: int, per_page: int, order_by: list):
         max_per_page = 100
         per_page = 20
-        return self.employee_repository.get_page(page, per_page, max_per_page, order_by)
+        return self.employee_repository.get_page(
+            page, per_page, max_per_page, search_query, order_by
+        )
 
     def get_employee(self, employee_id: int) -> Dict | None:
         employee = self.employee_repository.get_by_id(employee_id)
         if not employee:
             return None
-        return self.to_dict(employee)
+        return Mapper.from_entity(employee)
 
     def update_employee(self, employee_id: int, data: Dict) -> None:
-        pass
+        data["id"] = employee_id
+        return self.employee_repository.update(employee_id, data)
 
     def delete_employee(self, employee_id: int) -> bool:
         pass
 
-    def to_dict(self, employee: Employee) -> Dict:
-        employee_dict = {
-            "id": employee.id,
-            "email": employee.email,
-            "phone": employee.phone,
-            "name": employee.name,
-            "lastname": employee.lastname,
-            "fullname": employee.fullname,
-            "dni": employee.dni,
-            "profession": employee.profession.value,
-            "position": employee.position.value,
-            "job_condition": employee.job_condition.value,
-            "start_date": employee.start_date,
-            "end_date": employee.end_date,
-            "health_insurance": employee.health_insurance,
-            "affiliate_number": employee.affiliate_number,
-            "is_active": employee.is_active,
-            "inserted_at": employee.inserted_at,
-            "updated_at": employee.updated_at,
-            "user_id": employee.user_id,
-        }
-        return employee_dict
+    def is_email_used(self, email: str) -> bool:
+        employee = self.employee_repository.get_by_email(email=email)
+
+        return employee is not None
+
+    def is_dni_used(self, dni: str) -> bool:
+        employee = self.employee_repository.get_by_dni(dni=dni)
+
+        return employee is not None
