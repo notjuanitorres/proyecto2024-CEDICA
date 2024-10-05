@@ -10,16 +10,18 @@ from wtforms.fields import (
     TextAreaField,
 )
 from src.core.module.employee.data import ProfessionsEnum, PositionEnum, ConditionEnum
-from src.core.module.common import (
-    AddressForm,
-    EmergencyContactForm,
-    BasicInformationForm,
-)
+from src.core.module.employee.validators import EmailExistence, DniExistence
+from src.core.module.common import AddressForm, EmergencyContactForm, PhoneForm
 
 
-class EmployeeManagementForm(FlaskForm):
-    def __init__(self, *args, **kwargs):
-        super(EmployeeManagementForm, self).__init__(*args, **kwargs)
+def email_existence(form, field):
+    validator = EmailExistence(message="Email en uso")
+    validator(form, field)
+
+
+def dni_existence(form, field):
+    validator = DniExistence(message="DNI en uso")
+    validator(form, field)
 
 
 class EmploymentInformationForm(FlaskForm):
@@ -47,28 +49,54 @@ class EmploymentInformationForm(FlaskForm):
     is_active = BooleanField("Activo en la organizacion")
 
 
+class EmployeeManagementForm(FlaskForm):
+    def __init__(self, *args, **kwargs):
+        super(EmployeeManagementForm, self).__init__(*args, **kwargs)
+        self.current_email = None
+        self.current_dni = None
 
-class EmployeeCreateForm(EmployeeManagementForm):
-    basic_information = FormField(BasicInformationForm)
-    employment_information = FormField(EmploymentInformationForm)
+    first_name = StringField("Nombre", validators=[DataRequired()])
+    last_name = StringField("Apellido", validators=[DataRequired()])
     address = FormField(AddressForm)
-    emergency_contact = FormField(EmergencyContactForm)
+    phone = FormField(PhoneForm)
+    employment_information = FormField(EmploymentInformationForm)
     health_insurance = TextAreaField("Obra Social", validators=[Optional()])
     affiliate_number = StringField("Numero de afiliado", validators=[Optional()])
-    email = StringField(
-        "Email",
-        validators=[DataRequired(), Email(message="Email inválido"), Length(max=100)],
-    )
+    emergency_contact = FormField(EmergencyContactForm)
 
     # user_id = IntegerField("", validators=[DataRequired()])
 
 
-class EmployeeEditForm(EmployeeManagementForm):
-    basic_information = FormField(BasicInformationForm)
-    employment_information = FormField(EmploymentInformationForm)
-    address = FormField(AddressForm)
-    emergency_contact = FormField(EmergencyContactForm)
+class EmployeeCreateForm(EmployeeManagementForm):
+    dni = StringField(
+        "DNI", validators=[DataRequired(), Length(min=8, max=8), dni_existence]
+    )
     email = StringField(
         "Email",
-        validators=[DataRequired(), Email(message="Email inválido"), Length(max=100)],
+        validators=[
+            DataRequired(),
+            Email(message="Email inválido"),
+            Length(max=100),
+            email_existence,
+        ],
+    )
+
+
+class EmployeeEditForm(EmployeeManagementForm):
+    def __init__(self, *args, **kwargs):
+        super(EmployeeEditForm, self).__init__(*args, **kwargs)
+        self.current_email = kwargs.pop("current_email", None)
+        self.current_dni = kwargs.pop("current_dni", None)
+
+    dni = StringField(
+        "DNI", validators=[DataRequired(), Length(min=8, max=8), dni_existence]
+    )
+    email = StringField(
+        "Email",
+        validators=[
+            DataRequired(),
+            Email(message="Email inválido"),
+            Length(max=100),
+            email_existence,
+        ],
     )
