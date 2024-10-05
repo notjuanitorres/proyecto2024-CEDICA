@@ -17,8 +17,8 @@ class AbstractEmployeeRepository:
         page: int,
         per_page: int,
         max_per_page: int,
-        order_by: list,
-        # search_params: Dict,
+        search_query: Dict = None,
+        order_by: list = None,
     ) -> Pagination:
         raise NotImplementedError
 
@@ -61,9 +61,22 @@ class EmployeeRepository(AbstractEmployeeRepository):
         page: int,
         per_page: int,
         max_per_page: int,
+        search_query: Dict = None,
         order_by: List = None,
     ):
         query = Employee.query
+
+        if search_query:
+            if "filters" in search_query and search_query["filters"]:
+                for field, value in search_query["filters"].items():
+                    if hasattr(Employee, field):
+                        model_field = getattr(Employee, field)
+                        query = query.filter(model_field == value)
+
+            if "text" in search_query and "field" in search_query:
+                if hasattr(Employee, search_query["field"]):
+                    field = getattr(Employee, search_query["field"])
+                    query = query.filter(field.ilike(f"%{search_query["text"]}%"))
 
         if order_by:
             for field, direction in order_by:

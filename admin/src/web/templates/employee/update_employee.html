@@ -57,7 +57,7 @@
 <section class="section pt-4">
     <form method="POST" class="">
       {{ form.hidden_tag() }}
-      <div id="general-information" class="field">
+      <article id="general-information" class="field">
         <label class="label is-size-4">Información General</label>
         <div class="field-body">
             <div class="field">
@@ -79,7 +79,6 @@
                 {% endif %}
             </div>
         </div>
-
         <div class="field-body pt-2">
           <div class="field">
               <label class="label">{{ form.dni.label }}</label>
@@ -100,7 +99,6 @@
             {% endif %}
           </div>
         </div>
-
         <div class="field-body pt-2">
           <div class="field">
             <label class="label">{{ form.phone.country_code.label }}</label>
@@ -130,8 +128,9 @@
               {% endif %}
           </div>
         </div>
-      </div>
-      <div id="address-info" class="field pt-3">
+      </article>
+
+      <article id="address-info" class="field pt-3">
         <label class="label is-size-4">Dirección</label>
         <div class="field">
           <div class="field-body">
@@ -184,9 +183,9 @@
             {% endif %}
           </div>
         </div>
-      </div>
+      </article>
   
-      <div id="job-info" class="field pt-3">
+      <article id="job-info" class="field pt-3">
         <label class="label is-size-4">Datos laborales</label>
         <div class="field">
           <div class="control">
@@ -199,7 +198,6 @@
               <p class="help is-danger">{{ form.employment_information.is_active.errors[0] }}</p>
           {% endif %}
         </div>
-        
         <div class="field-body">
           <div class="field">
             <label class="label">{{ form.employment_information.profession.label }}</label>
@@ -213,7 +211,7 @@
             {% endif %}
           </div>
           <div class="field">
-            <label class="label">{{ form.employment_information.label }}</label>
+            <label class="label">{{ form.employment_information.position.label }}</label>
             <div class="control">
               <div class="select">
                 {{ form.employment_information.position() }}
@@ -256,49 +254,49 @@
             {% endif %}
           </div>
         </div>
-      </div>
+      </article>
 
-      <div id="health-info" class="field pt-3">
-      <label class="label is-size-4">Cobertura medica</label>
-      <div class="field-body">
-        <div class="field">
-          <label class="label">{{ form.emergency_contact.emergency_contact_name.label }}</label>
-          <div class="control">
-            {{ form.emergency_contact.emergency_contact_name(class="input", placeholder="Ingrese el nombre del contacto de emergencia")}}
-          </div>
-          {% if form.address.number.errors %}
-          <p class="help is-danger">{{ form.emergency_contact.emergency_contact_name.errors[0] }}</p>
-          {% endif %}
-        </div> 
-        <div class="field">
-          <label class="label">{{ form.emergency_contact.emergency_contact_phone.label }}</label>
-          <div class="control">
-              {{ form.emergency_contact.emergency_contact_phone(class="input", placeholder="Ingrese el nombre del contacto de emergencia")}}
-          </div>
-          {% if form.address.number.errors %}
-          <p class="help is-danger">{{ form.emergency_contact.emergency_contact_phone.errors[0] }}</p>
-          {% endif %}
-        </div> 
-      </div>
-      <div class="field pt-3">
-        <label class="label">{{ form.health_insurance.label }}</label>
-        <div class="control">
-          {{ form.health_insurance(class="textarea") }}
+      <article id="health-info" class="field pt-3">
+        <label class="label is-size-4">Cobertura medica</label>
+        <div class="field-body">
+          <div class="field">
+            <label class="label">{{ form.emergency_contact.emergency_contact_name.label }}</label>
+            <div class="control">
+              {{ form.emergency_contact.emergency_contact_name(class="input", placeholder="Ingrese el nombre del contacto de emergencia")}}
+            </div>
+            {% if form.address.number.errors %}
+            <p class="help is-danger">{{ form.emergency_contact.emergency_contact_name.errors[0] }}</p>
+            {% endif %}
+          </div> 
+          <div class="field">
+            <label class="label">{{ form.emergency_contact.emergency_contact_phone.label }}</label>
+            <div class="control">
+                {{ form.emergency_contact.emergency_contact_phone(class="input", placeholder="Ingrese el nombre del contacto de emergencia")}}
+            </div>
+            {% if form.address.number.errors %}
+            <p class="help is-danger">{{ form.emergency_contact.emergency_contact_phone.errors[0] }}</p>
+            {% endif %}
+          </div> 
         </div>
-        {% if form.health_insurance.errors %}
-          <p class="help is-danger">{{ form.health_insurance.errors[0] }}</p>
-        {% endif %}
-      </div>
-      <div class="field">
-        <label class="label">{{ form.affiliate_number.label }}</label>
-        <div class="control">
-          {{ form.affiliate_number(class="input", placeholder="Ingrese el número de afiliado") }}
+        <div class="field pt-3">
+          <label class="label">{{ form.health_insurance.label }}</label>
+          <div class="control">
+            {{ form.health_insurance(class="textarea") }}
+          </div>
+          {% if form.health_insurance.errors %}
+            <p class="help is-danger">{{ form.health_insurance.errors[0] }}</p>
+          {% endif %}
         </div>
-        {% if form.affiliate_number.errors %}
-          <p class="help is-danger">{{ form.affiliate_number.errors[0] }}</p>
-        {% endif %}
-      </div>
-      </div>
+        <div class="field">
+          <label class="label">{{ form.affiliate_number.label }}</label>
+          <div class="control">
+            {{ form.affiliate_number(class="input", placeholder="Ingrese el número de afiliado") }}
+          </div>
+          {% if form.affiliate_number.errors %}
+            <p class="help is-danger">{{ form.affiliate_number.errors[0] }}</p>
+          {% endif %}
+        </div>
+      </article>
 
       <div class="field mt-5">
         <div class="control">

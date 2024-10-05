@@ -1,5 +1,6 @@
 from enum import Enum
 
+
 class ProfessionsEnum(Enum):
     PSICOLOGO = "Psicólogo/a"
     PSICOMOTRICISTA = "Psicomotricista"
@@ -33,3 +34,10 @@ class ConditionEnum(Enum):
     VOLUNTARIO = "Voluntario"
     PERSONAL_RENTADO = "Personal Rentado"
     OTRO = "Otro"
+
+
+enums = {
+    "professions": ProfessionsEnum,
+    "positions": PositionEnum,
+    "conditions": ConditionEnum,
+}

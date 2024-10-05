@@ -8,6 +8,7 @@ from wtforms.fields import (
     FormField,
     DateField,
     TextAreaField,
+    SubmitField,
 )
 from src.core.module.employee.data import ProfessionsEnum, PositionEnum, ConditionEnum
 from src.core.module.employee.validators import EmailExistence, DniExistence
@@ -100,3 +101,37 @@ class EmployeeEditForm(EmployeeManagementForm):
             email_existence,
         ],
     )
+
+
+class EmployeeSearchForm(FlaskForm):
+    class Meta:
+        csrf = False
+
+    search_by = SelectField(
+        choices=[
+            ("name", "Nombre"),
+            ("lastname", "Apellido"),
+            ("dni", "DNI"),
+            ("email", "Email"),
+        ],
+        validate_choice=True,
+    )
+    search_text = StringField(validators=[Length(max=50)])
+    filter_profession = SelectField(
+        choices=[("", "Ver Todas")] + [(e.name, e.value) for e in ProfessionsEnum],
+        validate_choice=True,
+    )
+    order_by = SelectField(
+        choices=[
+            ("id", "ID"),
+            ("name", "Nombre"),
+            ("lastname", "Apellido"),
+            ("dni", "DNI"),
+            ("email", "Email"),
+        ],
+        validate_choice=True,
+    )
+    order = SelectField(
+        choices=[("asc", "Ascendente"), ("desc", "Descendente")], validate_choice=True
+    )
+    submit_search = SubmitField("Buscar")

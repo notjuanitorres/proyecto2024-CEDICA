@@ -11,7 +11,7 @@ class AbstractEmployeeServices:
         raise NotImplementedError
 
     @abstractmethod
-    def get_page(self, page: int, per_page: int, order_by: list):
+    def get_page(self, page: int, per_page: int, search_query: Dict, order_by: list):
         raise NotImplementedError
 
     @abstractmethod
@@ -44,7 +44,7 @@ class EmployeeServices(AbstractEmployeeServices):
 
         return Mapper.from_entity(created_user)
 
-    def get_page(self, page: int, per_page: int, order_by: list):
+    def get_page(self, page: int, per_page: int, search_query: Dict, order_by: list):
         max_per_page = 100
         per_page = 20
         return self.employee_repository.get_page(

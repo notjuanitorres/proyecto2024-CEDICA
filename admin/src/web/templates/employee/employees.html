@@ -1,6 +1,6 @@
 {% extends "base_list.html" %}
 
-{% block title %}Empleados - CEDICA{% endblock %}
+{% block title %}Equipo - CEDICA{% endblock %}
 
 {% block breadcrumb_items %}
   <li>
@@ -43,14 +43,62 @@
     <div class="card-content">
       <div class="content">
         <form class="form" method="GET">
+          <div class="is-flex is-flex-direction-row is-flex-wrap-wrap is-gap-1">
+            <div class="field">
+              <label class="label">Buscar</label>
+              <div class="control">
+                  <div class="select">
+                      {{ search_form.search_by() }}
+                  </div>
+              </div>
+            </div>
+            <div class="field">
+              <label class="label">Profesion</label>
+              <div class="control">
+                  <div class="select">
+                      {{ search_form.filter_profession() }}
+                  </div>
+              </div>
+            </div>
+            <div class="field is-flex-grow-1">
+              <label for="filtrar" class="label is-invisible-tablet">Buscar</label>
+              <p class="control has-icons-left">
+                {{ search_form.search_text(class="input", placeholder="Buscar") }}
+                <span class="icon is-left">
+                  <i class="fas fa-search" aria-hidden="true"></i>
+                </span>
+              </p>
+              {% if search_form.search_text.errors %}
+              <p class="help is-danger">{{ search_form.search_text.errors[0] }}</p>
+              {% endif %}
+            </div>
+          </div>
+          <div class="grid is-flex-tablet is-row-gap-0 is-column-gap-1 pt-3" >
+            <div class="field">
+              <label class="label">Ordenar por</label>
+              <div class="control">
+                  <div class="select">
+                      {{ search_form.order_by() }}
+                  </div>
+              </div>
+            </div>
+            <div class="field">
+              <label class="label">En orden</label>
+              <div class="control">
+                  <div class="select">
+                      {{ search_form.order() }}
+                  </div>
+              </div>
+            </div>
+          </div>
           <div class="field card-footer">
             <div class="control card-footer-item">
-              <a href="">
+              <a href="{{ url_for("employee_bp.get_employees") }}">
                 Limpiar
               </a>
             </div>
             <div class="control card-footer-item">
-              <button class="is-flex-grow-1" type="submit">Aplicar</button>
+              {{ search_form.submit_search(class="button is-flex-grow-1 is-link")}}
             </div>
           </div>
         </form>
@@ -58,6 +106,7 @@
     </div>
   </div>
 {% endblock %}
+
 
 {% block table_header %}
   <th></th>
