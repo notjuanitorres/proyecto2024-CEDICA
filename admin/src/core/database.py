@@ -29,13 +29,15 @@ def configure_hooks(app):
 
 
 def reset(app):
-    # Necessary to create the tables with create_all
-    # It should have the app context
-    from .module.accounts.models import User
-    from .module.employee.models import Employee
     """
     Resets the database by dropping and recreating all tables
     """
+    # Necessary to create the tables with create_all
+    # It should have the app context
+    # pylint: disable=C0415,W0611
+    from .module.accounts.models import User
+    from .module.employee.models import Employee
+
     with app.app_context():
         print("Dropping the database... ")
         db.drop_all()
