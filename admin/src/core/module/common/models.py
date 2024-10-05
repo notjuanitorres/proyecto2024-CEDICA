@@ -21,4 +21,4 @@ class EmergencyContactMixin:
 class PhoneMixin:
     country_code = db.Column(db.String(5))
     area_code = db.Column(db.String(5))
-    phone_number = db.Column(db.String(15))
+    phone = db.Column(db.String(15))

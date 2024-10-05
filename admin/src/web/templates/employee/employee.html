@@ -30,17 +30,16 @@
         <h3>Informacion general</h3>
         <ul>
             <li><strong>ID: </strong> {{ employee.id }}</li>
-            <li><strong>Nombre: </strong>{{ employee.name }}</li>
-            <li><strong>Apellido: </strong> {{ employee.lastname }}</li>
+            <li><strong>Nombre: </strong>{{ employee.first_name }}</li>
+            <li><strong>Apellido: </strong> {{ employee.last_name }}</li>
             <li><strong>Email: </strong>{{ employee.email }}</li>
             <li><strong>Telefono: </strong>{{ employee.phone }}</li>
             <li><strong>DNI: </strong>{{ employee.dni }}</li>
+            <li><strong>Dado de alta: </strong>{{ employee.inserted_at | format_date }}</li>
+            <li><strong>Ultima modificacion: </strong>{{ employee.updated_at | format_date }}</li>
+
         </ul>
-        <h4>Contacto de emergencia</h4>
-        <ul id="emergency-contact">
-            <li><strong>Nombre completo: </strong>{{ employee.emergency_contact_name }}</li>
-            <li><strong>Telefono: </strong>{{ employee.emergency_contact_phone }}</li>
-        </ul>
+
     </div>
     <div id="job-info" class="cell">
         <h3>Datos laborales</h3>
@@ -57,13 +56,13 @@
             <li><strong>Numero de afiliado: #</strong>{{ employee.affiliate_number }}</li>
         </ul>
     </div>
-    <div id="system-info" class="cell">
-        <h4>Estampas</h4>
-        <ul>
-            <li><strong>Dado de alta: </strong>{{ employee.inserted_at | format_date }}</li>
-            <li><strong>Ultima modificacion: </strong>{{ employee.updated_at | format_date }}</li>
-        </ul>
-    </div>
+</div>
+<div id="emergency-contact-info has-bab" class="cell box">
+    <h4>Contacto de emergencia</h4>
+    <ul id="emergency-contact">
+        <li><strong>Nombre completo: </strong>{{ employee.emergency_contact_name }}</li>
+        <li><strong>Telefono: </strong>{{ employee.emergency_contact_phone }}</li>
+    </ul>
 </div>
 {% endblock %}
 
