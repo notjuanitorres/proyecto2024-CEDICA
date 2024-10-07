@@ -1,13 +1,18 @@
 {% macro render_pagination(pagination, endpoint) %}
+  {% set args = request.args.to_dict() %}
+  {% if 'page' in args %}
+    {% set _ = args.pop('page') %}
+  {% endif %}
+
   <nav class="pagination is-centered" role="navigation" aria-label="pagination">
     {% if pagination.has_prev %}
-      <a href="{{ url_for(endpoint, page=pagination.prev_num) }}" class="pagination-previous">Anterior</a>
+      <a href="{{ url_for(endpoint, page=pagination.prev_num, **args) }}" class="pagination-previous">Anterior</a>
     {% else %}
       <a class="pagination-previous" disabled>Anterior</a>
     {% endif %}
 
     {% if pagination.has_next %}
-      <a href="{{ url_for(endpoint, page=pagination.next_num) }}" class="pagination-next">Siguiente</a>
+      <a href="{{ url_for(endpoint, page=pagination.next_num, **args) }}" class="pagination-next">Siguiente</a>
     {% else %}
       <a class="pagination-next" disabled>Siguiente</a>
     {% endif %}
@@ -17,7 +22,7 @@
         {% if page %}
           {% if page != pagination.page %}
             <li>
-              <a href="{{ url_for(endpoint, page=page) }}" class="pagination-link" aria-label="Goto page {{ page }}">{{ page }}</a>
+              <a href="{{ url_for(endpoint, page=page, **args) }}" class="pagination-link" aria-label="Goto page {{ page }}">{{ page }}</a>
             </li>
           {% else %}
             <li>
