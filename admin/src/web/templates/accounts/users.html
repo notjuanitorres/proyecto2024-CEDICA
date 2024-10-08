@@ -19,7 +19,10 @@
 
 
 {% block create_button %}
-  <a class="button is-primary level-item" href="{{ url_for('users_bp.create_user')}}">Crear usuario</a>
+  <a class="button is-primary level-item" href="{{ url_for('users_bp.create_user')}}">
+    Agregar usuario
+    <i class="fa-solid fa-user-plus ml-2 is-size-5"></i>
+  </a>
 {% endblock %}
 
 {% block form_action %}{{ url_for("users_bp.get_users") }}{% endblock %}
