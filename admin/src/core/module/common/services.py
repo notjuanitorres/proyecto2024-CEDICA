@@ -9,9 +9,11 @@ from werkzeug.datastructures import FileStorage
 from flask import current_app
 
 # from typing import BinaryIO
+FileType = Dict[str, str | int]
+FilesType = List[FileType]
 
 
-class AbstractStorageServices(object):
+class   AbstractStorageServices(object):
     @abstractmethod
     def upload_file(self, file: FileStorage, path: str = ""):
         raise NotImplementedError
@@ -50,31 +52,28 @@ class StorageServices(AbstractStorageServices):
         file.seek(0, os.SEEK_END)
         size = file.tell()
         file.seek(0)
-        self.storage.put_object(
-            bucket_name=self.bucket_name,
-            object_name=filename,
-            data=file.stream,
-            length=size,
-            content_type=file.content_type,
-        )
+        if size > 0:
+            self.storage.put_object(
+                bucket_name=self.bucket_name,
+                object_name=filename,
+                data=file.stream,
+                length=size,
+                content_type=file.content_type,
+            )
+            uploaded_file = {
+                "filename": filename,
+                "filetype": file.mimetype,
+                "filesize": size,
+            }
+        return uploaded_file
 
-        return filename
-
-    def upload_batch(self, files: Dict, path: str = "") -> Dict[str, List[str]]:
-        uploaded_filenames = {}
-
-        for category, file_item in files.items():
-            if isinstance(file_item, list):
-                uploaded_filenames[category] = []
-                for file in file_item:
-                    if file and file.filename:
-                        uploaded_filenames[category].append(self.upload_file(file, path))
-            elif isinstance(file_item, FileStorage):
-                if file_item and file_item.filename:
-                    uploaded_filenames[category] = [self.upload_file(file_item, path)]
-
-        return uploaded_filenames
-
+    def upload_batch(self, files: List[FileStorage], path: str = "") -> FilesType:
+        uploaded_files = {}
+        if isinstance(files, list):
+            uploaded_files = [
+                self.upload_file(file, path) for file in files if file and file.filename.strip()
+            ]
+        return uploaded_files
 
     def get_file(self, path: str, filename: str):
         response: HTTPResponse
