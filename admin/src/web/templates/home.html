@@ -25,17 +25,16 @@
     {{ render_flash_messages(messages) }}
 
     <div class="hero-body">
-        <article class="container has-text-centered glass-bg p-6">
+        <article class="container has-text-centered glass-bg p-5">
 
             {% if is_authenticated %}
-            <h2 class="title is-size-1 has-text-text-20">Bienvenido, {{ user_name }}</h2>
-            <p class="hero-subtitle is-size-5 has-text-text-20">¿En qué estás trabajando hoy?"</p>
+            <h2 class="title is-size-2 has-text-text-20">Bienvenido, {{ user_name }}</h2>
+            <p class="hero-subtitle is-size-5 has-text-text-20">¿En qué estás trabajando hoy?</p>
             {% else %}
             <figure class="image is-3by1 container" style="max-width: 900px; height:auto;"">
                 <img
                 src="{{ url_for('static', filename="assets/logo_cedica.jpeg")}}"
                 alt="CEDICA isologotipo"
-                class=""
                 />
             </figure>
             <div class="mt-5">
