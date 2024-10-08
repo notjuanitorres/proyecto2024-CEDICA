@@ -22,62 +22,27 @@
   <a class="button is-primary level-item" href="{{ url_for('users_bp.create_user')}}">Crear usuario</a>
 {% endblock %}
 
-{% block filter_form %}
-  <div class="card">
-    <header class="card-header">
-      <p class="card-header-title is-size-4">
-        <span class="icon mr-3">
-          <i class="fa-solid fa-filter"></i>
-        </span>
-        Filtrar      
-      </p>
-      <button class="card-header-icon" aria-label="more options">
-        <span class="icon">
-          <i class="fas fa-angle-down" aria-hidden="true"></i>
-        </span>
-      </button>
-    </header>
-    <div class="card-content">
-      <div class="content">
-        <form class="form" method="GET">
-          <div class="is-flex is-justify-content-start is-flex-wrap-wrap pb-5" >
-            <div class="field mr-5">
-              <label class="label">Ordenar por</label>
-              <div class="control">
-                <div class="select">
-                  <select name="sort_by">
-                    <option value="inserted_at">Fecha de creacion</option>
-                    <option value="email">Email</option>
-                  </select>
-                </div>
-              </div>
+{% block form_action %}{{ url_for("users_bp.get_users") }}{% endblock %}
+{% block clear_url %}{{ url_for("users_bp.get_users") }}{% endblock %}
+
+{% block aditional_filters %}
+    <div class="field">
+        <label class="label">Rol</label>
+        <div class="control">
+            <div class="select">
+                {{ search_form.filter_role_id() }}
             </div>
-            <div class="field">
-              <label class="label">En orden</label>
-              <div class="control">
-                <div class="select">
-                  <select name="order">
-                    <option value="asc">Ascendente</option>
-                    <option value="desc">Descendente</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="field card-footer">
-            <div class="control card-footer-item">
-              <a href="{{ url_for("users_bp.get_users") }}">
-                Limpiar
-              </a>
-            </div>
-            <div class="control card-footer-item">
-              <button class="is-flex-grow-1" type="submit">Aplicar</button>
-            </div>
-          </div>
-        </form>
-      </div>
+        </div>
     </div>
-  </div>
+
+    <div class="field">
+        <label class="label">Habilitado</label>
+        <div class="control">
+            <div class="select">
+                {{ search_form.filter_enabled() }}
+            </div>
+        </div>
+    </div>
 {% endblock %}
 
 {% block table_header %}
@@ -85,7 +50,7 @@
   <th>ID</th>
   <th>Correo</th>
   <th>Alias</th>
-  <th>Activo</th>
+  <th>Habilitado</th>
   <th>Rol</th>
   <th>Admin</th>
   <th>Ingreso</th>
@@ -139,7 +104,7 @@
   <th>ID</th>
   <th>Email</th>
   <th>Alias</th>
-  <th>Activo</th>
+  <th>Habilitado</th>
   <th>Rol</th>
   <th>Admin</th>
   <th>Ingreso</th>

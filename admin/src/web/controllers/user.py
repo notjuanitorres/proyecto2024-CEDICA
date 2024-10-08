@@ -3,6 +3,7 @@ from dependency_injector.wiring import inject, Provide
 from src.core.module.accounts import UserCreateForm, UserEditForm
 from src.core.container import Container
 from src.core.module.accounts import AbstractAccountsServices as AAS
+from src.core.module.accounts.forms import UserSearchForm
 
 users_bp = Blueprint(
     "users_bp", __name__, template_folder="./accounts/user", url_prefix="/usuarios"
@@ -21,14 +22,26 @@ def require_login_and_sys_admin(accounts_services=Provide[Container.accounts_ser
 def get_users(accounts_services: AAS = Provide[Container.accounts_services]):
     page = request.args.get("page", type=int)
     per_page = request.args.get("per_page", type=int)
-    sort_by = request.args.get("sort_by", "id")
-    order = request.args.get("order", "asc")
+    search = UserSearchForm(request.args)
+    search_query = {}
+    order_by = []
 
-    order_by = [(sort_by, order)]
+    if search.submit_search.data and search.validate():
+        order_by = [(search.order_by.data, search.order.data)]
+        search_query = {
+            "text": search.search_text.data,
+            "field": search.search_by.data,
+        }
+        if search.filter_enabled.data:
+            search_query["filters"] = {"enabled": search.filter_enabled.data}
+        if search.filter_role_id.data:
+            search_query["filters"]["role_id"] = int(search.filter_role_id.data)
 
-    paginated_users = accounts_services.get_page(page, per_page, order_by)
+    paginated_users = accounts_services.get_page(
+        page=page, per_page=per_page, order_by=order_by, search_query=search_query
+    )
 
-    return render_template("users.html", users=paginated_users)
+    return render_template("users.html", users=paginated_users, search_form=search, )
 
 
 @users_bp.route("/<int:user_id>")
@@ -39,6 +52,7 @@ def show_user(user_id: int, accounts_services: AAS = Provide[Container.accounts_
         flash(f"El usuario con ID = {user_id} no existe", "danger")
         return get_users()
     return render_template('user.html', user=user)
+
 
 @users_bp.route("/crear", methods=["GET", "POST"])
 def create_user():

@@ -10,7 +10,14 @@ class AbstractAccountsRepository:
         pass
 
     @abstractmethod
-    def get_page(self, page: int, per_page: int, max_per_page: int, order_by: list):
+    def get_page(
+            self,
+            page: int,
+            per_page: int,
+            max_per_page: int,
+            search_query: Dict = None,
+            order_by: list = None,
+    ):
         pass
 
     @abstractmethod
@@ -57,13 +64,33 @@ class AccountsRepository(AbstractAccountsRepository):
         
         return user
 
-    def get_page(self, page: int, per_page: int, max_per_page: int, order_by: list):
+    def get_page(
+            self,
+            page: int,
+            per_page: int,
+            max_per_page: int,
+            search_query: Dict = None,
+            order_by: List = None,
+    ):
         query = User.query
+
+        if search_query:
+            if "filters" in search_query and search_query["filters"]:
+                for field, value in search_query["filters"].items():
+                    if hasattr(User, field):
+                        model_field = getattr(User, field)
+                        query = query.filter(model_field == value)
+
+            if "text" in search_query and "field" in search_query:
+                if hasattr(User, search_query["field"]):
+                    field = getattr(User, search_query["field"])
+                    query = query.filter(field.ilike(f"%{search_query["text"]}%"))
+
         if order_by:
             for field, direction in order_by:
-                if direction == 'asc':
+                if direction == "asc":
                     query = query.order_by(getattr(User, field).asc())
-                elif direction == 'desc':
+                elif direction == "desc":
                     query = query.order_by(getattr(User, field).desc())
 
         return query.paginate(
