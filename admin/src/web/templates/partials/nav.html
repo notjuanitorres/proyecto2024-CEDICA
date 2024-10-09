@@ -1,4 +1,4 @@
-<nav class="navbar is-fixed-top" role="navigation" aria-label="main navigation">
+<nav class="navbar is-fixed-top pt-2" role="navigation" aria-label="main navigation">
     <div class="navbar-brand">
         <a class="navbar-item" href="{{ url_for("index_bp.home") }}">
             <figure class="level">
@@ -11,7 +11,7 @@
         </a>
         <a
                 role="button"
-                class="navbar-burger is-active"
+                class="navbar-burger"
                 aria-label="menu"
                 aria-expanded="false"
                 data-target="top-navbar"
@@ -34,7 +34,7 @@
                             Usuarios </a>
                     {% endif %}
                     {% if "equipo_index" in permissions or is_admin %}
-                        <a class="navbar-item is-selected" aria-label="Equipo"> Equipo </a>
+                        <a href="{{ url_for('employee_bp.get_employees') }}" class="navbar-item is-selected" aria-label="Equipo"> Equipo </a>
                     {% endif %}
                     {% if "jya_index" in permissions or is_admin %}
                         <a class="navbar-item" aria-label="Jinetes y Amazonas">
@@ -53,6 +53,19 @@
                             <a class="navbar-item" aria-label="Cobros"> Cobros </a>
                         {% endif %}
                     {% endif %}
+                    <hr class="is-hidden-desktop" /> 
+                    <a href="#" class="navbar-item is-hidden-desktop"> Perfil </a>
+                    <a class="navbar-item is-hidden-desktop"> Configuración </a>
+                    <form action="{{ url_for('auth_bp.logout') }}" method="POST" class="is-hidden-desktop navbar-item">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="button is-danger is-small is-outlined">
+                            <span class="icon is-small">
+                                <i class="fas fa-sign-out"></i>
+                              </span>
+                              <span>Cerrar Sesión</span>
+                        </button>
+                    </form>
+
                 </div>
             </div>
             {% endif %}
@@ -62,38 +75,22 @@
             <div class="navbar-item">
                 <div class="buttons has-dropdown">
                     <button id="themeToggle" class="button is-ghost" aria-label="Cambiar tema">
-                        <svg
-                                width="40px"
-                                height="40px"
-                                viewBox="0 0 24 24"
-                                xmlns="http://www.w3.org/2000/svg"
-                        >
+                        <svg width="40px" height="40px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <g fill="currentColor">
                                 <path
-                                        d="M12,22 C17.52,22 22,17.52 22,12 C22,6.48 17.52,2 12,2 C6.48,2 2,6.48 2,12 C2,17.52 6.48,22 12,22 Z M12,20.5 L12,3.5 C16.69,3.5 20.5,7.31 20.5,12 C20.5,16.69 16.69,20.5 12,20.5 Z"
-                                />
+                                    d="M12,22 C17.52,22 22,17.52 22,12 C22,6.48 17.52,2 12,2 C6.48,2 2,6.48 2,12 C2,17.52 6.48,22 12,22 Z M12,20.5 L12,3.5 C16.69,3.5 20.5,7.31 20.5,12 C20.5,16.69 16.69,20.5 12,20.5 Z" />
                             </g>
                         </svg>
                     </button>
                     {% if is_authenticated %}
-                    <div class="dropdown is-hoverable is-right">
+                    <div class=" is-desktop is-hidden-touchable dropdown is-hoverable is-right" id="dropdown">
                         <div class="dropdown-trigger">
-                            <button
-                                    class="button is-ghost"
-                                    aria-label="Opciones de usuario"
-                                    aria-haspopup="true"
-                                    aria-controls="dropdown-menu"
-                            >
-                                <svg
-                                        width="48"
-                                        height="48"
-                                        viewBox="0 0 48 48"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                >
+                            <button class="button is-ghost" aria-label="Opciones de usuario" aria-haspopup="true"
+                                aria-controls="dropdown-menu">
+                                <svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
                                     <path
-                                            d="M35.75,28c2.28,0,4.14,1.79,4.25,4.04v.21v.75c0,3.76-1.94,6.57-4.92,8.38C32.15,43.16,28.21,44,24,44s-8.15-.84-11.08-2.62c-2.89-1.76-4.8-4.46-4.92-8.06v-.75v-.21c0-2.28,1.79-4.14,4.04-4.25h23.5zM24,4c5.52,0,10,4.48,10,10s-4.48,10-10,10-10-4.48-10-10S18.48,4,24,4z"
-                                            fill="currentColor"
-                                    />
+                                        d="M35.75,28c2.28,0,4.14,1.79,4.25,4.04v.21v.75c0,3.76-1.94,6.57-4.92,8.38C32.15,43.16,28.21,44,24,44s-8.15-.84-11.08-2.62c-2.89-1.76-4.8-4.46-4.92-8.06v-.75v-.21c0-2.28,1.79-4.14,4.04-4.25h23.5zM24,4c5.52,0,10,4.48,10,10s-4.48,10-10,10-10-4.48-10-10S18.48,4,24,4z"
+                                        fill="currentColor" />
                                 </svg>
                             </button>
                         </div>
@@ -102,16 +99,22 @@
                                 <a href="#" class="dropdown-item"> Perfil </a>
                                 <a class="dropdown-item"> Configuración </a>
                                 <hr class="dropdown-divider"/>
-                                <form action="{{ url_for('auth_bp.logout') }}" method="POST" style="display: inline;">
+                                <form action="{{ url_for('auth_bp.logout') }}" method="POST" style="display: flex; justify-content: center;">
                                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                    <button type="submit" class="dropdown-item">Cerrar Sesión</button>
+                                    <button type="submit" class="button is-danger is-small is-outlined">
+                                        <span class="icon is-small">
+                                            <i class="fas fa-sign-out"></i>
+                                          </span>
+                                          <span>Cerrar Sesión</span>
+                                    </button>
                                 </form>
                             </div>
                         </div>
                     </div>
-                    {% endif %}
                 </div>
+                {% endif %}
             </div>
         </div>
+    </div>
     </div>
 </nav>

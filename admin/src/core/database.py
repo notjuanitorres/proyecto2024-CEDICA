@@ -37,6 +37,8 @@ def reset(app):
     """
     from src.core.module.accounts.models import User
     from .module.equestrian.models import Horse
+    from .module.accounts.models import User
+    from .module.employee.models import Employee
 
     with app.app_context():
         print("Dropping the database... ")

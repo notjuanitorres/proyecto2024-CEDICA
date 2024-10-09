@@ -1,21 +1,21 @@
-{% macro render_actions_menu(to_left, endpoints, value, field='user_id') %}
+{% macro render_actions_menu(to_left, endpoints, field, value) %}
     {% if to_left == true %}
-    <div class="dropdown is-left is-hoverable">
+    <div class="dropdown is-left is-hoverable">        
     {% else %}
     <div class="dropdown is-right is-hoverable">
     {% endif %}
         <div class="dropdown-trigger">
-        <a href="{{ url_for(endpoints.show, **{field:value}) }}" class="button" aria-haspopup="true" aria-controls="dropdown-menu">
-            <span class="is-bold">
+        <a href="{{ url_for(endpoints.show, **{field: value}) }}" class="button" aria-haspopup="true" aria-controls="dropdown-menu">
+            <span class=" is-bold">
                 <i class="fa-regular fa-eye"></i>
             </span>
         </a>
         </div>
-        <div class="dropdown-menu" id="dropdown-menu" role="menu">
+        <div class="dropdown-menu" id="dropdown-menu" role="menu"> 
         <div class="dropdown-content">
-            <a href="{{ url_for(endpoints.show, **{field:value}) }}" class="dropdown-item">Ver</a>
-            <a href="{{ url_for(endpoints.edit, **{field:value}) }}" class="dropdown-item has-text-warning">Editar</a>
-            <button class="dropdown-item has-text-danger modal-trigger" data-id="{{ value }}" data-target="{{ field.split('_')[0] }}-delete-modal">Eliminar</button>
+            <a href="{{ url_for(endpoints.show, **{field: value}) }}" class="dropdown-item">Ver</a>
+            <a href="{{ url_for(endpoints.edit, **{field: value}) }}" class="dropdown-item has-text-warning">Editar</a>
+            <button class="dropdown-item has-text-danger modal-trigger" data-id="{{ value }}" data-target="user-delete-modal">Eliminar</button>
         </div>
         </div>
     </div>

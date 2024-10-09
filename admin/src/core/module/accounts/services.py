@@ -12,8 +12,8 @@ class AbstractAccountsServices:
         pass
 
     @abstractmethod
-    def get_page(self, page: int, per_page: int, order_by: list, filters: dict):
-        pass
+    def get_page(self, page: int, per_page: int, search_query: Dict, order_by: list):
+        raise NotImplementedError
 
     @abstractmethod
     def get_user(self, user_id: int) -> Dict | None:
@@ -81,10 +81,12 @@ class AccountsServices(AbstractAccountsServices):
         created_user = self.accounts_repository.add(new_user)
         return self.to_dict(created_user)
 
-    def get_page(self, page: int, per_page: int, order_by: list, filters: dict):
+    def get_page(self, page: int, per_page: int, search_query: Dict, order_by: list):
         max_per_page = 100
         per_page = 20
-        return self.accounts_repository.get_page(page, per_page, max_per_page, order_by, filters)
+        return self.accounts_repository.get_page(
+            page, per_page, max_per_page, search_query, order_by
+        )
 
     def get_user(self, user_id: int) -> Dict | None:
         user = self.accounts_repository.get_by_id(user_id)
@@ -111,7 +113,6 @@ class AccountsServices(AbstractAccountsServices):
             return None
 
         return self.to_dict(user)
-
 
     def toggle_activation(self, user_id: int) -> bool:
         if self.is_sys_admin(user_id):

@@ -19,49 +19,33 @@
 
 
 {% block create_button %}
-  <a class="button is-primary level-item" href="{{ url_for('users_bp.create_user')}}">Crear usuario</a>
+  <a class="button is-primary level-item" href="{{ url_for('users_bp.create_user')}}">
+    Agregar usuario
+    <i class="fa-solid fa-user-plus ml-2 is-size-5"></i>
+  </a>
 {% endblock %}
 
-{% block search_and_filter %}
-    {{ render_search_and_filter_bar(
-     title="Buscar y Filtrar",
-     search_fields=[
-       {
-         'type': 'text',
-         'name': 'search_email',
-         'label': 'Buscar por email',
-         'placeholder': 'Email del usuario'
-       },
-       {
-         'type': 'select',
-         'name': 'search_active',
-         'label': 'Buscar por estado',
-         'options': [
-           {'value': '', 'label': 'Todos'},
-           {'value': 'true', 'label': 'Activo'},
-           {'value': 'false', 'label': 'Inactivo'}
-         ]
-       },
-       {
-         'type': 'select',
-         'name': 'search_role_id',
-         'label': 'Buscar por rol',
-         'options': [
-           {'value': '', 'label': 'Todos'},
-           {'value': '1', 'label': 'Técnica'},
-           {'value': '2', 'label': 'Ecuestre'},
-           {'value': '3', 'label': 'Voluntariado'},
-           {'value': '4', 'label': 'Administración'}
-         ]
-       }
-     ],
-     sort_options=[
-       {'value': 'inserted_at', 'label': 'Fecha de creación'},
-       {'value': 'email', 'label': 'Email'}
-     ],
-     current_sort_by=request.args.get('sort_by', 'inserted_at'),
-     current_order=request.args.get('order', 'asc')
-   ) }}
+{% block form_action %}{{ url_for("users_bp.get_users") }}{% endblock %}
+{% block clear_url %}{{ url_for("users_bp.get_users") }}{% endblock %}
+
+{% block aditional_filters %}
+    <div class="field">
+        <label class="label">Rol</label>
+        <div class="control">
+            <div class="select">
+                {{ search_form.filter_role_id() }}
+            </div>
+        </div>
+    </div>
+
+    <div class="field">
+        <label class="label">Habilitado</label>
+        <div class="control">
+            <div class="select">
+                {{ search_form.filter_enabled() }}
+            </div>
+        </div>
+    </div>
 {% endblock %}
 
 {% block table_header %}
@@ -69,7 +53,7 @@
   <th>ID</th>
   <th>Correo</th>
   <th>Alias</th>
-  <th>Activo</th>
+  <th>Habilitado</th>
   <th>Rol</th>
   <th>Admin</th>
   <th>Ingreso</th>
@@ -87,6 +71,7 @@
     <td class="is-hidden-mobile">
       {{
         render_actions_menu(
+        field="user_id",
         value=user.id,
         to_left=true,
         endpoints={
@@ -122,7 +107,7 @@
   <th>ID</th>
   <th>Email</th>
   <th>Alias</th>
-  <th>Activo</th>
+  <th>Habilitado</th>
   <th>Rol</th>
   <th>Admin</th>
   <th>Ingreso</th>

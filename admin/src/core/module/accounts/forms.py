@@ -1,5 +1,7 @@
+from random import choices
+
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SelectField
+from wtforms import StringField, PasswordField, BooleanField, SelectField, SubmitField
 from wtforms.validators import DataRequired, Email, Length, EqualTo, Optional
 from .validators import EmailExistence
 
@@ -137,3 +139,48 @@ class UserRegisterForm(FlaskForm):
             Length(min=3, max=15)
         ]
     )
+
+
+class UserSearchForm(FlaskForm):
+    class Meta:
+        csrf = False
+
+    search_by = SelectField(
+        choices=[
+            ("email", "Email"),
+        ],
+        validate_choice=True,
+    )
+    search_text = StringField(validators=[Length(max=50)])
+
+    filter_enabled = SelectField(
+        choices=[
+            ("true", "Si"),
+            ("false", "No"),
+            ("", "Todos"),
+        ],
+        validate_choice=True,
+    )
+
+    filter_role_id = SelectField(
+        choices=[
+            ('', 'Todos'),
+            ('1', 'Técnica'),
+            ('2', 'Ecuestre'),
+            ('3', 'Voluntariado'),
+            ('4', 'Administración')
+
+        ],
+    )
+
+    order_by = SelectField(
+        choices=[
+            ("id", "ID"),
+            ("email", "Email"),
+        ],
+        validate_choice=True,
+    )
+    order = SelectField(
+        choices=[("asc", "Ascendente"), ("desc", "Descendente")], validate_choice=True
+    )
+    submit_search = SubmitField("Buscar")
