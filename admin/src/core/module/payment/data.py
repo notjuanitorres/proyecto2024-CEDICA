@@ -1,0 +1,4 @@
+class payment_type():
+   HONORARIOS = 'HONORARIOS'
+   PROOVEDOR = 'PROOVEDOR'
+   GASTOS = 'GASTOS'
