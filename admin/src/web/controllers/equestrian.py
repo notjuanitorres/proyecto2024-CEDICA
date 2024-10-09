@@ -98,7 +98,7 @@ def edit_horse(horse_id: int, equestrian_services: AES = Provide[Container.eques
     if request.method in ["POST", "PUT"]:
         return update_horse(horse_id=horse_id, edit_form=edit_form)
 
-    return render_template("edit_horse.html", form=edit_form)
+    return render_template("edit_horse.html", form=edit_form, horse=horse)
 
 
 @inject

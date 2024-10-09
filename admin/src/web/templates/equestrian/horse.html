@@ -52,39 +52,45 @@
     </ul>
 {% endblock %}
 
-{% block card_footer %}
-    <p></p>
-    <button class="card-footer-item has-text-danger modal-trigger" data-id="{{ horse.id }}"
-            data-target="horse-delete-modal">
-        Eliminar
-    </button>
-    <a href="{{ url_for('equestrian_bp.edit_horse', horse_id=horse.id) }}" class="card-footer-item has-text-warning">Editar</a>
+{% block card_actions %}
+    {% if "ecuestre_destroy" in permissions or is_admin %}
+        <button class="card-footer-item has-text-danger modal-trigger" data-id="{{ horse.id }}"
+                data-target="horse-delete-modal">
+            Eliminar
+        </button>
+    {% endif %}
+
+    {% if "ecuestre_update" in permissions or is_admin %}
+        <a href="{{ url_for('equestrian_bp.edit_horse', horse_id=horse.id) }}"
+           class="card-footer-item has-text-warning">Editar</a>
+    {% endif %}
 {% endblock %}
 
 {% block additional_cards %}
 
     <div class="card">
         <header class="card-header">
-            <p class="card-header-title is-size-4">Entrenadores asociados</p>
+            <p class="card-header-title is-size-4">Entrenadores y conductores asociados</p>
         </header>
         <div class="card-content">
             <div class="content">
-
                 <table class="table is-striped is-scrollable is-fullwidth">
                     <thead>
                     <tr>
                         <th></th>
                         <th>ID</th>
                         <th>Nombre</th>
+                        <th>Apellido</th>
+                        <th>Posición</th>
                         <th></th>
                     </tr>
                     </thead>
 
                     <tbody>
-                        {% for trainer in horse_trainers %}
-                            <tr class="">
-                                <td class="is-hidden-mobile">
-                                    {{ render_actions_menu(
+                    {% for trainer in horse_trainers %}
+                        <tr class="">
+                            <td class="is-hidden-mobile">
+                                {{ render_actions_menu(
                                         field="employee_id",
                                         value=trainer.id,
                                         to_left=true,
@@ -92,23 +98,35 @@
                                             'show':'employee_bp.show_employee',
                                             'edit': 'employee_bp.edit_employee',
                                           'delete':''
-                                        })
-                                    }}
-                                </td>
-                                <td><span class="is-hidden-tablet has-text-weight-bold">ID: </span>{{ trainer.id }}</td>
-                                <td><span class="is-hidden-tablet has-text-weight-bold">Nombre: </span>{{ trainer.name }}</td>
+                                        },
+                                        permission_to_show="equipo_show",
+                                        permission_to_edit="equipo_update",
+                                        permission_to_delete="equipo_destroy",
+                                        user_permissions=permissions,
+                                        is_admin=is_admin
+                                        ) }}
+                            </td>
+                            <td><span class="is-hidden-tablet has-text-weight-bold">ID: </span>{{ trainer.id }}</td>
+                            <td><span class="is-hidden-tablet has-text-weight-bold">Nombre: </span>{{ trainer.name }}
+                            </td>
+                            <td><span
+                                    class="is-hidden-tablet has-text-weight-bold">Apellido: </span>{{ trainer.lastname }}
+                            </td>
+                            <td><span
+                                    class="is-hidden-tablet has-text-weight-bold">Posición: </span>{{ trainer.position.value }}
+                            </td>
 
-                                <td class="is-hidden-tablet is-flex">
-                                    <a href="{{ url_for('employee_bp.show_employee', employee_id = trainer.id) }}"
-                                       class="button is-flex-grow-1 ">
+                            <td class="is-hidden-tablet is-flex">
+                                <a href="{{ url_for('employee_bp.show_employee', employee_id = trainer.id) }}"
+                                   class="button is-flex-grow-1 ">
                                         <span class="is-bold">
                                             Ver en detalle
                                             <i class="fa-regular fa-eye ml-2"></i>
                                         </span>
-                                    </a>
-                                </td>
-                            </tr>
-                        {% endfor %}
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
                     </tbody>
 
                     <tfoot>
@@ -116,10 +134,20 @@
                         <th></th>
                         <th>ID</th>
                         <th>Nombre</th>
-                        <th></th>
+                        <th>Apellido</th>
+                        <th>Posición</th>
                     </tr>
                     </tfoot>
                 </table>
+                {% if "ecuestre_update" in permissions or is_admin %}
+                    {% block create_button %}
+                        <a class="button is-primary level-item" href="{{ url_for('equestrian_bp.edit_horse', horse_id=horse.id) }}#trainers-content">
+                            Cambiar entrenadores
+                            <i class="fa-solid fa-user ml-2 is-size-5"></i>
+                        </a>
+                    {% endblock %}
+                {% endif %}
+
             </div>
         </div>
 

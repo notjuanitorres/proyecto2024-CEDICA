@@ -19,7 +19,7 @@
 
 {% block create_button %}
   <a class="button is-primary level-item" href="{{ url_for('equestrian_bp.create_horse')}}">
-    Crear caballo
+    Agregar caballo
     <i class="fa-solid fa-horse-head ml-2 is-size-5"></i>
   </a>
 {% endblock %}
@@ -70,7 +70,13 @@
           'show':'equestrian_bp.show_horse',
           'edit': 'equestrian_bp.edit_horse',
           'delete':''
-        })
+        },
+        permission_to_show="ecuestre_show",
+        permission_to_edit="ecuestre_update",
+        permission_to_delete="ecuestre_destroy",
+        user_permissions=permissions,
+        is_admin=is_admin
+        )
       }}
     </td>
     <td><span class="is-hidden-tablet has-text-weight-bold">ID: </span>{{ horse.id }}</td>
