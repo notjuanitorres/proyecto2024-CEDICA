@@ -78,8 +78,15 @@
           'show':'users_bp.show_user',
           'edit': 'users_bp.edit_user',
           'delete':''
-        })
+        },
+        permission_to_show="users_show",
+        permission_to_edit="users_update",
+        permission_to_delete="users_destroy",
+        user_permissions=permissions,
+        is_admin=is_admin
+        )
       }}
+{# There are no permissions related to users but since this page is only accessed by the sysadmin they'll always be able to see it #}
     </td>
     <td><span class="is-hidden-tablet has-text-weight-bold">ID: </span>{{ user.id }}</td>
     <td><span class="is-hidden-tablet has-text-weight-bold">Email: </span>{{ user.email }}</td>
