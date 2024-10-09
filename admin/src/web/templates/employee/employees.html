@@ -71,7 +71,14 @@
           'show':'employee_bp.show_employee',
           'edit': 'employee_bp.edit_employee',
           'delete':''
-        }) }}
+        },
+        permission_to_show="equipo_show",
+        permission_to_edit="equipo_update",
+        permission_to_delete="equipo_destroy",
+        user_permissions=permissions,
+        is_admin=is_admin
+                )
+                }}
             </td>
             <td><span class="is-hidden-tablet has-text-weight-bold">ID: </span>{{ employee.id }}</td>
             <td><span class="is-hidden-tablet has-text-weight-bold">Email: </span>{{ employee.email }}</td>
