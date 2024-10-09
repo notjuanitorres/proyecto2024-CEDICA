@@ -24,39 +24,17 @@
   </a>
 {% endblock %}
 
-{% block search_and_filter %}
-    {{ render_search_and_filter_bar(
-     title="Buscar y Filtrar",
-     search_fields=[
-       {
-         'type': 'text',
-         'name': 'search_name',
-         'label': 'Buscar por nombre',
-         'placeholder': 'Nombre del caballo'
-       },
-       {
-         'type': 'select',
-         'name': 'search_ja_type',
-         'label': 'Buscar por tipo de actividad',
-         'options': [
-           {'value': '', 'label': 'Todos los tipos'},
-           {'value': 'HIPOTHERAPY', 'label': 'Hipoterapia'},
-           {'value': 'THERAPEUTIC_RIDING', 'label': 'Monta Terapéutica'},
-           {'value': 'ADAPTED_SPORTS', 'label': 'Deporte Ecuestre Adaptado'},
-           {'value': 'RECREATIONAL_ACTIVITIES', 'label': 'Actividades Recreativas'},
-           {'value': 'RIDING', 'label': 'Equitación'}
-         ]
-       }
-     ],
-     sort_options=[
-       {'value': 'inserted_at', 'label': 'Fecha de creación'},
-       {'value': 'name', 'label': 'Nombre'},
-       {'value': 'birth_date', 'label': 'Fecha de nacimiento'},
-       {'value': 'admission_date', 'label': 'Fecha de ingreso'}
-     ],
-     current_sort_by=request.args.get('sort_by', 'inserted_at'),
-     current_order=request.args.get('order', 'asc')
-   ) }}
+{% block form_action %}{{ url_for("equestrian_bp.get_horses") }}{% endblock %}
+{% block clear_url %}{{ url_for("equestrian_bp.get_horses") }}{% endblock %}
+{% block aditional_filters %}
+    <div class="field">
+        <label class="label">Tipo de Actividad</label>
+        <div class="control">
+            <div class="select">
+                {{ search_form.filter_ja_type() }}
+            </div>
+        </div>
+    </div>
 {% endblock %}
 
 

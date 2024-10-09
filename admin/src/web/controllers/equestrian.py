@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash
 from src.web.helpers.auth import check_user_permissions
 from src.core.container import Container
 from dependency_injector.wiring import inject, Provide
-from src.core.module.equestrian.forms import HorseCreateForm, HorseEditForm
+from src.core.module.equestrian.forms import HorseCreateForm, HorseEditForm, HorseSearchForm
 from src.core.module.equestrian import AbstractEquestrianServices as AES
 
 equestrian_bp = Blueprint(
@@ -16,17 +16,24 @@ equestrian_bp = Blueprint(
 def get_horses(equestrian_services: AES = Provide[Container.equestrian_services]):
     page = request.args.get("page", type=int)
     per_page = request.args.get("per_page", type=int)
-    sort_by = request.args.get("sort_by", "id")
-    order = request.args.get("order", "asc")
-    search_name = request.args.get('search_name', '')
-    search_ja_type = request.args.get('search_ja_type', '')
+    search = HorseSearchForm(request.args)
+    search_query = {}
+    order_by = []
 
-    order_by = [(sort_by, order)]
+    if search.submit_search.data and search.validate():
+        order_by = [(search.order_by.data, search.order.data)]
+        search_query = {
+            "text": search.search_text.data,
+            "field": search.search_by.data,
+        }
+        if search.filter_ja_type.data:
+            search_query["filters"] = {"ja_type": search.filter_ja_type.data}
 
-    paginated_horses = (equestrian_services.
-                        get_page(page, per_page, order_by, {'name': search_name, 'ja_type': search_ja_type}))
+    paginated_horses = equestrian_services.get_page(
+        page=page, per_page=per_page, order_by=order_by, search_query=search_query
+    )
 
-    return render_template("horses.html", horses=paginated_horses)
+    return render_template("horses.html", horses=paginated_horses, search_form=search)
 
 
 @equestrian_bp.route("/<int:horse_id>")

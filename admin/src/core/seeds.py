@@ -332,6 +332,32 @@ def seed_employees():
             affiliate_number=987650,
             job_condition=ConditionEnum.PERSONAL_RENTADO,
         ),
+
+        Employee(
+            email="mateo.gonzalez@gmail.com",
+            phone="761753864",
+            name="Mateo",
+            lastname="Gonzalez",
+            dni=987654,
+            profession=ProfessionsEnum.VETERINARIO,
+            position=PositionEnum.ENTRENADOR_CABALLOS,
+            health_insurance="Seguros Médicos",
+            affiliate_number=987650,
+            job_condition=ConditionEnum.PERSONAL_RENTADO,
+        ),
+
+        Employee(
+            email="ivan.pineda@gmail.com",
+            phone="481753864",
+            name="Ivan",
+            lastname="Pineda",
+            dni=987654321,
+            profession=ProfessionsEnum.VETERINARIO,
+            position=PositionEnum.CONDUCTOR,
+            health_insurance="Seguros Médicos",
+            affiliate_number=987650,
+            job_condition=ConditionEnum.PERSONAL_RENTADO,
+        ),
     ]
 
     # Add employees to the session and commit
@@ -396,16 +422,15 @@ def seed_horses():
             ja_type=JAEnum.RIDING
         )
     ]
-    print("Horses added")
     db.session.add_all(horses)
 
 
 def seed_horse_trainers():
     horse_trainers = [
-        HorseTrainers(id_horse=1, id_employee=1),
-        HorseTrainers(id_horse=2, id_employee=2),
-        HorseTrainers(id_horse=3, id_employee=3),
-        HorseTrainers(id_horse=4, id_employee=4),
-        HorseTrainers(id_horse=5, id_employee=5),
+        HorseTrainers(id_horse=1, id_employee=11),
+        HorseTrainers(id_horse=2, id_employee=12),
+        HorseTrainers(id_horse=3, id_employee=11),
+        HorseTrainers(id_horse=4, id_employee=11),
+        HorseTrainers(id_horse=4, id_employee=12),
     ]
     db.session.add_all(horse_trainers)

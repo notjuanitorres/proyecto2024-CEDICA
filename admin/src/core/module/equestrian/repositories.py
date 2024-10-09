@@ -1,5 +1,7 @@
 from abc import abstractmethod
 from typing import List, Dict
+
+from core.module.common.repositories import apply_filters
 from src.core.module.equestrian.models import Horse, HorseTrainers
 from src.core.database import db as database
 from src.core.module.employee.models import Employee
@@ -12,7 +14,14 @@ class AbstractEquestrianRepository:
         pass
 
     @abstractmethod
-    def get_page(self, page: int, per_page: int, max_per_page: int) -> List[Horse]:
+    def get_page(
+            self,
+            page: int,
+            per_page: int,
+            max_per_page: int,
+            search_query: Dict = None,
+            order_by: list = None,
+    ):
         pass
 
     @abstractmethod
@@ -46,8 +55,19 @@ class EquestrianRepository(AbstractEquestrianRepository):
         self.save()
         return horse
 
-    def get_page(self, page: int, per_page: int, max_per_page: int):
-        return Horse.query.paginate(
+    def get_page(
+            self,
+            page: int,
+            per_page: int,
+            max_per_page: int,
+            search_query: Dict = None,
+            order_by: List = None,
+    ):
+        query = Horse.query
+
+        query = apply_filters(Horse, query, search_query, order_by)
+
+        return query.paginate(
             page=page, per_page=per_page, error_out=False, max_per_page=max_per_page
         )
 
@@ -79,10 +99,10 @@ class EquestrianRepository(AbstractEquestrianRepository):
                           .filter(HorseTrainers.id_horse == horse_id).all())
 
         return (self.db.session.query(Employee)
-                .filter(Employee.id.in_([ht.id_trainer for ht in horse_trainers])).all())
+                .filter(Employee.id.in_([ht.id_employee for ht in horse_trainers])).all())
 
     def set_horse_trainers(self, horse_id: int, trainers_ids: List[int]):
         self.db.session.query(HorseTrainers).filter(HorseTrainers.id_horse == horse_id).delete()
         for trainer_id in trainers_ids:
-            self.db.session.add(HorseTrainers(id_horse=horse_id, id_trainer=trainer_id))
+            self.db.session.add(HorseTrainers(id_horse=horse_id, id_employee=trainer_id))
         self.save()

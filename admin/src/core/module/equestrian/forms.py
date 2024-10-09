@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, BooleanField, SelectField, DateField, SelectMultipleField, widgets
+from wtforms import StringField, BooleanField, SelectField, DateField, SelectMultipleField, widgets, SubmitField
 from wtforms.validators import DataRequired, Length
 from src.core.module.equestrian.models import JAEnum
 
@@ -107,12 +107,41 @@ class HorseEditForm(HorseManagementForm):
         return container.employee_services()
 
     def get_trainers_choices(self):
-        return [(1, 'Trainer 1'), (2, 'Trainer 2'), (3, 'Trainer 3'), (4, 'Trainer 4'), (5, 'Trainer 5'), (6, 'Trainer 6')]
-        # TODO: uncomment this method when the employee service is implemented
-        # return [(trainer.id, trainer.name) for trainer in self.import_validator().get_trainers()]
+        return [(trainer.id, trainer.name) for trainer in self.import_validator().get_trainers()]
 
     trainers = MultiCheckboxField(
         "Entrenadores y conductores",
         choices=[],
         # TODO: get the horse trainers and set them as checked
     )
+
+
+class HorseSearchForm(FlaskForm):
+    class Meta:
+        csrf = False
+
+    search_by = SelectField(
+        choices=[
+            ("name", "Nombre"),
+        ],
+        validate_choice=True,
+    )
+    search_text = StringField(validators=[Length(max=50)])
+
+    filter_ja_type = SelectField(
+        choices=[("", "Ver Todos")] + [(jtype.name, jtype.value) for jtype in JAEnum],
+        validate_choice=True,
+    )
+    order_by = SelectField(
+        choices=[
+            ("id", "ID"),
+            ("name", "Nombre"),
+            ("birth_date", "Fecha de nacimiento"),
+            ("admission_date", "Fecha de ingreso"),
+        ],
+        validate_choice=True,
+    )
+    order = SelectField(
+        choices=[("asc", "Ascendente"), ("desc", "Descendente")], validate_choice=True
+    )
+    submit_search = SubmitField("Buscar")

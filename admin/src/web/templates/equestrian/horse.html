@@ -81,34 +81,31 @@
                     </thead>
 
                     <tbody>
-                        {% for horse_trainer in horse_trainers %}
+                        {% for trainer in horse_trainers %}
                             <tr class="">
                                 <td class="is-hidden-mobile">
                                     {{ render_actions_menu(
-                                        field="user_id",
-                                        value=horse_trainer.id_trainer,
+                                        field="employee_id",
+                                        value=trainer.id,
                                         to_left=true,
                                         endpoints={
-                                            'show':'users_bp.show_user',
-                                            'edit': 'users_bp.edit_user',
+                                            'show':'employee_bp.show_employee',
+                                            'edit': 'employee_bp.edit_employee',
                                           'delete':''
-                                        }) }}
-                                    {# TODO: add lines when employees controllers are implemented #}
-                                    {# field="user_id",#}
-                                    {# 'show':'employees_bp.show_employee',#}
-                                    {#'edit': 'employees_bp.edit_employee',#}
+                                        })
+                                    }}
                                 </td>
-                                <td><span class="is-hidden-tablet has-text-weight-bold">ID: </span>{{ horse_trainer.id_trainer }}</td>
-{#                                <td><span class="is-hidden-tablet has-text-weight-bold">Nombre: </span>{{ trainer.name }}</td>#}
+                                <td><span class="is-hidden-tablet has-text-weight-bold">ID: </span>{{ trainer.id }}</td>
+                                <td><span class="is-hidden-tablet has-text-weight-bold">Nombre: </span>{{ trainer.name }}</td>
 
                                 <td class="is-hidden-tablet is-flex">
-{#                                    <a href="{{ url_for('employee_bp', employee_id = horse_trainer.id_trainer) }}"#}
+                                    <a href="{{ url_for('employee_bp.show_employee', employee_id = trainer.id) }}"
                                        class="button is-flex-grow-1 ">
                                         <span class="is-bold">
                                             Ver en detalle
                                             <i class="fa-regular fa-eye ml-2"></i>
                                         </span>
-{#                                    </a>#}
+                                    </a>
                                 </td>
                             </tr>
                         {% endfor %}

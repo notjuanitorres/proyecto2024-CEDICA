@@ -10,7 +10,7 @@ class AbstractEquestrianServices:
         pass
 
     @abstractmethod
-    def get_page(self, page: int, per_page: int, order_by: list, filters: Dict):
+    def get_page(self, page: int, per_page: int, search_query: Dict, order_by: list):
         pass
 
     @abstractmethod
@@ -54,10 +54,12 @@ class EquestrianServices(AbstractEquestrianServices):
 
         return self.to_dict(created_horse)
 
-    def get_page(self, page: int, per_page: int, order_by: list, filters: Dict):
+    def get_page(self, page: int, per_page: int, search_query: Dict, order_by: list):
         max_per_page = 100
         per_page = 20
-        return self.equestrian_repository.get_page(page, per_page, max_per_page, order_by, filters)
+        return self.equestrian_repository.get_page(
+            page, per_page, max_per_page, search_query, order_by
+        )
 
     def get_horse(self, horse_id: int):
         horse = self.equestrian_repository.get_by_id(horse_id)
