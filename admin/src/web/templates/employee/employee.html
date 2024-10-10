@@ -33,7 +33,7 @@
             <li><strong>Nombre: </strong>{{ employee.name }}</li>
             <li><strong>Apellido: </strong> {{ employee.lastname }}</li>
             <li><strong>Email: </strong>{{ employee.email }}</li>
-            <li><strong>Telefono: </strong>{{ employee.phone }}</li>
+            <li><strong>Telefono: </strong>+{{ employee.phone.country_code }} {{employee.phone.area_code}} {{employee.phone.number}}</li>
             <li><strong>DNI: </strong>{{ employee.dni }}</li>
             <li><strong>Dado de alta: </strong>{{ employee.inserted_at | format_date }}</li>
             <li><strong>Ultima modificacion: </strong>{{ employee.updated_at | format_date }}</li>
@@ -44,14 +44,14 @@
     <div id="job-info" class="cell">
         <h3>Datos laborales</h3>
         <ul>
-            <li><strong>Profesion: </strong> {{ employee.profession }}</li>
-            <li><strong>Cargo: </strong>{{ employee.position }}</li>
-            <li><strong>Condicion laboral: </strong>{{ employee.job_condition }}</li>
-            <li><strong>Comienzo de actividades: </strong> {{ employee.start_date }}</li>
-            {% if employee.end_date %}
-                <li><strong>Finalizacion de actividades: </strong>{{ employee.end_date }}</li>
+            <li><strong>Profesion: </strong> {{ employee.employment_information.profession }}</li>
+            <li><strong>Cargo: </strong>{{ employee.employment_information.position }}</li>
+            <li><strong>Condicion laboral: </strong>{{ employee.employment_information.job_condition }}</li>
+            <li><strong>Comienzo de actividades: </strong> {{ employee.employment_information.start_date }}</li>
+            {% if employee.employment_information.end_date %}
+                <li><strong>Finalizacion de actividades: </strong>{{ employee.employment_information.end_date }}</li>
             {% endif %}
-            <li><strong>Esta activo: </strong> {{ employee.is_active | natural_boolean }}</li>
+            <li><strong>Esta activo: </strong> {{ employee.employment_information.is_active | natural_boolean }}</li>
                 <li><strong>Obra Social: </strong>{{ employee.health_insurance }}</li>
             <li><strong>Numero de afiliado: #</strong>{{ employee.affiliate_number }}</li>
         </ul>
@@ -60,8 +60,8 @@
 <div id="emergency-contact-info has-bab" class="cell box">
     <h4>Contacto de emergencia</h4>
     <ul id="emergency-contact">
-        <li><strong>Nombre completo: </strong>{{ employee.emergency_contact_name }}</li>
-        <li><strong>Telefono: </strong>{{ employee.emergency_contact_phone }}</li>
+        <li><strong>Nombre completo: </strong>{{ employee.emergency_contact.emergency_contact_name }}</li>
+        <li><strong>Telefono: </strong>{{ employee.emergency_contact.emergency_contact_phone }}</li>
     </ul>
 </div>
 {% endblock %}

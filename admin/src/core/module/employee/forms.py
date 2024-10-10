@@ -12,6 +12,7 @@ from wtforms.fields import (
     SubmitField,
     FileField,
     MultipleFileField,
+    HiddenField
 )
 from src.core.module.employee.data import ProfessionsEnum, PositionEnum, ConditionEnum
 from src.core.module.employee.validators import EmailExistence, DniExistence
@@ -131,8 +132,8 @@ class EmployeeManagementForm(FlaskForm):
         self.current_email = None
         self.current_dni = None
 
-    first_name = StringField("Nombre", validators=[DataRequired()])
-    last_name = StringField("Apellido", validators=[DataRequired()])
+    name = StringField("Nombre", validators=[DataRequired()])
+    lastname = StringField("Apellido", validators=[DataRequired()])
     address = FormField(AddressForm)
     phone = FormField(PhoneForm)
     employment_information = FormField(EmploymentInformationForm)
@@ -165,6 +166,7 @@ class EmployeeEditForm(EmployeeManagementForm):
         self.current_email = kwargs.pop("current_email", None)
         self.current_dni = kwargs.pop("current_dni", None)
 
+    id = HiddenField("ID")
     dni = StringField(
         "DNI", validators=[DataRequired(), Length(min=8, max=8), dni_existence]
     )

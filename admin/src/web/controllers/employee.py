@@ -72,7 +72,9 @@ def add_employee(
     if not create_form.validate_on_submit():
         return render_template("./employee/create_employee.html", form=create_form)
 
-    created_employee = employees.create_employee(Mapper.from_form(create_form.data))
+    created_employee = employees.create_employee(
+        employee=Mapper.to_entity(create_form.data),
+    )
 
     return redirect(
         url_for("employee_bp.show_employee", employee_id=created_employee["id"])
@@ -106,7 +108,9 @@ def edit_employee(
         return redirect(url_for("employee_bp.get_employees"))
 
     update_form = EmployeeEditForm(
-        data=Mapper.to_form(employee),
+        data=employee,
+        id=employee_id,
+        # TODO: This lines could be passed as a hidden field on the form
         current_email=employee["email"],
         current_dni=employee["dni"],
     )
@@ -131,8 +135,8 @@ def update_employee(
             "./employee/update_employee.html", form=update_form, employee=employee
         )
 
-    if not employees.update_employee(employee_id, Mapper.from_form(update_form.data)):
-        flash("No se ha podido actualizar al miembro del equipo", "success")
+    if not employees.update_employee(employee_id, Mapper.flat_form(update_form.data)):
+        flash("No se ha podido actualizar al miembro del equipo", "warning")
         return render_template("./employee/update_employee.html")
 
     flash("El miembro del equipo ha sido actualizado exitosamente ")

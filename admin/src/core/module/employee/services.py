@@ -39,10 +39,10 @@ class EmployeeServices(AbstractEmployeeServices):
     def __init__(self, employee_repository: AbstractEmployeeRepository):
         self.employee_repository = employee_repository
 
-    def create_employee(self, employee: Dict) -> Dict | None:
-        created_user = self.employee_repository.add(Mapper.to_entity(employee))
+    def create_employee(self, employee: Employee) -> Dict | None:
+        created_employee: Employee = self.employee_repository.add(employee)
 
-        return Mapper.from_entity(created_user)
+        return Mapper.from_entity(created_employee)
 
     def get_page(self, page: int, per_page: int, search_query: Dict, order_by: list):
         max_per_page = 100
@@ -58,7 +58,6 @@ class EmployeeServices(AbstractEmployeeServices):
         return Mapper.from_entity(employee)
 
     def update_employee(self, employee_id: int, data: Dict) -> None:
-        data["id"] = employee_id
         return self.employee_repository.update(employee_id, data)
 
     def delete_employee(self, employee_id: int) -> bool:
@@ -66,7 +65,6 @@ class EmployeeServices(AbstractEmployeeServices):
 
     def is_email_used(self, email: str) -> bool:
         employee = self.employee_repository.get_by_email(email=email)
-
         return employee is not None
 
     def is_dni_used(self, dni: str) -> bool:
