@@ -12,11 +12,13 @@ class Config(object):
     TESTING = False
     DEBUG = False
     SESSION_TYPE = "filesystem"
+    SEED_ON_STARTUP = False
 
 
 class ProductionConfig(Config):
     """PRODUCTION CONFIGURATION"""
     SQLALCHEMY_DATABASE_URI = environ.get("DATABASE_URL")
+    SEED_ON_STARTUP = True
 
 
 class DevelopmentConfig(Config):

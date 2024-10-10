@@ -11,14 +11,15 @@ from src.core.module.equestrian.models import Horse, JAEnum, HorseTrainers
 from datetime import date
 
 
-def seed_all():
-    seed_accounts()
-    seed_employees()
-    print("Commiting employees and accounts")
-    db.session.commit()  # employees need to be commited before adding horse_trainers
-    seed_equestrian_module()
-    print("Commiting equestrian module")
-    db.session.commit()
+def seed_all(app):
+    with app.app_context():
+        seed_accounts()
+        seed_employees()
+        print("Commiting employees and accounts")
+        db.session.commit()  # employees need to be commited before adding horse_trainers
+        seed_equestrian_module()
+        print("Commiting equestrian module")
+        db.session.commit()
 
 
 def seed_equestrian_module():
