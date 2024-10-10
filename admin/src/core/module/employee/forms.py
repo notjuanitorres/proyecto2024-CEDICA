@@ -16,7 +16,7 @@ from wtforms.fields import (
 )
 from src.core.module.employee.data import ProfessionsEnum, PositionEnum, ConditionEnum
 from src.core.module.employee.validators import EmailExistence, DniExistence
-from src.core.module.common import AddressForm, EmergencyContactForm, PhoneForm
+from src.core.module.common import AddressForm, EmergencyContactForm, PhoneForm, IsNumber
 
 
 def email_existence(form, field):
@@ -147,7 +147,12 @@ class EmployeeManagementForm(FlaskForm):
 
 class EmployeeCreateForm(EmployeeManagementForm):
     dni = StringField(
-        "DNI", validators=[DataRequired(), Length(min=8, max=8), dni_existence]
+        "DNI", validators=[
+            DataRequired(),
+            Length(min=8, max=8),
+            IsNumber("Debe ser un numero de 8 digitos!"),
+            dni_existence
+            ]
     )
     email = StringField(
         "Email",
@@ -168,7 +173,12 @@ class EmployeeEditForm(EmployeeManagementForm):
 
     id = HiddenField("ID")
     dni = StringField(
-        "DNI", validators=[DataRequired(), Length(min=8, max=8), dni_existence]
+        "DNI", validators=[
+            DataRequired(),
+            Length(min=8, max=8),
+            IsNumber("Debe ser un numero de 8 digitos!"),
+            dni_existence
+        ]
     )
     email = StringField(
         "Email",
