@@ -3,6 +3,7 @@ from .auth import auth_bp
 from .user import users_bp
 from .employee import employee_bp
 from .equestrian import equestrian_bp
+from .payment import payment_bp
 
 __all__ = [
     "index_bp",
@@ -10,4 +11,5 @@ __all__ = [
     "users_bp",
     "employee_bp",
     "equestrian_bp",
+    "payment_bp"
 ]

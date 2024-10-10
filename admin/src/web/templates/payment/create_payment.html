@@ -1,0 +1,98 @@
+{% extends "layout.html" %}
+
+{% block title %} Pagos - Registrar Pago {% endblock %}
+
+{% block main_content %}
+    <section class="section">
+        <div class="container">
+            <h1 class="title">Registrar Pago</h1>
+            <form method="POST">
+               {{ form.hidden_tag() }}
+                
+                <div class="field">
+                    <label class="label">{{ form.amount.label }}</label>
+                    <div class="control">
+                        {{ form.amount(class="input", placeholder="Ingrese el monto") }}
+                    </div>
+                    {% if form.amount.errors %}
+                        <p class="help is-danger">{{ form.amount.errors[0] }}</p>
+                    {% endif %}
+                </div>
+
+                <div class="field">
+                    <label class="label">{{ form.date.label }}</label>
+                    <div class="control">
+                        {{ form.date(class="input", placeholder="Ingrese la fecha del pago") }}
+                    </div>
+                    {% if form.date.errors %}
+                        <p class="help is-danger">{{ form.date.errors[0] }}</p>
+                    {% endif %}
+                </div>
+
+                <div class="field">
+                    <label class="label">{{ form.payment_type.label }}</label>
+                    <div class="control">
+                        <div class="select">
+                            {{ form.payment_type() }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="field" id="beneficiaryField" style="display: none;">
+                    <label class="label">{{ form.beneficiary.label }}</label>
+                    <div class="control">
+                        {{ form.beneficiary(class="input", type="text", readonly=True) }}
+                        <button type="button" class="button is-info" id="openModalButton">Seleccionar Beneficiario</button>
+                    </div>
+                </div>
+                <!-- Modal -->
+                <div id="employeeModal" class="modal">
+                    <div class="modal-background"></div>
+                    <div class="modal-card">
+                        <header class="modal-card-head">
+                            <p class="modal-card-title">Seleccionar Beneficiario</p>
+                            <button class="delete" aria-label="close"></button>
+                        </header>
+                        <section class="modal-card-body">
+                            <input class="input" type="text" id="searchEmployee" placeholder="Buscar por correo">
+                            <table class="table is-fullwidth">
+                                <thead>
+                                    <tr>
+                                        <th>Nombre</th>
+                                        <th>Correo</th>
+                                        <th>Seleccionar</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="employeeList">
+                                    <!-- Aquí se llenará la lista de empleados -->
+                                </tbody>
+                            </table>
+                        </section>
+                        <footer class="modal-card-foot">
+                            <button class="button is-success" id="selectEmployee">Seleccionar</button>
+                            <button class="button">Cancelar</button>
+                        </footer>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label class="label">{{ form.description.label }}</label>
+                    <div class="control">
+                        {{ form.description(class="input", type="text", placeholder="Ingrese la descripción") }}
+                    </div>
+                    {% if form.description.errors %}
+                        <p class="help is-danger">{{ form.description.errors[0] }}</p>
+                    {% endif %}
+                </div>
+                <div class="field">
+                    <div class="control">
+                        <button class="button is-primary" type="submit">Registrar El Pago</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <script src="{{ url_for('static', filename='js/payment-form-employee.js') }}"></script>
+{% endblock %}
+
