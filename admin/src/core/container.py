@@ -2,6 +2,7 @@ from dependency_injector import containers, providers
 from .module.accounts import AccountsServices, AccountsRepository
 from .module.employee import EmployeeServices, EmployeeRepository
 from .database import db
+from .module.equestrian import EquestrianServices, EquestrianRepository
 
 
 class Container(containers.DeclarativeContainer):
@@ -11,6 +12,7 @@ class Container(containers.DeclarativeContainer):
     # TODO: Initialize the db in the container so it can be injected into the repository
     accounts_repository = providers.Factory(AccountsRepository)
     employee_repository = providers.Factory(EmployeeRepository)
+    equestrian_repository = providers.Factory(EquestrianRepository)
 
     # Services
     accounts_services = providers.Factory(
@@ -19,4 +21,8 @@ class Container(containers.DeclarativeContainer):
 
     employee_services = providers.Factory(
         EmployeeServices, employee_repository=employee_repository
+    )
+
+    equestrian_services = providers.Factory(
+        EquestrianServices, equestrian_repository=equestrian_repository
     )

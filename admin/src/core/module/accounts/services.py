@@ -114,7 +114,6 @@ class AccountsServices(AbstractAccountsServices):
 
         return self.to_dict(user)
 
-
     def toggle_activation(self, user_id: int) -> bool:
         if self.is_sys_admin(user_id):
             return False

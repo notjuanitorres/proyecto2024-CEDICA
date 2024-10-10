@@ -34,6 +34,10 @@ class AbstractEmployeeServices:
     def is_dni_used(self, dni: str) -> bool:
         raise NotImplementedError
 
+    @abstractmethod
+    def get_trainers(self):
+        raise NotImplementedError
+
 
 class EmployeeServices(AbstractEmployeeServices):
     def __init__(self, employee_repository: AbstractEmployeeRepository):
@@ -73,3 +77,6 @@ class EmployeeServices(AbstractEmployeeServices):
         employee = self.employee_repository.get_by_dni(dni=dni)
 
         return employee is not None
+
+    def get_trainers(self):
+        return self.employee_repository.get_trainers()

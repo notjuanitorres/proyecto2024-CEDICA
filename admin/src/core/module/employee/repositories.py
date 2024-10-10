@@ -5,6 +5,8 @@ from flask_sqlalchemy.pagination import Pagination
 from src.core.database import db as database
 from src.core.module.employee.models import Employee
 from src.core.module.common.repositories import apply_filters
+from src.core.module.employee.data import PositionEnum
+from sqlalchemy import or_
 
 
 class AbstractEmployeeRepository:
@@ -40,6 +42,10 @@ class AbstractEmployeeRepository:
 
     @abstractmethod
     def delete(self, employee_id: int) -> bool:
+        raise NotImplementedError
+
+    @abstractmethod
+    def get_trainers(self) -> List:
         raise NotImplementedError
 
 
@@ -95,3 +101,9 @@ class EmployeeRepository(AbstractEmployeeRepository):
 
     def delete(self, employee_id: int) -> bool:
         pass
+
+    def get_trainers(self):
+        return (self.db.session.query(Employee)
+                .filter(or_(Employee.position == PositionEnum["CONDUCTOR"],
+                        Employee.position == PositionEnum["ENTRENADOR_CABALLOS"]))
+                .all())

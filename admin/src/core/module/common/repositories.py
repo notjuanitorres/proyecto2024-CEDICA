@@ -10,7 +10,7 @@ def apply_filters(model, query, search_query, order_by):
         if "text" in search_query and "field" in search_query:
             if hasattr(model, search_query["field"]):
                 field = getattr(model, search_query["field"])
-                query = query.filter(field.contains(search_query["text"], autoescape=True))
+                query = query.filter(field.icontains(search_query["text"], autoescape=True))
 
     if order_by:
         for field, direction in order_by:
