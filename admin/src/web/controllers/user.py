@@ -3,6 +3,7 @@ from dependency_injector.wiring import inject, Provide
 from src.core.module.accounts import UserCreateForm, UserEditForm
 from src.core.container import Container
 from src.core.module.accounts import AbstractAccountsServices as AAS
+from src.core.module.accounts.forms import UserSearchForm
 
 users_bp = Blueprint(
     "users_bp", __name__, template_folder="./accounts/user", url_prefix="/usuarios"
@@ -18,17 +19,39 @@ def require_login_and_sys_admin(accounts_services=Provide[Container.accounts_ser
 
 @users_bp.route("/")
 @inject
-def get_page(accounts_services: AAS = Provide[Container.accounts_services]):
+def get_users(accounts_services: AAS = Provide[Container.accounts_services]):
     page = request.args.get("page", type=int)
     per_page = request.args.get("per_page", type=int)
-    paginated_users = accounts_services.get_page(page, per_page)
-    return render_template("users.html", users=paginated_users)
+    search = UserSearchForm(request.args)
+    search_query = {}
+    order_by = []
+
+    if search.submit_search.data and search.validate():
+        order_by = [(search.order_by.data, search.order.data)]
+        search_query = {
+            "text": search.search_text.data,
+            "field": search.search_by.data,
+        }
+        if search.filter_enabled.data:
+            search_query["filters"] = {"enabled": search.filter_enabled.data}
+        if search.filter_role_id.data:
+            search_query["filters"]["role_id"] = int(search.filter_role_id.data)
+
+    paginated_users = accounts_services.get_page(
+        page=page, per_page=per_page, order_by=order_by, search_query=search_query
+    )
+
+    return render_template("users.html", users=paginated_users, search_form=search, )
 
 
 @users_bp.route("/<int:user_id>")
 @inject
-def show_user(accounts_services: AAS = Provide[Container.accounts_services]):
-    pass
+def show_user(user_id: int, accounts_services: AAS = Provide[Container.accounts_services]):
+    user = accounts_services.get_user(user_id)
+    if not user:
+        flash(f"El usuario con ID = {user_id} no existe", "danger")
+        return get_users()
+    return render_template('user.html', user=user)
 
 
 @users_bp.route("/crear", methods=["GET", "POST"])
@@ -46,19 +69,18 @@ def add_user(create_form: UserCreateForm, accounts_services: AAS = Provide[Conta
     if not create_form.validate_on_submit():
         return render_template("create_user.html", form=create_form)
 
-    accounts_services.create_user(
+    user = accounts_services.create_user(
         {
             "email": create_form.email.data,
             "alias": create_form.alias.data,
             "password": create_form.password.data,
             "enabled": create_form.enabled.data,
             "system_admin": create_form.system_admin.data,
-            # 'role_id':create_form.role_id.data,
+            'role_id': create_form.role_id.data,
         }
     )
 
-    # TODO: change redirect to user page when exists
-    return redirect(url_for("users_bp.get_page"))
+    return redirect(url_for("users_bp.show_user", user_id=user["id"]))
 
 
 @users_bp.route("/editar/<int:user_id>", methods=["GET", "POST", "PUT"])
@@ -67,7 +89,7 @@ def edit_user(user_id: int, accounts_services: AAS = Provide[Container.accounts_
     user = accounts_services.get_user(user_id)
 
     if not user:
-        return redirect(url_for("users_bp.get_page"))
+        return redirect(url_for("users_bp.get_users"))
 
     edit_form = UserEditForm(data=user, current_email=user['email'])
 
@@ -89,12 +111,11 @@ def update_user(user_id: int, edit_form: UserEditForm, accounts_services: AAS = 
             "alias": edit_form.alias.data,
             "enabled": edit_form.enabled.data,
             "system_admin": edit_form.system_admin.data,
-            # 'role_id':create_form.role_id.data,
+            'role_id': edit_form.role_id.data,
         },
     )
 
-    # TODO: change redirect to user page when exists
-    return redirect(url_for("users_bp.get_page"))
+    return redirect(url_for("users_bp.show_user", user_id=user_id))
 
 
 @users_bp.route("/delete/", methods=["POST"])
@@ -106,4 +127,17 @@ def delete_user(accounts_services: AAS = Provide[Container.accounts_services]):
         flash("El usuario no ha podido ser eliminado, intentelo nuevamente", "danger")
 
     flash("El usuario ha sido eliminado correctamente", "success")
-    return redirect(url_for("users_bp.get_page"))
+    return redirect(url_for("users_bp.get_users"))
+
+
+@users_bp.route("/toggle-activation/<int:user_id>")
+@inject
+def toggle_activation(user_id: int, accounts_services: AAS = Provide[Container.accounts_services]):
+    toggled = accounts_services.toggle_activation(user_id)
+
+    if not toggled:
+        flash("No se puede desactivar a un administrador del sistema", "danger")
+    else:
+        flash("La operacion fue un exito", "success")
+
+    return redirect(request.referrer or url_for("index_bp.home"))

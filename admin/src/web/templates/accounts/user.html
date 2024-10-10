@@ -1,0 +1,69 @@
+{% extends "base_show.html" %}
+
+{% block title %}Usuario {{ user.alias }} - CEDICA{% endblock %}
+
+{% block breadcrumb_items %}
+    <li>
+        <a href="{{ url_for('users_bp.get_users' )}}">
+            <span class="icon is-small">
+                <i class="fas fa-users" aria-hidden="true"></i>
+            </span>
+            <span>Usuarios</span>
+        </a>
+    </li>
+    <li>
+        <a href="">
+            <span class="icon is-small">
+                <i class="fa-solid fa-user" aria-hidden="true"></i>
+            </span>
+            <span>{{ user.alias }}</span>
+        </a>
+    </li>
+{% endblock %}
+
+{% block card_title %}Usuario: {{ user.alias }}{% endblock %}
+
+{% block card_content %}
+    <ul>
+        <li><strong>ID: </strong> {{ user.id }}</li>
+        <li><strong>Correo: </strong>{{ user.email }}</li>
+        <li><strong>Rol: </strong>{{ user.role_id | role }}</li>
+        <li><strong>Alias: </strong>{{ user.alias }}</li>
+        <li><strong>Esta habilitado: </strong> {{ user.enabled | natural_boolean }}</li>
+        <li><strong>Es administrador de sistema: </strong>{{ user.system_admin | natural_boolean }}</li>
+    </ul>
+{% endblock %}
+
+{% block card_actions %}
+    <button href="" class="card-footer-item has-text-danger modal-trigger" data-id="{{ user.id }}" data-target="user-delete-modal">
+        Eliminar
+    </button>
+    <a href="{{ url_for('users_bp.toggle_activation', user_id=user.id)}}" class="card-footer-item">
+        {% if user.enabled %}Deshabilitar{% else %}Habilitar{% endif %}
+    </a>
+    <a href="{{ url_for('users_bp.edit_user', user_id=user.id)}}" class="card-footer-item has-text-warning">Editar</a>
+{% endblock %}
+
+{% block additional_cards %}
+    <div class="card">
+        <header class="card-header">
+            <p class="card-header-title is-size-4">Miembro del equipo asociado</p>
+        </header>
+        <div class="card-content">
+            <div class="content"></div>
+        </div>
+        <footer class="card-footer">
+            <a href="" class="card-footer-item">Ver</a>
+        </footer>
+    </div>
+{% endblock %}
+
+{% block modal %}
+    {{ render_delete_modal(
+        endpoint="users_bp.delete_user",
+        title="Eliminar",
+        msg="¿Está seguro de que desea eliminar al usuario?",
+        msg_sub="Luego de confirmar, no se podrán revertir los cambios"
+    ) }}
+{% endblock %}
+

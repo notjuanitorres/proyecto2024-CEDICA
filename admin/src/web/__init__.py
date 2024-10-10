@@ -37,4 +37,10 @@ def create_app(env="development", static_folder="../../static"):
     app.context_processor(inject_session_data)
     app.jinja_env.globals.update(is_authenticated=is_authenticated)
 
+    if app.config["SEED_ON_STARTUP"]:
+        from src.core.seeds import seed_all
+        from src.core.database import reset
+        reset(app)
+        seed_all(app)
+
     return app

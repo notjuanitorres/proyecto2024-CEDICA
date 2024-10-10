@@ -35,7 +35,6 @@ class User(db.Model):
         return f"<User(id={self.id}, username={self.alias}, email={self.email})>"
 
 
-
 class RolePermission(db.Model):
     __tablename__ = 'role_permissions'
 

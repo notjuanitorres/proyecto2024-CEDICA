@@ -1,0 +1,43 @@
+{% extends "layout.html" %}
+
+{% from "macros/delete_modal.html" import render_delete_modal %}
+{% from "macros/flash_message.html" import render_flash_messages %}
+
+{% block main_content %}
+    <nav class="breadcrumb" aria-label="breadcrumbs">
+        <ul>
+            <li>
+                <a href="{{ url_for('index_bp.home')}}">
+                    <span class="icon is-small">
+                        <i class="fas fa-home" aria-hidden="true"></i>
+                    </span>
+                    <span>Inicio</span>
+                </a>
+            </li>
+            {% block breadcrumb_items %}{% endblock %}
+        </ul>
+    </nav>
+
+    {{ render_flash_messages(messages) }}
+
+    <section class="container is-fullheight-with-navbar">
+        <div class="card">
+            <header class="card-header has-text-centered">
+                <h2 class="card-header-title is-size-4">{% block card_title %}{% endblock %}</h2>
+            </header>
+            <div class="card-content">
+                <div class="content">
+                    {% block card_content %}{% endblock %}
+                </div>
+            </div>
+            <footer class="card-footer">
+                <!-- TODO: Show only if the user has permissions -->
+                {% block card_actions %}{% endblock %}
+            </footer>
+        </div>
+
+        {% block additional_cards %}{% endblock %}
+    </section>
+
+    {% block modal %}{% endblock %}
+{% endblock %}

@@ -1,8 +1,8 @@
 from abc import abstractmethod
-from typing import Dict
+from typing import Dict, List
 from core.bcrypt import bcrypt
 from .repositories import AbstractAccountsRepository
-from .models import User
+from .models import User, Role
 
 
 class AbstractAccountsServices:
@@ -12,8 +12,8 @@ class AbstractAccountsServices:
         pass
 
     @abstractmethod
-    def get_page(self, page: int, per_page: int):
-        pass
+    def get_page(self, page: int, per_page: int, search_query: Dict, order_by: list):
+        raise NotImplementedError
 
     @abstractmethod
     def get_user(self, user_id: int) -> Dict | None:
@@ -32,7 +32,7 @@ class AbstractAccountsServices:
         pass
 
     @abstractmethod
-    def disable_user(self, user_id: int) -> None:
+    def toggle_activation(self, user_id: int) -> bool:
         pass
 
     @abstractmethod
@@ -41,6 +41,22 @@ class AbstractAccountsServices:
 
     @abstractmethod
     def is_sys_admin(self, user_id: int) -> bool:
+        pass
+
+    @abstractmethod
+    def get_role(self, role_id: int) -> Role:
+        pass
+
+    @abstractmethod
+    def get_roles(self) -> List:
+        pass
+
+    @abstractmethod
+    def get_permissions_of(self, user_id: int) -> List:
+        pass
+
+    @abstractmethod
+    def is_user_enabled(self, user_id: int) -> bool:
         pass
 
 
@@ -60,15 +76,16 @@ class AccountsServices(AbstractAccountsServices):
             password=bcrypt.generate_password_hash(user_data.get("password")).decode('utf-8'),
             enabled=user_data.get("enabled", False),
             system_admin=user_data.get("system_admin", False),
-            # role_id=user_data["role_id"],
+            role_id=user_data.get("role_id", None),
         )
-        return self.accounts_repository.add(new_user)
+        created_user = self.accounts_repository.add(new_user)
+        return self.to_dict(created_user)
 
-    def get_page(self, page: int, per_page: int):
+    def get_page(self, page: int, per_page: int, search_query: Dict, order_by: list):
         max_per_page = 100
         per_page = 20
         return self.accounts_repository.get_page(
-            page=page, per_page=per_page, max_per_page=max_per_page
+            page, per_page, max_per_page, search_query, order_by
         )
 
     def get_user(self, user_id: int) -> Dict | None:
@@ -97,8 +114,36 @@ class AccountsServices(AbstractAccountsServices):
 
         return self.to_dict(user)
 
-    def disable_user(self, user_id: int) -> User:
-        pass
+    def toggle_activation(self, user_id: int) -> bool:
+        if self.is_sys_admin(user_id):
+            return False
+
+        self.accounts_repository.toggle_activation(user_id)
+
+        return True
+
+    def is_sys_admin(self, user_id: int) -> bool:
+        if not user_id:
+            return False
+        user = self.accounts_repository.get_by_id(user_id)
+        return user.system_admin
+
+    def get_role(self, role_id: int) -> Role:
+        return self.accounts_repository.get_role(role_id)
+
+    def get_roles(self) -> List:
+        return self.accounts_repository.get_roles()
+
+    def get_permissions_of(self, user_id: int) -> List:
+        user = self.accounts_repository.get_by_id(user_id)
+        if not user:
+            return ["NO_PERMISSIONS"]
+        permissions = self.accounts_repository.get_permissions_of_role(user.role_id)
+        return [p.name for p in permissions]
+
+    def is_user_enabled(self, user_id: int) -> bool:
+        user = self.accounts_repository.get_by_id(user_id)
+        return user.enabled
 
     def to_dict(self, user: User) -> Dict:
         # TODO: Implement User DTO to transfer users between service and presentation layer
@@ -111,13 +156,6 @@ class AccountsServices(AbstractAccountsServices):
             "alias": user.alias,
             "enabled": user.enabled,
             "system_admin": user.system_admin,
-            # TODO: Insert roles and permissions into the db
-            # 'role_id':create_form.role_id.data,
+            'role_id': user.role_id
         }
         return user_dict
-
-    def is_sys_admin(self, user_id: int) -> bool:
-        if not user_id:
-            return False
-        user = self.accounts_repository.get_by_id(user_id)
-        return user.system_admin

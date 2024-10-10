@@ -1,0 +1,106 @@
+{% extends "layout.html" %}
+
+{% block title %}Caballos - Crear caballo{% endblock %}
+
+{% block main_content %}
+    <section class="section">
+        <div class="container">
+            <h1 class="title">Crear caballo</h1>
+            <form method="POST">
+                {{ form.hidden_tag() }}
+
+                <div class="field">
+                    <label class="label">{{ form.name.label }}</label>
+                    <div class="control">
+                        {{ form.name(class="input", placeholder="Ingrese el nombre del caballo") }}
+                    </div>
+                    {% if form.name.errors %}
+                        <p class="help is-danger">{{ form.name.errors[0] }}</p>
+                    {% endif %}
+                </div>
+
+                <div class="field">
+                    <label class="label">{{ form.breed.label }}</label>
+                    <div class="control">
+                        {{ form.breed(class="input", placeholder="Ingrese la raza del caballo") }}
+                    </div>
+                    {% if form.breed.errors %}
+                        <p class="help is-danger">{{ form.breed.errors[0] }}</p>
+                    {% endif %}
+                </div>
+
+                <div class="field">
+                    <label class="label">{{ form.birth_date.label }}</label>
+                    <div class="control">
+                        {{ form.birth_date(class="input", type="date") }}
+                    </div>
+                    {% if form.birth_date.errors %}
+                        <p class="help is-danger">{{ form.birth_date.errors[0] }}</p>
+                    {% endif %}
+                </div>
+
+                <div class="field">
+                    <label class="label">{{ form.coat.label }}</label>
+                    <div class="control">
+                        {{ form.coat(class="input", placeholder="Ingrese el pelaje del caballo") }}
+                    </div>
+                    {% if form.coat.errors %}
+                        <p class="help is-danger">{{ form.coat.errors[0] }}</p>
+                    {% endif %}
+                </div>
+
+                <div class="field">
+                    <label class="label">{{ form.sex.label }}</label>
+                    <div class="control">
+                        <div class="select">
+                            {{ form.sex() }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <div class="control">
+                        <label class="checkbox">
+                            {{ form.is_donation() }} {{ form.is_donation.label }}
+                        </label>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label class="label">{{ form.admission_date.label }}</label>
+                    <div class="control">
+                        {{ form.admission_date(class="input", type="date") }}
+                    </div>
+                    {% if form.admission_date.errors %}
+                        <p class="help is-danger">{{ form.admission_date.errors[0] }}</p>
+                    {% endif %}
+                </div>
+
+                <div class="field">
+                    <label class="label">{{ form.assigned_facility.label }}</label>
+                    <div class="control">
+                        {{ form.assigned_facility(class="input", placeholder="Ingrese la sede asignada") }}
+                    </div>
+                    {% if form.assigned_facility.errors %}
+                        <p class="help is-danger">{{ form.assigned_facility.errors[0] }}</p>
+                    {% endif %}
+                </div>
+
+                <div class="field">
+                    <label class="label">{{ form.ja_type.label }}</label>
+                    <div class="control">
+                        <div class="select">
+                            {{ form.ja_type() }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <div class="control">
+                        <button class="button is-primary" type="submit">Guardar cambios</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </section>
+{% endblock %}

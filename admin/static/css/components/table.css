@@ -1,0 +1,18 @@
+@media screen and (max-width: 768px) {
+    .table-container {
+        padding: 0;
+    }
+    .table {
+        background-color: transparent;
+    }
+    .table thead, .table tfoot {
+        display: none;
+    }
+
+    .table tbody td {
+        display: block;
+        border: none;
+        padding: 0.5rem 0.75rem;
+    }
+
+}
