@@ -9,11 +9,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const beneficiaryIdInput = document.getElementById('beneficiary_id');
 
   const toggleBeneficiaryField = () => {
-      if (paymentTypeField.value === 'HONORARIOS') {
-          beneficiaryField.style.display = 'block';
-      } else {
-          beneficiaryField.style.display = 'none';
-      }
+    if (paymentTypeField.value === 'HONORARIOS') {
+        beneficiaryField.style.display = 'block';
+    } else {
+        beneficiaryField.style.display = 'none';
+    }
   };
 
   // Initial check
@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
                   row.innerHTML = `
                       <td>${employee.name}</td>
                       <td>${employee.email}</td>
-                      <td><button class="button is-small is-primary select-employee-button" data-id="${employee.id}" data-name="${employee.name}" data-email="${employee.email}">Seleccionar</button></td>
+                      <td><button class="button is-small is-info select-employee-button" data-id="${employee.id}" data-name="${employee.name}" data-email="${employee.email}">Seleccionar</button></td>
                   `;
                   employeeList.appendChild(row);
               });

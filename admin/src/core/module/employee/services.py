@@ -73,3 +73,5 @@ class EmployeeServices(AbstractEmployeeServices):
         employee = self.employee_repository.get_by_dni(dni=dni)
 
         return employee is not None
+    def search_by_email(self, email: str):
+        return Employee.query.filter(Employee.email.ilike(f"%{email}%")).all()

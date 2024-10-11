@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, url_for, redirect, flash
+from flask import Blueprint, jsonify, render_template, request, url_for, redirect, flash
 from dependency_injector.wiring import inject, Provide
 from src.web.helpers.auth import check_user_permissions
 from src.core.container import Container
@@ -137,3 +137,26 @@ def update_employee(
 
     flash("El miembro del equipo ha sido actualizado exitosamente ")
     return redirect(url_for("employee_bp.show_employee", employee_id=employee_id))
+
+@employee_bp.route("/api", methods=["GET"])
+@check_user_permissions(permissions_required=["equipo_index"])
+@inject
+def api_get_employees(
+    employees: AbstractEmployeeServices = Provide[Container.employee_services],
+):
+    search_query = request.args.get("search", type=str, default="")
+    search_query = search_query.strip().lower()
+
+    if not search_query:
+        return jsonify([])
+
+    search_results = employees.search_by_email(search_query)
+
+    return jsonify([
+        {
+            "id": employee.id,
+            "name": employee.fullname,
+            "email": employee.email,
+        }
+        for employee in search_results
+    ])
