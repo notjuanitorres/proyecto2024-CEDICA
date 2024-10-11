@@ -41,10 +41,14 @@
                 <div class="field" id="beneficiaryField" style="display: none;">
                     <label class="label">{{ form.beneficiary.label }}</label>
                     <div class="control">
-                        {{ form.beneficiary(class="input", type="text", readonly=True) }}
-                        <button type="button" class="button is-info" id="openModalButton">Seleccionar Beneficiario</button>
+                        {{ form.beneficiary(class="input", type="text", readonly=True, placeholder="No se seleccionó beneficiario") }}
+                        {{ form.beneficiary_id() }}
+                        <br />
+                        <br />
+                        <button type="button " class="button is-info" id="openModalButton">Seleccionar</button>
                     </div>
                 </div>
+                
                 <!-- Modal -->
                 <div id="employeeModal" class="modal">
                     <div class="modal-background"></div>
