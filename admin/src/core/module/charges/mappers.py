@@ -1,0 +1,53 @@
+from typing import Dict
+from .models import Charge
+
+
+class ChargeMapper:
+    @classmethod
+    def from_entity(cls, charge: Charge) -> Dict:
+        return {
+            "id": charge.id,
+            "amount": charge.amount,
+            "observations": charge.observations,
+            "payment_method": charge.payment_method.value,
+            "date_of_charge": charge.date_of_charge,
+            "employee_id": charge.employee_id,
+            # "jya_id": charge.jya_id,
+            "created_at": charge.created_at,
+            "updated_at": charge.updated_at,
+        }
+
+    @classmethod
+    def to_entity(cls, data: Dict) -> "Charge":
+        return Charge(
+            id=data.get("id"),
+            amount=data.get("amount"),
+            observations=data.get("observations"),
+            payment_method=data.get("payment_method"),
+            date_of_charge=data.get("date_of_charge"),
+            employee_id=data.get("employee_id"),
+            # jya_id=data.get("jya_id"),
+        )
+
+    @classmethod
+    def from_form(cls, data: Dict) -> Dict:
+        return {
+            "id": data.get("id"),
+            "amount": data.get("amount"),
+            "observations": data.get("observations"),
+            "payment_method": data.get("payment_method"),
+            "date_of_charge": data.get("date_of_charge"),
+            "employee_id": data.get("employee_id"),
+            # "jya_id": data.get("jya_id"),
+        }
+
+    @classmethod
+    def to_form(cls, data: Dict) -> Dict:
+        return {
+            "amount": data.get("amount"),
+            "observations": data.get("observations"),
+            "payment_method": data.get("payment_method"),
+            "date_of_charge": data.get("date_of_charge"),
+            "employee_id": data.get("employee_id"),
+            # "jya_id": data.get("jya_id"),
+        }

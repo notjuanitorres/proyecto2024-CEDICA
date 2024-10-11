@@ -4,7 +4,7 @@ from datetime import datetime
 from enum import Enum as pyEnum
 
 
-class PaymentMethod(pyEnum):
+class PaymentMethodEnum(pyEnum):
     CASH = "Efectivo"
     CREDIT_CARD = "Tarjeta de crédito"
     DEBIT_CARD = "Tarjeta de débito"
@@ -19,7 +19,7 @@ class Charge(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     date_of_charge = db.Column(db.Date, nullable=False)
     amount = db.Column(db.Float, nullable=False)
-    payment_method = db.Column(db.Enum(PaymentMethod), nullable=False)
+    payment_method = db.Column(db.Enum(PaymentMethodEnum), nullable=False)
     observations = db.Column(db.String(255), nullable=True)
 
     inserted_at = db.Column(db.DateTime, default=datetime.now)
