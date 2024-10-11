@@ -76,11 +76,7 @@ class HorseManagementForm(FlaskForm):
     ja_type = SelectField(
         "Tipo de J&A asignado",
         choices=[
-            (JAEnum.HIPOTHERAPY.name, JAEnum.HIPOTHERAPY.value),
-            (JAEnum.THERAPEUTIC_RIDING.name, JAEnum.THERAPEUTIC_RIDING.value),
-            (JAEnum.ADAPTED_SPORTS.name, JAEnum.ADAPTED_SPORTS.value),
-            (JAEnum.RECREATIONAL_ACTIVITIES.name, JAEnum.RECREATIONAL_ACTIVITIES.value),
-            (JAEnum.RIDING.name, JAEnum.RIDING.value),
+            (jtype.name, jtype.value) for jtype in JAEnum
         ],
         validators=[
             DataRequired(),
