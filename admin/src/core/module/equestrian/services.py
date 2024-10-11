@@ -56,7 +56,6 @@ class EquestrianServices(AbstractEquestrianServices):
 
     def get_page(self, page: int, per_page: int, search_query: Dict, order_by: list):
         max_per_page = 100
-        per_page = 20
         return self.equestrian_repository.get_page(
             page, per_page, max_per_page, search_query, order_by
         )
