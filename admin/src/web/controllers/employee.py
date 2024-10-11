@@ -10,6 +10,7 @@ from src.core.module.employee import (
     EmployeeEditForm,
     enums as employment_information,
 )
+from src.core.module.common import AbstractStorageServices
 
 
 employee_bp = Blueprint(
@@ -68,13 +69,24 @@ def create_employee():
 def add_employee(
     create_form,
     employees: AbstractEmployeeServices = Provide[Container.employee_services],
+    storage: AbstractStorageServices = Provide[Container.storage_services],
 ):
     if not create_form.validate_on_submit():
         return render_template("./employee/create_employee.html", form=create_form)
 
+    documents = create_form.documents.data
+    
+    uploaded_documents = [
+        ("dni", storage.upload_batch(documents.get("dni"), employees.storage_path)),
+        ("title", storage.upload_batch(documents.get("title"), employees.storage_path)),
+        ("curriculum_vitae", [storage.upload_file(documents.get("curriculum_vitae"), employees.storage_path)])
+    ]
+
     created_employee = employees.create_employee(
-        employee=Mapper.to_entity(create_form.data),
+        employee=Mapper.to_entity(create_form.data, uploaded_documents),
     )
+
+    flash("Miembro creado con exito!", "success")
 
     return redirect(
         url_for("employee_bp.show_employee", employee_id=created_employee["id"])
@@ -141,3 +153,16 @@ def update_employee(
 
     flash("El miembro del equipo ha sido actualizado exitosamente ")
     return redirect(url_for("employee_bp.show_employee", employee_id=employee_id))
+
+
+@employee_bp.route(
+    "/editar/<int:employee_id>/documentos/", methods=["GET", "POST", "PUT"]
+)
+@check_user_permissions(permissions_required=["equipo_update"])
+@inject
+def edit_documents(employee_id: int):
+    return render_template("./employee/update_documents.html", employee_id=employee_id)
+
+@inject
+def update_documents():
+    pass

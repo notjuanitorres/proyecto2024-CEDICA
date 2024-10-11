@@ -1,44 +1,65 @@
 from typing import Dict
-from .models import Employee
+from .models import Employee, EmployeeFile
 
 
 class EmployeeMapper:
     @classmethod
-    def to_entity(self, data: Dict) -> Employee:
+    def _create_files(self, files):
+        def create_file(document_type, file_information):
+            employee_file = EmployeeFile(
+                filename=file_information.get("filename"),
+                filetype=file_information.get("filetype"),
+                filesize=file_information.get("filesize"),
+                tag=document_type,
+            )
+            return employee_file
+        created_files = []
+        for doc_type, files_info in files:
+            for file_info in files_info:
+                created_files.append(create_file(doc_type, file_info))
+
+        return created_files
+
+    @classmethod
+    def to_entity(self, data: Dict, files: Dict) -> Employee:
         phone = data.get("phone", {})
         employment_information = data.get("employment_information", {})
         address = data.get("address", {})
         emergency_contact = data.get("emergency_contact", {})
-        # documents = None
-        # if files:
-        #     documents = files
-        return Employee(
-            id = data.get("id"),
-            name = data.get("name"),
-            lastname = data.get("lastname"),
-            country_code = phone.get("country_code"),
-            area_code = phone.get("area_code"),
-            phone = phone.get("number"),
-            dni = data.get("dni"),
-            profession = employment_information.get("profession"),
-            position = employment_information.get("position"),
-            job_condition = employment_information.get("job_condition"),
-            start_date = employment_information.get("start_date"),
-            end_date = employment_information.get("end_date"),
-            is_active = employment_information.get("is_active"),
-            street = address.get("street"),
-            number = address.get("number"),
-            department = address.get("department"),
-            locality = address.get("locality"),
-            province = address.get("province"),
-            emergency_contact_name = emergency_contact.get("emergency_contact_name"),
-            emergency_contact_phone = emergency_contact.get("emergency_contact_phone"),
-            health_insurance = data.get("health_insurance"),
-            affiliate_number = data.get("affiliate_number"),
-            email = data.get("email"),
-            user_id = data.get("user_id"),
-            # documents = documents,
+
+        employee = Employee(
+            id=data.get("id"),
+            name=data.get("name"),
+            lastname=data.get("lastname"),
+            country_code=phone.get("country_code"),
+            area_code=phone.get("area_code"),
+            phone=phone.get("number"),
+            dni=data.get("dni"),
+            profession=employment_information.get("profession"),
+            position=employment_information.get("position"),
+            job_condition=employment_information.get("job_condition"),
+            start_date=employment_information.get("start_date"),
+            end_date=employment_information.get("end_date"),
+            is_active=employment_information.get("is_active"),
+            street=address.get("street"),
+            number=address.get("number"),
+            department=address.get("department"),
+            locality=address.get("locality"),
+            province=address.get("province"),
+            emergency_contact_name=emergency_contact.get("emergency_contact_name"),
+            emergency_contact_phone=emergency_contact.get("emergency_contact_phone"),
+            health_insurance=data.get("health_insurance"),
+            affiliate_number=data.get("affiliate_number"),
+            email=data.get("email"),
+            user_id=data.get("user_id"),
         )
+
+        if files:
+            employee_files = self._create_files(files)
+            for file in employee_files:
+                employee.files.append(file)
+
+        return employee
 
     @classmethod
     def from_entity(self, employee: Employee) -> "Dict":
@@ -78,7 +99,7 @@ class EmployeeMapper:
             "inserted_at": employee.inserted_at,
             "updated_at": employee.updated_at,
         }
-        
+
     @classmethod
     def flat_form(self, data: Dict) -> "Dict":
         phone = data.get("phone", {})
@@ -111,5 +132,3 @@ class EmployeeMapper:
             "email": data.get("email"),
             "user_id": data.get("user_id"),
         }
-
-    

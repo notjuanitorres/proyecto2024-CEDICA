@@ -6,6 +6,9 @@ from .mappers import EmployeeMapper as Mapper
 
 
 class AbstractEmployeeServices:
+    def __init__(self):
+        self.storage_path = "/employees"
+
     @abstractmethod
     def create_employee(self, employee: Dict) -> Dict | None:
         raise NotImplementedError
@@ -36,12 +39,15 @@ class AbstractEmployeeServices:
 
 
 class EmployeeServices(AbstractEmployeeServices):
-    def __init__(self, employee_repository: AbstractEmployeeRepository):
+    def __init__(
+        self,
+        employee_repository: AbstractEmployeeRepository,
+    ):
+        super().__init__()
         self.employee_repository = employee_repository
 
     def create_employee(self, employee: Employee) -> Dict | None:
         created_employee: Employee = self.employee_repository.add(employee)
-
         return Mapper.from_entity(created_employee)
 
     def get_page(self, page: int, per_page: int, search_query: Dict, order_by: list):
