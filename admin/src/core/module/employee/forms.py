@@ -24,6 +24,7 @@ from src.core.module.common import (
     AddressForm,
     EmergencyContactForm,
     PhoneForm,
+    FilesNumber,
     IsNumber,
 )
 
@@ -69,26 +70,6 @@ def max_file_size(size_in_mb: int):
     size_in_bytes = size_in_mb * BYTES_PER_MB
 
     return size_in_bytes
-
-
-class FilesNumber(object):
-    def __init__(self, min=-1, max=-1, message=None):
-        self.min = min
-        self.max = max
-        if not message:
-            message = f"Maximum number of files is {max} and the minimum {min}." % (
-                min,
-                max,
-            )
-        self.message = message
-
-    def __call__(self, form, field):
-        files = field.data
-
-        if (self.min != -1 and len(files) < self.min) or (
-            self.max != -1 and len(files) > self.max
-        ):
-            raise ValidationError(self.message)
 
 
 class EmployeeDocumentsForm(FlaskForm):

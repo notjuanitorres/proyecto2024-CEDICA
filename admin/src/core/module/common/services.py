@@ -6,6 +6,8 @@ from urllib3 import HTTPResponse
 from ulid import ULID
 from minio import Minio
 from werkzeug.datastructures import FileStorage
+from werkzeug.utils import secure_filename
+
 from flask import current_app
 
 # from typing import BinaryIO
@@ -48,7 +50,8 @@ class StorageServices(AbstractStorageServices):
 
     def upload_file(self, file: FileStorage, path: str = ""):
         ulid: str = ULID().from_datetime(datetime.now()).hex
-        filename = self.__construct_path(path, f"{ulid}{file.filename}")
+        original_name = secure_filename(file.filename)
+        filename = self.__construct_path(path, f"{ulid}{original_name}")
         file.seek(0, os.SEEK_END)
         size = file.tell()
         file.seek(0)
@@ -65,6 +68,7 @@ class StorageServices(AbstractStorageServices):
                 "filename": filename,
                 "filetype": file.mimetype,
                 "filesize": size,
+                "original_filename": original_name
             }
         return uploaded_file
 
