@@ -1,5 +1,5 @@
 from enum import Enum
-class payment_type(Enum):
+class PaymentTypeEnum(Enum):
    HONORARIOS = 'HONORARIOS'
    PROOVEDOR = 'PROOVEDOR'
    GASTOS = 'GASTOS'

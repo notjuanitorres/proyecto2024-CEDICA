@@ -1,17 +1,15 @@
 from datetime import datetime
 from random import choices
-from src.core.module.payment.data import payment_type as types
+from src.core.module.payment.data import PaymentTypeEnum as types
 from flask_wtf import FlaskForm
 from wtforms import StringField, SelectField, SubmitField, DateField, DecimalField, HiddenField
 from wtforms.validators import DataRequired, Length, Optional
 
 class PaymentForm(FlaskForm):
-
     amount = DecimalField(
         "Monto a pagar",
         validators=[
             DataRequired(),
-            Length(max=100),
         ],
         places=2,
     )
@@ -45,7 +43,7 @@ class PaymentForm(FlaskForm):
     )
 
     submit = SubmitField("Submit")
-    def validate(self):
+    def validate(self, extra_validators=None):
         rv = FlaskForm.validate(self)
         if not rv:
             return False

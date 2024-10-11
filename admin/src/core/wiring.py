@@ -1,5 +1,5 @@
 from src.web.helpers import auth as auth_helper
-from src.web.controllers import user, auth, employee, equestrian
+from src.web.controllers import user, auth, employee, equestrian, payment
 from src.core.module.accounts import validators
 from .container import Container
 
@@ -15,6 +15,7 @@ def init_wiring():
         employee,
         equestrian,
         validators,
+        payment,
         auth_helper
     ])
     container.init_resources()
