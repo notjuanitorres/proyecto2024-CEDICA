@@ -1,13 +1,13 @@
 from datetime import datetime
-from datetime import datetime
-from src.core.database import db
+from src.core.bcrypt import bcrypt
 from src.core.module.accounts.models import User, Role, Permission, RolePermission
 from src.core.module.employee.models import Employee
-from src.core.module.employee.data import PositionEnum, ConditionEnum, ProfessionsEnum
-from src.core.module.employee.models import Employee
-from src.core.module.employee.data import PositionEnum, ConditionEnum, ProfessionsEnum
-from src.core.bcrypt import bcrypt
-
+from src.core.module.employee.data import (
+    JobPositionEnum as PositionEnum,
+    JobConditionEnum as ConditionEnum,
+    ProfessionsEnum,
+)
+from src.core.database import db
 
 
 def seed_accounts():
@@ -28,7 +28,7 @@ def seed_roles():
         Role(name="Técnico"),
         Role(name="Ecuestre"),
         Role(name="Voluntario"),
-        Role(name="Administración")
+        Role(name="Administración"),
     ]
 
     db.session.add_all(roles)
@@ -255,7 +255,7 @@ def seed_employees():
             health_insurance="Salud Integral",
             affiliate_number=5432109,
             job_condition=ConditionEnum.VOLUNTARIO,
-         ),
+        ),
         Employee(
             email="sofia.gonzalez@gmail.com",
             phone="789321654",

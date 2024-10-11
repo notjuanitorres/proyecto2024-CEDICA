@@ -15,7 +15,7 @@ class ProfessionsEnum(Enum):
     OTRO = "Otro"
 
 
-class PositionEnum(Enum):
+class JobPositionEnum(Enum):
     ADMINISTRATIVO = "Administrativo/a"
     TERAPEUTA = "Terapeuta"
     CONDUCTOR = "Conductor"
@@ -30,7 +30,7 @@ class PositionEnum(Enum):
     OTRO = "Otro"
 
 
-class ConditionEnum(Enum):
+class JobConditionEnum(Enum):
     VOLUNTARIO = "Voluntario"
     PERSONAL_RENTADO = "Personal Rentado"
     OTRO = "Otro"
@@ -38,6 +38,6 @@ class ConditionEnum(Enum):
 
 enums = {
     "professions": ProfessionsEnum,
-    "positions": PositionEnum,
-    "conditions": ConditionEnum,
+    "positions": JobPositionEnum,
+    "conditions": JobConditionEnum,
 }

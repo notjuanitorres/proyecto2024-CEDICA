@@ -39,8 +39,8 @@ def get_employees(
             "text": search.search_text.data,
             "field": search.search_by.data,
         }
-        if search.filter_profession.data:
-            search_query["filters"] = {"profession": search.filter_profession.data}
+        if search.filter_job_position.data:
+            search_query["filters"] = {"position": search.filter_job_position.data}
 
     paginated_employees = employees.get_page(
         page=page, per_page=per_page, order_by=order_by, search_query=search_query

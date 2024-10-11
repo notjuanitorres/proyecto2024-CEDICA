@@ -13,7 +13,7 @@ FileType = Dict[str, str | int]
 FilesType = List[FileType]
 
 
-class   AbstractStorageServices(object):
+class AbstractStorageServices(object):
     @abstractmethod
     def upload_file(self, file: FileStorage, path: str = ""):
         raise NotImplementedError

@@ -12,11 +12,20 @@ from wtforms.fields import (
     SubmitField,
     FileField,
     MultipleFileField,
-    HiddenField
+    HiddenField,
 )
-from src.core.module.employee.data import ProfessionsEnum, PositionEnum, ConditionEnum
+from src.core.module.employee.data import (
+    ProfessionsEnum,
+    JobPositionEnum as PositionEnum,
+    JobConditionEnum as ConditionEnum,
+)
 from src.core.module.employee.validators import EmailExistence, DniExistence
-from src.core.module.common import AddressForm, EmergencyContactForm, PhoneForm, IsNumber
+from src.core.module.common import (
+    AddressForm,
+    EmergencyContactForm,
+    PhoneForm,
+    IsNumber,
+)
 
 
 def email_existence(form, field):
@@ -147,12 +156,13 @@ class EmployeeManagementForm(FlaskForm):
 
 class EmployeeCreateForm(EmployeeManagementForm):
     dni = StringField(
-        "DNI", validators=[
+        "DNI",
+        validators=[
             DataRequired(),
             Length(min=8, max=8),
             IsNumber("Debe ser un numero de 8 digitos!"),
-            dni_existence
-            ]
+            dni_existence,
+        ],
     )
     email = StringField(
         "Email",
@@ -173,12 +183,13 @@ class EmployeeEditForm(EmployeeManagementForm):
 
     id = HiddenField("ID")
     dni = StringField(
-        "DNI", validators=[
+        "DNI",
+        validators=[
             DataRequired(),
             Length(min=8, max=8),
             IsNumber("Debe ser un numero de 8 digitos!"),
-            dni_existence
-        ]
+            dni_existence,
+        ],
     )
     email = StringField(
         "Email",
@@ -205,8 +216,9 @@ class EmployeeSearchForm(FlaskForm):
         validate_choice=True,
     )
     search_text = StringField(validators=[Length(max=50)])
-    filter_profession = SelectField(
-        choices=[("", "Ver Todas")] + [(e.name, e.value) for e in ProfessionsEnum],
+    filter_job_position = SelectField(
+        "Puesto laboral",
+        choices=[("", "Ver Todas")] + [(e.name, e.value) for e in PositionEnum],
         validate_choice=True,
     )
     order_by = SelectField(
