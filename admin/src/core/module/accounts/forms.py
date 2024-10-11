@@ -5,6 +5,8 @@ from wtforms import StringField, PasswordField, BooleanField, SelectField, Submi
 from wtforms.validators import DataRequired, Email, Length, EqualTo, Optional
 from .validators import EmailExistence
 
+from src.core.module.accounts.models import RoleEnum
+
 
 def email_existence(form, field):
     validator = EmailExistence(message="Email en uso")
@@ -52,7 +54,6 @@ class UserManagementForm(FlaskForm):
 
 
 class UserCreateForm(UserManagementForm):
-
     password = PasswordField(
         "Contraseña",
         validators=[
@@ -163,14 +164,8 @@ class UserSearchForm(FlaskForm):
     )
 
     filter_role_id = SelectField(
-        choices=[
-            ('', 'Todos'),
-            ('1', 'Técnica'),
-            ('2', 'Ecuestre'),
-            ('3', 'Voluntariado'),
-            ('4', 'Administración')
-
-        ],
+        choices=[('', 'Todos')] +
+                [(str(index + 1), role.value) for index, role in enumerate(RoleEnum)],
     )
 
     order_by = SelectField(
