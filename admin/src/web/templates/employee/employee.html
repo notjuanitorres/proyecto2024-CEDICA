@@ -1,5 +1,9 @@
 {% extends "base_show.html" %}
 
+
+{% from "macros/file_icon.html" import render_file_icon %}
+{% from "employee/macros/parse_categories.html" import render_category %}
+
 {% block title %}Miembro {{ employee.name + " " + employee.lastname }} - CEDICA{% endblock %}
 
 {% block breadcrumb_items %}
@@ -70,24 +74,11 @@
     <button href="" class="card-footer-item has-text-danger modal-trigger" data-id="{{ employee.id }}" data-target="employee-delete-modal">
         Eliminar
     </button>
-    <a href="{{ url_for( "employee_bp.edit_employee", employee_id=employee.id )}}" class="card-footer-item has-text-warning">Editar</a>
+    <a href="{{ url_for( "employee_bp.edit_employee", employee_id=employee.id )}}" class="card-footer-item has-text-warning">Actualizar</a>
 {% endblock %}
 
 {% block additional_cards %}
-    <div class="card">
-        <header class="card-header">
-            <p class="card-header-title is-size-4">Documentos anexos</p>
-        </header>
-        <div class="card-content">
-            <div class="content">
-                
-            </div>
-        </div>
-        <footer class="card-footer">
-            <a href="" class="card-footer-item has-text-warning">Editar</a>
-        </footer>
-    </div>
-    <div class="card">
+    <div id="account" class="card">
         <header class="card-header">
             <p class="card-header-title is-size-4">Usuario asociado a {{ employee.fullname }}</p>
         </header>
@@ -98,6 +89,41 @@
         </div>
         <footer class="card-footer">
             <a href="" class="card-footer-item">Ver</a>
+        </footer>
+    </div>
+    <div id="documents" class="card">
+        <header class="card-header">
+            <p class="card-header-title is-size-4">Documentos anexos</p>
+        </header>
+        <div class="card-content">
+            <div class="content">
+                {% if employee.files %}
+                {% for file in employee.files %}
+                <div class="box">
+                    <article class="media">
+                        <div class="media-left">
+                            {{ render_file_icon(file.filetype, size=1) }}
+                        </div>
+                        <div class="media-content ml-2">
+                        <div class="content">
+                            <p>
+                            <strong>{{ render_category(file.tag) }}</strong>
+                            <small>{{ file.uploaded_at | format_date }}</small>
+                            <br />
+                            {{ file.original_filename }}
+                            </p>
+                        </div>
+                        </div>
+                    </article>
+                </div>
+                {% endfor %}
+                {% else %}
+                    <p>No se se ha subido ningun documento</p>
+                {% endif %}
+            </div>
+        </div>
+        <footer class="card-footer">
+            <a href="" class="card-footer-item has-text-warning">Actualizar</a>
         </footer>
     </div>
 {% endblock %}

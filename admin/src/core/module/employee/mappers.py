@@ -66,7 +66,7 @@ class EmployeeMapper:
 
     @classmethod
     def from_entity(self, employee: Employee) -> "Dict":
-        return {
+        serialized_employee = {
             "id": employee.id,
             "name": employee.name,
             "lastname": employee.lastname,
@@ -102,6 +102,10 @@ class EmployeeMapper:
             "inserted_at": employee.inserted_at,
             "updated_at": employee.updated_at,
         }
+        if employee.files:
+            serialized_employee["files"] = [ file.to_dict() for file in employee.files if file ]
+
+        return serialized_employee
 
     @classmethod
     def flat_form(self, data: Dict) -> "Dict":
