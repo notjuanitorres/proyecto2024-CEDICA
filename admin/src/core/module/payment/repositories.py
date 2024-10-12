@@ -1,4 +1,5 @@
 from abc import abstractmethod
+from operator import and_
 from typing import Dict, List
 from flask_sqlalchemy import SQLAlchemy
 from flask_sqlalchemy.pagination import Pagination
@@ -60,11 +61,23 @@ class PaymentRepository(AbstractPaymentRepository):
     ):
         query = Payment.query
 
-        query = apply_filters(Payment, query, search_query, order_by)
+        # Aplicar filtros
+        if search_query:
+            if "payment_date__gte" in search_query:
+                query = query.filter(Payment.payment_date >= search_query["payment_date__gte"])
+            if "payment_date__lte" in search_query:
+                query = query.filter(Payment.payment_date <= search_query["payment_date__lte"])
+            if "payment_type" in search_query:
+                query = query.filter(Payment.payment_type == search_query["payment_type"])
 
-        return query.paginate(
-            page=page, per_page=per_page, error_out=False, max_per_page=max_per_page
-        )
+        # Aplicar orden
+        if order_by:
+            for order in order_by:
+                column, direction = order
+                query = query.order_by(getattr(getattr(Payment, column), direction)())
+
+        return query.paginate(page=page, per_page=per_page, error_out=False)
+
 
     def get_by_id(self, payment_id: int) -> Payment:
         return (

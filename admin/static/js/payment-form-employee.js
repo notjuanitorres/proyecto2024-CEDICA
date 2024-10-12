@@ -54,6 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
               document.querySelectorAll('.select-employee-button').forEach(button => {
                   button.addEventListener('click', (event) => {
+                    event.preventDefault();
                     const name = event.target.getAttribute('data-name');
                     const email = event.target.getAttribute('data-email');
                     const id = event.target.getAttribute('data-id');

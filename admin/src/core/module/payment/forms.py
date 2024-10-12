@@ -53,3 +53,16 @@ class PaymentForm(FlaskForm):
             return False
 
         return True
+    
+class PaymentSearchForm(FlaskForm):
+    start_date = DateField('Start Date', format='%Y-%m-%d', validators=[Optional()])
+    end_date = DateField('End Date', format='%Y-%m-%d', validators=[Optional()])
+    payment_type = SelectField('Payment Type', choices=[
+        ('', 'Todos'),
+        ('HONORARIOS', 'Honorarios'),
+        ('PROOVEDOR', 'Proveedor'),
+        ('GASTOS', 'Gastos Varios')
+    ], validators=[Optional()])
+    order_by = SelectField('Order By', choices=[('payment_date', 'Fecha de Pago'), ('amount', 'Monto')], validators=[Optional()])
+    order = SelectField('Order', choices=[('asc', 'Ascendente'), ('desc', 'Descendente')], validators=[Optional()])
+    submit_search = SubmitField("Buscar")
