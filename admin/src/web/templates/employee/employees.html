@@ -64,20 +64,20 @@
         <tr class="">
             <td class="is-hidden-mobile">
                 {{ render_actions_menu(
-        field="employee_id",
-        value=employee.id,
-        to_left=true,
-        endpoints={
-          'show':'employee_bp.show_employee',
-          'edit': 'employee_bp.edit_employee',
-          'delete':''
-        },
-        permission_to_show="equipo_show",
-        permission_to_edit="equipo_update",
-        permission_to_delete="equipo_destroy",
-        user_permissions=permissions,
-        is_admin=is_admin
-                )
+                field="employee_id",
+                value=employee.id,
+                to_left=true,
+                endpoints={
+                  'show':'employee_bp.show_employee',
+                  'edit': 'employee_bp.edit_employee',
+                  'delete':''
+                },
+                permission_to_show="equipo_show",
+                permission_to_edit="equipo_update",
+                permission_to_delete="equipo_destroy",
+                user_permissions=permissions,
+                is_admin=is_admin
+                        )
                 }}
             </td>
             <td><span class="is-hidden-tablet has-text-weight-bold">ID: </span>{{ employee.id }}</td>
@@ -113,4 +113,15 @@
 
 {% block bottom_pagination %}
     {{ render_pagination(employees, 'employee_bp.get_employees') }}
+{% endblock %}
+
+{% block delete_modal %}
+  {{
+    render_delete_modal(
+      endpoint="employee_bp.delete_employee",
+      title="Eliminar",
+      msg="¿Está seguro de que desea eliminar al empleado?",
+      msg_sub="Luego de confirmar, no se podrán revertir los cambios"
+    )
+  }}
 {% endblock %}
