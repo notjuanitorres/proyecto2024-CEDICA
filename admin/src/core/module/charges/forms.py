@@ -2,7 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import SelectField, StringField, SubmitField, DateField, DecimalField
 from wtforms.validators import Length, DataRequired
 
-from core.module.charges.models import PaymentMethodEnum, Charge
+from src.core.module.charges.models import PaymentMethodEnum
 
 
 class ChargeSearchForm(FlaskForm):

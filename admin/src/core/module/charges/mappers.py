@@ -1,5 +1,5 @@
 from typing import Dict
-from .models import Charge
+from src.core.module.charges.models import Charge
 
 
 class ChargeMapper:

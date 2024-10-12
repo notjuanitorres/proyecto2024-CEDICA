@@ -1,7 +1,7 @@
 from abc import abstractmethod
 from typing import List, Dict
 
-from core.module.employee.models import Employee
+from src.core.module.employee.models import Employee
 from src.core.database import db as database
 from src.core.module.charges.models import Charge
 from core.module.common.repositories import apply_filters, apply_search_criteria
