@@ -88,43 +88,37 @@
             </div>
         </div>
         <footer class="card-footer">
-            <a href="" class="card-footer-item">Ver</a>
+            <a href="" class="card-footer-item has-text-link">Ver</a>
         </footer>
     </div>
-    <div id="documents" class="card">
-        <header class="card-header">
-            <p class="card-header-title is-size-4">Documentos anexos</p>
-        </header>
-        <div class="card-content">
-            <div class="content">
-                {% if employee.files %}
-                {% for file in employee.files %}
-                <div class="box">
-                    <article class="media">
-                        <div class="media-left">
-                            {{ render_file_icon(file.filetype, size=1) }}
-                        </div>
-                        <div class="media-content ml-2">
-                        <div class="content">
-                            <p>
-                            <strong>{{ render_category(file.tag) }}</strong>
-                            <small>{{ file.uploaded_at | format_date }}</small>
-                            <br />
-                            {{ file.original_filename }}
-                            </p>
-                        </div>
-                        </div>
-                    </article>
-                </div>
-                {% endfor %}
-                {% else %}
-                    <p>No se se ha subido ningun documento</p>
-                {% endif %}
-            </div>
+    <div id="documents" class="panel">
+        <div class="panel-heading has-background-dark">
+            <p class="card-header-title is-size-4">Documentos asociados</p>
+        </div>
+        {% if employee.files %}
+
+        {% for document in employee.files %}
+        <div class="panel-block is-active">
+            <span class="panel-icon">
+            {{ render_file_icon(document.filetype, 5) }}
+            </span>
+            <span class="tag is-white">{{ render_category(document.tag) }}</span>
+            <p class="ml-2"> {{ document.original_filename}} </p>
+        </div>
+        {% endfor %}
+        <div class="panel-block">
+            <a href="{{ url_for("employee_bp.edit_documents", employee_id=employee.id ) }}" class="card-footer-item has-text-warning">
+                Actualizar
+            </a>
         </div>
         <footer class="card-footer">
-            <a href="" class="card-footer-item has-text-warning">Actualizar</a>
         </footer>
+    </div>
+    {% else %}
+    <p>No se se ha subido ningun documento</p>
+    {% endif %}
+
+
     </div>
 {% endblock %}
 

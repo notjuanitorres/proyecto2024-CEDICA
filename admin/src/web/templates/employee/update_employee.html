@@ -21,6 +21,14 @@
       </a>
     </li>
     <li>
+      <a href="{{ url_for('employee_bp.show_employee', employee_id=employee.id) }}">
+        <span class="icon is-small">
+          <i class="fas fa-user" aria-hidden="true"></i>
+        </span>
+        <span>{{ employee.name }} {{ employee.lastname }}</span>
+      </a>
+    </li>
+    <li>
       <a>
         <span class="icon is-small">
           <i class="fa-solid fa-pen-nib"></i>
@@ -44,11 +52,11 @@
         </a>
       </li>
       <li>
-        <a>
+        <a href="{{ url_for("employee_bp.edit_documents",  employee_id=employee.id ) }}">
           <span class="icon is-small">
               <i class="far fa-file-alt" aria-hidden="true"></i>
           </span>
-          <span>Documentacion Anexa</span>
+          <span>Documentos Anexos</span>
         </a>
       </li>
     </ul>

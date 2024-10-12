@@ -33,7 +33,7 @@ class AbstractStorageServices(object):
         raise NotImplementedError
 
     @abstractmethod
-    def presigned_download_url(self, filename: str, path: str = "") -> str:
+    def presigned_download_url(self, filename: str) -> str:
         raise NotImplementedError
 
     @abstractmethod
@@ -92,10 +92,10 @@ class StorageServices(AbstractStorageServices):
             response.release_conn()
         return response.data
 
-    def presigned_download_url(self, filename: str, path: str = "") -> str:
+    def presigned_download_url(self, filename: str) -> str:
         return self.storage.presigned_get_object(
             self.bucket_name,
-            self.__construct_path(path=path, filename=filename),
+            filename,
             expires=timedelta(hours=self.expiration_get),
         )
 

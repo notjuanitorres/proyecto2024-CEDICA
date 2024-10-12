@@ -101,7 +101,6 @@ def show_employee(
     employees: AbstractEmployeeServices = Provide[Container.employee_services],
 ):
     employee = employees.get_employee(employee_id=employee_id)
-
     if not employee:
         return redirect(url_for("employee_bp.get_employees"))
 
@@ -156,13 +155,30 @@ def update_employee(
 
 
 @employee_bp.route(
-    "/editar/<int:employee_id>/documentos/", methods=["GET", "POST", "PUT"]
+    "/editar/<int:employee_id>/documentos/",
 )
 @check_user_permissions(permissions_required=["equipo_update"])
 @inject
-def edit_documents(employee_id: int):
-    return render_template("./employee/update_documents.html", employee_id=employee_id)
+def edit_documents(
+    employee_id: int,
+    employees: AbstractEmployeeServices = Provide[Container.employee_services],
+    storage: AbstractStorageServices = Provide[Container.storage_services],
+):
+    employee = employees.get_employee(employee_id=employee_id)
+    documents = [
+        {"file": file, "url": storage.presigned_download_url(file.get("filename"))}
+        for file in employee.get("files")
+    ]
+    return render_template(
+        "./employee/update_documents.html", employee=employee, documents=documents
+    )
+
 
 @inject
 def update_documents():
+    pass
+
+
+@inject
+def delete_documents():
     pass

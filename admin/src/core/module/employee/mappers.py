@@ -102,8 +102,7 @@ class EmployeeMapper:
             "inserted_at": employee.inserted_at,
             "updated_at": employee.updated_at,
         }
-        if employee.files:
-            serialized_employee["files"] = [ file.to_dict() for file in employee.files if file ]
+        serialized_employee["files"] = [ file.to_dict() for file in employee.files if file ]
 
         return serialized_employee
 
