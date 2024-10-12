@@ -38,6 +38,10 @@ class AbstractEmployeeServices:
     def get_trainers(self):
         raise NotImplementedError
 
+    @abstractmethod
+    def search_by_email(self, email: str):
+        raise NotImplementedError
+
 
 class EmployeeServices(AbstractEmployeeServices):
     def __init__(self, employee_repository: AbstractEmployeeRepository):
@@ -80,3 +84,7 @@ class EmployeeServices(AbstractEmployeeServices):
 
     def get_trainers(self):
         return self.employee_repository.get_trainers()
+
+    def search_by_email(self, email: str):
+        return Employee.query.filter(Employee.email.icontains(email, autoescape=True)).all()
+
