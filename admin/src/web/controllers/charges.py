@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
+
 from src.web.helpers.auth import check_user_permissions
 from src.core.container import Container
 from dependency_injector.wiring import inject, Provide
@@ -7,6 +8,7 @@ from src.core.module.charges import (
     AbstractChargeRepository as ACR,
     ChargeMapper as Mapper
 )
+from src.core.module.employee import AbstractEmployeeServices
 
 charges_bp = Blueprint(
     "charges_bp", __name__, template_folder="../templates/charges", url_prefix="/cobros"
@@ -50,14 +52,17 @@ def get_charges(charges_repository: ACR = Provide[Container.charges_repository])
 @charges_bp.route("/<int:charge_id>")
 @check_user_permissions(permissions_required=["cobros_show"])
 @inject
-def show_charge(charge_id: int, charges_repository: ACR = Provide[Container.charges_repository]):
+def show_charge(charge_id: int,
+                charges_repository: ACR = Provide[Container.charges_repository],
+                employees_services: AbstractEmployeeServices = Provide[Container.employee_services]):
     charge = Mapper.from_entity(charges_repository.get_by_id(charge_id))
 
     if not charge:
         flash(f"El cobro con ID = {charge_id} no existe", "danger")
         return get_charges()
 
-    return render_template('charge.html', charge=charge)
+    employee = employees_services.get_employee(charge["employee_id"])
+    return render_template('charge.html', charge=charge, employee=employee)
 
 
 @charges_bp.route("/crear", methods=["GET", "POST"])

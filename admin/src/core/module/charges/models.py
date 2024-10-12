@@ -26,8 +26,8 @@ class Charge(db.Model):
     updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
 
     employee_id = db.Column(db.Integer, db.ForeignKey("employees.id"), nullable=False)
-    # employee = db.relationship("Employee", backref=db.backref("charges", lazy="dynamic"))
+    employee = db.relationship("Employee", back_populates="charges", lazy="select")
 
     # TODO: uncomment when JYA model is created
     # jya_id = db.Column(db.Integer, db.ForeignKey("jyas.id"), nullable=True)
-    # jya = db.relationship("JYA", backref=db.backref("charge"), uselist=False)
+    # jya = db.relationship("JYA", back_populates="charges", uselist=False)

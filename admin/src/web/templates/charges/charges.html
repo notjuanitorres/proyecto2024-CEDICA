@@ -106,7 +106,7 @@
     <td class="is-hidden-tablet is-flex">
       <a href="{{ url_for('charges_bp.show_charge', charge_id=charge.id)}}" class="button  is-flex-grow-1 ">
         <span class=" is-bold ">
-            Ver cargo
+            Ver cobro
             <i class="fa-regular fa-eye ml-2"></i>
         </span>
       </a>
@@ -135,7 +135,7 @@
     render_delete_modal(
       endpoint="charges_bp.delete_charge",
       title="Eliminar",
-      msg="¿Está seguro de que desea eliminar este cargo?",
+      msg="¿Está seguro de que desea eliminar este cobro?",
       msg_sub="Luego de confirmar, no se podrán revertir los cambios"
     )
   }}

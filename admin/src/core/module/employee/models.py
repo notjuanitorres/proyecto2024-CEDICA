@@ -29,7 +29,7 @@ class Employee(db.Model, AddressMixin, PhoneMixin, EmergencyContactMixin):
     # One to one
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True)
     user = db.relationship("User", backref=db.backref("employee"), uselist=False)
-
+    charges = db.relationship("Charge", back_populates="employee", lazy="select")
     # TODO: Add references to multiple uploaded files on each field
     #           - Título
     #           - Copia DNI

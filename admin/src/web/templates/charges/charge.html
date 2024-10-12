@@ -1,0 +1,112 @@
+{% extends "base_show.html" %}
+
+{% block title %}Cobro #{{ charge.id }} - CEDICA{% endblock %}
+
+{% block breadcrumb_items %}
+    <li>
+        <a href="{{ url_for('charges_bp.get_charges' ) }}">
+            <span class="icon is-small">
+                <i class="fas fa-money-bill-wave" aria-hidden="true"></i>
+            </span>
+            <span>Cobros</span>
+        </a>
+    </li>
+    <li>
+        <a href="">
+            <span class="icon is-small">
+                <i class="fa-solid fa-file-invoice-dollar" aria-hidden="true"></i>
+            </span>
+            <span>Cobro #{{ charge.id }}</span>
+        </a>
+    </li>
+{% endblock %}
+
+{% block card_title %}Cobro: #{{ charge.id }}{% endblock %}
+
+{% block card_content %}
+    <div class="grid is-col-min-16">
+        <div id="basic-info" class="cell">
+            <h3>Información del cobro</h3>
+            <ul>
+                <li><strong>ID: </strong> {{ charge.id }}</li>
+                <li><strong>Fecha de cobro: </strong>{{ charge.date_of_charge | format_date }}</li>
+                <li><strong>Monto: </strong> {{ charge.amount }}</li>
+                <li><strong>Método de pago: </strong>{{ charge.payment_method.value }}</li>
+                <li><strong>Observaciones: </strong>{{ charge.observations or 'N/A' }}</li>
+                <li><strong>Creado: </strong>{{ charge.inserted_at | format_date }}</li>
+                <li><strong>Última modificación: </strong>{{ charge.updated_at | format_date }}</li>
+            </ul>
+        </div>
+        <div id="related-info1" class="cell">
+            <h3>Información del empleado</h3>
+            <ul>
+                <li><strong>Empleado ID: </strong> {{ charge.employee_id }}</li>
+                <li><strong>Nombre: </strong> {{ employee.name }}</li>
+                <li><strong>Apellido: </strong> {{ employee.lastname }}</li>
+                <li><strong>Dni: </strong> {{ employee.dni }}</li>
+            </ul>
+        </div>
+        <div id="related-info2" class="cell">
+            <h3>Información del jya</h3>
+            <ul>
+                {% if charge.jya_id %}
+                    <li><strong>JYA ID: </strong>{{ charge.jya_id }}</li>
+                    <li><strong>Nombre: </strong> {{ jya.name }}</li>
+                    <li><strong>Apellido: </strong> {{ jya.lastname }}</li>
+                    <li><strong>Dni: </strong> {{ jya.dni }}</li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+{% endblock %}
+
+{% block card_actions %}
+    <button href="" class="card-footer-item has-text-danger modal-trigger" data-id="{{ charge.id }}"
+            data-target="charge-delete-modal">
+        Eliminar cobro
+    </button>
+    <a href="{{ url_for( "charges_bp.edit_charge", charge_id=charge.id ) }}" class="card-footer-item has-text-warning">Editar
+        cobro</a>
+{% endblock %}
+
+{% block additional_cards %}
+    <div class="card">
+        <header class="card-header">
+            <p class="card-header-title is-size-4">Empleado asociado al cobro</p>
+        </header>
+        <div class="card-content">
+            <div class="content">
+                <p></p>
+            </div>
+        </div>
+        <footer class="card-footer">
+            <a href="" class="card-footer-item">Ver</a>
+        </footer>
+    </div>
+
+    <div class="card">
+        <header class="card-header">
+            <p class="card-header-title is-size-4">JYA asociado al cobro</p>
+        </header>
+        <div class="card-content">
+            <div class="content">
+                <p></p>
+            </div>
+        </div>
+        <footer class="card-footer">
+            <a href="" class="card-footer-item">Ver</a>
+        </footer>
+    </div>
+{% endblock %}
+
+{% block modal %}
+  {{
+    render_delete_modal(
+      field="charge",
+      endpoint="charges_bp.delete_charge",
+      title="Eliminar",
+      msg="¿Está seguro de que desea eliminar este cobro?",
+      msg_sub="Luego de confirmar, no se podrán revertir los cambios"
+    )
+  }}
+{% endblock %}
