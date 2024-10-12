@@ -86,7 +86,7 @@ class ChargeRepository(AbstractChargeRepository):
         return charge
 
     def update_charge(self, charge_id: int, data: Dict) -> bool:
-        charge = self.get_by_id(charge_id)
+        charge = Charge.query.filter_by(id=charge_id)
         if not charge:
             return False
         charge.update(data)

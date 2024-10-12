@@ -20,7 +20,6 @@ class ChargeMapper:
     @classmethod
     def to_entity(cls, data: Dict) -> "Charge":
         return Charge(
-            id=data.get("id"),
             amount=data.get("amount"),
             observations=data.get("observations"),
             payment_method=data.get("payment_method"),
@@ -32,12 +31,11 @@ class ChargeMapper:
     @classmethod
     def from_form(cls, data: Dict) -> Dict:
         return {
-            "id": data.get("id"),
             "amount": data.get("amount"),
             "observations": data.get("observations"),
             "payment_method": data.get("payment_method"),
             "date_of_charge": data.get("date_of_charge"),
-            "employee_id": data.get("employee_id"),
+            "employee_id": 1  # data.get("employee_id"),
             # "jya_id": data.get("jya_id"),
         }
 

@@ -1,0 +1,79 @@
+{% extends "layout.html" %}
+
+{% block title %}Cobros - Crear cobro{% endblock %}
+
+{% block main_content %}
+    <section class="section">
+        <div class="container">
+            <h1 class="title">Crear cobro</h1>
+            <form method="POST">
+                {{ form.hidden_tag() }}
+
+                <div class="field">
+                    <label class="label">{{ form.amount.label }}</label>
+                    <div class="control">
+                        {{ form.amount(class="input", placeholder="Ingrese el monto del cobro") }}
+                    </div>
+                    {% if form.amount.errors %}
+                        <p class="help is-danger">{{ form.amount.errors[0] }}</p>
+                    {% endif %}
+                </div>
+
+                <div class="field">
+                    <label class="label">{{ form.date_of_charge.label }}</label>
+                    <div class="control">
+                        {{ form.date_of_charge(class="input", type="date") }}
+                    </div>
+                    {% if form.date_of_charge.errors %}
+                        <p class="help is-danger">{{ form.date_of_charge.errors[0] }}</p>
+                    {% endif %}
+                </div>
+
+                <div class="field">
+                    <label class="label">{{ form.payment_method.label }}</label>
+                    <div class="control">
+                        <div class="select">
+                            {{ form.payment_method() }}
+                        </div>
+                    </div>
+                    {% if form.payment_method.errors %}
+                        <p class="help is-danger">{{ form.payment_method.errors[0] }}</p>
+                    {% endif %}
+                </div>
+
+                <div class="field">
+                    <label class="label">{{ form.observations.label }}</label>
+                    <div class="control">
+                        {{ form.observations(class="textarea", placeholder="Ingrese observaciones sobre el cobro") }}
+                    </div>
+                    {% if form.observations.errors %}
+                        <p class="help is-danger">{{ form.observations.errors[0] }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- TODO: Add JYA selection component -->
+                <div class="field">
+                    <label class="label">JYA</label>
+                    <div class="control">
+                        <p>El componente de selección de JYA aún no está implementado.</p>
+                    </div>
+                </div>
+
+                <!-- TODO: Add Employee selection component -->
+                <div class="field">
+                    <label class="label">Empleado</label>
+                    <div class="control">
+                        <p>NOTA: el id del empleado esta hardcodeado en el mapper con valor 1</p>
+                        <p>El componente de selección de Empleado aún no está implementado.</p>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <div class="control">
+                        <button class="button is-primary" type="submit">Guardar cobro</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </section>
+{% endblock %}

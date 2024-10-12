@@ -66,14 +66,14 @@ class ChargeSearchForm(FlaskForm):
 
 class ChargeManagementForm(FlaskForm):
     # jya_id = # TODO: use component from payments search form
-    amount = DecimalField(places=2, validators=[DataRequired()])
+    amount = DecimalField("Monto abonado", places=2, validators=[DataRequired()])
     date_of_charge = DateField("Fecha de pago", format='%Y-%m-%d')
-    payment_method = SelectField(
-        choices=[(p.name, p.value) for p in PaymentMethodEnum],
-        validate_choice=True,
-    )
+    payment_method = SelectField("Modo de pago",
+                                 choices=[(p.name, p.value) for p in PaymentMethodEnum],
+                                 validate_choice=True,
+                                 )
     # employee_id = # TODO: use component from payments search form
-    observations = StringField(validators=[Length(max=255)])
+    observations = StringField("Observaciones", validators=[Length(max=255)])
 
 
 class ChargeCreateForm(ChargeManagementForm):

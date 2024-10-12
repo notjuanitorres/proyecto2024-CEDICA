@@ -31,7 +31,7 @@
                 <li><strong>ID: </strong> {{ charge.id }}</li>
                 <li><strong>Fecha de cobro: </strong>{{ charge.date_of_charge | format_date }}</li>
                 <li><strong>Monto: </strong> {{ charge.amount }}</li>
-                <li><strong>Método de pago: </strong>{{ charge.payment_method.value }}</li>
+                <li><strong>Método de pago: </strong>{{ charge.payment_method}}</li>
                 <li><strong>Observaciones: </strong>{{ charge.observations or 'N/A' }}</li>
                 <li><strong>Creado: </strong>{{ charge.inserted_at | format_date }}</li>
                 <li><strong>Última modificación: </strong>{{ charge.updated_at | format_date }}</li>
