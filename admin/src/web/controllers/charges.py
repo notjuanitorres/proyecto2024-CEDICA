@@ -33,9 +33,13 @@ def get_charges(charges_repository: ACR = Provide[Container.charges_repository])
             search_query["filters"] = {"payment_method": search.filter_payment_method.data}
 
         if search.start_date.data and search.finish_date.data:
+            if "filters" not in search_query:
+                search_query["filters"] = {}
             search_query["filters"]["start_date"] = search.start_date.data
             search_query["filters"]["finish_date"] = search.finish_date.data
 
+    print(search_query)
+    print(order_by)
     paginated_charges = charges_repository.get_page(
         page=page, per_page=per_page, order_by=order_by, search_query=search_query
     )
@@ -47,7 +51,7 @@ def get_charges(charges_repository: ACR = Provide[Container.charges_repository])
 @check_user_permissions(permissions_required=["cobros_show"])
 @inject
 def show_charge(charge_id: int, charges_repository: ACR = Provide[Container.charges_repository]):
-    charge = charges_repository.get_by_id(charge_id)
+    charge = Mapper.from_entity(charges_repository.get_by_id(charge_id))
 
     if not charge:
         flash(f"El cobro con ID = {charge_id} no existe", "danger")
@@ -81,7 +85,7 @@ def add_charge(create_form: ChargeCreateForm, charges_repository: ACR = Provide[
 @check_user_permissions(permissions_required=["cobros_update"])
 @inject
 def edit_charge(charge_id: int, charges_repository: ACR = Provide[Container.charges_repository]):
-    charge = charges_repository.get_by_id(charge_id)
+    charge = Mapper.from_entity(charges_repository.get_by_id(charge_id))
 
     if not charge:
         flash(f"Su búsqueda no devolvió un cobro existente", "danger")

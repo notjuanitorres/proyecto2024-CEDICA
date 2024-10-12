@@ -18,10 +18,11 @@ class ChargeSearchForm(FlaskForm):
     )
     search_text = StringField(validators=[Length(max=50)])
 
-    filter_payment_method = SelectField(
-        choices=[("", "Ver Todas")] + [(p.name, p.value) for p in PaymentMethodEnum],
-        validate_choice=True,
-    )
+    filter_payment_method = (
+        SelectField("Método de pago",
+                    choices=[("", "Ver Todas")] + [(p.name, p.value) for p in PaymentMethodEnum],
+                    validate_choice=True,
+                    ))
 
     start_date = DateField("Fecha de inicio", format='%Y-%m-%d')
     finish_date = DateField("Fecha de fin", format='%Y-%m-%d')
@@ -40,25 +41,27 @@ class ChargeSearchForm(FlaskForm):
 
     # Custom validation function (redefine built-in)
     def validate(self, **kwargs):
-        # Standard validators
-        rv = FlaskForm.validate(self)
-        # Ensure all standard validators are met
-        if rv:
-            # Don't validate if no search is submitted
-            if not self.start_date.data and not self.finish_date.data:
-                return True
-            # Ensure that if one date is selected the other is too
-            if bool(self.start_date.data) != bool(self.finish_date.data):
-                self.finish_date.errors.append('Se deben seleccionar ambas fechas.')
-                return False
-            # Ensure end date >= start date
-            if self.start_date.data > self.finish_date.data:
-                self.finish_date.errors.append('La fecha de inicio no puede ser mayor a la fecha de fin.')
-                return False
-
+        # Don't validate if no search is submitted
+        if not self.start_date.data and not self.finish_date.data:
             return True
 
-        return False
+        # Ensure that if one date is selected the other is too
+        if self.start_date.data and not self.finish_date.data:
+            self.finish_date.errors = []
+            self.finish_date.errors.append('Se deben seleccionar ambas fechas.')
+            return False
+        if not self.start_date.data and self.finish_date.data:
+            self.start_date.errors = []
+            self.start_date.errors.append('Se deben seleccionar ambas fechas.')
+            return False
+
+        # Ensure end date >= start date
+        if self.start_date.data > self.finish_date.data:
+            self.start_date.errors = []
+            self.start_date.errors.append('La fecha de inicio no puede ser mayor a la fecha de fin.')
+            return False
+
+        return True
 
 
 class ChargeManagementForm(FlaskForm):

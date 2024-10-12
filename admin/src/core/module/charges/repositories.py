@@ -4,7 +4,7 @@ from typing import List, Dict
 from src.core.module.employee.models import Employee
 from src.core.database import db as database
 from src.core.module.charges.models import Charge
-from core.module.common.repositories import apply_filters, apply_search_criteria
+from src.core.module.common.repositories import apply_filters, apply_search_criteria
 from .mappers import ChargeMapper as Mapper
 
 
@@ -24,7 +24,7 @@ class AbstractChargeRepository:
         pass
 
     @abstractmethod
-    def get_by_id(self, charge_id: int) -> Charge:
+    def get_by_id(self, charge_id: int) -> Charge | None:
         pass
 
     @abstractmethod
@@ -81,11 +81,9 @@ class ChargeRepository(AbstractChargeRepository):
             page=page, per_page=per_page, error_out=False, max_per_page=max_per_page
         )
 
-    def get_by_id(self, charge_id: int) -> Dict | None:
+    def get_by_id(self, charge_id: int) -> Charge | None:
         charge = self.db.session.query(Charge).filter(Charge.id == charge_id).first()
-        if charge:
-            return Mapper.from_entity(charge)
-        return None
+        return charge
 
     def update_charge(self, charge_id: int, data: Dict) -> bool:
         charge = self.get_by_id(charge_id)

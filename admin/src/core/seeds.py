@@ -1,3 +1,4 @@
+from src.core.module.charges.models import Charge, PaymentMethodEnum
 from src.core.database import db
 from src.core.module.accounts.models import User, Role, Permission, RolePermission, PermissionEnum, RoleEnum
 from src.core.module.employee.models import Employee
@@ -13,8 +14,10 @@ def seed_all(app):
         seed_employees()
         print("Commiting employees and accounts")
         db.session.commit()  # employees need to be commited before adding horse_trainers
+        print("Seeding charges")
+        seed_charges()
         seed_equestrian_module()
-        print("Commiting equestrian module")
+        print("Commiting charges and equestrian module")
         db.session.commit()
 
 
@@ -198,3 +201,40 @@ def seed_horse_trainers():
         HorseTrainers(id_horse=4, id_employee=12),
     ]
     db.session.add_all(horse_trainers)
+
+
+def seed_charges():
+    charges = [
+        Charge(
+            id=1,
+            date_of_charge=date(2023, 1, 1),
+            amount=100.0,
+            payment_method=PaymentMethodEnum.CREDIT_CARD,
+            employee_id=1,
+            observations="First charge",
+            inserted_at=date(2023, 1, 1),
+            updated_at=date(2023, 1, 1)
+        ),
+        Charge(
+            id=2,
+            date_of_charge=date(2023, 2, 1),
+            amount=200.0,
+            payment_method=PaymentMethodEnum.CASH,
+            employee_id=2,
+            observations="Second charge",
+            inserted_at=date(2023, 2, 1),
+            updated_at=date(2023, 2, 1)
+        ),
+        Charge(
+            id=3,
+            date_of_charge=date(2023, 3, 1),
+            amount=150.0,
+            payment_method=PaymentMethodEnum.DEBIT_CARD,
+            employee_id=3,
+            observations="Third charge",
+            inserted_at=date(2023, 3, 1),
+            updated_at=date(2023, 3, 1)
+        ),
+    ]
+
+    db.session.add_all(charges)

@@ -13,7 +13,7 @@ class ChargeMapper:
             "date_of_charge": charge.date_of_charge,
             "employee_id": charge.employee_id,
             # "jya_id": charge.jya_id,
-            "created_at": charge.created_at,
+            "inserted_at": charge.inserted_at,
             "updated_at": charge.updated_at,
         }
 

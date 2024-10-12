@@ -34,7 +34,7 @@
                             Usuarios </a>
                     {% endif %}
                     {% if "equipo_index" in permissions or is_admin %}
-                        <a href="{{ url_for('employee_bp.get_employees') }}" class="navbar-item is-selected" aria-label="Equipo"> Equipo </a>
+                        <a href="{{ url_for('employee_bp.get_employees') }}" class="navbar-item" aria-label="Equipo"> Equipo </a>
                     {% endif %}
                     {% if "jya_index" in permissions or is_admin %}
                         <a class="navbar-item" aria-label="Jinetes y Amazonas">
@@ -50,7 +50,7 @@
                             <a class="navbar-item" aria-label="Pagos"> Pagos </a>
                         {% endif %}
                         {% if "cobros_index" in pemissions or is_admin %}
-                            <a class="navbar-item" aria-label="Cobros"> Cobros </a>
+                            <a href="{{ url_for('charges_bp.get_charges') }}" class="navbar-item" aria-label="Cobros"> Cobros </a>
                         {% endif %}
                     {% endif %}
                     <hr class="is-hidden-desktop" /> 
