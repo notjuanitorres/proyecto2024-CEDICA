@@ -102,4 +102,16 @@
     </div>
 {% endblock %}
 
+{% block modal %}
+  {{
+    render_delete_modal(
+      field="employee",
+      endpoint="employee_bp.delete_employee",
+      title="Eliminar",
+      msg="¿Está seguro de que desea eliminar este empleado?",
+      msg_sub="Luego de confirmar, no se podrán revertir los cambios"
+    )
+  }}
+{% endblock %}
+
 
