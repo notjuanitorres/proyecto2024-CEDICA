@@ -65,8 +65,8 @@
   <th>Fecha de carga</th>
   <th>Monto</th>
   <th>Método de Pago</th>
-  <th>Observaciones</th>
-  <th>Empleado ID</th>
+  <th>Empleado</th>
+  <th>Jinete o Amazona</th>
   <th></th>
 {% endblock %}
 
@@ -100,9 +100,10 @@
     <td><span class="is-hidden-tablet has-text-weight-bold">Fecha de carga: </span>{{ charge.date_of_charge | format_date }}</td>
     <td><span class="is-hidden-tablet has-text-weight-bold">Monto: </span>{{ charge.amount }}</td>
     <td><span class="is-hidden-tablet has-text-weight-bold">Método de Pago: </span>{{ charge.payment_method.value }}</td>
-    <td><span class="is-hidden-tablet has-text-weight-bold">Observaciones: </span>{{ charge.observations }}</td>
-    <td><span class="is-hidden-tablet has-text-weight-bold">Empleado ID: </span>{{ charge.employee_id }}</td>
-
+    <td><span class="is-hidden-tablet has-text-weight-bold">Empleado: </span>{{ charge.employee.name + " " + charge.employee.lastname }}</td>
+    {#      TODO: uncomment when jya model is done#}
+    {#      <td><span class="is-hidden-tablet has-text-weight-bold">Jinete o Amazona: </span>{{ charge.jya.name + " " + charge.jya.lastname }}</td>#}
+    <td><span class="is-hidden-tablet has-text-weight-bold">Jinete o Amazona: </span>Nombre y apellido</td>
     <td class="is-hidden-tablet is-flex">
       <a href="{{ url_for('charges_bp.show_charge', charge_id=charge.id)}}" class="button  is-flex-grow-1 ">
         <span class=" is-bold ">
@@ -121,8 +122,8 @@
   <th>Fecha de carga</th>
   <th>Monto</th>
   <th>Método de Pago</th>
-  <th>Observaciones</th>
-  <th>Empleado ID</th>
+  <th>Empleado</th>
+  <th>Jinete o Amazona</th>
   <th></th>
 {% endblock %}
 

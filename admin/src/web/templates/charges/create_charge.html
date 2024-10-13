@@ -51,11 +51,43 @@
                     {% endif %}
                 </div>
 
-                <!-- TODO: Add JYA selection component -->
                 <div class="field">
-                    <label class="label">JYA</label>
+                    <label class="label">{{ form.jya.label }}</label>
                     <div class="control">
-                        <p>El componente de selección de JYA aún no está implementado.</p>
+                        {{ form.jya(class="input", type="text", readonly=True, placeholder="No se seleccionó jinete o amazona") }}
+                        {{ form.jya_id() }}
+                        <br />
+                        <br />
+                        <button type="button" class="button is-info" id="openModalButtonJya">Seleccionar</button>
+                    </div>
+                </div>
+
+                <!-- JYA Modal -->
+                <div id="jyaModal" class="modal">
+                    <div class="modal-background"></div>
+                    <div class="modal-card">
+                        <header class="modal-card-head">
+                            <p class="modal-card-title">Seleccionar Jinete o Amazona</p>
+                            <button class="delete" aria-label="close"></button>
+                        </header>
+                        <section class="modal-card-body">
+                            <input class="input" type="text" id="searchJya" placeholder="Buscar por correo">
+                            <table class="table is-fullwidth">
+                                <thead>
+                                    <tr>
+                                        <th>Nombre</th>
+                                        <th>Correo</th>
+                                        <th>Seleccionar</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="jyaList">
+                                    <!-- Aquí se llenará la lista de jinetes y amazonas -->
+                                </tbody>
+                            </table>
+                        </section>
+                        <footer class="modal-card-foot">
+                            <button class="button">Cancelar</button>
+                        </footer>
                     </div>
                 </div>
 
@@ -70,7 +102,7 @@
                     </div>
                 </div>
 
-                <!-- Modal -->
+                <!-- Employee Modal -->
                 <div id="employeeModal" class="modal">
                     <div class="modal-background"></div>
                     <div class="modal-card">
@@ -112,4 +144,5 @@
 {% block extra_scripts %}
     {{ super() }}
     <script src="{{ url_for('static', filename='js/charges-form-employee.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/charges-form-jya.js') }}"></script>
 {% endblock %}
