@@ -208,7 +208,7 @@ def update_documents(
     uploaded_document = storage.upload_file(
         file=add_form.file.data, path=employees.storage_path
     )
-    saved_documents = employees.add_document(
+    employees.add_document(
         employee_id=employee_id,
         document=Mapper.create_file(
             document_type=add_form.tag.data, file_information=uploaded_document
@@ -218,6 +218,18 @@ def update_documents(
     return redirect(url_for("employee_bp.edit_documents", employee_id=employee_id))
 
 
+@employee_bp.route("/editar/<int:employee_id>/documentos/eliminar", methods=["POST"])
 @inject
-def delete_documents():
-    pass
+def delete_document(
+    employee_id: int,
+    employees: AbstractEmployeeServices = Provide[Container.employee_services],
+    storage: AbstractStorageServices = Provide[Container.storage_services],
+):
+    document_id = request.form["item_id"]
+    document = employees.get_document(employee_id, document_id)
+    
+    storage.delete_file(document.get("filename"))
+    employees.delete_document(employee_id, document_id)
+
+    flash(f"El documento {document.get("original_filename")} ha sido eliminado correctamente", "success")
+    return redirect(url_for("employee_bp.edit_documents", employee_id=employee_id))

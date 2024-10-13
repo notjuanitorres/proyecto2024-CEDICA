@@ -1,7 +1,9 @@
 {% extends "layout.html" %}
 
 {% from "macros/file_icon.html" import render_file_icon %}
+{% from "macros/delete_modal.html" import render_delete_modal %}
 {% from "employee/macros/parse_categories.html" import render_category %}
+{% from "macros/flash_message.html" import render_flash_messages %}
 
 {% block title %} Equipo - Agregar miembro {% endblock %} 
 
@@ -65,8 +67,9 @@
       </li>
     </ul>
   </div>
-
+<div>
 <section class="section pt-4 px-0">
+  {{ render_flash_messages(messages) }}
   <div id="documents" class="card">
     <header class="card-header">
       <h2 class="card-header-title is-size-4 m-0">Documentación relacionada</h2>
@@ -131,7 +134,7 @@
             </div>
             <div class="field has-addons">
               <div class="control">
-                <button class="button is-danger hover">
+                <button class="button is-danger hover modal-trigger" data-id="{{ document.file.id }}" data-target="user-delete-modal">
                   <span class="icon mr-1">
                     <i class="fa-solid fa-trash"></i>
                   </span>
@@ -157,6 +160,14 @@
     </div>
   </div>
 </section>
+{% block modal %}
+    {{ render_delete_modal(
+        url_for("employee_bp.delete_document", employee_id=employee.id),
+        title="Eliminar documento",
+        msg="¿Está seguro de que desea eliminar el documento?",
+        msg_sub="Luego de confirmar, no se podrán revertir los cambios"
+    ) }}
+{% endblock %}
 {% endblock %}
 
 {% block extra_scripts %}

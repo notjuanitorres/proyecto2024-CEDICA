@@ -106,17 +106,16 @@
             <p class="ml-2"> {{ document.original_filename}} </p>
         </div>
         {% endfor %}
-        <div class="panel-block">
-            <a href="{{ url_for("employee_bp.edit_documents", employee_id=employee.id ) }}" class="card-footer-item has-text-warning">
-                Actualizar
-            </a>
-        </div>
         {% else %}
         <div class="panel-block">
             <p>No se se ha subido ningun documento</p>
         </div>
         {% endif %}
-
+        <div class="panel-block">
+            <a href="{{ url_for("employee_bp.edit_documents", employee_id=employee.id ) }}" class="card-footer-item has-text-warning">
+                Actualizar
+            </a>
+        </div>
     </div>
 
 

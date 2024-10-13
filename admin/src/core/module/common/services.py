@@ -104,9 +104,9 @@ class StorageServices(AbstractStorageServices):
             self.bucket_name, self.__construct_path(path, filename)
         )
 
-    def delete_file(self, filename: str, path: str = ""):
+    def delete_file(self, filename: str) -> None:
         self.storage.remove_object(
-            self.bucket_name, self.__construct_path(path, filename)
+            self.bucket_name, filename
         )
 
     def __construct_path(self, path: str = "", filename: str = "") -> str:

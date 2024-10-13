@@ -37,6 +37,18 @@ class AbstractEmployeeServices:
     def is_dni_used(self, dni: str) -> bool:
         raise NotImplementedError
 
+    @abstractmethod
+    def add_document(self, employee_id: int, document: EmployeeFile) -> None:
+        raise NotImplementedError
+
+    @abstractmethod
+    def get_document(self, employee_id: int, document_id: int) -> Dict:
+        raise NotImplementedError
+
+    @abstractmethod
+    def delete_document(self, employee_id: int, document_id: int) -> None:
+        raise NotImplementedError
+
 
 class EmployeeServices(AbstractEmployeeServices):
     def __init__(
@@ -77,7 +89,13 @@ class EmployeeServices(AbstractEmployeeServices):
     def is_dni_used(self, dni: str) -> bool:
         employee = self.employee_repository.get_by_dni(dni=dni)
         return employee is not None
-    
+
     def add_document(self, employee_id: int, document: EmployeeFile):
-        self.employee_repository.add_document(employee_id, document)
+        return self.employee_repository.add_document(employee_id, document)
+
+    def get_document(self, employee_id: int, document_id: int) -> Dict:
+        return self.employee_repository.get_document(employee_id, document_id).to_dict()
+
+    def delete_document(self, employee_id: int, document_id: int):
+        return self.employee_repository.delete_document(employee_id, document_id)
 

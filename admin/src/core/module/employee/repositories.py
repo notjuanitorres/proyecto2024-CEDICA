@@ -3,7 +3,7 @@ from typing import Dict, List
 from flask_sqlalchemy import SQLAlchemy
 from flask_sqlalchemy.pagination import Pagination
 from src.core.database import db as database
-from src.core.module.employee.models import Employee
+from src.core.module.employee.models import Employee, EmployeeFile
 
 
 class AbstractEmployeeRepository:
@@ -29,7 +29,7 @@ class AbstractEmployeeRepository:
     @abstractmethod
     def get_by_email(self, email: str) -> Employee:
         raise NotImplementedError
-    
+
     def get_by_dni(self, dni: str) -> Employee:
         raise NotImplementedError
 
@@ -40,6 +40,20 @@ class AbstractEmployeeRepository:
     @abstractmethod
     def delete(self, employee_id: int) -> bool:
         raise NotImplementedError
+
+    @abstractmethod
+    def add_document(self, employee_id: int, document: EmployeeFile) -> None:
+        raise NotImplementedError
+
+    @abstractmethod
+    def get_document(self, employee_id: int, document_id: int) -> EmployeeFile:
+        raise NotImplementedError
+
+    @abstractmethod
+    def delete_document(self, employee_id: int, document_id: int) -> None:
+        raise NotImplementedError
+
+
 
 
 class EmployeeRepository(AbstractEmployeeRepository):
@@ -93,7 +107,7 @@ class EmployeeRepository(AbstractEmployeeRepository):
         return (
             self.db.session.query(Employee).filter(Employee.id == employee_id).first()
         )
-        
+
     def get_by_email(self, email: str) -> Employee | None:
         return self.db.session.query(Employee).filter(Employee.email == email).first()
 
@@ -108,11 +122,26 @@ class EmployeeRepository(AbstractEmployeeRepository):
 
         self.save()
         return True
-    
+
     def add_document(self, employee_id: int, documents):
         employee: Employee = self.get_by_id(employee_id)
         employee.files.append(documents)
         self.save()
 
+    def get_document(self, employee_id: int, document_id: int):
+        document = (
+            self.db.session.query(EmployeeFile)
+            .filter_by(owner_id=employee_id, id=document_id)
+            .first()
+        )
+
+        return document
+
+    def delete_document(self, employee_id: int, document_id):
+        employee: Employee = self.get_by_id(employee_id)
+        document = self.get_document(employee.id, document_id)
+        employee.files.remove(document)
+        self.save()
+
     def delete(self, employee_id: int) -> bool:
-        pass
+        pass        
