@@ -103,3 +103,10 @@ class ChargeCreateForm(ChargeManagementForm):
 class ChargeEditForm(ChargeManagementForm):
     def __init__(self, *args, **kwargs):
         super(ChargeEditForm, self).__init__(*args, **kwargs)
+
+        if kwargs['data']["employee_id"]:
+            self.employee_id.data = kwargs['data']["employee_id"]
+
+        if kwargs['employee']["name"] and kwargs['employee']["email"]:
+            self.employee.data = kwargs['employee']["name"] + " (" + kwargs['employee']["email"] + ")"
+

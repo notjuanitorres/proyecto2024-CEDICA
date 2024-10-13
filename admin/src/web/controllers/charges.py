@@ -89,14 +89,19 @@ def add_charge(create_form: ChargeCreateForm, charges_repository: ACR = Provide[
 @charges_bp.route("/editar/<int:charge_id>", methods=["GET", "POST", "PUT"])
 @check_user_permissions(permissions_required=["cobros_update"])
 @inject
-def edit_charge(charge_id: int, charges_repository: ACR = Provide[Container.charges_repository]):
+def edit_charge(charge_id: int,
+                charges_repository: ACR = Provide[Container.charges_repository],
+                employee_services: AbstractEmployeeServices = Provide[Container.employee_services],
+                ):
+    # TODO: traerme el jya del cobro
     charge = Mapper.from_entity(charges_repository.get_by_id(charge_id))
 
     if not charge:
         flash(f"Su búsqueda no devolvió un cobro existente", "danger")
         return redirect(url_for("charges_bp.get_charges"))
 
-    edit_form = ChargeEditForm(data=charge)
+    employee = employee_services.get_employee(charge["employee_id"])
+    edit_form = ChargeEditForm(data=charge, employee=employee)
 
     if request.method in ["POST", "PUT"]:
         return update_charge(charge_id=charge_id, edit_form=edit_form)
