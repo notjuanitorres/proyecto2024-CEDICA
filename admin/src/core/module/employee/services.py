@@ -49,6 +49,10 @@ class AbstractEmployeeServices:
     def delete_document(self, employee_id: int, document_id: int) -> None:
         raise NotImplementedError
 
+    @abstractmethod
+    def get_trainers(self):
+        raise NotImplementedError
+
 
 class EmployeeServices(AbstractEmployeeServices):
     def __init__(
@@ -99,3 +103,5 @@ class EmployeeServices(AbstractEmployeeServices):
     def delete_document(self, employee_id: int, document_id: int):
         return self.employee_repository.delete_document(employee_id, document_id)
 
+    def get_trainers(self):
+        return self.employee_repository.get_trainers()

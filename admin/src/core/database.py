@@ -31,10 +31,12 @@ def configure_hooks(app):
 def reset(app):
     """
     Resets the database by dropping and recreating all tables
+    Models that want to be included in the schema should be imported here
     """
     # Necessary to create the tables with create_all
     # It should have the app context
     # pylint: disable=C0415,W0611
+    from .module.equestrian.models import Horse
     from .module.accounts.models import User
     from .module.employee.models import Employee
 

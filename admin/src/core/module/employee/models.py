@@ -33,7 +33,6 @@ class Employee(db.Model, AddressMixin, PhoneMixin, EmergencyContactMixin):
     end_date = db.Column(db.Date, nullable=True)
     health_insurance = db.Column(db.Text, nullable=True)
     affiliate_number = db.Column(db.String(255), nullable=True)
-    job_condition = db.Column(db.Enum(ConditionEnum), nullable=False)
     is_active = db.Column(db.Boolean, nullable=False, default=True)
     inserted_at = db.Column(db.DateTime, default=datetime.now)
     updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)

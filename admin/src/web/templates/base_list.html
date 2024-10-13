@@ -31,12 +31,87 @@
 
   <section class="is-fullheight-with-navbar pt-4">
     <h2 class="title is-size-3 has-text-centered">
-      {% block inner_title %}  
+      {% block inner_title %}
       {% endblock %}
     </h2>
     <div class="px-3">
       {% block create_button %}{% endblock %}
-      {% block filter_form %}{% endblock %}
+
+      {% block filter_form %}
+          <div class="card">
+            <header class="card-header">
+              <p class="card-header-title is-size-4">
+                <span class="icon mr-3">
+                  <i class="fa-solid fa-filter"></i>
+                </span>
+                Filtrar
+              </p>
+              <button class="card-header-icon" aria-label="more options" id="toggle-search-button">
+                <span class="icon">
+                  <i class="fas fa-angle-down" aria-hidden="true"></i>
+                </span>
+              </button>
+            </header>
+            <div class="card-content" id="toggle-search">
+              <div class="content">
+                <form class="form" method="GET" action="{% block form_action %}{{ url_for(request.endpoint) }}{% endblock %}">
+                  <div class="is-flex is-flex-direction-row is-flex-wrap-wrap is-gap-1">
+                    <div class="field">
+                      <label class="label">Buscar</label>
+                      <div class="control">
+                          <div class="select">
+                              {{ search_form.search_by() }}
+                          </div>
+                      </div>
+                    </div>
+                    {% block aditional_filters %}{% endblock %}
+                    <div class="field is-flex-grow-1">
+                      <label for="filtrar" class="label is-invisible-tablet">Buscar</label>
+                      <p class="control has-icons-left">
+                        {{ search_form.search_text(class="input", placeholder="Buscar") }}
+                        <span class="icon is-left">
+                          <i class="fas fa-search" aria-hidden="true"></i>
+                        </span>
+                      </p>
+                      {% if search_form.search_text.errors %}
+                      <p class="help is-danger">{{ search_form.search_text.errors[0] }}</p>
+                      {% endif %}
+                    </div>
+                  </div>
+                  <div class="grid is-flex-tablet is-row-gap-0 is-column-gap-1 pt-3" >
+                    <div class="field">
+                      <label class="label">Ordenar por</label>
+                      <div class="control">
+                          <div class="select">
+                              {{ search_form.order_by() }}
+                          </div>
+                      </div>
+                    </div>
+                    <div class="field">
+                      <label class="label">En orden</label>
+                      <div class="control">
+                          <div class="select">
+                              {{ search_form.order() }}
+                          </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="field card-footer">
+                    <div class="control card-footer-item">
+                      <a href="{% block clear_url %}{{ url_for(request.endpoint) }}{% endblock %}">
+                        Limpiar
+                      </a>
+                    </div>
+                    <div class="control card-footer-item">
+                      {{ search_form.submit_search(class="button is-flex-grow-1 is-link")}}
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+      {% endblock %}
+
     </div>
     <div class="table-container p-2 mt-2">
       <table class="table is-striped is-scrollable is-fullwidth">
@@ -69,4 +144,5 @@
 {% block extra_scripts %}
   {{ super() }}
   <script src="{{ url_for('static', filename='js/table-row-toggle.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/toggle-search-bar.js') }}"></script>
 {% endblock %}

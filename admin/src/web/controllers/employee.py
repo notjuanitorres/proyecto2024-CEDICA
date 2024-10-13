@@ -9,7 +9,6 @@ from src.core.module.employee import (
     EmployeeCreateForm,
     EmployeeEditForm,
     EmployeeAddDocumentsForm,
-    FileTagEnum,
     employment_enums as employment_information,
 )
 from src.core.module.common import AbstractStorageServices
@@ -161,6 +160,19 @@ def update_employee(
 
     flash("El miembro del equipo ha sido actualizado exitosamente ")
     return redirect(url_for("employee_bp.show_employee", employee_id=employee_id))
+
+
+@employee_bp.route("/delete/", methods=["POST"])
+@inject
+def delete_employee(employee_services: AbstractEmployeeServices = Provide[Container.employee_services]):
+    employee_id = request.form["item_id"]
+    deleted = employee_services.delete_employee(employee_id)
+    if not deleted:
+        flash("El empleado no ha podido ser eliminado, intentelo nuevamente", "danger")
+    else:
+        flash("El empleado ha sido eliminado correctamente", "success")
+
+    return redirect(url_for("employee_bp.get_employees"))
 
 
 @employee_bp.route("/editar/<int:employee_id>/documentos/", methods=["GET", "POST"])

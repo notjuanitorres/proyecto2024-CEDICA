@@ -2,6 +2,7 @@ from abc import abstractmethod
 from typing import List, Dict
 from src.core.module.accounts.models import User, Role, RolePermission, Permission
 from src.core.database import db as database
+from src.core.module.common.repositories import apply_filters
 
 
 class AbstractAccountsRepository:
@@ -10,7 +11,14 @@ class AbstractAccountsRepository:
         pass
 
     @abstractmethod
-    def get_page(self, page: int, per_page: int, max_per_page: int, order_by: list):
+    def get_page(
+            self,
+            page: int,
+            per_page: int,
+            max_per_page: int,
+            search_query: Dict = None,
+            order_by: list = None,
+    ):
         pass
 
     @abstractmethod
@@ -57,14 +65,17 @@ class AccountsRepository(AbstractAccountsRepository):
         
         return user
 
-    def get_page(self, page: int, per_page: int, max_per_page: int, order_by: list):
+    def get_page(
+            self,
+            page: int,
+            per_page: int,
+            max_per_page: int,
+            search_query: Dict = None,
+            order_by: List = None,
+    ):
         query = User.query
-        if order_by:
-            for field, direction in order_by:
-                if direction == 'asc':
-                    query = query.order_by(getattr(User, field).asc())
-                elif direction == 'desc':
-                    query = query.order_by(getattr(User, field).desc())
+
+        query = apply_filters(User, query, search_query, order_by)
 
         return query.paginate(
             page=page, per_page=per_page, error_out=False, max_per_page=max_per_page
