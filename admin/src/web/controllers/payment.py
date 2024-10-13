@@ -64,7 +64,7 @@ def show_payment(
     payment_service: PaymentServices = Provide[Container.payment_services],
 ):
     payment = payment_service.get_payment(payment_id)
-    return render_template("payment/show_payment.html", payment=payment)
+    return render_template("payment/payment.html", payment=payment)
 
 @payment_bp.route("/<int:payment_id>/editar", methods=["GET", "POST"])
 @inject

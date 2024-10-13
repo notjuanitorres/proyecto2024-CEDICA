@@ -18,9 +18,11 @@ class PaymentMapper:
         return {
             "id": payment.id,
             "amount": str(payment.amount),  # Convertir a string para evitar problemas de serialización
-            "payment_date": payment.payment_date.isoformat(),
+            "payment_date": payment.payment_date,
             "payment_type": payment.payment_type.name,
             "description": payment.description,
             "beneficiary_id": payment.beneficiary_id,
-            "beneficiary_name": payment.beneficiary.name if payment.beneficiary else None,
+            "beneficiary_name": payment.beneficiary.fullname if payment.beneficiary else None,
+            "inserted_at": payment.inserted_at,
+            "updated_at": payment.updated_at,
         }
