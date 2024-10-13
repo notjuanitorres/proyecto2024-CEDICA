@@ -1,9 +1,11 @@
 {% macro render_category(category) %}
-  {% if category == "dni" %}
+  {% if category == "DNI" %}
     DNI
-  {% elif category == "title" %}
+  {% elif category == "TITLE" %}
     Titulo
-  {% elif category == "curriculum_vitae" %}
+  {% elif category == "CURRICULUM_VITAE" %}
     Curriculum Vitae
+  {% else %}
+    Otro
   {% endif %}
 {% endmacro %}

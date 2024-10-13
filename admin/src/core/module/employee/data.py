@@ -36,7 +36,13 @@ class JobConditionEnum(Enum):
     OTRO = "Otro"
 
 
-enums = {
+class FileTagEnum(Enum):
+    DNI = "DNI"
+    TITLE = "Titulo"
+    CURRICULUM_VITAE = "Curriculum Vitae"
+
+
+employment_enums = {
     "professions": ProfessionsEnum,
     "positions": JobPositionEnum,
     "conditions": JobConditionEnum,

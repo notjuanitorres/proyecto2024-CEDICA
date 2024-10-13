@@ -1,8 +1,8 @@
 from .repositories import AbstractEmployeeRepository, EmployeeRepository
 from .services import AbstractEmployeeServices, EmployeeServices
-from .forms import EmployeeCreateForm, EmployeeEditForm
+from .forms import EmployeeCreateForm, EmployeeEditForm, EmployeeAddDocumentsForm
 from .mappers import EmployeeMapper
-from .data import ProfessionsEnum, JobPositionEnum, JobConditionEnum, enums
+from .data import ProfessionsEnum, JobPositionEnum, JobConditionEnum, employment_enums, FileTagEnum
 
 
 __all__ = [
@@ -10,9 +10,11 @@ __all__ = [
     "EmployeeServices",
     "EmployeeCreateForm",
     "EmployeeEditForm",
+    "EmployeeAddDocumentsForm",
     "EmployeeMapper",
     "ProfessionsEnum",
     "JobPositionEnum",
     "JobConditionEnum",
-    "enums"
+    "employment_enums",
+    "FileTagEnum"
 ]

@@ -92,7 +92,7 @@
         </footer>
     </div>
     <div id="documents" class="panel">
-        <div class="panel-heading has-background-dark">
+        <div class="panel-heading has-background-black-bis">
             <p class="card-header-title is-size-4">Documentos asociados</p>
         </div>
         {% if employee.files %}
@@ -111,12 +111,14 @@
                 Actualizar
             </a>
         </div>
-        <footer class="card-footer">
-        </footer>
+        {% else %}
+        <div class="panel-block">
+            <p>No se se ha subido ningun documento</p>
+        </div>
+        {% endif %}
+
     </div>
-    {% else %}
-    <p>No se se ha subido ningun documento</p>
-    {% endif %}
+
 
 
     </div>

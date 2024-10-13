@@ -8,7 +8,9 @@ from src.core.module.employee import (
     AbstractEmployeeServices,
     EmployeeCreateForm,
     EmployeeEditForm,
-    enums as employment_information,
+    EmployeeAddDocumentsForm,
+    FileTagEnum,
+    employment_enums as employment_information,
 )
 from src.core.module.common import AbstractStorageServices
 
@@ -75,11 +77,18 @@ def add_employee(
         return render_template("./employee/create_employee.html", form=create_form)
 
     documents = create_form.documents.data
-    
+
     uploaded_documents = [
-        ("dni", storage.upload_batch(documents.get("dni"), employees.storage_path)),
-        ("title", storage.upload_batch(documents.get("title"), employees.storage_path)),
-        ("curriculum_vitae", [storage.upload_file(documents.get("curriculum_vitae"), employees.storage_path)])
+        ("DNI", storage.upload_batch(documents.get("dni"), employees.storage_path)),
+        ("TITLE", storage.upload_batch(documents.get("title"), employees.storage_path)),
+        (
+            "CURRICULUM_VITAE",
+            [
+                storage.upload_file(
+                    documents.get("curriculum_vitae"), employees.storage_path
+                )
+            ],
+        ),
     ]
 
     created_employee = employees.create_employee(
@@ -154,9 +163,7 @@ def update_employee(
     return redirect(url_for("employee_bp.show_employee", employee_id=employee_id))
 
 
-@employee_bp.route(
-    "/editar/<int:employee_id>/documentos/",
-)
+@employee_bp.route("/editar/<int:employee_id>/documentos/", methods=["GET", "POST"])
 @check_user_permissions(permissions_required=["equipo_update"])
 @inject
 def edit_documents(
@@ -164,19 +171,51 @@ def edit_documents(
     employees: AbstractEmployeeServices = Provide[Container.employee_services],
     storage: AbstractStorageServices = Provide[Container.storage_services],
 ):
+    add_document_form = EmployeeAddDocumentsForm()
     employee = employees.get_employee(employee_id=employee_id)
     documents = [
         {"file": file, "url": storage.presigned_download_url(file.get("filename"))}
         for file in employee.get("files")
     ]
+
+    if request.method == "POST":
+        return update_documents(add_document_form, employee, documents)
+
     return render_template(
-        "./employee/update_documents.html", employee=employee, documents=documents
+        "./employee/update_documents.html",
+        employee=employee,
+        documents=documents,
+        add_form=add_document_form,
     )
 
 
 @inject
-def update_documents():
-    pass
+def update_documents(
+    add_form: EmployeeAddDocumentsForm,
+    employee: dict,
+    documents: list[dict],
+    employees: AbstractEmployeeServices = Provide[Container.employee_services],
+    storage: AbstractStorageServices = Provide[Container.storage_services],
+):
+    if not add_form.validate_on_submit():
+        return render_template(
+            "./employee/update_documents.html",
+            add_form=add_form,
+            employee=employee,
+            documents=documents,
+        )
+    employee_id = employee["id"]
+    uploaded_document = storage.upload_file(
+        file=add_form.file.data, path=employees.storage_path
+    )
+    saved_documents = employees.add_document(
+        employee_id=employee_id,
+        document=Mapper.create_file(
+            document_type=add_form.tag.data, file_information=uploaded_document
+        ),
+    )
+
+    return redirect(url_for("employee_bp.edit_documents", employee_id=employee_id))
 
 
 @inject

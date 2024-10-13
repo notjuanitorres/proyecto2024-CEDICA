@@ -108,6 +108,11 @@ class EmployeeRepository(AbstractEmployeeRepository):
 
         self.save()
         return True
+    
+    def add_document(self, employee_id: int, documents):
+        employee: Employee = self.get_by_id(employee_id)
+        employee.files.append(documents)
+        self.save()
 
     def delete(self, employee_id: int) -> bool:
         pass

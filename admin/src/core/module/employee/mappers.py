@@ -4,22 +4,23 @@ from .models import Employee, EmployeeFile
 
 class EmployeeMapper:
     @classmethod
-    def __create_files(self, files):
-        def create_file(document_type, file_information):
-            employee_file = EmployeeFile(
-                filename=file_information.get("filename"),
-                filetype=file_information.get("filetype"),
-                filesize=file_information.get("filesize"),
-                original_filename=file_information.get("original_filename"),
-                tag=document_type,
-            )
-            return employee_file
+    def create_file(self, document_type, file_information):
+        employee_file = EmployeeFile(
+            filename=file_information.get("filename"),
+            filetype=file_information.get("filetype"),
+            filesize=file_information.get("filesize"),
+            original_filename=file_information.get("original_filename"),
+            tag=document_type,
+        )
+        return employee_file
 
+    @classmethod
+    def create_files(self, files):
         created_files = []
         for doc_type, files_info in files:
             for file_info in files_info:
                 if file_info:
-                    created_files.append(create_file(doc_type, file_info))
+                    created_files.append(self.create_file(doc_type, file_info))
 
         return created_files
 
@@ -58,7 +59,7 @@ class EmployeeMapper:
         )
 
         if files:
-            employee_files = self.__create_files(files)
+            employee_files = self.create_files(files)
             for file in employee_files:
                 employee.files.append(file)
 

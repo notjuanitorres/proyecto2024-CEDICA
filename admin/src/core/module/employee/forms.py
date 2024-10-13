@@ -18,6 +18,7 @@ from src.core.module.employee.data import (
     ProfessionsEnum,
     JobPositionEnum as PositionEnum,
     JobConditionEnum as ConditionEnum,
+    FileTagEnum,
 )
 from src.core.module.employee.validators import EmailExistence, DniExistence
 from src.core.module.common import (
@@ -109,8 +110,33 @@ class EmployeeDocumentsForm(FlaskForm):
                 message="El archivo es demasiado grande",
             ),
             FileAllowed(
-                upload_set=["pdf", "jpg", "jpeg"],
+                upload_set=["pdf", "jpg", "jpeg", "png"],
                 message="Formato no reconocido. Formato valido: .pdf",
+            ),
+        ]
+    )
+
+
+class EmployeeAddDocumentsForm(FlaskForm):
+    tag = SelectField(
+        "Tag",
+        choices=[(e.name, e.value) for e in FileTagEnum],
+        validators=[
+            DataRequired(
+                message="Debe seleccionar lo que representa este archivo",
+            )
+        ],
+    )
+    file = FileField(
+        validators=[
+            FileRequired("Debe adjuntar un archivo"),
+            FileSize(
+                max_size=max_file_size(size_in_mb=5),
+                message="El archivo es demasiado grande",
+            ),
+            FileAllowed(
+                upload_set=["pdf", "jpg", "jpeg", "png", "webp"],
+                message="Formato no reconocido",
             ),
         ]
     )

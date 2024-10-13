@@ -66,70 +66,100 @@
     </ul>
   </div>
 
-<section class="section pt-4">
+<section class="section pt-4 px-0">
   <div id="documents" class="card">
-    <header class="panel-header">
-      <div class="panel-block">
-        <button class="button is-fullwidth is-primary">
-          Agregar documento
-          <span class="icon ml-1">
-            <i class="fa-solid fa-file is-size-5"></i>
-          </span>
-        </button>
-      </div>
-      <div class="panel-block">
-        <!-- <p class="control has-icons-left">
-          <input class="input" type="text" placeholder="Search" />
-          <span class="icon is-left">
-            <i class="fas fa-search" aria-hidden="true"></i>
-          </span>
-        </p> -->
-      </div>
+    <header class="card-header">
+      <h2 class="card-header-title is-size-4 m-0">Documentación relacionada</h2>
     </header>
     <div class="card-content">
-        <div class="content">
-          {% if employee.files %}
-          {% for document in documents %}
-          <div class="card">
-              <article class="card-content level is-flex is-flex-wrap-wrap is-justify-content-space-between">
-                  <div class="media m-0">
-                    <div class="media-left">
-                        {{ render_file_icon(document.file.filetype, size=1) }}
-                    </div>
-                    <div class="media-content ml-2">
-                      <p>
-                        <strong class="tag is-white">{{ render_category(document.file.tag) }}</strong>
-                        <small class="ml-1">{{ document.file.uploaded_at | format_date }}</small>
-                        <br />
-                        {{ document.file.original_filename }}
-                        </p>
-                    </div>
-                  </div>
-                  <div class="field has-addons">
-                    <div class="control">
-                      <button class="button is-danger hover">
-                        <span class="icon mr-1">
-                          <i class="fa-solid fa-trash"></i>
-                        </span>
-                        Eliminar
-                      </button>
-                    </div>
-                    <div class="control">
-                      <a href="{{ document.url }}" target="_blank" class="button is-link">
-                        <span class="icon mr-1">
-                          <i class="fa-solid fa-download"></i>
-                        </span>
-                        Descargar
-                      </a>
-                    </div>
-                  </div>
-              </article>
+      <form method="POST" class="block" enctype="multipart/form-data">
+        {{ add_form.hidden_tag() }}
+        <div class="is-flex is-gap-2">
+          <div class="field">
+            <div class="control">
+              <div class="select">
+                {{ add_form.tag(class="is-fullwidth")}}
+              </div>
+            </div>
+            {% if add_form.tag.errors %}
+            <p class="help is-danger">{{ add_form.tag.errors[0] }}</p>
+            {% endif %}
           </div>
-          {% endfor %}
-          {% else %}
-          <p>No se se ha subido ningun documento</p>
-          {% endif %}
+          <div class="field">
+            <div class="file has-name">
+              <label class="file-label">
+                {{ add_form.file(class="file-input", multiple="multiple") }}
+                <span class="file-cta">
+                  <span class="file-icon">
+                    <i class="fas fa-upload"></i>
+                  </span>
+                  <span class="file-label"> Elegir archivos </span>
+                </span>
+                <span class="file-name">No se ha seleccionado ningun archivo</span>
+              </label>
+            </div>
+          </div>
         </div>
+        <div class="field">
+          <div class="control">
+            <button type="submit" class="button is-fullwidth is-primary" aria-haspopup="true" aria-controls="Add document">
+              Agregar documento
+              <span class="icon ml-1">
+                <i class="fa-solid fa-file is-size-5" aria-hidden="true"></i>
+              </span>
+            </button>
+          </div>
+        </div>
+      </form>
+      <div class="content">
+        {% if employee.files %}
+        {% for document in documents %}
+        <div class="card">
+          <article class="card-content level is-flex is-flex-wrap-wrap is-justify-content-space-between">
+            <div class="media m-0">
+              <div class="media-left">
+                {{ render_file_icon(document.file.filetype, size=1) }}
+              </div>
+              <div class="media-content ml-2">
+                <p>
+                  <strong class="tag is-white">{{ render_category(document.file.tag) }}</strong>
+                  <small class="ml-1">{{ document.file.uploaded_at | format_date }}</small>
+                  <br />
+                  {{ document.file.original_filename }}
+                  </p>
+              </div>
+            </div>
+            <div class="field has-addons">
+              <div class="control">
+                <button class="button is-danger hover">
+                  <span class="icon mr-1">
+                    <i class="fa-solid fa-trash"></i>
+                  </span>
+                  Eliminar
+                </button>
+              </div>
+              <div class="control">
+                <a href="{{ document.url }}" target="_blank" class="button is-link">
+                  <span class="icon mr-1">
+                    <i class="fa-solid fa-download"></i>
+                  </span>
+                  Descargar
+                </a>
+              </div>
+            </div>
+          </article>
+        </div>
+        {% endfor %}
+        {% else %}
+        <p>No se se ha subido ningun documento</p>
+        {% endif %}
+      </div>
     </div>
+  </div>
 </section>
+{% endblock %}
+
+{% block extra_scripts %}
+    {{ super() }}
+    <script src="{{ url_for('static', filename='js/file-input.js') }}"></script>
 {% endblock %}

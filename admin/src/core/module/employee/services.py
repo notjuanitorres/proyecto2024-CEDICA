@@ -1,13 +1,13 @@
 from abc import abstractmethod
 from typing import Dict
 from .repositories import AbstractEmployeeRepository
-from .models import Employee
+from .models import Employee, EmployeeFile
 from .mappers import EmployeeMapper as Mapper
 
 
 class AbstractEmployeeServices:
     def __init__(self):
-        self.storage_path = "/employees"
+        self.storage_path = "employees/"
 
     @abstractmethod
     def create_employee(self, employee: Dict) -> Dict | None:
@@ -61,6 +61,7 @@ class EmployeeServices(AbstractEmployeeServices):
         employee = self.employee_repository.get_by_id(employee_id)
         if not employee:
             return None
+
         return Mapper.from_entity(employee)
 
     def update_employee(self, employee_id: int, data: Dict) -> None:
@@ -75,5 +76,8 @@ class EmployeeServices(AbstractEmployeeServices):
 
     def is_dni_used(self, dni: str) -> bool:
         employee = self.employee_repository.get_by_dni(dni=dni)
-
         return employee is not None
+    
+    def add_document(self, employee_id: int, document: EmployeeFile):
+        self.employee_repository.add_document(employee_id, document)
+
