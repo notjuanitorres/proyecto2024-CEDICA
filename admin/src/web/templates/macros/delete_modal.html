@@ -12,12 +12,16 @@
       </section>
       <footer class="modal-card-foot">
         <div class="buttons">
-          <form action="{{ url_for(endpoint) }}" method="POST" style="display: inline;">
+          <form 
+            action="{{ endpoint }}" 
+            method="POST" 
+            style="display: inline;"
+            >
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <input type="hidden" name="item_id" id="item-id">
             <button type="submit" id="delete-btn" class="button has-text-danger">Eliminar</button>
           </form>
-          <button class="button">Cancel</button>
+          <button class="button">Cancelar</button>
         </div>
       </footer>
     </div>
