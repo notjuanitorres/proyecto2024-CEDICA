@@ -2,12 +2,12 @@ from flask import Blueprint, render_template, request, url_for, redirect, flash
 from dependency_injector.wiring import inject, Provide
 from src.web.helpers.auth import check_user_permissions
 from src.core.container import Container
-from src.core.module.employee.forms import EmployeeSearchForm
 from src.core.module.employee import (
     EmployeeMapper as Mapper,
-    AbstractEmployeeServices,
+    AbstractEmployeeRepository,
     EmployeeCreateForm,
     EmployeeEditForm,
+    EmployeeSearchForm,
     EmployeeAddDocumentsForm,
     employment_enums as employment_information,
 )
@@ -26,7 +26,7 @@ employee_bp = Blueprint(
 @check_user_permissions(permissions_required=["equipo_index"])
 @inject
 def get_employees(
-    employees: AbstractEmployeeServices = Provide[Container.employee_services],
+    employees: AbstractEmployeeRepository = Provide[Container.employee_repository],
 ):
     page = request.args.get("page", type=int)
     per_page = request.args.get("per_page", type=int)
@@ -69,7 +69,7 @@ def create_employee():
 @inject
 def add_employee(
     create_form,
-    employees: AbstractEmployeeServices = Provide[Container.employee_services],
+    employees: AbstractEmployeeRepository = Provide[Container.employee_repository],
     storage: AbstractStorageServices = Provide[Container.storage_services],
 ):
     if not create_form.validate_on_submit():
@@ -90,7 +90,7 @@ def add_employee(
         ),
     ]
 
-    created_employee = employees.create_employee(
+    created_employee = employees.add(
         employee=Mapper.to_entity(create_form.data, uploaded_documents),
     )
 
@@ -106,7 +106,7 @@ def add_employee(
 @inject
 def show_employee(
     employee_id: int,
-    employees: AbstractEmployeeServices = Provide[Container.employee_services],
+    employees: AbstractEmployeeRepository = Provide[Container.employee_repository],
 ):
     employee = employees.get_employee(employee_id=employee_id)
     if not employee:
@@ -120,7 +120,7 @@ def show_employee(
 @inject
 def edit_employee(
     employee_id: int,
-    employees: AbstractEmployeeServices = Provide[Container.employee_services],
+    employees: AbstractEmployeeRepository = Provide[Container.employee_repository],
 ):
     employee = employees.get_employee(employee_id)
     if not employee:
@@ -129,7 +129,6 @@ def edit_employee(
     update_form = EmployeeEditForm(
         data=employee,
         id=employee_id,
-        # TODO: This lines could be passed as a hidden field on the form
         current_email=employee["email"],
         current_dni=employee["dni"],
     )
@@ -146,7 +145,7 @@ def edit_employee(
 def update_employee(
     employee_id: int,
     update_form,
-    employees: AbstractEmployeeServices = Provide[Container.employee_services],
+    employees: AbstractEmployeeRepository = Provide[Container.employee_repository],
 ):
     employee = employees.get_employee(employee_id)
     if not update_form.validate_on_submit():
@@ -154,7 +153,7 @@ def update_employee(
             "./employee/update_employee.html", form=update_form, employee=employee
         )
 
-    if not employees.update_employee(employee_id, Mapper.flat_form(update_form.data)):
+    if not employees.update(employee_id, Mapper.flat_form(update_form.data)):
         flash("No se ha podido actualizar al miembro del equipo", "warning")
         return render_template("./employee/update_employee.html")
 
@@ -164,9 +163,9 @@ def update_employee(
 
 @employee_bp.route("/delete/", methods=["POST"])
 @inject
-def delete_employee(employee_services: AbstractEmployeeServices = Provide[Container.employee_services]):
+def delete_employee(employee_repository: AbstractEmployeeRepository = Provide[Container.employee_repository]):
     employee_id = request.form["item_id"]
-    deleted = employee_services.delete_employee(employee_id)
+    deleted = employee_repository.delete_employee(employee_id)
     if not deleted:
         flash("El empleado no ha podido ser eliminado, intentelo nuevamente", "danger")
     else:
@@ -180,7 +179,7 @@ def delete_employee(employee_services: AbstractEmployeeServices = Provide[Contai
 @inject
 def edit_documents(
     employee_id: int,
-    employees: AbstractEmployeeServices = Provide[Container.employee_services],
+    employees: AbstractEmployeeRepository = Provide[Container.employee_repository],
     storage: AbstractStorageServices = Provide[Container.storage_services],
 ):
     add_document_form = EmployeeAddDocumentsForm()
@@ -206,7 +205,7 @@ def update_documents(
     add_form: EmployeeAddDocumentsForm,
     employee: dict,
     documents: list[dict],
-    employees: AbstractEmployeeServices = Provide[Container.employee_services],
+    employees: AbstractEmployeeRepository = Provide[Container.employee_repository],
     storage: AbstractStorageServices = Provide[Container.storage_services],
 ):
     if not add_form.validate_on_submit():
@@ -226,7 +225,7 @@ def update_documents(
             document_type=add_form.tag.data, file_information=uploaded_document
         ),
     )
-
+    flash(f"El documento {uploaded_document.get("original_filename")} se ha subido exitosamente", "success")
     return redirect(url_for("employee_bp.edit_documents", employee_id=employee_id))
 
 
@@ -234,12 +233,12 @@ def update_documents(
 @inject
 def delete_document(
     employee_id: int,
-    employees: AbstractEmployeeServices = Provide[Container.employee_services],
+    employees: AbstractEmployeeRepository = Provide[Container.employee_repository],
     storage: AbstractStorageServices = Provide[Container.storage_services],
 ):
     document_id = request.form["item_id"]
     document = employees.get_document(employee_id, document_id)
-    
+
     storage.delete_file(document.get("filename"))
     employees.delete_document(employee_id, document_id)
 

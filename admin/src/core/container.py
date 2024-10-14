@@ -1,7 +1,7 @@
 # pylint: disable=I1101
 from dependency_injector import containers, providers
 from .module.accounts import AccountsServices, AccountsRepository
-from .module.employee import EmployeeServices, EmployeeRepository
+from .module.employee import EmployeeRepository
 from .module.equestrian import EquestrianServices, EquestrianRepository
 from .module.common import StorageServices
 
@@ -19,11 +19,6 @@ class Container(containers.DeclarativeContainer):
 
     accounts_services = providers.Factory(
         AccountsServices, accounts_repository=accounts_repository
-    )
-
-    employee_services = providers.Factory(
-        EmployeeServices,
-        employee_repository=employee_repository,
     )
 
     equestrian_services = providers.Factory(
