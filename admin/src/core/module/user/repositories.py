@@ -1,32 +1,33 @@
 from abc import abstractmethod
 from typing import List, Dict
-from src.core.module.accounts.models import User, Role, RolePermission, Permission
 from src.core.database import db as database
 from src.core.module.common.repositories import apply_filters
+from .models import User
+from .mappers import UserMapper
 
 
-class AbstractAccountsRepository:
+class AbstractUserRepository:
     @abstractmethod
     def add(self, user: User) -> User | None:
         pass
 
     @abstractmethod
     def get_page(
-            self,
-            page: int,
-            per_page: int,
-            max_per_page: int,
-            search_query: Dict = None,
-            order_by: list = None,
+        self,
+        page: int,
+        per_page: int,
+        max_per_page: int,
+        search_query: Dict = None,
+        order_by: list = None,
     ):
         pass
 
     @abstractmethod
-    def get_by_id(self, user_id: int) -> User:
+    def get_user(self, user_id: int) -> Dict | None:
         pass
 
     @abstractmethod
-    def get_by_email(self, email: str) -> User:
+    def get_by_email(self, email: str) -> User | None:
         pass
 
     @abstractmethod
@@ -42,19 +43,15 @@ class AbstractAccountsRepository:
         pass
 
     @abstractmethod
-    def get_role(self, role_id: int) -> Role:
+    def is_sys_admin(self, user_id: int) -> bool:
         pass
 
     @abstractmethod
-    def get_roles(self) -> List[Role]:
-        pass
-
-    @abstractmethod
-    def get_permissions_of_role(self, role_id: int) -> List:
+    def is_user_enabled(self, user_id: int) -> bool:
         pass
 
 
-class AccountsRepository(AbstractAccountsRepository):
+class UserRepository(AbstractUserRepository):
     def __init__(self):
         self.db = database
 
@@ -62,17 +59,18 @@ class AccountsRepository(AbstractAccountsRepository):
         self.db.session.add(user)
         self.db.session.flush()
         self.save()
-        
-        return user
+
+        return UserMapper.from_entity(user)
 
     def get_page(
-            self,
-            page: int,
-            per_page: int,
-            max_per_page: int,
-            search_query: Dict = None,
-            order_by: List = None,
+        self,
+        page: int,
+        per_page: int = 10 ,
+        max_per_page: int = 30,
+        search_query: Dict = None,
+        order_by: List = None,
     ):
+        per_page = 10
         query = User.query
 
         query = apply_filters(User, query, search_query, order_by)
@@ -83,6 +81,12 @@ class AccountsRepository(AbstractAccountsRepository):
 
     def get_by_id(self, user_id: int) -> User | None:
         return self.db.session.query(User).filter(User.id == user_id).first()
+    
+    def get_user(self, user_id: int) -> Dict | None:
+        user = self.get_by_id(user_id)
+        if not user:
+            return None
+        return UserMapper.from_entity(user)
 
     def get_by_email(self, email: str) -> User | None:
         return self.db.session.query(User).filter(User.email == email).first()
@@ -103,21 +107,25 @@ class AccountsRepository(AbstractAccountsRepository):
         self.save()
         return True
 
-    def toggle_activation(self, user_id: int) -> None:
+    def toggle_activation(self, user_id: int) -> bool:
+        if self.is_sys_admin(user_id):
+            return False
         user = self.get_by_id(user_id)
         user.enabled = not user.enabled
         self.save()
+        return True
+
+    def is_sys_admin(self, user_id: int) -> bool:
+        if not user_id:
+            return False
+        user = self.get_by_id(user_id)
+        return user.system_admin
+
+    def is_user_enabled(self, user_id: int) -> bool:
+        if not user_id:
+            return False
+        user = self.get_by_id(user_id)
+        return user.enabled
 
     def save(self):
         self.db.session.commit()
-
-    def get_role(self, role_id: int) -> Role:
-        return self.db.session.query(Role).filter(Role.id == role_id).first()
-
-    def get_roles(self) -> List[Role]:
-        return self.db.session.query(Role).all()
-
-    def get_permissions_of_role(self, role_id: int) -> List:
-        permission_ids = RolePermission.query.filter(RolePermission.role_id == role_id).all()
-        return (Permission.query.
-                filter(Permission.id.in_([p.permission_id for p in permission_ids])).all())

@@ -1,12 +1,8 @@
-from random import choices
-
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SelectField, SubmitField
 from wtforms.validators import DataRequired, Email, Length, EqualTo, Optional
+from src.core.module.auth.data import RoleEnum
 from .validators import EmailExistence
-
-from src.core.module.accounts.models import RoleEnum
-
 
 def email_existence(form, field):
     validator = EmailExistence(message="Email en uso")
@@ -29,7 +25,7 @@ class UserManagementForm(FlaskForm):
         from src.core.container import Container
 
         container = Container()
-        return container.accounts_services()
+        return container.auth_services()
 
     role_id = SelectField(
         "Rol",
@@ -80,66 +76,6 @@ class UserEditForm(UserManagementForm):
     def __init__(self, *args, **kwargs):
         self.current_email = kwargs.pop('current_email', None)
         super(UserEditForm, self).__init__(*args, **kwargs)
-
-
-class UserLoginForm(FlaskForm):
-    email = StringField(
-        "Email",
-        validators=[
-            DataRequired(),
-            Email(message="Email inválido"),
-            Length(max=100)],
-    )
-
-    password = PasswordField(
-        "Contraseña",
-        validators=[
-            DataRequired(),
-            Length(
-                min=8, max=255, message="La contraseña debe tener más de 8 caracteres"
-            ),
-        ],
-    )
-
-
-class UserRegisterForm(FlaskForm):
-    current_email = None
-
-    email = StringField(
-        "Email",
-        validators=[
-            DataRequired(),
-            Email(message="Email inválido"),
-            email_existence,
-            Length(max=100),
-        ],
-    )
-
-    password = PasswordField(
-        "Contraseña",
-        validators=[
-            DataRequired(),
-            Length(
-                min=8, max=255, message="La contraseña debe tener más de 8 caracteres"
-            ),
-        ],
-    )
-
-    confirm_password = PasswordField(
-        "Confirmar contraseña",
-        validators=[
-            DataRequired(),
-            EqualTo("password", message="Las contraseñas deben coincidir"),
-        ],
-    )
-
-    alias = StringField(
-        "Alias",
-        validators=[
-            DataRequired(),
-            Length(min=3, max=15)
-        ]
-    )
 
 
 class UserSearchForm(FlaskForm):
