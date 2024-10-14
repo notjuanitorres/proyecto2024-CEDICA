@@ -3,6 +3,7 @@ from .module.accounts import AccountsServices, AccountsRepository
 from .module.employee import EmployeeServices, EmployeeRepository
 from .database import db
 from .module.equestrian import EquestrianServices, EquestrianRepository
+from .module.jockey_amazon import JockeyAmazonRepository
 
 
 class Container(containers.DeclarativeContainer):
@@ -13,6 +14,7 @@ class Container(containers.DeclarativeContainer):
     accounts_repository = providers.Factory(AccountsRepository)
     employee_repository = providers.Factory(EmployeeRepository)
     equestrian_repository = providers.Factory(EquestrianRepository)
+    jockey_amazon_repository = providers.Factory(JockeyAmazonRepository)
 
     # Services
     accounts_services = providers.Factory(
