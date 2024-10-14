@@ -40,19 +40,24 @@ def dni_existence(form, field):
     validator(form, field)
 
 
+allowed_filetypes = ["pdf", "jpg", "jpeg", "png", "webp"]
+formatted_filetypes = ", ".join(f".{ext}" for ext in allowed_filetypes[:-1]) + f" y .{allowed_filetypes[-1]}"
+filetypes_message = f"Formato no reconocido. Formato válido: {formatted_filetypes}"
+
+
 class EmploymentInformationForm(FlaskForm):
     profession = SelectField(
-        "Profesion",
+        "Profesión",
         choices=[(e.name, e.value) for e in ProfessionsEnum],
         validators=[DataRequired()],
     )
     position = SelectField(
-        "Posicion laboral",
+        "Posición laboral",
         choices=[(e.name, e.value) for e in PositionEnum],
         validators=[DataRequired()],
     )
     job_condition = SelectField(
-        "Condicion laboral",
+        "Condición laboral",
         choices=[(e.name, e.value) for e in ConditionEnum],
         validators=[DataRequired()],
     )
@@ -61,8 +66,8 @@ class EmploymentInformationForm(FlaskForm):
         validators=[DataRequired()],
         default=datetime.today,
     )
-    end_date = DateField("Finalizacion de actividades", validators=[Optional()])
-    is_active = BooleanField("Activo en la organizacion")
+    end_date = DateField("Finalización de actividades", validators=[Optional()])
+    is_active = BooleanField("Activo en la organización")
 
 
 def max_file_size(size_in_mb: int):
@@ -82,8 +87,8 @@ class EmployeeDocumentsForm(FlaskForm):
                 message="El archivo es demasiado grande",
             ),
             FileAllowed(
-                ["pdf", "jpg", "jpeg", "png"],
-                message="Formato no reconocido. Formato valido: .pdf, .jpg, .jpeg, .png",
+                allowed_filetypes,
+                message=filetypes_message,
             ),
             FilesNumber(min=0, max=2, message="Puede subir hasta 2 archivos"),
         ]
@@ -96,8 +101,8 @@ class EmployeeDocumentsForm(FlaskForm):
                 message="El archivo es demasiado grande",
             ),
             FileAllowed(
-                ["pdf", "jpg", "jpeg", "png"],
-                message="Formato no reconocido Formato valido: .pdf, .jpg, .jpeg, .png",
+                allowed_filetypes,
+                message=filetypes_message,
             ),
             FilesNumber(min=0, max=5, message="Puede subir hasta 5 archivos"),
         ]
@@ -110,8 +115,8 @@ class EmployeeDocumentsForm(FlaskForm):
                 message="El archivo es demasiado grande",
             ),
             FileAllowed(
-                upload_set=["pdf", "jpg", "jpeg", "png"],
-                message="Formato no reconocido. Formato valido: .pdf",
+                upload_set=allowed_filetypes,
+                message=filetypes_message,
             ),
         ]
     )
@@ -135,8 +140,8 @@ class EmployeeAddDocumentsForm(FlaskForm):
                 message="El archivo es demasiado grande",
             ),
             FileAllowed(
-                upload_set=["pdf", "jpg", "jpeg", "png", "webp"],
-                message="Formato no reconocido",
+                upload_set=allowed_filetypes,
+                message=filetypes_message,
             ),
         ]
     )
