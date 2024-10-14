@@ -75,7 +75,7 @@ class ChargeManagementForm(FlaskForm):
 
     observations = StringField("Observaciones", validators=[Length(max=255), DataRequired()])
 
-    employee = StringField(
+    employee_info = StringField(
         "Empleado",
         validators=[DataRequired()],
         render_kw={"readonly": True}  # Hacer que el campo sea de solo lectura
@@ -85,7 +85,7 @@ class ChargeManagementForm(FlaskForm):
         validators=[DataRequired()],
     )
 
-    jya = StringField(
+    jya_info = StringField(
         "jya",
         validators=[Optional()],
         render_kw={"readonly": True}  # Hacer que el campo sea de solo lectura
@@ -101,12 +101,5 @@ class ChargeCreateForm(ChargeManagementForm):
 
 
 class ChargeEditForm(ChargeManagementForm):
-    def __init__(self, *args, **kwargs):
-        super(ChargeEditForm, self).__init__(*args, **kwargs)
-
-        if kwargs['data']["employee_id"]:
-            self.employee_id.data = kwargs['data']["employee_id"]
-
-        if kwargs['employee']["name"] and kwargs['employee']["email"]:
-            self.employee.data = kwargs['employee']["name"] + " (" + kwargs['employee']["email"] + ")"
+    pass
 

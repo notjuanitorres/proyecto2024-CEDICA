@@ -40,8 +40,6 @@ def get_charges(charges_repository: ACR = Provide[Container.charges_repository])
             search_query["filters"]["start_date"] = search.start_date.data
             search_query["filters"]["finish_date"] = search.finish_date.data
 
-    print(search_query)
-    print(order_by)
     paginated_charges = charges_repository.get_page(
         page=page, per_page=per_page, order_by=order_by, search_query=search_query
     )
@@ -101,7 +99,8 @@ def edit_charge(charge_id: int,
         return redirect(url_for("charges_bp.get_charges"))
 
     employee = employee_services.get_employee(charge["employee_id"])
-    edit_form = ChargeEditForm(data=charge, employee=employee)
+    employee_info = f"{employee['name']} {employee['lastname']} (Email: {employee['email']})"
+    edit_form = ChargeEditForm(data=charge, employee_id=employee["id"], employee_info=employee_info)
 
     if request.method in ["POST", "PUT"]:
         return update_charge(charge_id=charge_id, edit_form=edit_form)
@@ -115,6 +114,7 @@ def update_charge(charge_id: int, edit_form: ChargeEditForm,
     if not edit_form.validate_on_submit():
         return render_template("edit_charge.html", form=edit_form)
 
+    print(edit_form.data)
     charges_repository.update_charge(charge_id, Mapper.from_form(edit_form.data))
 
     return redirect(url_for("charges_bp.show_charge", charge_id=charge_id))
