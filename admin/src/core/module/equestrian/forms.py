@@ -92,8 +92,6 @@ class HorseEditForm(HorseManagementForm):
     def __init__(self, *args, **kwargs):
         super(HorseEditForm, self).__init__(*args, **kwargs)
         self.trainers.choices = self.get_trainers_choices()
-        if kwargs['data']["id"]:
-            self.set_default_trainers(kwargs['data']["id"])
 
     def import_employee_services(self):
         # Needed to import the container dynamically at run time
@@ -104,20 +102,9 @@ class HorseEditForm(HorseManagementForm):
         container = Container()
         return container.employee_services()
 
-    def import_equestrian_services(self):
-        # pylint: disable="C0415"
-        from src.core.container import Container
-
-        container = Container()
-        return container.equestrian_services()
-
     def get_trainers_choices(self):
         return [(trainer.id, f"{trainer.fullname} ({trainer.position.value})")
                 for trainer in self.import_employee_services().get_trainers()]
-
-    def set_default_trainers(self, horse_id):
-        horse_trainers = self.import_equestrian_services().get_trainers_of_horse(horse_id)
-        self.trainers.data = [str(trainer.id) for trainer in horse_trainers]
 
     trainers = MultiCheckboxField(
         "Entrenadores y conductores",
