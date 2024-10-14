@@ -1,8 +1,20 @@
 from datetime import datetime
 from sqlalchemy.orm import column_property
 from src.core.database import db
-from src.core.module.common import AddressMixin, EmergencyContactMixin, PhoneMixin
-from src.core.module.employee.data import ProfessionsEnum, PositionEnum, ConditionEnum
+from src.core.module.common import AddressMixin, EmergencyContactMixin, PhoneMixin, File
+from src.core.module.employee.data import (
+    ProfessionsEnum,
+    JobPositionEnum as PositionEnum,
+    JobConditionEnum as ConditionEnum,
+)
+
+
+class EmployeeFile(File):
+    __mapper_args__ = {
+        "polymorphic_identity": "employee",
+    }
+    owner_id = db.Column(db.Integer, db.ForeignKey("employees.id"))
+    owner = db.relationship("Employee", back_populates="files")
 
 
 class Employee(db.Model, AddressMixin, PhoneMixin, EmergencyContactMixin):
@@ -22,13 +34,14 @@ class Employee(db.Model, AddressMixin, PhoneMixin, EmergencyContactMixin):
     health_insurance = db.Column(db.Text, nullable=True)
     affiliate_number = db.Column(db.String(255), nullable=True)
     is_active = db.Column(db.Boolean, nullable=False, default=True)
-
     inserted_at = db.Column(db.DateTime, default=datetime.now)
     updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
 
     # One to one
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True)
     user = db.relationship("User", backref=db.backref("employee"), uselist=False)
+
+    files = db.relationship("EmployeeFile", back_populates="owner")
 
     # TODO: Add references to multiple uploaded files on each field
     #           - Título

@@ -7,7 +7,6 @@ def render_natural_boolean(value):
 
 
 def render_role(role_id: int):
-    # TODO: get this info from the service
     roles = {
         1: "Técnico",
         2: "Ecuestre",

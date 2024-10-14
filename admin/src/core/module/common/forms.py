@@ -5,6 +5,7 @@ from wtforms.fields import (
     StringField,
     TelField,
 )
+from .validators import IsNumber
 
 
 class AddressForm(FlaskForm):
@@ -19,8 +20,12 @@ class PhoneForm(FlaskForm):
     country_code = TelField(
         "Codigo de pais", validators=[DataRequired(), Length(max=5)]
     )
-    area_code = TelField("Codigo de area", validators=[DataRequired(), Length(max=5)])
-    number = TelField("Numero", validators=[DataRequired(), Length(max=15)])
+    area_code = TelField(
+        "Codigo de area", validators=[DataRequired(), Length(max=5), IsNumber()]
+    )
+    number = TelField(
+        "Numero", validators=[DataRequired(), Length(min=9, max=15), IsNumber()]
+    )
 
 
 class EmergencyContactForm(FlaskForm):

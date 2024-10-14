@@ -21,7 +21,15 @@
       </a>
     </li>
     <li>
-      <a href="">
+      <a href="{{ url_for('employee_bp.show_employee', employee_id=employee.id) }}">
+        <span class="icon is-small">
+          <i class="fas fa-user" aria-hidden="true"></i>
+        </span>
+        <span>{{ employee.name }} {{ employee.lastname }}</span>
+      </a>
+    </li>
+    <li>
+      <a>
         <span class="icon is-small">
           <i class="fa-solid fa-pen-nib"></i>
         </span>
@@ -44,11 +52,11 @@
         </a>
       </li>
       <li>
-        <a>
+        <a href="{{ url_for("employee_bp.edit_documents",  employee_id=employee.id ) }}">
           <span class="icon is-small">
               <i class="far fa-file-alt" aria-hidden="true"></i>
           </span>
-          <span>Documentacion Anexa</span>
+          <span>Documentos Anexos</span>
         </a>
       </li>
     </ul>
@@ -57,25 +65,26 @@
 <section class="section pt-4">
     <form method="POST" class="">
       {{ form.hidden_tag() }}
+      {{ form.id }}
       <article id="general-information" class="field">
         <label class="label is-size-4">Información General</label>
         <div class="field-body">
             <div class="field">
-                <label class="label">{{ form.first_name.label }}</label>
+                <label class="label">{{ form.name.label }}</label>
                 <div class="control">
-                    {{ form.first_name(class="input", placeholder="Ingrese el nombre") }}
+                    {{ form.name(class="input", placeholder="Ingrese el nombre") }}
                 </div>
-                {% if form.first_name.errors %}
+                {% if form.name.errors %}
                     <p class="help is-danger">{{ form.name.errors[0] }}</p>
                 {% endif %}
             </div>
             <div class="field">
-                <label class="label">{{ form.last_name.label }}</label>
+                <label class="label">{{ form.lastname.label }}</label>
                 <div class="control">
-                    {{ form.last_name(class="input", placeholder="Ingrese el apellido") }}
+                    {{ form.lastname(class="input", placeholder="Ingrese el apellido") }}
                 </div>
-                {% if form.last_name.errors %}
-                    <p class="help is-danger">{{ form.last_name.errors[0] }}</p>
+                {% if form.lastname.errors %}
+                    <p class="help is-danger">{{ form.lastname.errors[0] }}</p>
                 {% endif %}
             </div>
         </div>
