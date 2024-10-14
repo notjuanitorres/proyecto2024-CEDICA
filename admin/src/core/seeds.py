@@ -2,7 +2,11 @@ from src.core.module.charges.models import Charge, PaymentMethodEnum
 from src.core.database import db
 from src.core.module.accounts.models import User, Role, Permission, RolePermission, PermissionEnum, RoleEnum
 from src.core.module.employee.models import Employee
-from src.core.module.employee.data import PositionEnum, ConditionEnum, ProfessionsEnum
+from src.core.module.employee.data import (
+    JobPositionEnum as PositionEnum,
+    JobConditionEnum as ConditionEnum,
+    ProfessionsEnum,
+)
 from src.core.bcrypt import bcrypt
 from src.core.module.equestrian.models import Horse, JAEnum, HorseTrainers
 from datetime import date

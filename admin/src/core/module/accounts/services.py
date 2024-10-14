@@ -79,6 +79,7 @@ class AccountsServices(AbstractAccountsServices):
             role_id=user_data.get("role_id", None),
         )
         created_user = self.accounts_repository.add(new_user)
+
         return self.to_dict(created_user)
 
     def get_page(self, page: int, per_page: int, search_query: Dict, order_by: list):
@@ -146,10 +147,6 @@ class AccountsServices(AbstractAccountsServices):
         return user.enabled
 
     def to_dict(self, user: User) -> Dict:
-        # TODO: Implement User DTO to transfer users between service and presentation layer
-        # The DTO is a dataclass with methods for passing from entity to dto and viceversa
-        # It is possible to also add a to_dict method
-        # It is easier to handle an object than a dict
         user_dict = {
             "id": user.id,
             "email": user.email,

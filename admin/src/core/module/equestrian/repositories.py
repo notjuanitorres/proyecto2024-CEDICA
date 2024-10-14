@@ -1,7 +1,7 @@
 from abc import abstractmethod
 from typing import List, Dict
 
-from core.module.common.repositories import apply_filters
+from src.core.module.common.repositories import apply_filters
 from src.core.module.equestrian.models import Horse, HorseTrainers
 from src.core.database import db as database
 from src.core.module.employee.models import Employee
