@@ -93,7 +93,8 @@ def edit_horse(horse_id: int, equestrian_services: AES = Provide[Container.eques
         flash(f"Su búsqueda no devolvió un caballo existente", "danger")
         return redirect(url_for("equestrian_bp.get_horses"))
 
-    edit_form = HorseEditForm(data=horse)
+    trainers = [str(trainer.id) for trainer in equestrian_services.get_trainers_of_horse(horse_id)]
+    edit_form = HorseEditForm(data=horse, trainers=trainers)
 
     if request.method in ["POST", "PUT"]:
         return update_horse(horse_id=horse_id, edit_form=edit_form)
