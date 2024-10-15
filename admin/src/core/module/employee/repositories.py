@@ -65,6 +65,10 @@ class AbstractEmployeeRepository:
     def get_trainers(self) -> List:
         raise NotImplementedError
 
+    @abstractmethod
+    def link_account(self, employee_id: int, account_id: int | None) -> bool:
+        pass
+
 
 class EmployeeRepository(AbstractEmployeeRepository):
     def __init__(self):
@@ -81,9 +85,31 @@ class EmployeeRepository(AbstractEmployeeRepository):
 
         return Mapper.from_entity(employee)
 
+    def __get_by_id(self, employee_id: int) -> Employee:
+        return (
+            self.db.session.query(Employee).filter(Employee.id == employee_id).first()
+        )
+
+    def __get_by_email(self, email: str) -> Employee | None:
+        return self.db.session.query(Employee).filter(Employee.email == email).first()
+
+    def __get_by_email(self, email: str) -> Employee | None:
+        return self.db.session.query(Employee).filter(Employee.email == email).first()
+
+    def __get_by_dni(self, dni: str) -> Employee | None:
+        return self.db.session.query(Employee).filter(Employee.dni == dni).first()
+
+    def __get_document(self, employee_id: int, document_id: int) -> EmployeeFile:
+        document = (
+            self.db.session.query(EmployeeFile)
+            .filter_by(owner_id=employee_id, id=document_id)
+            .first()
+        )
+        return document
+
     def get_page(
         self,
-        page: int,
+        page: int = 1,
         per_page: int = 10,
         max_per_page: int = 30,
         search_query: Dict = None,
@@ -99,25 +125,8 @@ class EmployeeRepository(AbstractEmployeeRepository):
             page=page, per_page=per_page, error_out=False, max_per_page=max_per_page
         )
 
-    def __get_by_id(self, employee_id: int) -> Employee:
-        return (
-            self.db.session.query(Employee).filter(Employee.id == employee_id).first()
-        )
-
     def get_employee(self, employee_id):
         return Mapper.from_entity(self.__get_by_id(employee_id))
-
-    def __get_by_email(self, email: str) -> Employee | None:
-        return self.db.session.query(Employee).filter(Employee.email == email).first()
-
-    def is_email_used(self, email: str) -> bool:
-        return self.__get_by_email(email) is not None
-
-    def __get_by_dni(self, dni: str) -> Employee | None:
-        return self.db.session.query(Employee).filter(Employee.dni == dni).first()
-
-    def is_dni_used(self, dni: str) -> bool:
-        return self.__get_by_dni(dni) is not None
 
     def update(self, employee_id: int, data: Dict) -> bool:
         employee = Employee.query.filter_by(id=employee_id)
@@ -128,18 +137,19 @@ class EmployeeRepository(AbstractEmployeeRepository):
         self.save()
         return True
 
+    def delete(self, employee_id: int) -> bool:
+        pass
+
+    def is_email_used(self, email: str) -> bool:
+        return self.__get_by_email(email) is not None
+
+    def is_dni_used(self, dni: str) -> bool:
+        return self.__get_by_dni(dni) is not None
+
     def add_document(self, employee_id: int, document: EmployeeFile):
         employee: Employee = self.__get_by_id(employee_id)
         employee.files.append(document)
         self.save()
-
-    def __get_document(self, employee_id: int, document_id: int) -> EmployeeFile:
-        document = (
-            self.db.session.query(EmployeeFile)
-            .filter_by(owner_id=employee_id, id=document_id)
-            .first()
-        )
-        return document
 
     def get_document(self, employee_id: int, document_id: int) -> Dict:
         return self.__get_document(employee_id, document_id).to_dict()
@@ -149,9 +159,6 @@ class EmployeeRepository(AbstractEmployeeRepository):
         document = self.__get_document(employee.id, document_id)
         employee.files.remove(document)
         self.save()
-
-    def delete(self, employee_id: int) -> bool:
-        pass
 
     def get_trainers(self):
         return (
@@ -164,3 +171,11 @@ class EmployeeRepository(AbstractEmployeeRepository):
             )
             .all()
         )
+
+    def link_account(self, employee_id: int, account_id: int | None) -> bool:
+        employee = self.__get_by_id(employee_id=employee_id)
+        if not employee:
+            return False
+        employee.user_id = account_id
+        self.save()
+        return True

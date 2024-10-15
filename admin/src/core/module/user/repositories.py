@@ -1,9 +1,10 @@
 from abc import abstractmethod
 from typing import List, Dict
 from src.core.database import db as database
-from src.core.module.common.repositories import apply_filters
+from src.core.module.common.repositories import apply_filters, apply_multiple_search_criteria
 from .models import User
 from .mappers import UserMapper
+from sqlalchemy import and_
 
 
 class AbstractUserRepository:
@@ -20,6 +21,10 @@ class AbstractUserRepository:
         search_query: Dict = None,
         order_by: list = None,
     ):
+        pass
+
+    @abstractmethod
+    def get_active_users(self, page: int):
         pass
 
     @abstractmethod
@@ -64,13 +69,12 @@ class UserRepository(AbstractUserRepository):
 
     def get_page(
         self,
-        page: int,
-        per_page: int = 10 ,
+        page: int = 1,
+        per_page: int = 10,
         max_per_page: int = 30,
         search_query: Dict = None,
         order_by: List = None,
     ):
-        per_page = 10
         query = User.query
 
         query = apply_filters(User, query, search_query, order_by)
@@ -79,9 +83,21 @@ class UserRepository(AbstractUserRepository):
             page=page, per_page=per_page, error_out=False, max_per_page=max_per_page
         )
 
+    def get_active_users(self, page: int = 1, search: str = ""):
+        per_page = 7
+        
+        query = User.query.filter(and_(User.enabled, User.employee is None))
+        if search:
+            search_fields = ["alias", "email"]
+            query = apply_multiple_search_criteria(
+                User, query, search_query={"text": search, "fields": search_fields}
+            )
+
+        return query.paginate(page=page, per_page=per_page, error_out=False)
+
     def get_by_id(self, user_id: int) -> User | None:
         return self.db.session.query(User).filter(User.id == user_id).first()
-    
+
     def get_user(self, user_id: int) -> Dict | None:
         user = self.get_by_id(user_id)
         if not user:

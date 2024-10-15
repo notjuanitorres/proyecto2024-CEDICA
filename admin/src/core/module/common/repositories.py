@@ -1,3 +1,6 @@
+from sqlalchemy import or_
+
+
 def apply_filters(model, query, search_query, order_by):
     if search_query:
         query = apply_filter_criteria(model, query, search_query)
@@ -23,7 +26,24 @@ def apply_search_criteria(model, query, search_query):
     if "text" in search_query and "field" in search_query:
         if hasattr(model, search_query["field"]):
             field = getattr(model, search_query["field"])
-            query = query.filter(field.icontains(search_query["text"], autoescape=True))
+            query = query.filter(field.ilike(f"%{search_query['text']}%"))
+
+    return query
+
+
+def apply_multiple_search_criteria(model, query, search_query):
+    if "text" in search_query and "fields" in search_query:
+        search_text = search_query["text"]
+        search_fields = search_query["fields"]
+
+        conditions = []
+        for field_name in search_fields:
+            if hasattr(model, field_name):
+                field = getattr(model, field_name)
+                conditions.append(field.ilike(f"%{search_text}%"))
+
+        if conditions:
+            query = query.filter(or_(*conditions))
 
     return query
 

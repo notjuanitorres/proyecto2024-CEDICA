@@ -12,6 +12,11 @@ from src.core.module.employee import (
     employment_enums as employment_information,
 )
 from src.core.module.common import AbstractStorageServices
+from src.core.module.user import (
+    AbstractUserRepository,
+    AccountSearchForm,
+    AccountSelectForm,
+)
 
 
 employee_bp = Blueprint(
@@ -28,12 +33,11 @@ employee_bp = Blueprint(
 def get_employees(
     employees: AbstractEmployeeRepository = Provide[Container.employee_repository],
 ):
-    page = request.args.get("page", type=int)
-    per_page = request.args.get("per_page", type=int)
+    page = request.args.get("page", type=int, default=1)
+    per_page = request.args.get("per_page", type=int, default=10)
     search = EmployeeSearchForm(request.args)
     search_query = {}
     order_by = []
-
     if search.submit_search.data and search.validate():
         order_by = [(search.order_by.data, search.order.data)]
         search_query = {
@@ -107,12 +111,16 @@ def add_employee(
 def show_employee(
     employee_id: int,
     employees: AbstractEmployeeRepository = Provide[Container.employee_repository],
+    accounts: AbstractUserRepository = Provide[Container.user_repository],
 ):
     employee = employees.get_employee(employee_id=employee_id)
+    employee_account = accounts.get_user(employee.get("user_id"))
     if not employee:
         return redirect(url_for("employee_bp.get_employees"))
 
-    return render_template("./employee/employee.html", employee=employee)
+    return render_template(
+        "./employee/employee.html", employee=employee, account=employee_account
+    )
 
 
 @employee_bp.route("/editar/<int:employee_id>", methods=["GET", "POST"])
@@ -163,7 +171,11 @@ def update_employee(
 
 @employee_bp.route("/delete/", methods=["POST"])
 @inject
-def delete_employee(employee_repository: AbstractEmployeeRepository = Provide[Container.employee_repository]):
+def delete_employee(
+    employee_repository: AbstractEmployeeRepository = Provide[
+        Container.employee_repository
+    ],
+):
     employee_id = request.form["item_id"]
     deleted = employee_repository.delete_employee(employee_id)
     if not deleted:
@@ -172,6 +184,85 @@ def delete_employee(employee_repository: AbstractEmployeeRepository = Provide[Co
         flash("El empleado ha sido eliminado correctamente", "success")
 
     return redirect(url_for("employee_bp.get_employees"))
+
+
+@employee_bp.route("/sincronizar-cuenta/<int:employee_id>", methods=["GET", "POST"])
+@check_user_permissions(permissions_required=["equipo_update"])
+@inject
+def link_account(
+    employee_id: int,
+    page: int = 1,
+    employees: AbstractEmployeeRepository = Provide[Container.employee_repository],
+    users: AbstractUserRepository = Provide[Container.user_repository],
+):
+    page = request.args.get("page", type=int, default=1)
+    search_account = AccountSearchForm()
+    select_account = AccountSelectForm()
+    employee = employees.get_employee(employee_id)
+    accounts = users.get_active_users(page=page)
+
+    if request.method == "POST":
+        return set_employee_account(employee, search_account, select_account, accounts)
+
+    if search_account.submit_search.data and search_account.validate():
+        accounts = users.get_active_users(
+            page=page, search=search_account.search_text.data
+        )
+
+    return render_template(
+        "./employee/update_account.html",
+        employee=employee,
+        accounts=accounts,
+        search_form=search_account,
+        select_form=select_account,
+    )
+
+
+@inject
+def set_employee_account(
+    employee,
+    search_form,
+    select_form,
+    active_accounts,
+    employees: AbstractEmployeeRepository = Provide[Container.employee_repository],
+):
+    if not (select_form.submit_account.data and select_form.validate()):
+        return render_template(
+            "./employee/update_account.html",
+            employee=employee,
+            accounts=active_accounts,
+            search_form=search_form,
+            select_form=select_form,
+        )
+    employee_id = employee.get("id")
+    account_id = select_form.selected_account.data
+
+    employees.link_account(employee_id, account_id)
+
+    flash(
+        f"Se ha asociado correctamente a {employee.get("name")} con su cuenta",
+        "success",
+    )
+    return redirect(url_for("employee_bp.show_employee", employee_id=employee_id))
+
+
+@employee_bp.route("/quitar-cuenta/<int:employee_id>", methods=["GET", "POST"])
+@check_user_permissions(permissions_required=["equipo_update"])
+@inject
+def unlink_account(
+    employee_id: int,
+    employees: AbstractEmployeeRepository = Provide[Container.employee_repository],
+):
+    employee = employees.get_employee(employee_id)
+    employees.link_account(employee_id, None)
+    
+    flash(
+        f"Se ha desasociado correctamente a {employee.get("name")} de su cuenta",
+        "warning",
+    )
+    return redirect(url_for("employee_bp.show_employee", employee_id=employee_id))
+
+ 
 
 
 @employee_bp.route("/editar/<int:employee_id>/documentos/", methods=["GET", "POST"])
@@ -225,7 +316,10 @@ def update_documents(
             document_type=add_form.tag.data, file_information=uploaded_document
         ),
     )
-    flash(f"El documento {uploaded_document.get("original_filename")} se ha subido exitosamente", "success")
+    flash(
+        f"El documento {uploaded_document.get("original_filename")} se ha subido exitosamente",
+        "success",
+    )
     return redirect(url_for("employee_bp.edit_documents", employee_id=employee_id))
 
 
@@ -242,5 +336,8 @@ def delete_document(
     storage.delete_file(document.get("filename"))
     employees.delete_document(employee_id, document_id)
 
-    flash(f"El documento {document.get("original_filename")} ha sido eliminado correctamente", "success")
+    flash(
+        f"El documento {document.get("original_filename")} ha sido eliminado correctamente",
+        "success",
+    )
     return redirect(url_for("employee_bp.edit_documents", employee_id=employee_id))
