@@ -171,7 +171,7 @@ class JockeyAmazon(db.Model, AddressMixin, PhoneMixin, EmergencyContactMixin):
 
     professionals = db.Column(db.Text, nullable=True)
 
-    family_members = db.relationship('FamilyMember', secondary='family_member_jockey_amazon', back_populates='jockeys_amazons')
+    family_members = db.relationship('FamilyMember', secondary='family_member_jockey_amazon', back_populates='jockey_amazon')
     work_assignments = db.relationship('WorkAssignment', backref='jockey_amazon', cascade="all, delete-orphan")
 
     inserted_at = db.Column(db.DateTime, default=datetime.now)

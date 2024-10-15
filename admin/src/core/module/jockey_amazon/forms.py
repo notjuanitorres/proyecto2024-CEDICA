@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, BooleanField, SelectField, TextAreaField, IntegerField, DateField, FormField, FieldList
-from wtforms.validators import DataRequired, Length, Optional, NumberRange
+from wtforms.validators import DataRequired, Length, Optional
 from src.core.module.common.forms import AddressForm, PhoneForm, EmergencyContactForm
 from src.core.module.jockey_amazon.models import (
     DisabilityDiagnosisEnum, DisabilityTypeEnum, FamilyAssignmentEnum, PensionEnum, WorkProposalEnum, WorkConditionEnum, SedeEnum, DayEnum, EducationLevelEnum
@@ -10,7 +10,7 @@ def enum_choices(enum):
     return [(choice.name, choice.value) for choice in enum]
 
 class SchoolInstitutionForm(FlaskForm):
-    name = StringField('Nombre', validators=[DataRequired(), Length(max=200)])
+    school_name = StringField('Nombre', validators=[DataRequired(), Length(max=200)])
     street = StringField('Calle', validators=[DataRequired(), Length(max=50)])
     number = IntegerField('Número', validators=[DataRequired()])
     department = StringField('Departamento', validators=[Optional(), Length(max=50)])
