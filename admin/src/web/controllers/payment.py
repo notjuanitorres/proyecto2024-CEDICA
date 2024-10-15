@@ -54,7 +54,7 @@ def create_payment(
     else:
         if(form.amount.data):
             flash('Error al crear el pago', 'danger')
-    return render_template('payment/create_payment.html', form=form)
+    return render_template('payment/create_payment.html', form=form,  edit=False)
 
 
 @payment_bp.route("/<int:payment_id>", methods=["GET"])
@@ -87,7 +87,7 @@ def edit_payment(
         flash('Pago actualizado exitosamente', 'success')
         return redirect(url_for('payment_bp.show_payment', payment_id=payment_id))
 
-    return render_template('payment/edit_payment.html', form=form, payment=payment)
+    return render_template('payment/create_payment.html', form=form, payment=payment, edit=True)
 
 @payment_bp.route("/eliminar", methods=["POST"])
 @inject

@@ -96,13 +96,22 @@
                 </div>
                 <div class="field">
                     <div class="control">
+                        {% if edit %}
+                        <button class="button is-primary" type="submit">Aplicar cambios</button>
+                        {% else %}
                         <button class="button is-primary" type="submit">Registrar El Pago</button>
+                        {% endif %}
                     </div>
                 </div>
             </form>
         </div>
     </section>
 
-    <script src="{{ url_for('static', filename='js/payment-form-employee.js') }}"></script>
 {% endblock %}
 
+{% block extra_scripts %}
+
+{{ super() }}
+<script src="{{ url_for('static', filename='js/payment-form-employee.js') }}"></script>
+
+{% endblock %}
