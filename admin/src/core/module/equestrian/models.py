@@ -1,6 +1,6 @@
+from src.core.module.common.models import MinioFile, UrlFile
 from src.core.database import db
 from datetime import datetime
-
 from enum import Enum as pyEnum
 
 
@@ -25,6 +25,8 @@ class Horse(db.Model):
     admission_date = db.Column(db.Date, nullable=False)
     assigned_facility = db.Column(db.String(100), nullable=False)
     ja_type = db.Column(db.Enum(JAEnum), nullable=False)
+    minio_files = db.relationship("HorseMinioFile", back_populates="owner")
+    url_files = db.relationship("HorseUrlFile", back_populates="owner")
 
     inserted_at = db.Column(db.DateTime, default=datetime.now)
     updated_at = db.Column(
@@ -37,3 +39,19 @@ class HorseTrainers(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     id_horse = db.Column(db.Integer, db.ForeignKey('horses.id'))
     id_employee = db.Column(db.Integer, db.ForeignKey('employees.id'))
+
+
+class HorseMinioFile(MinioFile):
+    __mapper_args__ = {
+        "polymorphic_identity": "horse",
+    }
+    horse_id = db.Column(db.Integer, db.ForeignKey("horses.id"))
+    owner = db.relationship("Horse", back_populates="files")
+
+    
+class HorseUrlFile(UrlFile):
+    __mapper_args__ = {
+        "polymorphic_identity": "horse",
+    }
+    horse_id = db.Column(db.Integer, db.ForeignKey("horses.id"))
+    owner = db.relationship("Horse", back_populates="files")

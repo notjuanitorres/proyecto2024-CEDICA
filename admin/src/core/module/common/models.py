@@ -3,14 +3,15 @@ from sqlalchemy.orm import declarative_mixin
 from src.core.database import db
 
 
-class File(db.Model):
-    __tablename__ = "files"
+class MinioFile(db.Model):
+    __tablename__ = "minio_files"
 
     id = db.Column(db.Integer, primary_key=True)
     filename = db.Column(db.String())
     filetype = db.Column(db.String())
     filesize = db.Column(db.Integer)
     original_filename = db.Column(db.String())
+    title = db.Column(db.String(length=100))
     tag = db.Column(db.String(length=25))
     inserted_at = db.Column(db.DateTime, default=datetime.now)
     deleted = db.Column(db.Boolean, default=False)
@@ -28,6 +29,33 @@ class File(db.Model):
             "filetype": self.filetype,
             "filesize": self.filesize,
             "original_filename": self.original_filename,
+            "title": self.title,
+            "tag": self.tag,
+            "uploaded_at": self.inserted_at
+        }
+
+
+class UrlFile(db.Model):
+    __tablename__ = "url_files"
+
+    id = db.Column(db.Integer, primary_key=True)
+    url = db.Column(db.String(length=255))
+    title = db.Column(db.String(length=100))
+    tag = db.Column(db.String(length=25))
+    inserted_at = db.Column(db.DateTime, default=datetime.now)
+    deleted = db.Column(db.Boolean, default=False)
+    deleted_at = db.Column(db.DateTime, nullable=True)
+    owner_type = db.Column(db.String)  # Polimorphic discriminator
+
+    __mapper_args__ = {
+        "polymorphic_on": owner_type,
+    }
+
+    def to_dict(self) -> dict:
+        return {
+            "id": self.id,
+            "url": self.url,
+            "title": self.title,
             "tag": self.tag,
             "uploaded_at": self.inserted_at
         }

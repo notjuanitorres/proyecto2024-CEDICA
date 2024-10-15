@@ -1,4 +1,4 @@
-from .models import AddressMixin, EmergencyContactMixin, PhoneMixin, File
+from .models import AddressMixin, EmergencyContactMixin, PhoneMixin, MinioFile
 from .forms import AddressForm, EmergencyContactForm, PhoneForm
 from .services import AbstractStorageServices, StorageServices
 from .validators import IsNumber, FilesNumber
@@ -10,7 +10,7 @@ __all__ = [
     "AddressMixin",
     "EmergencyContactMixin",
     "PhoneMixin",
-    "File",
+    "MinioFile",
 
     "AddressForm",
     "EmergencyContactForm",

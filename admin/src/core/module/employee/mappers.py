@@ -1,11 +1,11 @@
 from typing import Dict
-from .models import Employee, EmployeeFile
+from .models import Employee, EmployeeMinioFile
 
 
 class EmployeeMapper:
     @classmethod
     def create_file(self, document_type, file_information):
-        employee_file = EmployeeFile(
+        employee_file = EmployeeMinioFile(
             filename=file_information.get("filename"),
             filetype=file_information.get("filetype"),
             filesize=file_information.get("filesize"),
