@@ -3,7 +3,8 @@ from dependency_injector.wiring import inject, Provide
 from src.core.module.payment.forms import PaymentForm, PaymentSearchForm, PaymentEditForm
 from src.core.container import Container
 from src.core.module.payment.services import PaymentServices
-from src.core.module.payment.repositories import PaymentRepository
+from src.web.helpers.auth import check_user_permissions
+
 
 payment_bp = Blueprint(
     "payment_bp", __name__, template_folder="../templates/payment", url_prefix="/pago"
@@ -12,6 +13,7 @@ payment_bp = Blueprint(
 
 @payment_bp.route("/", methods=["GET", "POST"])
 @inject
+@check_user_permissions('pagos_index')
 def get_payments(
     payment_service: PaymentServices = Provide[Container.payment_services],
 ):
@@ -36,6 +38,7 @@ def get_payments(
 
 @payment_bp.route("/crear", methods=["GET", "POST"])
 @inject
+@check_user_permissions('pagos_create')
 def create_payment(
     payment_service: PaymentServices = Provide[Container.payment_services],
 ):
@@ -59,6 +62,7 @@ def create_payment(
 
 @payment_bp.route("/<int:payment_id>", methods=["GET"])
 @inject
+@check_user_permissions('pagos_show')
 def show_payment(
     payment_id: int,
     payment_service: PaymentServices = Provide[Container.payment_services],
@@ -68,6 +72,7 @@ def show_payment(
 
 @payment_bp.route("/editar/<int:payment_id>", methods=["GET", "POST"])
 @inject
+@check_user_permissions('pagos_update')
 def edit_payment(
     payment_id: int,
     payment_service: PaymentServices = Provide[Container.payment_services],
@@ -91,6 +96,7 @@ def edit_payment(
 
 @payment_bp.route("/eliminar", methods=["POST"])
 @inject
+@check_user_permissions('pagos_destroy')
 def delete_payment(
     payment_service: PaymentServices = Provide[Container.payment_services],
 ):
