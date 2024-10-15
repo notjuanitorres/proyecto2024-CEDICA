@@ -6,6 +6,8 @@ from wtforms import StringField, SelectField, SubmitField, DateField, DecimalFie
 from wtforms.validators import DataRequired, Length, Optional
 
 class PaymentForm(FlaskForm):
+    def __init__(self, *args, **kwargs):
+        super(PaymentForm, self).__init__(*args, **kwargs)
     amount = DecimalField(
         "Monto a pagar",
         validators=[
@@ -66,3 +68,9 @@ class PaymentSearchForm(FlaskForm):
     order_by = SelectField('Order By', choices=[('payment_date', 'Fecha de Pago'), ('amount', 'Monto')], validators=[Optional()])
     order = SelectField('Order', choices=[('asc', 'Ascendente'), ('desc', 'Descendente')], validators=[Optional()])
     submit_search = SubmitField("Buscar")
+
+    
+class PaymentEditForm(PaymentForm):
+
+    def __init__(self, *args, **kwargs):
+        super(PaymentEditForm, self).__init__(*args, **kwargs)

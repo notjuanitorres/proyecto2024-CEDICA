@@ -38,7 +38,7 @@
     <button href="" class="card-footer-item has-text-danger modal-trigger" data-id="{{ payment.id }}" data-target="user-delete-modal">
         Eliminar
     </button>
-    <a href="" class="card-footer-item has-text-warning">Editar</a>
+    <a href="{{ url_for('payment_bp.edit_payment', payment_id=payment.id) }}" class="card-footer-item has-text-warning">Editar</a>
 {% endblock %}
 
 {% block additional_cards %}
