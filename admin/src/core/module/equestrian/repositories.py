@@ -139,7 +139,7 @@ class EquestrianRepository(AbstractEquestrianRepository):
     def __get_document(self, horse_id: int, document_id: int) -> HorseMinioFile:
         document = (
             self.db.session.query(HorseMinioFile)
-            .filter_by(owner_id=horse_id, id=document_id)
+            .filter_by(horse_id=horse_id, id=document_id)
             .first()
         )
         return document

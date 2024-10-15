@@ -1,5 +1,5 @@
 from datetime import datetime
-from sqlalchemy.orm import column_property
+from sqlalchemy.orm import column_property, declared_attr
 from src.core.database import db
 from src.core.module.common import AddressMixin, EmergencyContactMixin, PhoneMixin, MinioFile
 from src.core.module.employee.data import (
@@ -13,7 +13,7 @@ class EmployeeMinioFile(MinioFile):
     __mapper_args__ = {
         "polymorphic_identity": "employee",
     }
-    owner_id = db.Column(db.Integer, db.ForeignKey("employees.id"))
+    employee_id = db.Column(db.Integer, db.ForeignKey("employees.id"))
     owner = db.relationship("Employee", back_populates="files")
 
 

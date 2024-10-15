@@ -1,5 +1,8 @@
 {% extends "base_show.html" %}
 {% from "macros/edit_menu.html" import render_actions_menu %}
+{% from "macros/file_icon.html" import render_file_icon %}
+{% from "employee/macros/parse_categories.html" import render_category %}
+
 
 {% block title %}Caballo {{ horse.name }} - CEDICA{% endblock %}
 
@@ -153,19 +156,33 @@
 
     </div>
 
-    <div class="card">
-        <header class="card-header">
-            <p class="card-header-title is-size-4">Documentos anexos</p>
-        </header>
-        <div class="card-content">
-            <div class="content">
-
-            </div>
+    <div id="documents" class="panel">
+        <div class="panel-heading has-background-black-bis">
+            <p class="card-header-title is-size-4">Documentos asociados</p>
         </div>
-        <footer class="card-footer">
-            <a href="" class="card-footer-item has-text-warning">Editar documentos</a>
-        </footer>
+        {% if horse.minio_files %}
+
+        {% for document in horse.minio_files %}
+        <div class="panel-block is-active">
+            <span class="panel-icon">
+            {{ render_file_icon(document.filetype, 5) }}
+            </span>
+            <span class="tag is-white">{{ render_category(document.tag) }}</span>
+            <p class="ml-2"> {{ document.original_filename}} </p>
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="panel-block">
+            <p>No se se ha subido ningun documento</p>
+        </div>
+        {% endif %}
+        <div class="panel-block">
+            <a href="{{ url_for("equestrian_bp.edit_documents", horse_id=horse.id ) }}" class="card-footer-item has-text-warning">
+                Actualizar
+            </a>
+        </div>
     </div>
+
 {% endblock %}
 
 {% block modal %}

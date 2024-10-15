@@ -136,7 +136,7 @@ class EmployeeRepository(AbstractEmployeeRepository):
     def __get_document(self, employee_id: int, document_id: int) -> EmployeeMinioFile:
         document = (
             self.db.session.query(EmployeeMinioFile)
-            .filter_by(owner_id=employee_id, id=document_id)
+            .filter_by(employee_id=employee_id, id=document_id)
             .first()
         )
         return document
