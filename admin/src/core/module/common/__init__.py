@@ -1,5 +1,5 @@
 from .models import AddressMixin, EmergencyContactMixin, PhoneMixin, MinioFile
-from .forms import AddressForm, EmergencyContactForm, PhoneForm
+from .forms import AddressForm, EmergencyContactForm, PhoneForm, max_file_size
 from .services import AbstractStorageServices, StorageServices
 from .validators import IsNumber, FilesNumber
 
@@ -16,5 +16,6 @@ __all__ = [
     "EmergencyContactForm",
     "PhoneForm",
     "IsNumber",
-    "FilesNumber"
+    "FilesNumber",
+    "max_file_size",
 ]

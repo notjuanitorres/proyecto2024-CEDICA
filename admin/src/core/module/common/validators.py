@@ -6,15 +6,13 @@ class FilesNumber(object):
         self.min = min
         self.max = max
         if not message:
-            message = f"Maximum number of files is {max} and the minimum {min}." % (
-                min,
-                max,
-            )
+            message = f"Maximum number of files is {max} and the minimum {min}."
         self.message = message
 
     def __call__(self, form, field):
         files = field.data
-
+        if files is None:
+            files = []
         if (self.min != -1 and len(files) < self.min) or (
             self.max != -1 and len(files) > self.max
         ):

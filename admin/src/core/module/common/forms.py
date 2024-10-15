@@ -8,6 +8,14 @@ from wtforms.fields import (
 from .validators import IsNumber
 
 
+def max_file_size(size_in_mb: int):
+    BYTES_PER_MB = 1024 * 1024
+
+    size_in_bytes = size_in_mb * BYTES_PER_MB
+
+    return size_in_bytes
+
+
 class AddressForm(FlaskForm):
     street = StringField("Calle", validators=[DataRequired(), Length(max=50)])
     number = IntegerField("Numero", validators=[DataRequired()])

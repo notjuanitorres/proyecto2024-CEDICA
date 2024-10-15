@@ -27,6 +27,7 @@ from src.core.module.common import (
     PhoneForm,
     FilesNumber,
     IsNumber,
+    max_file_size,
 )
 
 
@@ -68,14 +69,6 @@ class EmploymentInformationForm(FlaskForm):
     )
     end_date = DateField("Finalización de actividades", validators=[Optional()])
     is_active = BooleanField("Activo en la organización")
-
-
-def max_file_size(size_in_mb: int):
-    BYTES_PER_MB = 1024 * 1024
-
-    size_in_bytes = size_in_mb * BYTES_PER_MB
-
-    return size_in_bytes
 
 
 class EmployeeDocumentsForm(FlaskForm):

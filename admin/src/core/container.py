@@ -5,6 +5,7 @@ from .module.employee import EmployeeRepository
 from .module.equestrian import EquestrianServices, EquestrianRepository
 from .module.common import StorageServices
 
+
 class Container(containers.DeclarativeContainer):
     config = providers.Configuration()
 

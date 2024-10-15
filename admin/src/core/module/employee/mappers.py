@@ -61,7 +61,8 @@ class EmployeeMapper:
         if files:
             employee_files = self.create_files(files)
             for file in employee_files:
-                employee.files.append(file)
+                if file:
+                    employee.files.append(file)
 
         return employee
 
