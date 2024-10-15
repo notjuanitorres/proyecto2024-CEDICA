@@ -2,7 +2,7 @@ from abc import abstractmethod
 from typing import List, Dict
 
 from src.core.module.common.repositories import apply_filters
-from src.core.module.equestrian.models import Horse, HorseTrainers
+from src.core.module.equestrian.models import Horse, HorseTrainers, HorseMinioFile
 from src.core.database import db as database
 from src.core.module.employee.models import Employee
 
@@ -43,6 +43,18 @@ class AbstractEquestrianRepository:
     @abstractmethod
     def set_horse_trainers(self, horse_id: int, trainers_ids: List[int]):
         pass
+
+    @abstractmethod
+    def add_document(self, horse_id: int, document: HorseMinioFile) -> None:
+        raise NotImplementedError
+
+    @abstractmethod
+    def get_document(self, horse_id: int, document_id: int) -> HorseMinioFile:
+        raise NotImplementedError
+
+    @abstractmethod
+    def delete_document(self, horse_id: int, document_id: int) -> None:
+        raise NotImplementedError
 
 
 class EquestrianRepository(AbstractEquestrianRepository):
@@ -105,4 +117,26 @@ class EquestrianRepository(AbstractEquestrianRepository):
         self.db.session.query(HorseTrainers).filter(HorseTrainers.id_horse == horse_id).delete()
         for trainer_id in trainers_ids:
             self.db.session.add(HorseTrainers(id_horse=horse_id, id_employee=trainer_id))
+        self.save()
+
+    def add_document(self, horse_id: int, document: HorseMinioFile):
+        horse: Horse = self.get_by_id(horse_id)
+        horse.minio_files.append(document)
+        self.save()
+
+    def __get_document(self, horse_id: int, document_id: int) -> HorseMinioFile:
+        document = (
+            self.db.session.query(HorseMinioFile)
+            .filter_by(owner_id=horse_id, id=document_id)
+            .first()
+        )
+        return document
+
+    def get_document(self, horse_id: int, document_id: int) -> Dict:
+        return self.__get_document(horse_id, document_id).to_dict()
+
+    def delete_document(self, horse_id: int, document_id):
+        horse: Horse = self.get_by_id(horse_id)
+        document = self.__get_document(horse.id, document_id)
+        horse.minio_files.remove(document)
         self.save()

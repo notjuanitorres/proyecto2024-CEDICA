@@ -124,7 +124,7 @@
   {{
     render_delete_modal(
       field="horse",
-      endpoint="equestrian_bp.delete_horse",
+      endpoint=url_for("equestrian_bp.delete_horse"),
       title="Eliminar",
       msg="¿Está seguro de que desea eliminar al caballo?",
       msg_sub="Luego de confirmar, no se podrán revertir los cambios"

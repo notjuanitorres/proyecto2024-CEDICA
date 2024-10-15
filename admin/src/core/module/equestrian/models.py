@@ -41,17 +41,25 @@ class HorseTrainers(db.Model):
     id_employee = db.Column(db.Integer, db.ForeignKey('employees.id'))
 
 
+class FileTagEnum(pyEnum):
+    FICHA_GENERAL = "Ficha general del caballo"
+    PLANIFICACION_ENTRENAMIENTO = "Planificación de Entrenamiento"
+    INFORME_EVOLUCION = "Informe de Evolución"
+    CARGA_IMAGENES = "Carga de Imágenes"
+    REGISTRO_VETERINARIO = "Registro veterinario"
+
+
 class HorseMinioFile(MinioFile):
     __mapper_args__ = {
         "polymorphic_identity": "horse",
     }
     horse_id = db.Column(db.Integer, db.ForeignKey("horses.id"))
-    owner = db.relationship("Horse", back_populates="files")
+    owner = db.relationship("Horse", back_populates="minio_files")
 
-    
+
 class HorseUrlFile(UrlFile):
     __mapper_args__ = {
         "polymorphic_identity": "horse",
     }
     horse_id = db.Column(db.Integer, db.ForeignKey("horses.id"))
-    owner = db.relationship("Horse", back_populates="files")
+    owner = db.relationship("Horse", back_populates="url_files")

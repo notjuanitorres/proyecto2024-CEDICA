@@ -1,10 +1,13 @@
 from abc import abstractmethod
 from typing import Dict, List
 from .repositories import AbstractEquestrianRepository
-from .models import Horse
+from .models import Horse, HorseMinioFile
 
 
 class AbstractEquestrianServices:
+    def __init__(self):
+        self.storage_path = "equestrian/"
+
     @abstractmethod
     def create_horse(self, horse_data: Dict) -> Horse | None:
         pass
@@ -33,24 +36,38 @@ class AbstractEquestrianServices:
     def get_trainers_of_horse(self, horse_id: int) -> List:
         pass
 
+    @abstractmethod
+    def add_document(self, horse_id: int, document: HorseMinioFile) -> None:
+        raise NotImplementedError
+
+    @abstractmethod
+    def get_document(self, horse_id: int, document_id: int) -> HorseMinioFile:
+        raise NotImplementedError
+
+    @abstractmethod
+    def delete_document(self, horse_id: int, document_id: int) -> None:
+        raise NotImplementedError
+
 
 class EquestrianServices(AbstractEquestrianServices):
     def __init__(self, equestrian_repository: AbstractEquestrianRepository):
+        super().__init__()
         self.equestrian_repository = equestrian_repository
 
+
     def create_horse(self, horse_data: Dict):
-        new_horse = Horse(
-            name=horse_data.get("name"),
-            breed=horse_data.get("breed"),
-            birth_date=horse_data.get("birth_date"),
-            coat=horse_data.get("coat"),
-            is_donation=horse_data.get("is_donation"),
-            admission_date=horse_data.get("admission_date"),
-            assigned_facility=horse_data.get("assigned_facility"),
-            ja_type=horse_data.get("ja_type"),
-            sex=horse_data.get("sex")
-        )
-        created_horse = self.equestrian_repository.add(new_horse)
+        # new_horse = Horse(
+        #     name=horse_data.get("name"),
+        #     breed=horse_data.get("breed"),
+        #     birth_date=horse_data.get("birth_date"),
+        #     coat=horse_data.get("coat"),
+        #     is_donation=horse_data.get("is_donation"),
+        #     admission_date=horse_data.get("admission_date"),
+        #     assigned_facility=horse_data.get("assigned_facility"),
+        #     ja_type=horse_data.get("ja_type"),
+        #     sex=horse_data.get("sex")
+        # )
+        created_horse = self.equestrian_repository.add(horse_data)
 
         return self.to_dict(created_horse)
 
@@ -95,3 +112,12 @@ class EquestrianServices(AbstractEquestrianServices):
 
     def get_trainers_of_horse(self, horse_id: int) -> List:
         return self.equestrian_repository.get_trainers_of_horse(horse_id)
+
+    def add_document(self, horse_id: int, document: HorseMinioFile):
+        self.equestrian_repository.add_document(horse_id, document)
+
+    def get_document(self, horse_id: int, document_id: int):
+        return self.equestrian_repository.get_document(horse_id, document_id)
+
+    def delete_document(self, horse_id: int, document_id: int):
+        return self.equestrian_repository.delete_document(horse_id, document_id)

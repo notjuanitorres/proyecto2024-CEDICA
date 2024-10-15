@@ -1,15 +1,21 @@
 from flask_wtf import FlaskForm
-from wtforms import (
+from flask_wtf.file import FileSize, FileAllowed, FileRequired
+from wtforms.fields import (
     StringField,
     BooleanField,
     SelectField,
     DateField,
     SelectMultipleField,
-    widgets,
-    SubmitField,
+    SubmitField, FileField, MultipleFileField, FormField,
 )
 from wtforms.validators import DataRequired, Length
-from src.core.module.equestrian.models import JAEnum, Horse
+from wtforms import widgets
+
+from src.core.module.common import (
+    FilesNumber,
+    max_file_size,
+)
+from src.core.module.equestrian.models import JAEnum, Horse, FileTagEnum
 
 
 class MultiCheckboxField(SelectMultipleField):
@@ -23,6 +29,109 @@ class MultiCheckboxField(SelectMultipleField):
 
     widget = widgets.ListWidget(prefix_label=False)
     option_widget = widgets.CheckboxInput()
+
+
+allowed_filetypes = ["pdf", "doc", "xls", "jpg", "jpeg", "png", "webp"]
+formatted_filetypes = ", ".join(f".{ext}" for ext in allowed_filetypes[:-1]) + f" y .{allowed_filetypes[-1]}"
+filetypes_message = f"Formato no reconocido. Formato válido: {formatted_filetypes}"
+
+
+class HorseDocumentsForm(FlaskForm):
+    ficha_general = MultipleFileField(
+        validators=[
+            # FileRequired(),
+            FileSize(
+                max_size=max_file_size(size_in_mb=5),
+                message="El archivo es demasiado grande",
+            ),
+            FileAllowed(
+                allowed_filetypes,
+                message=filetypes_message,
+            ),
+            FilesNumber(min=0, max=5, message="Puede subir hasta 5 archivos"),
+        ]
+    )
+    planificacion_entrenamiento = MultipleFileField(
+        validators=[
+            # FileRequired(),
+            FileSize(
+                max_size=max_file_size(size_in_mb=5),
+                message="El archivo es demasiado grande",
+            ),
+            FileAllowed(
+                allowed_filetypes,
+                message=filetypes_message,
+            ),
+            FilesNumber(min=0, max=5, message="Puede subir hasta 5 archivos"),
+        ]
+    )
+    informe_evolucion = MultipleFileField(
+        validators=[
+            # FileRequired(),
+            FileSize(
+                max_size=max_file_size(size_in_mb=5),
+                message="El archivo es demasiado grande",
+            ),
+            FileAllowed(
+                allowed_filetypes,
+                message=filetypes_message,
+            ),
+            FilesNumber(min=0, max=5, message="Puede subir hasta 5 archivos"),
+        ]
+    )
+    carga_imagenes = MultipleFileField(
+        validators=[
+            # FileRequired(),
+            FileSize(
+                max_size=max_file_size(size_in_mb=5),
+                message="El archivo es demasiado grande",
+            ),
+            FileAllowed(
+                allowed_filetypes,
+                message=filetypes_message,
+            ),
+            FilesNumber(min=0, max=10, message="Puede subir hasta 10 archivos"),
+        ]
+    )
+    registro_veterinario = MultipleFileField(
+        validators=[
+            # FileRequired(),
+            FileSize(
+                max_size=max_file_size(size_in_mb=5),
+                message="El archivo es demasiado grande",
+            ),
+            FileAllowed(
+                allowed_filetypes,
+                message=filetypes_message,
+            ),
+            FilesNumber(min=0, max=5, message="Puede subir hasta 5 archivos"),
+        ]
+    )
+
+
+class HorseAddDocumentsForm(FlaskForm):
+    tag = SelectField(
+        "Tag",
+        choices=[(e.name, e.value) for e in FileTagEnum],
+        validators=[
+            DataRequired(
+                message="Debe seleccionar lo que representa este archivo",
+            )
+        ],
+    )
+    file = FileField(
+        validators=[
+            FileRequired("Debe adjuntar un archivo"),
+            FileSize(
+                max_size=max_file_size(size_in_mb=5),
+                message="El archivo es demasiado grande",
+            ),
+            FileAllowed(
+                upload_set=allowed_filetypes,
+                message=filetypes_message,
+            ),
+        ]
+    )
 
 
 class HorseManagementForm(FlaskForm):
@@ -90,6 +199,8 @@ class HorseManagementForm(FlaskForm):
         ],
     )
 
+    documents = FormField(HorseDocumentsForm)
+
 
 class HorseCreateForm(HorseManagementForm):
     pass
@@ -107,12 +218,12 @@ class HorseEditForm(HorseManagementForm):
         from src.core.container import Container
 
         container = Container()
-        return container.employee_services()
+        return container.employee_repository()
 
     def get_trainers_choices(self):
         return [
             (trainer.id, f"{trainer.fullname} ({trainer.position.value})")
-            for trainer in self.import_services().employee_repository().get_trainers()
+            for trainer in self.import_services().get_trainers()
         ]
 
     trainers = MultiCheckboxField(
@@ -150,3 +261,4 @@ class HorseSearchForm(FlaskForm):
         choices=[("asc", "Ascendente"), ("desc", "Descendente")], validate_choice=True
     )
     submit_search = SubmitField("Buscar")
+

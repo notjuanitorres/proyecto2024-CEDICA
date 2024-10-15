@@ -1,4 +1,5 @@
 {% extends "layout.html" %}
+{% from "macros/flash_message.html" import render_flash_messages %}
 
 {% block title %}Caballos - Actualizar caballo{% endblock %}
 
@@ -32,6 +33,8 @@
         </ul>
     </nav>
 
+    {{ render_flash_messages(messages) }}
+
     <div class="container">
         <h4 class="title is-fullwidth has-text-centered">Actualizando a {{ horse.name }}</h4>
         <div class="tabs is-toggle is-fullwidth is-toggle-rounded is-centered is-medium">
@@ -45,7 +48,7 @@
                     </a>
                 </li>
                 <li>
-                    <a>
+                    <a href="{{ url_for("equestrian_bp.edit_documents",  horse_id=horse.id ) }}">
                           <span class="icon is-small">
                               <i class="far fa-file-alt" aria-hidden="true"></i>
                           </span>

@@ -1,9 +1,13 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
+
+from src.core.module.common import AbstractStorageServices
 from src.web.helpers.auth import check_user_permissions
 from src.core.container import Container
 from dependency_injector.wiring import inject, Provide
-from src.core.module.equestrian.forms import HorseCreateForm, HorseEditForm, HorseSearchForm
+from src.core.module.equestrian.forms import HorseCreateForm, HorseEditForm, HorseSearchForm, HorseAddDocumentsForm
 from src.core.module.equestrian import AbstractEquestrianServices as AES
+from src.core.module.equestrian.models import FileTagEnum
+from src.core.module.equestrian.mappers import HorseMapper as Mapper
 
 equestrian_bp = Blueprint(
     "equestrian_bp", __name__, template_folder="../templates/equestrian", url_prefix="/ecuestre"
@@ -62,24 +66,30 @@ def create_horse():
 
 
 @inject
-def add_horse(create_form: HorseCreateForm, equestrian_services: AES = Provide[Container.equestrian_services]):
+def add_horse(create_form: HorseCreateForm,
+              equestrian_services: AES = Provide[Container.equestrian_services],
+              storage: AbstractStorageServices = Provide[Container.storage_services],
+              ):
+
     if not create_form.validate_on_submit():
         return render_template("create_horse.html", form=create_form)
 
-    horse = equestrian_services.create_horse(
-        {
-            "name": create_form.name.data,
-            "breed": create_form.breed.data,
-            "birth_date": create_form.birth_date.data,
-            "coat": create_form.coat.data,
-            "is_donation": create_form.is_donation.data,
-            "admission_date": create_form.admission_date.data,
-            "assigned_facility": create_form.assigned_facility.data,
-            "ja_type": create_form.ja_type.data,
-            "sex": create_form.sex.data,
-        }
-    )
+    documents = create_form.documents.data
+    uploaded_documents = [
+        (tag.name, storage.upload_batch(documents.get(tag.name.lower()), equestrian_services.storage_path))
+        for tag in FileTagEnum
+    ]
+    horse = equestrian_services.create_horse(Mapper.to_entity(create_form.data, uploaded_documents))
 
+    for doc in uploaded_documents:
+        for file in doc[1]:
+            if not file:
+                flash(f"No se pudo subir el archivo {doc[0]}", "danger")
+                return redirect(
+                    url_for("equestrian_bp.show_horse", horse_id=horse["id"])
+                )
+
+    flash("Caballo creado con exito!", "success")
     return redirect(url_for("equestrian_bp.show_horse", horse_id=horse["id"]))
 
 
@@ -136,6 +146,92 @@ def delete_horse(equestrian_services: AES = Provide[Container.equestrian_service
     deleted = equestrian_services.delete_horse(int(horse_id))
     if not deleted:
         flash("El caballo no ha podido ser eliminado, inténtelo nuevamente", "danger")
-
-    flash("El caballo ha sido eliminado correctamente", "success")
+    else:
+        flash("El caballo ha sido eliminado correctamente", "success")
     return redirect(url_for("equestrian_bp.get_horses"))
+
+
+@equestrian_bp.route("/editar/<int:horse_id>/documentos/", methods=["GET", "POST"])
+@check_user_permissions(permissions_required=["ecuestre_update"])
+@inject
+def edit_documents(
+    horse_id: int,
+    horse_services: AES = Provide[Container.equestrian_services],
+    storage: AbstractStorageServices = Provide[Container.storage_services],
+):
+    add_document_form = HorseAddDocumentsForm()
+    horse = horse_services.get_horse(horse_id=horse_id)
+
+    documents = []
+    for file in horse.get("minio_files", []):
+        documents.append({"file": file, "url": storage.presigned_download_url(file.get("filename"))})
+        if not documents[-1].get("url"):
+            flash(f"No se pudieron obtener los documentos", "danger")
+            if request.referrer:
+                return redirect(request.referrer)
+            return redirect(url_for("equestrian_bp.edit_horse", horse_id=horse_id))
+
+    if request.method == "POST":
+        return update_documents(add_document_form, horse, documents)
+
+    return render_template(
+        "./equestrian/update_documents.html",
+        horse=horse,
+        documents=documents,
+        add_form=add_document_form,
+    )
+
+
+@inject
+def update_documents(
+    add_form: HorseAddDocumentsForm,
+    horse: dict,
+    documents: list[dict],
+    horse_services: AES = Provide[Container.equestrian_services],
+    storage: AbstractStorageServices = Provide[Container.storage_services],
+):
+    if not add_form.validate_on_submit():
+        return render_template(
+            "./equestrian/update_documents.html",
+            add_form=add_form,
+            horse=horse,
+            documents=documents,
+        )
+    horse_id = horse["id"]
+    uploaded_document = storage.upload_file(
+        file=add_form.file.data, path=horse_services.storage_path
+    )
+
+    if not uploaded_document:
+        flash("No se pudo subir el archivo, inténtelo nuevamente", "danger")
+        return redirect(url_for("equestrian_bp.edit_documents", horse_id=horse_id))
+
+    horse_services.add_document(
+        horse_id=horse_id,
+        document=Mapper.create_file(
+            document_type=add_form.tag.data, file_information=uploaded_document
+        ),
+    )
+    flash(f"El documento {uploaded_document.get("original_filename")} se ha subido exitosamente", "success")
+    return redirect(url_for("equestrian_bp.edit_documents", horse_id=horse_id))
+
+
+@equestrian_bp.route("/editar/<int:horse_id>/documentos/eliminar", methods=["POST"])
+@inject
+def delete_document(
+    horse_id: int,
+    horse_services: AES = Provide[Container.equestrian_services],
+    storage: AbstractStorageServices = Provide[Container.storage_services],
+):
+    document_id = int(request.form["item_id"])
+    document = horse_services.get_document(horse_id, document_id)
+
+    deleted_in_bucket = storage.delete_file(document.get("filename"))
+    if not deleted_in_bucket:
+        flash("No se ha podido eliminar el documento, inténtelo nuevamente", "danger")
+        return redirect(url_for("equestrian_bp.edit_documents", horse_id=horse_id))
+
+    horse_services.delete_document(horse_id, document_id)
+
+    flash(f"El documento {document.get("original_filename")} ha sido eliminado correctamente", "success")
+    return redirect(url_for("equestrian_bp.edit_documents", horse_id=horse_id))

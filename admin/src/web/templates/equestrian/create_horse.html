@@ -6,7 +6,7 @@
     <section class="section">
         <div class="container">
             <h1 class="title">Crear caballo</h1>
-            <form method="POST">
+            <form method="POST" enctype="multipart/form-data">
                 {{ form.hidden_tag() }}
 
                 <div class="field">
@@ -94,6 +94,114 @@
                         </div>
                     </div>
                 </div>
+
+
+                <div id="horse-documents" class="field pt-3">
+                    <label class="label is-size-4">Documentos del Caballo</label>
+                    <p class="has-text-weight-light">Formatos permitidos: <span
+                            class="is-italic">PDF, DOC, XLS, JPEG</span></p>
+
+                    <div class="field pt-3">
+                        <label for="ficha_general" class="label">Ficha General <span
+                                class="has-text-weight-light is-italic">(máximo 5 archivos)</span></label>
+                        <div class="file has-name is-fullwidth">
+                            <label class="file-label">
+                                {{ form.documents.ficha_general(class="file-input", multiple="multiple") }}
+                                <span class="file-cta">
+          <span class="file-icon">
+            <i class="fas fa-upload"></i>
+          </span>
+          <span class="file-label"> Elegir archivos </span>
+        </span>
+                                <span class="file-name"> Ficha General </span>
+                            </label>
+                        </div>
+                        {% if form.documents.ficha_general.errors %}
+                            <p class="help is-danger">{{ form.documents.ficha_general.errors[0] }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div class="field pt-3">
+                        <label for="planificacion_entrenamiento" class="label">Planificación de Entrenamiento <span
+                                class="has-text-weight-light is-italic">(máximo 5 archivos)</span></label>
+                        <div class="file has-name is-fullwidth">
+                            <label class="file-label">
+                                {{ form.documents.planificacion_entrenamiento(class="file-input", multiple="multiple") }}
+                                <span class="file-cta">
+          <span class="file-icon">
+            <i class="fas fa-upload"></i>
+          </span>
+          <span class="file-label"> Elegir archivos </span>
+        </span>
+                                <span class="file-name"> Planificación de Entrenamiento </span>
+                            </label>
+                        </div>
+                        {% if form.documents.planificacion_entrenamiento.errors %}
+                            <p class="help is-danger">{{ form.documents.planificacion_entrenamiento.errors[0] }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div class="field pt-3">
+                        <label for="informe_evolucion" class="label">Informe de Evolución <span
+                                class="has-text-weight-light is-italic">(máximo 5 archivos)</span></label>
+                        <div class="file has-name is-fullwidth">
+                            <label class="file-label">
+                                {{ form.documents.informe_evolucion(class="file-input", multiple="multiple") }}
+                                <span class="file-cta">
+          <span class="file-icon">
+            <i class="fas fa-upload"></i>
+          </span>
+          <span class="file-label"> Elegir archivos </span>
+        </span>
+                                <span class="file-name"> Informe de Evolución </span>
+                            </label>
+                        </div>
+                        {% if form.documents.informe_evolucion.errors %}
+                            <p class="help is-danger">{{ form.documents.informe_evolucion.errors[0] }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div class="field pt-3">
+                        <label for="carga_imagenes" class="label">Imágenes <span
+                                class="has-text-weight-light is-italic">(máximo 10 archivos)</span></label>
+                        <div class="file has-name is-fullwidth">
+                            <label class="file-label">
+                                {{ form.documents.carga_imagenes(class="file-input", multiple="multiple") }}
+                                <span class="file-cta">
+          <span class="file-icon">
+            <i class="fas fa-upload"></i>
+          </span>
+          <span class="file-label"> Elegir archivos </span>
+        </span>
+                                <span class="file-name"> Imágenes </span>
+                            </label>
+                        </div>
+                        {% if form.documents.carga_imagenes.errors %}
+                            <p class="help is-danger">{{ form.documents.carga_imagenes.errors[0] }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div class="field pt-3">
+                        <label for="registro_veterinario" class="label">Registro Veterinario <span
+                                class="has-text-weight-light is-italic">(máximo 5 archivos)</span></label>
+                        <div class="file has-name is-fullwidth">
+                            <label class="file-label">
+                                {{ form.documents.registro_veterinario(class="file-input") }}
+                                <span class="file-cta">
+          <span class="file-icon">
+            <i class="fas fa-upload"></i>
+          </span>
+          <span class="file-label"> Elegir archivo </span>
+        </span>
+                                <span class="file-name"> Registro Veterinario </span>
+                            </label>
+                        </div>
+                        {% if form.documents.registro_veterinario.errors %}
+                            <p class="help is-danger">{{ form.documents.registro_veterinario.errors[0] }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+
 
                 <div class="field">
                     <div class="control">
