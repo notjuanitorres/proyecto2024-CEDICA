@@ -1,7 +1,7 @@
 {% extends "base_show.html" %}
 {% from "macros/edit_menu.html" import render_actions_menu %}
 {% from "macros/file_icon.html" import render_file_icon %}
-{% from "employee/macros/parse_categories.html" import render_category %}
+{% from "equestrian/macros/parse_categories.html" import render_category %}
 
 
 {% block title %}Caballo {{ horse.name }} - CEDICA{% endblock %}
@@ -160,15 +160,15 @@
         <div class="panel-heading has-background-black-bis">
             <p class="card-header-title is-size-4">Documentos asociados</p>
         </div>
-        {% if horse.minio_files %}
+        {% if horse.files %}
 
-        {% for document in horse.minio_files %}
+        {% for document in horse.files %}
         <div class="panel-block is-active">
             <span class="panel-icon">
             {{ render_file_icon(document.filetype, 5) }}
             </span>
             <span class="tag is-white">{{ render_category(document.tag) }}</span>
-            <p class="ml-2"> {{ document.original_filename}} </p>
+            <p class="ml-2"> {{ document.title}} </p>
         </div>
         {% endfor %}
         {% else %}

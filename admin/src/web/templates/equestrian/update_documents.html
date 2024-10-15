@@ -2,7 +2,7 @@
 
 {% from "macros/file_icon.html" import render_file_icon %}
 {% from "macros/delete_modal.html" import render_delete_modal %}
-{% from "employee/macros/parse_categories.html" import render_category %}
+{% from "equestrian/macros/parse_categories.html" import render_category %}
 {% from "macros/flash_message.html" import render_flash_messages %}
 
 {% block title %} Caballos - Actualizar documentos {% endblock %}
@@ -118,7 +118,7 @@
         </div>
       </form>
       <div class="content">
-        {% if horse.minio_files %}
+        {% if horse.files %}
         {% for document in documents %}
         <div class="card">
           <article class="card-content level is-flex is-flex-wrap-wrap is-justify-content-space-between">
@@ -131,7 +131,7 @@
                   <strong class="tag is-white">{{ render_category(document.file.tag) }}</strong>
                   <small class="ml-1">{{ document.file.uploaded_at | format_date }}</small>
                   <br />
-                  {{ document.file.original_filename }}
+                  {{ document.file.title }}
                   </p>
               </div>
             </div>
@@ -145,7 +145,7 @@
                 </button>
               </div>
               <div class="control">
-                <a href="{{ document.url }}" target="_blank" class="button is-link">
+                <a href="{{ document.download_url }}" target="_blank" class="button is-link">
                   <span class="icon mr-1">
                     <i class="fa-solid fa-download"></i>
                   </span>

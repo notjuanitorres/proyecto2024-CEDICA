@@ -1,15 +1,16 @@
 from typing import Dict, List
-from .models import Horse, HorseMinioFile
+from .models import Horse, HorseFile
 
 
 class HorseMapper:
     @classmethod
     def create_file(cls, document_type, file_information):
-        horse_file = HorseMinioFile(
-            filename=file_information.get("filename"),
+        horse_file = HorseFile(
+            path=file_information.get("path"),
+            title=file_information.get("title"),
+            is_link=file_information.get("is_link"),
             filetype=file_information.get("filetype"),
             filesize=file_information.get("filesize"),
-            original_filename=file_information.get("original_filename"),
             tag=document_type,
         )
         return horse_file
@@ -41,7 +42,7 @@ class HorseMapper:
             horse_files = cls.create_files(files)
             for file in horse_files:
                 if file:
-                    horse.minio_files.append(file)
+                    horse.files.append(file)
 
         return horse
 
@@ -52,7 +53,7 @@ class HorseMapper:
                             "admission_date": horse.admission_date, "assigned_facility": horse.assigned_facility,
                             "ja_type": horse.ja_type.value, "inserted_at": horse.inserted_at,
                             "updated_at": horse.updated_at,
-                            "minio_files": [file.to_dict() for file in horse.minio_files if file]}
+                            "files": [file.to_dict() for file in horse.files if file]}
 
         return serialized_horse
 

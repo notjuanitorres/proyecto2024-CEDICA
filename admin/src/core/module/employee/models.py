@@ -1,7 +1,7 @@
 from datetime import datetime
 from sqlalchemy.orm import column_property, declared_attr
 from src.core.database import db
-from src.core.module.common import AddressMixin, EmergencyContactMixin, PhoneMixin, MinioFile
+from src.core.module.common import AddressMixin, EmergencyContactMixin, PhoneMixin, File
 from src.core.module.employee.data import (
     ProfessionsEnum,
     JobPositionEnum as PositionEnum,
@@ -9,7 +9,7 @@ from src.core.module.employee.data import (
 )
 
 
-class EmployeeMinioFile(MinioFile):
+class EmployeeFile(File):
     __mapper_args__ = {
         "polymorphic_identity": "employee",
     }
@@ -41,7 +41,7 @@ class Employee(db.Model, AddressMixin, PhoneMixin, EmergencyContactMixin):
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True)
     user = db.relationship("User", backref=db.backref("employee"), uselist=False)
 
-    files = db.relationship("EmployeeMinioFile", back_populates="owner")
+    files = db.relationship("EmployeeFile", back_populates="owner")
 
     # TODO: Add references to multiple uploaded files on each field
     #           - Título

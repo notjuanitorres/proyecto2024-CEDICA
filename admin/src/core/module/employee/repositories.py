@@ -4,7 +4,7 @@ from sqlalchemy import or_
 from flask_sqlalchemy import SQLAlchemy
 from flask_sqlalchemy.pagination import Pagination
 from src.core.database import db as database
-from src.core.module.employee.models import Employee, EmployeeMinioFile
+from src.core.module.employee.models import Employee, EmployeeFile
 from src.core.module.common.repositories import apply_filters
 from src.core.module.employee.data import JobPositionEnum as PositionEnum
 from .mappers import EmployeeMapper as Mapper
@@ -50,11 +50,11 @@ class AbstractEmployeeRepository:
         raise NotImplementedError
 
     @abstractmethod
-    def add_document(self, employee_id: int, document: EmployeeMinioFile) -> None:
+    def add_document(self, employee_id: int, document: EmployeeFile) -> None:
         raise NotImplementedError
 
     @abstractmethod
-    def get_document(self, employee_id: int, document_id: int) -> EmployeeMinioFile:
+    def get_document(self, employee_id: int, document_id: int) -> EmployeeFile:
         raise NotImplementedError
 
     @abstractmethod
@@ -128,14 +128,15 @@ class EmployeeRepository(AbstractEmployeeRepository):
         self.save()
         return True
 
-    def add_document(self, employee_id: int, document: EmployeeMinioFile):
+    def add_document(self, employee_id: int, document: EmployeeFile):
         employee: Employee = self.__get_by_id(employee_id)
+        document.is_link = False
         employee.files.append(document)
         self.save()
 
-    def __get_document(self, employee_id: int, document_id: int) -> EmployeeMinioFile:
+    def __get_document(self, employee_id: int, document_id: int) -> EmployeeFile:
         document = (
-            self.db.session.query(EmployeeMinioFile)
+            self.db.session.query(EmployeeFile)
             .filter_by(employee_id=employee_id, id=document_id)
             .first()
         )

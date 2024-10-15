@@ -194,8 +194,8 @@ def edit_documents(
 
     documents = []
     for file in employee.get("files"):
-        documents.append({"file": file, "url": storage.presigned_download_url(file.get("filename"))})
-        if not documents[-1].get("url"):
+        documents.append({"file": file, "download_url": storage.presigned_download_url(file.get("path"))})
+        if not documents[-1].get("download_url"):
             flash(f"No se pudieron obtener los documentos", "danger")
             if request.referrer:
                 return redirect(request.referrer)
@@ -242,7 +242,7 @@ def update_documents(
             document_type=add_form.tag.data, file_information=uploaded_document
         ),
     )
-    flash(f"El documento {uploaded_document.get("original_filename")} se ha subido exitosamente", "success")
+    flash(f"El documento {uploaded_document.get("title")} se ha subido exitosamente", "success")
     return redirect(url_for("employee_bp.edit_documents", employee_id=employee_id))
 
 
@@ -256,12 +256,12 @@ def delete_document(
     document_id = request.form["item_id"]
     document = employees.get_document(employee_id, document_id)
 
-    deleted_in_bucket = storage.delete_file(document.get("filename"))
+    deleted_in_bucket = storage.delete_file(document.get("path"))
     if not deleted_in_bucket:
         flash("No se ha podido eliminar el documento, inténtelo nuevamente", "danger")
         return redirect(url_for("employee_bp.edit_documents", employee_id=employee_id))
 
     employees.delete_document(employee_id, document_id)
 
-    flash(f"El documento {document.get("original_filename")} ha sido eliminado correctamente", "success")
+    flash(f"El documento {document.get("title")} ha sido eliminado correctamente", "success")
     return redirect(url_for("employee_bp.edit_documents", employee_id=employee_id))

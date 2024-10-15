@@ -68,10 +68,11 @@ class StorageServices(AbstractStorageServices):
                     content_type=file.content_type,
                 )
                 uploaded_file = {
-                    "filename": filename,
+                    "path": filename,
                     "filetype": file.mimetype,
                     "filesize": size,
-                    "original_filename": original_name
+                    "title": original_name,
+                    "is_link": False,
                 }
             except MaxRetryError as e:
                 uploaded_file = None

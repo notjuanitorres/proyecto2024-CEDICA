@@ -1,15 +1,16 @@
 from typing import Dict
-from .models import Employee, EmployeeMinioFile
+from .models import Employee, EmployeeFile
 
 
 class EmployeeMapper:
     @classmethod
     def create_file(self, document_type, file_information):
-        employee_file = EmployeeMinioFile(
-            filename=file_information.get("filename"),
+        employee_file = EmployeeFile(
+            path=file_information.get("path"),
+            title=file_information.get("title"),
+            is_link=file_information.get("is_link"),
             filetype=file_information.get("filetype"),
             filesize=file_information.get("filesize"),
-            original_filename=file_information.get("original_filename"),
             tag=document_type,
         )
         return employee_file
