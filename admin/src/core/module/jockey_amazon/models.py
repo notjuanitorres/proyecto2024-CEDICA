@@ -72,6 +72,18 @@ class EducationLevelEnum(Enum):
     TERTIARY = "Terciario"
     UNIVERSITY = "Universitario"
 
+jockey_amazon_enums = {
+    "disability_diagnosis": DisabilityDiagnosisEnum,
+    "disability_type": DisabilityTypeEnum,
+    "family_assignment": FamilyAssignmentEnum,
+    "pension": PensionEnum,
+    "work_proposal": WorkProposalEnum,
+    "work_condition": WorkConditionEnum,
+    "sede": SedeEnum,
+    "day": DayEnum,
+    "education_level": EducationLevelEnum,
+}
+
 class SchoolInstitution(db.Model):
     __tablename__ = 'school_institutions'
 

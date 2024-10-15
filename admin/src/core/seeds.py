@@ -4,6 +4,11 @@ from src.core.module.employee.models import Employee
 from src.core.module.employee.data import PositionEnum, ConditionEnum, ProfessionsEnum
 from src.core.bcrypt import bcrypt
 from src.core.module.equestrian.models import Horse, JAEnum, HorseTrainers
+from src.core.module.jockey_amazon.models import (
+    JockeyAmazon, SchoolInstitution, FamilyMember, WorkAssignment,
+    DisabilityDiagnosisEnum, DisabilityTypeEnum, FamilyAssignmentEnum, PensionEnum,
+    WorkProposalEnum, WorkConditionEnum, SedeEnum, DayEnum, EducationLevelEnum
+)
 from datetime import date
 
 
@@ -15,6 +20,9 @@ def seed_all(app):
         db.session.commit()  # employees need to be commited before adding horse_trainers
         seed_equestrian_module()
         print("Commiting equestrian module")
+        db.session.commit()
+        seed_jockey_amazons()
+        print("Commiting jockey_amazons module")
         db.session.commit()
 
 
@@ -198,3 +206,79 @@ def seed_horse_trainers():
         HorseTrainers(id_horse=4, id_employee=12),
     ]
     db.session.add_all(horse_trainers)
+
+def seed_jockey_amazons():
+    print("Seeding jockey_amazons")
+    school1 = SchoolInstitution(
+        name="Escuela Primaria N°1",
+        street="Calle Falsa",
+        number=123,
+        department="Departamento 1",
+        locality="Localidad 1",
+        province="Provincia 1",
+        phone_country_code="54",
+        phone_area_code="11",
+        phone_number="12345678"
+    )
+    db.session.add(school1)
+
+    family_member1 = FamilyMember(
+        relationship="Padre",
+        first_name="Juan",
+        last_name="Pérez",
+        dni="12345678",
+        street="Calle Falsa",
+        number=123,
+        department="Departamento 1",
+        locality="Localidad 1",
+        province="Provincia 1",
+        phone_country_code="54",
+        phone_area_code="11",
+        phone_number="12345678",
+        email="juan.perez@example.com",
+        education_level=EducationLevelEnum.SECONDARY,
+        occupation="Empleado"
+    )
+    db.session.add(family_member1)
+
+    jockey1 = JockeyAmazon(
+        first_name="María",
+        last_name="González",
+        dni="87654321",
+        age=25,
+        birth_date=date(1996, 5, 15),
+        birthplace="Ciudad 1",
+        is_scholarship=True,
+        scholarship_observations="Observaciones de beca",
+        has_disability=True,
+        disability_diagnosis=DisabilityDiagnosisEnum.AUTISM_SPECTRUM_DISORDER,
+        disability_other=None,
+        disability_type=DisabilityTypeEnum.MENTAL,
+        has_family_assignment=True,
+        family_assignment_type=FamilyAssignmentEnum.UNIVERSAL_WITH_DISABLED_CHILD,
+        has_pension=PensionEnum.NATIONAL,
+        pension_details="Detalles de la pensión",
+        social_security="Obra Social 1",
+        social_security_number="123456789",
+        has_curatorship=False,
+        curatorship_observations=None,
+        school_institution=school1,
+        current_grade_year="5to Año",
+        school_observations="Observaciones escolares",
+        professionals="Profesionales involucrados",
+        family_members=[family_member1]
+    )
+    db.session.add(jockey1)
+    db.session.commit() # jockey1 needs to be commited before adding work_assignments
+    work_assignment1 = WorkAssignment(
+        proposal=WorkProposalEnum.HIPOTHERAPY,
+        condition=WorkConditionEnum.REGULAR,
+        sede=SedeEnum.CASJ,
+        days=[DayEnum.MONDAY, DayEnum.WEDNESDAY, DayEnum.FRIDAY],
+        professor_or_therapist_id=3,
+        conductor_id=3,
+        track_assistant_id=3,
+        horse_id=3,
+        jockey_amazon_id=jockey1.id
+    )
+    db.session.add(work_assignment1)

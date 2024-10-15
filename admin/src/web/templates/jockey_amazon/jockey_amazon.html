@@ -1,0 +1,105 @@
+{% extends "base_show.html" %}
+
+{% block title %}Jockey {{ jockey.first_name + " " + jockey.last_name }} - CEDICA{% endblock %}
+
+{% block breadcrumb_items %}
+    <li>
+        <a href="{{ url_for('jockey_amazon_bp.get_jockeys' )}}">
+            <span class="icon is-small">
+                <i class="fas fa-hat-cowboy" aria-hidden="true"></i>
+            </span>
+            <span>Jockeys</span>
+        </a>
+    </li>
+    <li>
+        <a href="">
+            <span class="icon is-small">
+                <i class="fa-solid fa-user" aria-hidden="true"></i>
+            </span>
+            <span>{{ jockey.first_name + " " + jockey.last_name }}</span>
+        </a>
+    </li>
+{% endblock %}
+
+{% block card_title %}Jockey: {{ jockey.first_name + " " + jockey.last_name }}{% endblock %}
+
+{% block card_content %}
+
+<div class="grid is-col-min-16">
+    <div id="basic-info" class="cell">
+        <h3>Informacion general</h3>
+        <ul>
+            <li><strong>ID: </strong> {{ jockey.id }}</li>
+            <li><strong>Nombre: </strong>{{ jockey.first_name }}</li>
+            <li><strong>Apellido: </strong> {{ jockey.last_name }}</li>
+            <li><strong>Telefono: </strong>{{ jockey.phone }}</li>
+            <li><strong>DNI: </strong>{{ jockey.dni }}</li>
+            <li><strong>Dado de alta: </strong>{{ jockey.inserted_at | format_date }}</li>
+            <li><strong>Ultima modificacion: </strong>{{ jockey.updated_at | format_date }}</li>
+        </ul>
+    </div>
+    <div id="job-info" class="cell">
+        <h3>Datos laborales</h3>
+        <ul>
+            <li><strong>Condición laboral: </strong>{{ jockey.work_condition }}</li>
+            <li><strong>Propuesta de trabajo: </strong>{{ jockey.work_proposal }}</li>
+            <li><strong>Asignación familiar: </strong>{{ jockey.family_assignment }}</li>
+        </ul>
+    </div>
+</div>
+<div id="emergency-contact-info has-bab" class="cell box">
+    <h4>Contacto de emergencia</h4>
+    <ul id="emergency-contact">
+        <li><strong>Nombre completo: </strong>{{ jockey.emergency_contact_name }}</li>
+        <li><strong>Telefono: </strong>{{ jockey.emergency_contact_phone }}</li>
+    </ul>
+</div>
+{% endblock %}
+
+{% block card_actions %}
+    <button href="" class="card-footer-item has-text-danger modal-trigger" data-id="{{ jockey.id }}" data-target="jockey-delete-modal">
+        Eliminar
+    </button>
+    <a href="{{ url_for( "jockey_amazon_bp.edit_jockey", jockey_id=jockey.id )}}" class="card-footer-item has-text-warning">Editar</a>
+{% endblock %}
+
+{% block additional_cards %}
+    <div class="card">
+        <header class="card-header">
+            <p class="card-header-title is-size-4">Documentos anexos</p>
+        </header>
+        <div class="card-content">
+            <div class="content">
+                
+            </div>
+        </div>
+        <footer class="card-footer">
+            <a href="" class="card-footer-item has-text-warning">Editar</a>
+        </footer>
+    </div>
+    <div class="card">
+        <header class="card-header">
+            <p class="card-header-title is-size-4">Usuario asociado a {{ jockey.fullname }}</p>
+        </header>
+        <div class="card-content">
+            <div class="content">
+                <p>No existe un usuario asociado a este integrante</p>
+            </div>
+        </div>
+        <footer class="card-footer">
+            <a href="" class="card-footer-item">Ver</a>
+        </footer>
+    </div>
+{% endblock %}
+
+{% block modal %}
+  {{
+    render_delete_modal(
+      field="jockey",
+      endpoint="jockey_amazon_bp.delete_jockey",
+      title="Eliminar",
+      msg="¿Está seguro de que desea eliminar este jockey?",
+      msg_sub="Luego de confirmar, no se podrán revertir los cambios"
+    )
+  }}
+{% endblock %}

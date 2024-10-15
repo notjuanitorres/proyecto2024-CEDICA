@@ -46,10 +46,10 @@ class JockeyAmazonRepository(AbstractJockeyAmazonRepository):
             self,
             page: int,
             per_page: int,
-            max_per_page: int,
             search_query: Dict = None,
             order_by: List = None,
     ):
+        max_per_page = 20
         query = JockeyAmazon.query
 
         query = apply_filters(JockeyAmazon, query, search_query, order_by)
