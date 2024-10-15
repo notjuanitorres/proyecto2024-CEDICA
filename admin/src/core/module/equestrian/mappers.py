@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, List
 from .models import Horse, HorseMinioFile
 
 
@@ -24,7 +24,7 @@ class HorseMapper:
         return created_files
 
     @classmethod
-    def to_entity(cls, data: Dict, files: Dict) -> Horse:
+    def to_entity(cls, data: Dict, files: List) -> Horse:
         horse = Horse(
             name=data.get("name"),
             birth_date=data.get("birth_date"),
@@ -52,8 +52,20 @@ class HorseMapper:
                             "admission_date": horse.admission_date, "assigned_facility": horse.assigned_facility,
                             "ja_type": horse.ja_type.value, "inserted_at": horse.inserted_at,
                             "updated_at": horse.updated_at,
-                            "files": [file.to_dict() for file in horse.minio_files if file]}
+                            "minio_files": [file.to_dict() for file in horse.minio_files if file]}
 
         return serialized_horse
 
-
+    @classmethod
+    def from_simple_form(cls, data: Dict):
+        return {
+            "name": data.get("name"),
+            "birth_date": data.get("birth_date"),
+            "sex": data.get("sex"),
+            "breed": data.get("breed"),
+            "coat": data.get("coat"),
+            "is_donation": data.get("is_donation"),
+            "admission_date": data.get("admission_date"),
+            "assigned_facility": data.get("assigned_facility"),
+            "ja_type": data.get("ja_type"),
+        }
