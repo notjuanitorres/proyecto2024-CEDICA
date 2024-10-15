@@ -16,7 +16,12 @@ def render_role(role_id: int):
     return roles.get(role_id, "No definido")
 
 
+def render_file_type(is_link: bool):
+    return '(Url)' if is_link else '(Archivo)'
+
+
 def register_filters(app):
     app.jinja_env.filters['natural_boolean'] = render_natural_boolean
     app.jinja_env.filters['format_date'] = format_date
     app.jinja_env.filters['role'] = render_role
+    app.jinja_env.filters['file_type'] = render_file_type

@@ -78,6 +78,38 @@
       <form method="POST" class="block" enctype="multipart/form-data">
         {{ add_form.hidden_tag() }}
         <div class="is-flex is-gap-2">
+
+          <div class="field">
+            <div class="control">
+              <div class="radio">
+                {{ add_form.upload_type(class="is-fullwidth")}}
+              </div>
+            </div>
+            {% if add_form.upload_type.errors %}
+            <p class="help is-danger">{{ add_form.upload_type.errors[0] }}</p>
+            {% endif %}
+          </div>
+
+          <div class="field">
+            <label class="label">{{ add_form.title.label }}</label>
+            <div class="control">
+                {{ add_form.title(class="input", placeholder="Ingrese el titulo del documento") }}
+            </div>
+            {% if add_form.title.errors %}
+                <p class="help is-danger">{{ add_form.title.errors[0] }}</p>
+            {% endif %}
+          </div>
+
+          <div class="field">
+            <label class="label">{{ add_form.url.label }}</label>
+            <div class="control">
+                {{ add_form.url(class="input", placeholder="Ingrese la url del documento") }}
+            </div>
+            {% if add_form.url.errors %}
+                <p class="help is-danger">{{ add_form.url.errors[0] }}</p>
+            {% endif %}
+          </div>
+
           <div class="field">
             <div class="control">
               <div class="select">
@@ -128,10 +160,14 @@
               </div>
               <div class="media-content ml-2">
                 <p>
-                  <strong class="tag is-white">{{ render_category(document.file.tag) }}</strong>
+                  <strong class="tag is-white">{{ render_category(document.file.tag) }} {{ document.file.is_link | file_type }}</strong>
                   <small class="ml-1">{{ document.file.uploaded_at | format_date }}</small>
                   <br />
-                  {{ document.file.title }}
+                  Título: {{ document.file.title }}
+                  <br />
+                  {% if document.file.is_link %}
+                    Enlace: <a href="{{ document.file.path }}">{{ document.file.path }}</a>
+                  {% endif %}
                   </p>
               </div>
             </div>
@@ -145,12 +181,14 @@
                 </button>
               </div>
               <div class="control">
-                <a href="{{ document.download_url }}" target="_blank" class="button is-link">
-                  <span class="icon mr-1">
-                    <i class="fa-solid fa-download"></i>
-                  </span>
-                  Descargar
-                </a>
+                <a href="{{ document.download_url if document.download_url else '#' }}"
+                     class="button is-link {{ '' if document.download_url else 'is-disabled' }}"
+                     {% if not document.download_url %} aria-disabled="true" {% endif %}>
+                    <span class="icon mr-1">
+                      <i class="fa-solid fa-download"></i>
+                    </span>
+                    Descargar
+                  </a>
               </div>
             </div>
           </article>
@@ -176,4 +214,9 @@
 {% block extra_scripts %}
     {{ super() }}
     <script src="{{ url_for('static', filename='js/file-input.js') }}"></script>
+{% endblock %}
+
+{% block extra_styles %}
+    {{ super() }}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/documents/buttons.css' )}}">
 {% endblock %}

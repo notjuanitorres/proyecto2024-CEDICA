@@ -102,7 +102,7 @@
             <span class="panel-icon">
             {{ render_file_icon(document.filetype, 5) }}
             </span>
-            <span class="tag is-white">{{ render_category(document.tag) }}</span>
+            <span class="tag is-white">{{ render_category(document.tag) }} {{ document.is_link | file_type }}</span>
             <p class="ml-2"> {{ document.title}} </p>
         </div>
         {% endfor %}

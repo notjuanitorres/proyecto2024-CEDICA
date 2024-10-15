@@ -130,7 +130,6 @@ class EmployeeRepository(AbstractEmployeeRepository):
 
     def add_document(self, employee_id: int, document: EmployeeFile):
         employee: Employee = self.__get_by_id(employee_id)
-        document.is_link = False
         employee.files.append(document)
         self.save()
 

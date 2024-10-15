@@ -32,7 +32,8 @@ class File(db.Model):
             "filesize": self.filesize,
             "title": self.title,
             "tag": self.tag,
-            "uploaded_at": self.inserted_at
+            "uploaded_at": self.inserted_at,
+            "is_link": self.is_link,
         }
 
 

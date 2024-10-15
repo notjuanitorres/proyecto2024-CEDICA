@@ -8,8 +8,8 @@ from wtforms.fields import (
     SelectMultipleField,
     SubmitField, FileField, MultipleFileField, FormField,
 )
-from wtforms.validators import DataRequired, Length
-from wtforms import widgets
+from wtforms.validators import DataRequired, Length, Optional, URL
+from wtforms import widgets, RadioField
 
 from src.core.module.common import (
     FilesNumber,
@@ -110,6 +110,12 @@ class HorseDocumentsForm(FlaskForm):
 
 
 class HorseAddDocumentsForm(FlaskForm):
+    upload_type = RadioField(
+        'Tipo de subida',
+        choices=[('file', 'Archivo'), ('url', 'URL')],
+        validators=[DataRequired(message="Debe seleccionar el tipo de subida")]
+    )
+
     tag = SelectField(
         "Tag",
         choices=[(e.name, e.value) for e in FileTagEnum],
@@ -119,9 +125,18 @@ class HorseAddDocumentsForm(FlaskForm):
             )
         ],
     )
+
+    title = StringField(
+        "Título",
+        validators=[
+            DataRequired(message="Debe proporcionar un título"),
+            Length(max=100, message="El título no puede exceder los 100 caracteres")
+        ]
+    )
+
     file = FileField(
         validators=[
-            FileRequired("Debe adjuntar un archivo"),
+            Optional(),
             FileSize(
                 max_size=max_file_size(size_in_mb=5),
                 message="El archivo es demasiado grande",
@@ -132,6 +147,29 @@ class HorseAddDocumentsForm(FlaskForm):
             ),
         ]
     )
+
+    url = StringField(
+        'URL',
+        validators=[
+            Optional(),
+            URL(message="Debe proporcionar una URL válida")
+        ]
+    )
+
+    def validate(self, *args, **kwargs):
+        if not super(HorseAddDocumentsForm, self).validate():
+            return False
+
+        if self.upload_type.data == 'file':
+            if not self.file.data:
+                self.file.errors.append('Debe adjuntar un archivo cuando selecciona "Archivo"')
+                return False
+        elif self.upload_type.data == 'url':
+            if not self.url.data:
+                self.url.errors.append('Debe proporcionar una URL cuando selecciona "URL"')
+                return False
+
+        return True
 
 
 class HorseManagementForm(FlaskForm):

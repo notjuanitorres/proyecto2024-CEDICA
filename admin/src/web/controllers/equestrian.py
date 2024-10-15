@@ -158,10 +158,13 @@ def edit_documents(
 
     documents = []
     for file in horse.get("files"):
-        documents.append({"file": file, "download_url": storage.presigned_download_url(file.get("path"))})
-        print(file)
-        if not documents[-1].get("download_url"):
-            flash(f"No se pudieron obtener los documentos", "danger")
+        if not file.get("is_link"):
+            documents.append({"file": file, "download_url": storage.presigned_download_url(file.get("path"))})
+        else:
+            documents.append({"file": file, "download_url": None})
+
+        if not documents[-1].get("file").get("is_link") and not documents[-1].get("download_url"):
+            flash(f"No se pudieron obtener los archivos", "danger")
             if request.referrer:
                 return redirect(request.referrer)
             return redirect(url_for("equestrian_bp.edit_horse", horse_id=horse_id))
@@ -193,9 +196,18 @@ def update_documents(
             documents=documents,
         )
     horse_id = horse["id"]
-    uploaded_document = storage.upload_file(
-        file=add_form.file.data, path=equestrian_repository.storage_path
-    )
+    if add_form.upload_type.data == 'file':
+        uploaded_document = storage.upload_file(
+            file=add_form.file.data, path=equestrian_repository.storage_path, title=add_form.title.data
+        )
+    else:
+        uploaded_document = {
+                    "path": add_form.url.data,
+                    "filetype": None,
+                    "filesize": None,
+                    "title": add_form.title.data,
+                    "is_link": True,
+                }
 
     if not uploaded_document:
         flash("No se pudo subir el archivo, inténtelo nuevamente", "danger")

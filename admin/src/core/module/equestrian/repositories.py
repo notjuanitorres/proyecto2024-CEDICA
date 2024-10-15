@@ -133,7 +133,6 @@ class EquestrianRepository(AbstractEquestrianRepository):
 
     def add_document(self, horse_id: int, document: HorseFile):
         horse: Horse = self.__get_by_id(horse_id)
-        document.is_link = False
         horse.files.append(document)
         self.save()
 

@@ -194,8 +194,12 @@ def edit_documents(
 
     documents = []
     for file in employee.get("files"):
-        documents.append({"file": file, "download_url": storage.presigned_download_url(file.get("path"))})
-        if not documents[-1].get("download_url"):
+        if not file.get("is_link"):
+            documents.append({"file": file, "download_url": storage.presigned_download_url(file.get("path"))})
+        else:
+            documents.append({"file": file, "download_url": None})
+
+        if not documents[-1].get("file").get("is_link") and not documents[-1].get("download_url"):
             flash(f"No se pudieron obtener los documentos", "danger")
             if request.referrer:
                 return redirect(request.referrer)
@@ -228,9 +232,18 @@ def update_documents(
             documents=documents,
         )
     employee_id = employee["id"]
-    uploaded_document = storage.upload_file(
-        file=add_form.file.data, path=employees.storage_path
-    )
+    if add_form.upload_type.data == 'file':
+        uploaded_document = storage.upload_file(
+            file=add_form.file.data, path=employees.storage_path, title=add_form.title.data
+        )
+    else:
+        uploaded_document = {
+                    "path": add_form.url.data,
+                    "filetype": None,
+                    "filesize": None,
+                    "title": add_form.title.data,
+                    "is_link": True,
+                }
 
     if not uploaded_document:
         flash("No se pudo subir el archivo, inténtelo nuevamente", "danger")

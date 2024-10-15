@@ -1,7 +1,8 @@
 from datetime import datetime
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileAllowed, FileSize, FileRequired
-from wtforms.validators import DataRequired, Email, Length, Optional, ValidationError
+from wtforms import RadioField
+from wtforms.validators import DataRequired, Email, Length, Optional, ValidationError, URL
 from wtforms.fields import (
     StringField,
     BooleanField,
@@ -116,6 +117,12 @@ class EmployeeDocumentsForm(FlaskForm):
 
 
 class EmployeeAddDocumentsForm(FlaskForm):
+    upload_type = RadioField(
+        'Tipo de subida',
+        choices=[('file', 'Archivo'), ('url', 'URL')],
+        validators=[DataRequired(message="Debe seleccionar el tipo de subida")]
+    )
+
     tag = SelectField(
         "Tag",
         choices=[(e.name, e.value) for e in FileTagEnum],
@@ -125,9 +132,18 @@ class EmployeeAddDocumentsForm(FlaskForm):
             )
         ],
     )
+
+    title = StringField(
+        "Título",
+        validators=[
+            DataRequired(message="Debe proporcionar un título"),
+            Length(max=100, message="El título no puede exceder los 100 caracteres")
+        ]
+    )
+
     file = FileField(
         validators=[
-            FileRequired("Debe adjuntar un archivo"),
+            Optional(),
             FileSize(
                 max_size=max_file_size(size_in_mb=5),
                 message="El archivo es demasiado grande",
@@ -136,6 +152,14 @@ class EmployeeAddDocumentsForm(FlaskForm):
                 upload_set=allowed_filetypes,
                 message=filetypes_message,
             ),
+        ]
+    )
+
+    url = StringField(
+        'URL',
+        validators=[
+            Optional(),
+            URL(message="Debe proporcionar una URL válida")
         ]
     )
 
