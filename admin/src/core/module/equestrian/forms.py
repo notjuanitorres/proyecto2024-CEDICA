@@ -1,5 +1,13 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, BooleanField, SelectField, DateField, SelectMultipleField, widgets, SubmitField
+from wtforms import (
+    StringField,
+    BooleanField,
+    SelectField,
+    DateField,
+    SelectMultipleField,
+    widgets,
+    SubmitField,
+)
 from wtforms.validators import DataRequired, Length
 from src.core.module.equestrian.models import JAEnum, Horse
 
@@ -12,6 +20,7 @@ class MultiCheckboxField(SelectMultipleField):
     Iterating the field will produce subfields, allowing custom rendering of
     the enclosed checkbox fields.
     """
+
     widget = widgets.ListWidget(prefix_label=False)
     option_widget = widgets.CheckboxInput()
 
@@ -42,7 +51,7 @@ class HorseManagementForm(FlaskForm):
 
     sex = SelectField(
         "Sexo",
-        choices=[('M', 'Macho'), ('H', 'Hembra')],
+        choices=[("M", "Macho"), ("H", "Hembra")],
         validators=[
             DataRequired(),
         ],
@@ -75,9 +84,7 @@ class HorseManagementForm(FlaskForm):
 
     ja_type = SelectField(
         "Tipo de J&A asignado",
-        choices=[
-            (jtype.name, jtype.value) for jtype in JAEnum
-        ],
+        choices=[(jtype.name, jtype.value) for jtype in JAEnum],
         validators=[
             DataRequired(),
         ],
@@ -92,32 +99,21 @@ class HorseEditForm(HorseManagementForm):
     def __init__(self, *args, **kwargs):
         super(HorseEditForm, self).__init__(*args, **kwargs)
         self.trainers.choices = self.get_trainers_choices()
-        if kwargs['data']["id"]:
-            self.set_default_trainers(kwargs['data']["id"])
 
-    def import_employee_services(self):
+    def import_repository(self):
         # Needed to import the container dynamically at run time
         # It is in order to work along with WTForms instantiation at definition
         # pylint: disable="C0415"
         from src.core.container import Container
 
         container = Container()
-        return container.employee_services()
-
-    def import_equestrian_services(self):
-        # pylint: disable="C0415"
-        from src.core.container import Container
-
-        container = Container()
-        return container.equestrian_services()
+        return container.employee_repository()
 
     def get_trainers_choices(self):
-        return [(trainer.id, f"{trainer.fullname} ({trainer.position.value})")
-                for trainer in self.import_employee_services().get_trainers()]
-
-    def set_default_trainers(self, horse_id):
-        horse_trainers = self.import_equestrian_services().get_trainers_of_horse(horse_id)
-        self.trainers.data = [str(trainer.id) for trainer in horse_trainers]
+        return [
+            (trainer.id, f"{trainer.fullname} ({trainer.position.value})")
+            for trainer in self.import_repository().get_trainers()
+        ]
 
     trainers = MultiCheckboxField(
         "Entrenadores y conductores",
