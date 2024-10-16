@@ -1,23 +1,11 @@
-{% extends "layout.html" %}
+{% extends "base_document_list.html" %}
 
-{% from "macros/file_icon.html" import render_file_icon %}
-{% from "macros/delete_modal.html" import render_delete_modal %}
-{% from "employee/macros/parse_categories.html" import render_category %}
-{% from "macros/flash_message.html" import render_flash_messages %}
+{% set entity_has_documents = employee.files %}
 
-{% block title %} Equipo - Agregar miembro {% endblock %} 
+{% block title %} Empleados - Actualizar documentos {% endblock %}
 
-{% block main_content %}
-<nav class="breadcrumb" aria-label="breadcrumbs">
-  <ul>
-    <li>
-      <a href="{{ url_for('index_bp.home')}}">
-        <span class="icon is-small">
-          <i class="fas fa-home" aria-hidden="true"></i>
-        </span>
-        <span>Inicio</span>
-      </a>
-    </li>
+
+{% block breadcrumb_items %}
     <li>
       <a href="{{ url_for('employee_bp.get_employees') }}">
         <span class="icon is-small">
@@ -42,179 +30,13 @@
         <span>Actualizar miembro</span>
       </a>
     </li>
-  </ul>
-</nav>
+{% endblock %}
 
-<div class="container">
-  <h4 class="title is-fullwidth has-text-centered">Actualizando a {{ employee.name + " " + employee.lastname }}</h4>
-  <div class="tabs is-toggle is-fullwidth is-toggle-rounded is-centered is-medium">
-    <ul>
-      <li class="">
-        <a href="{{ url_for("employee_bp.edit_employee", employee_id=employee.id ) }}">
-          <span class="icon is-small">
-              <i class="fa fa-info-circle" aria-hidden="true"></i>
-          </span>
-          <span>Informacion General</span>
-        </a>
-      </li>
-      <li class="is-active">
-        <a>
-          <span class="icon is-small">
-              <i class="far fa-file-alt" aria-hidden="true"></i>
-          </span>
-          <span>Documentos Anexos</span>
-        </a>
-      </li>
-    </ul>
-  </div>
-<div>
-<section class="section pt-4 px-0">
-  {{ render_flash_messages(messages) }}
-  <div id="documents" class="card">
-    <header class="card-header">
-      <h2 class="card-header-title is-size-4 m-0">Documentación relacionada</h2>
-    </header>
-    <div class="card-content">
-      <form method="POST" class="block" enctype="multipart/form-data">
-        {{ add_form.hidden_tag() }}
-        <div class="columns is-multiline">
-         <div class="column is-full">
-            <div class="field">
-              <label class="label">{{ add_form.upload_type.label }}</label>
-              <div class="control is-flex">
-                {{ add_form.upload_type(class="is-flex") }}
-              </div>
-              {% if add_form.upload_type.errors %}
-              <p class="help is-danger">{{ add_form.upload_type.errors[0] }}</p>
-              {% endif %}
-            </div>
-          </div>
+{% block doc_header_title %} Actualizando documentos de {{ employee.name }} {% endblock %}
+{% block doc_header_endpoint %}{{ url_for("employee_bp.edit_employee", employee_id=employee.id ) }}{% endblock %}
 
-          <div class="column is-half">
-            <div class="field">
-            <label class="label">{{ add_form.title.label }}</label>
-              <div class="control">
-                {{ add_form.title(class="input", placeholder="Ingrese el título del documento") }}
-              </div>
-              {% if add_form.title.errors %}
-              <p class="help is-danger">{{ add_form.title.errors[0] }}</p>
-              {% endif %}
-            </div>
-          </div>
+{% block no_documents_text %} No se ha subido ningún documento para este empleado {% endblock %}
 
-          <div class="column is-half">
-            <div class="field">
-            <label class="label">{{ add_form.url.label }}</label>
-              <div class="control">
-                {{ add_form.url(class="input", placeholder="Ingrese la url del documento") }}
-              </div>
-              {% if add_form.url.errors %}
-              <p class="help is-danger">{{ add_form.url.errors[0] }}</p>
-              {% endif %}
-            </div>
-          </div>
-
-          <div class="column is-half">
-            <div class="field">
-            <label class="label">{{ add_form.tag.label }}</label>
-              <div class="control">
-                <div class="select is-fullwidth">
-                  {{ add_form.tag(class="is-fullwidth") }}
-                </div>
-              </div>
-              {% if add_form.tag.errors %}
-              <p class="help is-danger">{{ add_form.tag.errors[0] }}</p>
-              {% endif %}
-            </div>
-          </div>
-
-          <div class="column is-half">
-            <div class="field">
-            <label class="label">{{ add_form.file.label }}</label>
-              <div class="file has-name is-fullwidth">
-                <label class="file-label">
-                  {{ add_form.file(class="file-input", multiple="multiple") }}
-                  <span class="file-cta">
-                    <span class="file-icon">
-                      <i class="fas fa-upload"></i>
-                    </span>
-                    <span class="file-label">Elegir archivo</span>
-                  </span>
-                  <span class="file-name">No se ha seleccionado ningún archivo</span>
-                </label>
-              </div>
-              {% if add_form.file.errors %}
-              <p class="help is-danger">{{ add_form.file.errors[0] }}</p>
-              {% endif %}
-            </div>
-          </div>
-
-          <div class="column is-full">
-            <div class="field">
-              <div class="control">
-                <button type="submit" class="button is-fullwidth is-primary">
-                  Agregar documento
-                  <span class="icon ml-1">
-                    <i class="fa-solid fa-file"></i>
-                  </span>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </form>
-      <div class="content">
-        {% if employee.files %}
-        {% for document in documents %}
-        <div class="card">
-          <article class="card-content level is-flex is-flex-wrap-wrap is-justify-content-space-between">
-            <div class="media m-0">
-              <div class="media-left">
-                {{ render_file_icon(document.file.filetype, size=1) }}
-              </div>
-              <div class="media-content ml-2">
-                <p>
-                  <strong class="tag is-white">{{ render_category(document.file.tag) }} {{ document.file.is_link | file_type }}</strong>
-                  <small class="ml-1">{{ document.file.uploaded_at | format_date }}</small>
-                  <br />
-                  Título: {{ document.file.title }}
-                  <br />
-                  {% if document.file.is_link %}
-                    Enlace: <a href="{{ document.file.path }}">{{ document.file.path }}</a>
-                  {% endif %}
-                  </p>
-              </div>
-            </div>
-            <div class="field has-addons">
-              <div class="control">
-                <button class="button is-danger hover modal-trigger" data-id="{{ document.file.id }}" data-target="user-delete-modal">
-                  <span class="icon mr-1">
-                    <i class="fa-solid fa-trash"></i>
-                  </span>
-                  Eliminar
-                </button>
-              </div>
-              <div class="control">
-                <a href="{{ document.download_url if document.download_url else '#' }}"
-                     class="button is-link {{ '' if document.download_url else 'is-disabled' }}"
-                     {% if not document.download_url %} aria-disabled="true" {% endif %}>
-                    <span class="icon mr-1">
-                      <i class="fa-solid fa-download"></i>
-                    </span>
-                    Descargar
-                  </a>
-              </div>
-            </div>
-          </article>
-        </div>
-        {% endfor %}
-        {% else %}
-        <p>No se se ha subido ningun documento</p>
-        {% endif %}
-      </div>
-    </div>
-  </div>
-</section>
 {% block modal %}
     {{ render_delete_modal(
         url_for("employee_bp.delete_document", employee_id=employee.id),
@@ -222,15 +44,4 @@
         msg="¿Está seguro de que desea eliminar el documento?",
         msg_sub="Luego de confirmar, no se podrán revertir los cambios"
     ) }}
-{% endblock %}
-{% endblock %}
-
-{% block extra_scripts %}
-    {{ super() }}
-    <script src="{{ url_for('static', filename='js/file-input.js') }}"></script>
-{% endblock %}
-
-{% block extra_styles %}
-    {{ super() }}
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/documents/buttons.css' )}}">
 {% endblock %}
