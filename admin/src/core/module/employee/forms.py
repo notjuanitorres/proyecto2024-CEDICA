@@ -1,8 +1,7 @@
 from datetime import datetime
 from flask_wtf import FlaskForm
-from flask_wtf.file import FileAllowed, FileSize, FileRequired
-from wtforms import RadioField
-from wtforms.validators import DataRequired, Email, Length, Optional, ValidationError, URL
+from flask_wtf.file import FileAllowed, FileSize
+from wtforms.validators import DataRequired, Email, Length, Optional
 from wtforms.fields import (
     StringField,
     BooleanField,
@@ -15,6 +14,8 @@ from wtforms.fields import (
     MultipleFileField,
     HiddenField,
 )
+
+from src.core.module.common.forms import filetypes_message, allowed_filetypes, BaseAddDocumentsForm
 from src.core.module.employee.data import (
     ProfessionsEnum,
     JobPositionEnum as PositionEnum,
@@ -40,11 +41,6 @@ def email_existence(form, field):
 def dni_existence(form, field):
     validator = DniExistence(message="DNI en uso")
     validator(form, field)
-
-
-allowed_filetypes = ["pdf", "jpg", "jpeg", "png", "webp"]
-formatted_filetypes = ", ".join(f".{ext}" for ext in allowed_filetypes[:-1]) + f" y .{allowed_filetypes[-1]}"
-filetypes_message = f"Formato no reconocido. Formato válido: {formatted_filetypes}"
 
 
 class EmploymentInformationForm(FlaskForm):
@@ -116,13 +112,7 @@ class EmployeeDocumentsForm(FlaskForm):
     )
 
 
-class EmployeeAddDocumentsForm(FlaskForm):
-    upload_type = RadioField(
-        'Tipo de subida',
-        choices=[('file', 'Archivo'), ('url', 'URL')],
-        validators=[DataRequired(message="Debe seleccionar el tipo de subida")]
-    )
-
+class EmployeeAddDocumentsForm(BaseAddDocumentsForm):
     tag = SelectField(
         "Tag",
         choices=[(e.name, e.value) for e in FileTagEnum],
@@ -131,36 +121,6 @@ class EmployeeAddDocumentsForm(FlaskForm):
                 message="Debe seleccionar lo que representa este archivo",
             )
         ],
-    )
-
-    title = StringField(
-        "Título",
-        validators=[
-            DataRequired(message="Debe proporcionar un título"),
-            Length(max=100, message="El título no puede exceder los 100 caracteres")
-        ]
-    )
-
-    file = FileField(
-        validators=[
-            Optional(),
-            FileSize(
-                max_size=max_file_size(size_in_mb=5),
-                message="El archivo es demasiado grande",
-            ),
-            FileAllowed(
-                upload_set=allowed_filetypes,
-                message=filetypes_message,
-            ),
-        ]
-    )
-
-    url = StringField(
-        'URL',
-        validators=[
-            Optional(),
-            URL(message="Debe proporcionar una URL válida")
-        ]
     )
 
 

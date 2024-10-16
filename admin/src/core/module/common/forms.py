@@ -1,5 +1,7 @@
 from flask_wtf import FlaskForm
-from wtforms.validators import DataRequired, Length, Optional
+from flask_wtf.file import FileSize, FileAllowed
+from wtforms import RadioField, SelectField, FileField
+from wtforms.validators import DataRequired, Length, Optional, URL
 from wtforms.fields import (
     IntegerField,
     StringField,
@@ -43,3 +45,62 @@ class EmergencyContactForm(FlaskForm):
     emergency_contact_phone = TelField(
         "Telefono contacto de emergencia", validators=[DataRequired()]
     )
+
+
+allowed_filetypes = ["pdf", "jpg", "jpeg", "png", "webp"]
+formatted_filetypes = ", ".join(f".{ext}" for ext in allowed_filetypes[:-1]) + f" y .{allowed_filetypes[-1]}"
+filetypes_message = f"Formato no reconocido. Formato válido: {formatted_filetypes}"
+
+
+class BaseAddDocumentsForm(FlaskForm):
+    upload_type = RadioField(
+        'Tipo de subida',
+        choices=[('file', 'Archivo'), ('url', 'URL')],
+        validators=[DataRequired(message="Debe seleccionar el tipo de subida")]
+    )
+
+    title = StringField(
+        "Título",
+        validators=[
+            DataRequired(message="Debe proporcionar un título"),
+            Length(max=100, message="El título no puede exceder los 100 caracteres")
+        ]
+    )
+
+    file = FileField(
+        "Archivo",
+        validators=[
+            Optional(),
+            FileSize(
+                max_size=max_file_size(size_in_mb=5),
+                message="El archivo es demasiado grande",
+            ),
+            FileAllowed(
+                upload_set=allowed_filetypes,
+                message=filetypes_message,
+            ),
+        ]
+    )
+
+    url = StringField(
+        'Url',
+        validators=[
+            Optional(),
+            URL(message="Debe proporcionar una URL válida")
+        ]
+    )
+
+    def validate(self, *args, **kwargs):
+        if not super(BaseAddDocumentsForm, self).validate():
+            return False
+
+        if self.upload_type.data == 'file':
+            if not self.file.data:
+                self.file.errors.append('Debe adjuntar un archivo cuando selecciona "Archivo"')
+                return False
+        elif self.upload_type.data == 'url':
+            if not self.url.data:
+                self.url.errors.append('Debe proporcionar una URL cuando selecciona "URL"')
+                return False
+
+        return True

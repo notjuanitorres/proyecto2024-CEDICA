@@ -1,16 +1,17 @@
 from flask_wtf import FlaskForm
-from flask_wtf.file import FileSize, FileAllowed, FileRequired
+from flask_wtf.file import FileSize, FileAllowed
 from wtforms.fields import (
     StringField,
     BooleanField,
     SelectField,
     DateField,
     SelectMultipleField,
-    SubmitField, FileField, MultipleFileField, FormField,
+    SubmitField, MultipleFileField, FormField,
 )
-from wtforms.validators import DataRequired, Length, Optional, URL
-from wtforms import widgets, RadioField
+from wtforms.validators import DataRequired, Length
+from wtforms import widgets
 
+from src.core.module.common.forms import BaseAddDocumentsForm, allowed_filetypes, filetypes_message
 from src.core.module.common import (
     FilesNumber,
     max_file_size,
@@ -29,11 +30,6 @@ class MultiCheckboxField(SelectMultipleField):
 
     widget = widgets.ListWidget(prefix_label=False)
     option_widget = widgets.CheckboxInput()
-
-
-allowed_filetypes = ["pdf", "doc", "xls", "jpg", "jpeg", "png", "webp"]
-formatted_filetypes = ", ".join(f".{ext}" for ext in allowed_filetypes[:-1]) + f" y .{allowed_filetypes[-1]}"
-filetypes_message = f"Formato no reconocido. Formato válido: {formatted_filetypes}"
 
 
 class HorseDocumentsForm(FlaskForm):
@@ -109,13 +105,7 @@ class HorseDocumentsForm(FlaskForm):
     )
 
 
-class HorseAddDocumentsForm(FlaskForm):
-    upload_type = RadioField(
-        'Tipo de subida',
-        choices=[('file', 'Archivo'), ('url', 'URL')],
-        validators=[DataRequired(message="Debe seleccionar el tipo de subida")]
-    )
-
+class HorseAddDocumentsForm(BaseAddDocumentsForm):
     tag = SelectField(
         "Tag",
         choices=[(e.name, e.value) for e in FileTagEnum],
@@ -125,51 +115,6 @@ class HorseAddDocumentsForm(FlaskForm):
             )
         ],
     )
-
-    title = StringField(
-        "Título",
-        validators=[
-            DataRequired(message="Debe proporcionar un título"),
-            Length(max=100, message="El título no puede exceder los 100 caracteres")
-        ]
-    )
-
-    file = FileField(
-        validators=[
-            Optional(),
-            FileSize(
-                max_size=max_file_size(size_in_mb=5),
-                message="El archivo es demasiado grande",
-            ),
-            FileAllowed(
-                upload_set=allowed_filetypes,
-                message=filetypes_message,
-            ),
-        ]
-    )
-
-    url = StringField(
-        'URL',
-        validators=[
-            Optional(),
-            URL(message="Debe proporcionar una URL válida")
-        ]
-    )
-
-    def validate(self, *args, **kwargs):
-        if not super(HorseAddDocumentsForm, self).validate():
-            return False
-
-        if self.upload_type.data == 'file':
-            if not self.file.data:
-                self.file.errors.append('Debe adjuntar un archivo cuando selecciona "Archivo"')
-                return False
-        elif self.upload_type.data == 'url':
-            if not self.url.data:
-                self.url.errors.append('Debe proporcionar una URL cuando selecciona "URL"')
-                return False
-
-        return True
 
 
 class HorseManagementForm(FlaskForm):
