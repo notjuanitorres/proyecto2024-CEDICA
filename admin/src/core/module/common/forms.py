@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileSize, FileAllowed
-from wtforms import RadioField, SelectField, FileField
+from wtforms import RadioField, SelectField, FileField, SubmitField
 from wtforms.validators import DataRequired, Length, Optional, URL
 from wtforms.fields import (
     IntegerField,
@@ -104,3 +104,25 @@ class BaseAddDocumentsForm(FlaskForm):
                 return False
 
         return True
+
+
+class BaseSearchForm(FlaskForm):
+    class Meta:
+        csrf = False
+
+    search_by = SelectField(
+        choices=[],
+        validate_choice=True,
+    )
+
+    search_text = StringField(validators=[Length(max=50)])
+
+    order_by = SelectField(
+        choices=[],
+        validate_choice=True,
+    )
+
+    order = SelectField(
+        choices=[("asc", "Ascendente"), ("desc", "Descendente")], validate_choice=True
+    )
+    submit_search = SubmitField("Buscar")

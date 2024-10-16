@@ -1,11 +1,10 @@
-from random import choices
-
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SelectField, SubmitField
+from wtforms import StringField, PasswordField, BooleanField, SelectField
 from wtforms.validators import DataRequired, Email, Length, EqualTo, Optional
 from .validators import EmailExistence
 
 from src.core.module.accounts.models import RoleEnum
+from src.core.module.common.forms import BaseSearchForm
 
 
 def email_existence(form, field):
@@ -142,17 +141,16 @@ class UserRegisterForm(FlaskForm):
     )
 
 
-class UserSearchForm(FlaskForm):
-    class Meta:
-        csrf = False
-
-    search_by = SelectField(
-        choices=[
+class UserSearchForm(BaseSearchForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.search_by.choices = [
             ("email", "Email"),
-        ],
-        validate_choice=True,
-    )
-    search_text = StringField(validators=[Length(max=50)])
+        ]
+        self.order_by.choices = [
+            ("id", "ID"),
+            ("email", "Email"),
+        ]
 
     filter_enabled = SelectField(
         choices=[
@@ -167,15 +165,3 @@ class UserSearchForm(FlaskForm):
         choices=[('', 'Todos')] +
                 [(str(index + 1), role.value) for index, role in enumerate(RoleEnum)],
     )
-
-    order_by = SelectField(
-        choices=[
-            ("id", "ID"),
-            ("email", "Email"),
-        ],
-        validate_choice=True,
-    )
-    order = SelectField(
-        choices=[("asc", "Ascendente"), ("desc", "Descendente")], validate_choice=True
-    )
-    submit_search = SubmitField("Buscar")

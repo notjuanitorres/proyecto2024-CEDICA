@@ -6,11 +6,12 @@ from wtforms.fields import (
     SelectField,
     DateField,
     SelectMultipleField,
-    SubmitField, MultipleFileField, FormField,
+    MultipleFileField, FormField,
 )
 from wtforms.validators import DataRequired, Length
 from wtforms import widgets
 
+from src.core.module.common.forms import BaseSearchForm
 from src.core.module.common.forms import BaseAddDocumentsForm, allowed_filetypes, filetypes_message
 from src.core.module.common import (
     FilesNumber,
@@ -215,33 +216,21 @@ class HorseEditForm(HorseManagementForm):
     )
 
 
-class HorseSearchForm(FlaskForm):
-    class Meta:
-        csrf = False
-
-    search_by = SelectField(
-        choices=[
+class HorseSearchForm(BaseSearchForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.search_by.choices = [
             ("name", "Nombre"),
-        ],
-        validate_choice=True,
-    )
-    search_text = StringField(validators=[Length(max=50)])
+        ]
+        self.order_by.choices = [
+            ("id", "ID"),
+            ("name", "Nombre"),
+            ("birth_date", "Fecha de nacimiento"),
+            ("admission_date", "Fecha de ingreso"),
+        ]
 
     filter_ja_type = SelectField(
         choices=[("", "Ver Todos")] + [(jtype.name, jtype.value) for jtype in JAEnum],
         validate_choice=True,
     )
-    order_by = SelectField(
-        choices=[
-            ("id", "ID"),
-            ("name", "Nombre"),
-            ("birth_date", "Fecha de nacimiento"),
-            ("admission_date", "Fecha de ingreso"),
-        ],
-        validate_choice=True,
-    )
-    order = SelectField(
-        choices=[("asc", "Ascendente"), ("desc", "Descendente")], validate_choice=True
-    )
-    submit_search = SubmitField("Buscar")
 

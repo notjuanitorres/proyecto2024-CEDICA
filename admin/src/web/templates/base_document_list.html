@@ -52,6 +52,81 @@
 
 {% block main_content %}
 
+    {% block filter_form %}
+          <div class="card">
+            <header class="card-header">
+              <p class="card-header-title is-size-4">
+                <span class="icon mr-3">
+                  <i class="fa-solid fa-filter"></i>
+                </span>
+                Filtrar
+              </p>
+              <button class="card-header-icon" aria-label="more options" id="toggle-search-button">
+                <span class="icon">
+                  <i class="fas fa-angle-down" aria-hidden="true"></i>
+                </span>
+              </button>
+            </header>
+            <div class="card-content" id="toggle-search">
+              <div class="content">
+                <form class="form" method="GET" action="{% block form_action %}{{ url_for(request.endpoint) }}{% endblock %}">
+                  <div class="is-flex is-flex-direction-row is-flex-wrap-wrap is-gap-1">
+                    <div class="field">
+                      <label class="label">Buscar</label>
+                      <div class="control">
+                          <div class="select">
+                              {{ search_form.search_by() }}
+                          </div>
+                      </div>
+                    </div>
+                    {% block aditional_filters %}{% endblock %}
+                    <div class="field is-flex-grow-1">
+                      <label for="filtrar" class="label is-invisible-tablet">Buscar</label>
+                      <p class="control has-icons-left">
+                        {{ search_form.search_text(class="input", placeholder="Buscar") }}
+                        <span class="icon is-left">
+                          <i class="fas fa-search" aria-hidden="true"></i>
+                        </span>
+                      </p>
+                      {% if search_form.search_text.errors %}
+                      <p class="help is-danger">{{ search_form.search_text.errors[0] }}</p>
+                      {% endif %}
+                    </div>
+                  </div>
+                  <div class="grid is-flex-tablet is-row-gap-0 is-column-gap-1 pt-3" >
+                    <div class="field">
+                      <label class="label">Ordenar por</label>
+                      <div class="control">
+                          <div class="select">
+                              {{ search_form.order_by() }}
+                          </div>
+                      </div>
+                    </div>
+                    <div class="field">
+                      <label class="label">En orden</label>
+                      <div class="control">
+                          <div class="select">
+                              {{ search_form.order() }}
+                          </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="field card-footer">
+                    <div class="control card-footer-item">
+                      <a href="{% block clear_url %}{{ url_for(request.endpoint) }}{% endblock %}">
+                        Limpiar
+                      </a>
+                    </div>
+                    <div class="control card-footer-item">
+                      {{ search_form.submit_search(class="button is-flex-grow-1 is-link")}}
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+      {% endblock %}
+
 <section class="section pt-4 px-0">
 {{ render_flash_messages(messages) }}
   <div id="documents" class="card">
@@ -59,7 +134,63 @@
       <h2 class="card-header-title is-size-4 m-0">Documentación relacionada</h2>
     </header>
     <div class="card-content">
-        {% block add_form_block %}
+        {% block document_list %}
+            <div class="content mt-4">
+            {% if entity_has_documents %}
+              {% for document in documents %}
+                <div class="card">
+                  <article class="card-content level is-flex is-flex-wrap-wrap is-justify-content-space-between">
+                    <div class="media m-0">
+                      <div class="media-left">
+                        {{ render_file_icon(document.file.filetype, size=1) }}
+                      </div>
+                      <div class="media-content ml-2">
+                        <p>
+                          <strong class="tag is-white">{{ render_category(document.file.tag) }} {{ document.file.is_link | file_type }}</strong>
+                          <small class="ml-1">{{ document.file.uploaded_at | format_date }}</small>
+                          <br />
+                          Título: {{ document.file.title }}
+                          <br />
+                          {% if document.file.is_link %}
+                          Enlace: <a href="{{ document.file.path }}">{{ document.file.path }}</a>
+                          {% endif %}
+                        </p>
+                      </div>
+                    </div>
+                    <div class="field has-addons">
+                      <div class="control">
+                        <button class="button is-danger hover modal-trigger" data-id="{{ document.file.id }}" data-target="user-delete-modal">
+                          <span class="icon mr-1">
+                            <i class="fa-solid fa-trash"></i>
+                          </span>
+                          Eliminar
+                        </button>
+                      </div>
+                      <div class="control">
+                        <a href="{{ document.download_url if document.download_url else '#' }}"
+                           class="button is-link {{ '' if document.download_url else 'is-disabled' }}"
+                           {% if not document.download_url %} aria-disabled="true" {% endif %}>
+                          <span class="icon mr-1">
+                            <i class="fa-solid fa-download"></i>
+                          </span>
+                          Descargar
+                        </a>
+                      </div>
+                    </div>
+                  </article>
+                </div>
+              {% endfor %}
+            {% else %}
+                <p>{% block no_documents_text %}{% endblock %}</p>
+            {% endif %}
+          </div>
+            </div>
+          </div>
+        </section>
+            {% block modal %}{% endblock %}
+        {% endblock %}
+
+    {% block add_form_block %}
             <form method="POST" class="block" enctype="multipart/form-data">
             {{ add_form.hidden_tag() }}
             <div class="columns is-multiline">
@@ -150,61 +281,6 @@
           </form>
         {% endblock %}
 
-    {% block document_list %}
-        <div class="content mt-4">
-        {% if entity_has_documents %}
-          {% for document in documents %}
-            <div class="card">
-              <article class="card-content level is-flex is-flex-wrap-wrap is-justify-content-space-between">
-                <div class="media m-0">
-                  <div class="media-left">
-                    {{ render_file_icon(document.file.filetype, size=1) }}
-                  </div>
-                  <div class="media-content ml-2">
-                    <p>
-                      <strong class="tag is-white">{{ render_category(document.file.tag) }} {{ document.file.is_link | file_type }}</strong>
-                      <small class="ml-1">{{ document.file.uploaded_at | format_date }}</small>
-                      <br />
-                      Título: {{ document.file.title }}
-                      <br />
-                      {% if document.file.is_link %}
-                      Enlace: <a href="{{ document.file.path }}">{{ document.file.path }}</a>
-                      {% endif %}
-                    </p>
-                  </div>
-                </div>
-                <div class="field has-addons">
-                  <div class="control">
-                    <button class="button is-danger hover modal-trigger" data-id="{{ document.file.id }}" data-target="user-delete-modal">
-                      <span class="icon mr-1">
-                        <i class="fa-solid fa-trash"></i>
-                      </span>
-                      Eliminar
-                    </button>
-                  </div>
-                  <div class="control">
-                    <a href="{{ document.download_url if document.download_url else '#' }}"
-                       class="button is-link {{ '' if document.download_url else 'is-disabled' }}"
-                       {% if not document.download_url %} aria-disabled="true" {% endif %}>
-                      <span class="icon mr-1">
-                        <i class="fa-solid fa-download"></i>
-                      </span>
-                      Descargar
-                    </a>
-                  </div>
-                </div>
-              </article>
-            </div>
-          {% endfor %}
-        {% else %}
-            <p>{% block no_documents_text %}{% endblock %}</p>
-        {% endif %}
-      </div>
-        </div>
-      </div>
-    </section>
-        {% block modal %}{% endblock %}
-    {% endblock %}
 {% endblock %}
 
 {% block extra_scripts %}

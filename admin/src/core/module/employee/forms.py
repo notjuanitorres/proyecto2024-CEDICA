@@ -9,12 +9,12 @@ from wtforms.fields import (
     FormField,
     DateField,
     TextAreaField,
-    SubmitField,
     FileField,
     MultipleFileField,
     HiddenField,
 )
 
+from src.core.module.common.forms import BaseSearchForm
 from src.core.module.common.forms import filetypes_message, allowed_filetypes, BaseAddDocumentsForm
 from src.core.module.employee.data import (
     ProfessionsEnum,
@@ -191,36 +191,26 @@ class EmployeeEditForm(EmployeeManagementForm):
     )
 
 
-class EmployeeSearchForm(FlaskForm):
-    class Meta:
-        csrf = False
-
-    search_by = SelectField(
-        choices=[
+class EmployeeSearchForm(BaseSearchForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.search_by.choices = [
             ("name", "Nombre"),
             ("lastname", "Apellido"),
             ("dni", "DNI"),
             ("email", "Email"),
-        ],
-        validate_choice=True,
-    )
-    search_text = StringField(validators=[Length(max=50)])
-    filter_job_position = SelectField(
-        "Puesto laboral",
-        choices=[("", "Ver Todas")] + [(e.name, e.value) for e in PositionEnum],
-        validate_choice=True,
-    )
-    order_by = SelectField(
-        choices=[
+        ]
+
+        self.order_by.choices = [
             ("id", "ID"),
             ("name", "Nombre"),
             ("lastname", "Apellido"),
             ("dni", "DNI"),
             ("email", "Email"),
-        ],
+        ]
+
+    filter_job_position = SelectField(
+        "Puesto laboral",
+        choices=[("", "Ver Todas")] + [(e.name, e.value) for e in PositionEnum],
         validate_choice=True,
     )
-    order = SelectField(
-        choices=[("asc", "Ascendente"), ("desc", "Descendente")], validate_choice=True
-    )
-    submit_search = SubmitField("Buscar")
