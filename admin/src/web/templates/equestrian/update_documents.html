@@ -1,6 +1,7 @@
 {% extends "base_document_list.html" %}
 
 {% set entity_has_documents = documents %}
+{% set current_url = url_for('equestrian_bp.edit_documents', horse_id=horse.id) %}
 
 {% block title %} Caballos - Actualizar documentos {% endblock %}
 

@@ -1,11 +1,16 @@
+from typing import Dict
+
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 
 from src.core.module.equestrian.mappers import HorseMapper
-from src.core.module.common import AbstractStorageServices
+from src.core.module.common import AbstractStorageServices, FileMapper
 from src.web.helpers.auth import check_user_permissions
 from src.core.container import Container
 from dependency_injector.wiring import inject, Provide
-from src.core.module.equestrian.forms import HorseCreateForm, HorseEditForm, HorseSearchForm, HorseAddDocumentsForm, HorseDocumentSearchForm
+from src.core.module.equestrian.forms import (HorseCreateForm,
+                                              HorseEditForm, HorseSearchForm,
+                                              HorseAddDocumentsForm,
+                                              HorseDocumentSearchForm)
 from src.core.module.equestrian import AbstractEquestrianRepository
 from src.core.module.equestrian.models import FileTagEnum
 from src.core.module.equestrian.mappers import HorseMapper as Mapper
@@ -272,3 +277,80 @@ def delete_document(
     flash(f"El documento {document.get("title")} ha sido eliminado correctamente", "success")
 
     return redirect(url_for("equestrian_bp.edit_documents", horse_id=horse_id))
+
+
+@equestrian_bp.route("/editar/<int:horse_id>/documentos/editar/<int:document_id>", methods=["GET", "POST"])
+@check_user_permissions(permissions_required=["ecuestre_update"])
+@inject
+def edit_document(
+    horse_id: int,
+    document_id: int,
+    equestrian_repository: AbstractEquestrianRepository = Provide[Container.equestrian_repository],
+):
+    horse = equestrian_repository.get_only_horse_by_id(horse_id=horse_id)
+    if not horse:
+        flash(f"El caballo con ID = {horse_id} no existe", "danger")
+        return redirect(url_for("equestrian_bp.get_horses"))
+
+    document = equestrian_repository.get_document(horse_id, document_id)
+    if not document:
+        flash(f"El documento con ID = {document_id} no existe", "danger")
+        return redirect(url_for("equestrian_bp.edit_documents", horse_id=horse_id))
+
+    edit_form = HorseAddDocumentsForm(data=FileMapper.to_form(document))
+    if request.method == "POST":
+        return update_document(horse_id, document_id, edit_form, document)
+
+    return render_template(
+        "./equestrian/edit_document.html",
+        horse=horse,
+        document=document,
+        edit_form=edit_form,
+    )
+
+
+@inject
+def update_document(horse_id: int,
+                    document_id: int,
+                    edit_form: HorseAddDocumentsForm,
+                    previous_doc: Dict,
+                    equestrian_repository: AbstractEquestrianRepository = Provide[Container.equestrian_repository],
+                    storage: AbstractStorageServices = Provide[Container.storage_services],):
+
+    was_file = not previous_doc["is_link"]
+    if not (edit_form.is_submitted()
+            and
+            edit_form.validate(is_file_already_uploaded=was_file)):
+
+        return render_template(
+            "./equestrian/edit_document.html",
+            horse_id=horse_id,
+            document_id=document_id,
+            edit_form=edit_form,
+        )
+
+    if edit_form.file.data and edit_form.upload_type.data == 'file':
+        uploaded_document = storage.modify_file(edit_form.file.data, full_path=previous_doc["path"])
+        if not uploaded_document:
+            flash("No se pudo subir el archivo, inténtelo nuevamente", "danger")
+            return redirect(url_for("equestrian_bp.edit_documents", horse_id=horse_id))
+
+    if was_file and edit_form.upload_type.data == 'url':
+        deleted_in_bucket = storage.delete_file(previous_doc["path"])
+        if not deleted_in_bucket:
+            flash("No se ha podido modificar el documento, inténtelo nuevamente", "danger")
+            return redirect(url_for("equestrian_bp.edit_documents", horse_id=horse_id))
+
+    success = equestrian_repository.update_document(
+        horse_id=horse_id,
+        document_id=document_id,
+        data=Mapper.file_from_edit_form(edit_form.data),
+    )
+    if success:
+        flash(f"El documento {edit_form.title.data} ha sido editado correctamente", "success")
+    else:
+        flash(f"El documento {edit_form.title.data} no ha podido ser editado", "danger")
+
+    return redirect(url_for("equestrian_bp.edit_documents", horse_id=horse_id))
+
+

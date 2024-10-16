@@ -15,7 +15,7 @@ from wtforms.fields import (
 )
 
 from src.core.module.common.forms import BaseSearchForm
-from src.core.module.common.forms import filetypes_message, allowed_filetypes, BaseAddDocumentsForm
+from src.core.module.common.forms import filetypes_message, allowed_filetypes, BaseManageDocumentsForm
 from src.core.module.employee.data import (
     ProfessionsEnum,
     JobPositionEnum as PositionEnum,
@@ -112,7 +112,7 @@ class EmployeeDocumentsForm(FlaskForm):
     )
 
 
-class EmployeeAddDocumentsForm(BaseAddDocumentsForm):
+class EmployeeAddDocumentsForm(BaseManageDocumentsForm):
     tag = SelectField(
         "Tag",
         choices=[(e.name, e.value) for e in FileTagEnum],

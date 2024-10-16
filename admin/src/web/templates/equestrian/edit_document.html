@@ -1,0 +1,167 @@
+{% extends "layout.html" %}
+
+{% block title %}Editar documento{% endblock %}
+
+<nav class="breadcrumb mb-2" aria-label="breadcrumbs">
+    <ul>
+      <li>
+        <a href="{{ url_for('index_bp.home')}}">
+          <span class="icon is-small">
+            <i class="fas fa-home" aria-hidden="true"></i>
+          </span>
+          <span>Inicio</span>
+        </a>
+      </li>
+      <li>
+      <a href="{{ url_for('equestrian_bp.get_horses') }}">
+        <span class="icon is-small">
+          <i class="fas fa-horse" aria-hidden="true"></i>
+        </span>
+        <span>Caballos</span>
+      </a>
+    </li>
+    <li>
+      <a href="{{ url_for('equestrian_bp.show_horse', horse_id=horse.id) }}">
+        <span class="icon is-small">
+          <i class="fas fa-horse-head" aria-hidden="true"></i>
+        </span>
+        <span>{{ horse.name }}</span>
+      </a>
+    </li>
+    <li>
+      <a href="{{ url_for('equestrian_bp.edit_documents', horse_id=horse.id) }}">
+        <span class="icon is-small">
+          <i class="fa-solid fa-pen-nib"></i>
+        </span>
+        <span>Actualizar documentos</span>
+      </a>
+    </li>
+    <li>
+      <a href="{{ url_for('equestrian_bp.edit_document', horse_id=horse.id, document_id=document.id) }}">
+        <span class="icon is-small">
+          <i class="fa-solid fa-pen-nib"></i>
+        </span>
+        <span>Actualizando documento {{ documento.title }}</span>
+      </a>
+    </li>
+    </ul>
+</nav>
+
+
+{% block main_content %}
+    <div class="card">
+        <header class="card-header">
+          <p class="card-header-title is-size-4">
+            Modifcar documento
+          </p>
+        </header>
+        <div class="card-content">
+          <div class="content">
+    <form method="POST" class="block" enctype="multipart/form-data">
+    {{ edit_form.hidden_tag() }}
+    <div class="columns is-multiline">
+     <div class="column is-full">
+        <div class="field">
+          <label class="label">{{ edit_form.upload_type.label }}</label>
+          <div class="control is-flex">
+            {% for subfield in edit_form.upload_type %}
+              <label class="radio">
+                {{ subfield }}
+                <span class="radio-label">{{ subfield.label }}</span>
+              </label>
+            {% endfor %}
+          </div>
+          {% if edit_form.upload_type.errors %}
+          <p class="help is-danger">{{ edit_form.upload_type.errors[0] }}</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="column is-half">
+        <div class="field">
+        <label class="label">{{ edit_form.title.label }}</label>
+          <div class="control">
+            {{ edit_form.title(class="input", placeholder="Ingrese el título del documento") }}
+          </div>
+          {% if edit_form.title.errors %}
+          <p class="help is-danger">{{ edit_form.title.errors[0] }}</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="column is-half">
+        <div class="field">
+        <label class="label">{{ edit_form.url.label }}</label>
+          <div class="control">
+            {{ edit_form.url(class="input", placeholder="Ingrese la url del documento") }}
+          </div>
+          {% if edit_form.url.errors %}
+          <p class="help is-danger">{{ edit_form.url.errors[0] }}</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="column is-half">
+        <div class="field">
+        <label class="label">{{ edit_form.tag.label }}</label>
+          <div class="control">
+            <div class="select is-fullwidth">
+              {{ edit_form.tag(class="is-fullwidth") }}
+            </div>
+          </div>
+          {% if edit_form.tag.errors %}
+          <p class="help is-danger">{{ edit_form.tag.errors[0] }}</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="column is-half">
+        <div class="field">
+        <label class="label">{{ edit_form.file.label }}</label>
+          <div class="file has-name is-fullwidth">
+            <label class="file-label">
+              {{ edit_form.file(class="file-input", multiple="multiple") }}
+              <span class="file-cta">
+                <span class="file-icon">
+                  <i class="fas fa-upload"></i>
+                </span>
+                <span class="file-label">Elegir archivo</span>
+              </span>
+              <span class="file-name">
+                  {% if not document.is_link %}
+                    Se usará el archivo previamente cargado
+                  {% else %}
+                    No se ha seleccionado ningún archivo
+                  {% endif %}
+              </span>
+            </label>
+          </div>
+          {% if edit_form.file.errors %}
+          <p class="help is-danger">{{ edit_form.file.errors[0] }}</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="column is-full">
+        <div class="field">
+          <div class="control">
+            <button type="submit" class="button is-fullwidth is-primary">
+              Modificar
+              <span class="icon ml-1">
+                <i class="fa-solid fa-file"></i>
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+    </div>
+    </div>
+    </div>
+    {% endblock %}
+
+{% block extra_scripts %}
+    {{ super() }}
+    <script src="{{ url_for('static', filename='js/file-input.js') }}"></script>
+{% endblock %}

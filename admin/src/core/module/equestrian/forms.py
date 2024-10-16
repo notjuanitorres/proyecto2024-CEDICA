@@ -12,7 +12,7 @@ from wtforms.validators import DataRequired, Length
 from wtforms import widgets
 
 from src.core.module.common.forms import BaseSearchForm, DocumentsSearchForm
-from src.core.module.common.forms import BaseAddDocumentsForm, allowed_filetypes, filetypes_message
+from src.core.module.common.forms import BaseManageDocumentsForm, allowed_filetypes, filetypes_message
 from src.core.module.common import (
     FilesNumber,
     max_file_size,
@@ -106,7 +106,7 @@ class HorseDocumentsForm(FlaskForm):
     )
 
 
-class HorseAddDocumentsForm(BaseAddDocumentsForm):
+class HorseAddDocumentsForm(BaseManageDocumentsForm):
     tag = SelectField(
         "Tag",
         choices=[(e.name, e.value) for e in FileTagEnum],

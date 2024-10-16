@@ -81,3 +81,16 @@ class HorseMapper:
             "assigned_facility": data.get("assigned_facility"),
             "ja_type": data.get("ja_type"),
         }
+
+    @classmethod
+    def file_from_edit_form(cls, data: Dict):
+        temp = {
+            "title": data.get("title"),
+            "is_link": data.get("upload_type") == "url",
+            "tag": data.get("tag"),
+        }
+
+        if data.get("upload_type") == "url":
+            temp["path"] = data.get("url")
+
+        return temp

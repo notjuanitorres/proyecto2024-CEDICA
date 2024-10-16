@@ -62,6 +62,10 @@ class AbstractEquestrianRepository:
         raise NotImplementedError
 
     @abstractmethod
+    def update_document(self, horse_id: int, document_id: int, data: Dict) -> bool:
+        raise NotImplementedError
+
+    @abstractmethod
     def get_only_horse_by_id(self, horse_id: int) -> Dict | None:
         raise NotImplementedError
 
@@ -197,6 +201,14 @@ class EquestrianRepository(AbstractEquestrianRepository):
         return query.paginate(
             page=page, per_page=per_page, error_out=False, max_per_page=max_per_page
         )
+
+    def update_document(self, horse_id: int, document_id: int, data: Dict) -> bool:
+        doc_query = self.db.session.query(HorseFile).filter_by(horse_id=horse_id, id=document_id)
+        if not doc_query:
+            return False
+        doc_query.update(data)
+        self.save()
+        return True
 
 
 

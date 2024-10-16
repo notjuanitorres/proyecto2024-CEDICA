@@ -52,7 +52,7 @@ formatted_filetypes = ", ".join(f".{ext}" for ext in allowed_filetypes[:-1]) + f
 filetypes_message = f"Formato no reconocido. Formato válido: {formatted_filetypes}"
 
 
-class BaseAddDocumentsForm(FlaskForm):
+class BaseManageDocumentsForm(FlaskForm):
     upload_type = RadioField(
         'Tipo de subida',
         choices=[('file', 'Archivo'), ('url', 'URL')],
@@ -90,12 +90,19 @@ class BaseAddDocumentsForm(FlaskForm):
         ]
     )
 
-    def validate(self, *args, **kwargs):
-        if not super(BaseAddDocumentsForm, self).validate():
+    def validate(self, *args, is_file_already_uploaded: bool = False, **kwargs):
+        """
+        Validate the form
+
+        :param is_file_already_uploaded: In the case of editing a document,
+        this parameter is used to determine if the file is already uploaded, so
+        if there is no data in the file field, the form is still valid
+        """
+        if not super(BaseManageDocumentsForm, self).validate():
             return False
 
         if self.upload_type.data == 'file':
-            if not self.file.data:
+            if not self.file.data and not is_file_already_uploaded:
                 self.file.errors.append('Debe adjuntar un archivo cuando selecciona "Archivo"')
                 return False
         elif self.upload_type.data == 'url':
