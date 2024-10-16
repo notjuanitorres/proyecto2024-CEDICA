@@ -9,7 +9,7 @@ class Validator(object):
         from src.core.container import Container
 
         container = Container()
-        return container.employee_services()
+        return container.employee_repository()
 
 
 class EmailExistence(Validator):
@@ -25,8 +25,8 @@ class EmailExistence(Validator):
         if is_edit and is_user:
             return
 
-        service = self.import_services()
-        if service.is_email_used(email=email.data):
+        repository = self.import_services()
+        if repository.is_email_used(email=email.data):
             raise ValidationError(self.message)
 
 
@@ -43,6 +43,6 @@ class DniExistence(Validator):
         if is_edit and dni_owned:
             return
 
-        service = self.import_services()
-        if service.is_dni_used(dni=dni.data):
+        repository = self.import_services()
+        if repository.is_dni_used(dni=dni.data):
             raise ValidationError(self.message)
