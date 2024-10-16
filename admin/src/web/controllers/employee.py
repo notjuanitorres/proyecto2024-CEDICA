@@ -266,15 +266,16 @@ def delete_document(
     employees: AbstractEmployeeRepository = Provide[Container.employee_repository],
     storage: AbstractStorageServices = Provide[Container.storage_services],
 ):
-    document_id = request.form["item_id"]
+    document_id = int(request.form["item_id"])
     document = employees.get_document(employee_id, document_id)
 
-    deleted_in_bucket = storage.delete_file(document.get("path"))
-    if not deleted_in_bucket:
-        flash("No se ha podido eliminar el documento, inténtelo nuevamente", "danger")
-        return redirect(url_for("employee_bp.edit_documents", employee_id=employee_id))
+    if not document.get("is_link"):
+        deleted_in_bucket = storage.delete_file(document.get("path"))
+        if not deleted_in_bucket:
+            flash("No se ha podido eliminar el documento, inténtelo nuevamente", "danger")
+            return redirect(url_for("employee_bp.edit_documents", employee_id=employee_id))
 
     employees.delete_document(employee_id, document_id)
-
     flash(f"El documento {document.get("title")} ha sido eliminado correctamente", "success")
+    
     return redirect(url_for("employee_bp.edit_documents", employee_id=employee_id))

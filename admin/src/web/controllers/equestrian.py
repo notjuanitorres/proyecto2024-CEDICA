@@ -233,12 +233,13 @@ def delete_document(
     document_id = int(request.form["item_id"])
     document = equestrian_repository.get_document(horse_id, document_id)
 
-    deleted_in_bucket = storage.delete_file(document.get("path"))
-    if not deleted_in_bucket:
-        flash("No se ha podido eliminar el documento, inténtelo nuevamente", "danger")
-        return redirect(url_for("equestrian_bp.edit_documents", horse_id=horse_id))
+    if not document.get("is_link"):
+        deleted_in_bucket = storage.delete_file(document.get("path"))
+        if not deleted_in_bucket:
+            flash("No se ha podido eliminar el documento, inténtelo nuevamente", "danger")
+            return redirect(url_for("equestrian_bp.edit_documents", horse_id=horse_id))
 
     equestrian_repository.delete_document(horse_id, document_id)
-
     flash(f"El documento {document.get("title")} ha sido eliminado correctamente", "success")
+
     return redirect(url_for("equestrian_bp.edit_documents", horse_id=horse_id))
