@@ -54,31 +54,6 @@ class StorageServices(AbstractStorageServices):
         self.expiration_get = 1
         self.storage: Minio = current_app.storage.client
 
-    def modify_file(self, file: FileStorage, full_path: str) -> bool:
-        """Modifies an already existent file in the storage
-
-        :params: file: FileStorage contents of the file
-        :params: full_path: str path to the file in the storage
-        :return: bool True if the file was modified successfully, False otherwise
-        """
-        file.seek(0, os.SEEK_END)
-        size = file.tell()
-        file.seek(0)
-        if size > 0:
-            try:
-                self.storage.put_object(
-                    bucket_name=self.bucket_name,
-                    object_name=full_path,
-                    data=file.stream,
-                    length=size,
-                    content_type=file.content_type,
-                )
-            except MaxRetryError as e:
-                print("No se pudo establecer conexion con minio. Error: ", e)
-                return False
-
-        return True
-
     def upload_file(self, file: FileStorage, path: str = "", title: str = ""):
         ulid: str = ULID().from_datetime(datetime.now()).hex
         filename = self.__construct_path(path, f"{ulid}{title}")

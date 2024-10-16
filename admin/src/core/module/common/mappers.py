@@ -13,3 +13,22 @@ class FileMapper:
         }
 
         return file_dict
+
+    @classmethod
+    def file_from_edit_form(cls, data: Dict):
+        """
+        Transforms edit form data into a dictionary that can be used to update a file.
+
+        :param data: Dictionary with the form data.
+        In the case of minio files this should only be called if there is not a new file to upload.
+        """
+        temp = {
+            "title": data.get("title"),
+            "is_link": data.get("upload_type") == "url",
+            "tag": data.get("tag"),
+        }
+
+        if data.get("upload_type") == "url":
+            temp["path"] = data.get("url")
+
+        return temp

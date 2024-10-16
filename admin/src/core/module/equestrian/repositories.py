@@ -30,7 +30,7 @@ class AbstractEquestrianRepository:
         pass
 
     @abstractmethod
-    def get_by_id(self, horse_id: int) -> Dict | None:
+    def get_by_id(self, horse_id: int, documents: bool = True) -> Dict | None:
         pass
 
     @abstractmethod
@@ -63,10 +63,6 @@ class AbstractEquestrianRepository:
 
     @abstractmethod
     def update_document(self, horse_id: int, document_id: int, data: Dict) -> bool:
-        raise NotImplementedError
-
-    @abstractmethod
-    def get_only_horse_by_id(self, horse_id: int) -> Dict | None:
         raise NotImplementedError
 
     @abstractmethod
@@ -109,17 +105,11 @@ class EquestrianRepository(AbstractEquestrianRepository):
             page=page, per_page=per_page, error_out=False, max_per_page=max_per_page
         )
 
-    def get_by_id(self, horse_id: int) -> Dict | None:
+    def get_by_id(self, horse_id: int, documents: bool = True) -> Dict | None:
         horse = self.__get_by_id(horse_id)
         if not horse:
             return None
-        return HorseMapper.from_entity(horse)
-
-    def get_only_horse_by_id(self, horse_id: int) -> Dict | None:
-        horse = self.__get_by_id(horse_id)
-        if not horse:
-            return None
-        return HorseMapper.no_documents_from_entity(horse)
+        return HorseMapper.from_entity(horse, documents=documents)
 
     def __get_by_id(self, horse_id: int) -> Horse:
         return self.db.session.query(Horse).filter(Horse.id == horse_id).first()
