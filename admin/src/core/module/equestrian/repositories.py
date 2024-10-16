@@ -61,6 +61,22 @@ class AbstractEquestrianRepository:
     def delete_document(self, horse_id: int, document_id: int) -> None:
         raise NotImplementedError
 
+    @abstractmethod
+    def get_only_horse_by_id(self, horse_id: int) -> Dict | None:
+        raise NotImplementedError
+
+    @abstractmethod
+    def get_file_page(
+            self,
+            horse_id: int,
+            page: int,
+            per_page: int,
+            max_per_page: int = 10,
+            search_query: Dict = None,
+            order_by: List = None,
+    ):
+        raise NotImplementedError
+
 
 class EquestrianRepository(AbstractEquestrianRepository):
     def __init__(self):
@@ -94,6 +110,12 @@ class EquestrianRepository(AbstractEquestrianRepository):
         if not horse:
             return None
         return HorseMapper.from_entity(horse)
+
+    def get_only_horse_by_id(self, horse_id: int) -> Dict | None:
+        horse = self.__get_by_id(horse_id)
+        if not horse:
+            return None
+        return HorseMapper.no_documents_from_entity(horse)
 
     def __get_by_id(self, horse_id: int) -> Horse:
         return self.db.session.query(Horse).filter(Horse.id == horse_id).first()
@@ -152,3 +174,30 @@ class EquestrianRepository(AbstractEquestrianRepository):
         document = self.__get_document(horse.id, document_id)
         horse.files.remove(document)
         self.save()
+
+    def get_file_page(
+            self,
+            horse_id: int,
+            page: int,
+            per_page: int,
+            max_per_page: int = 10,
+            search_query: Dict = None,
+            order_by: List = None,
+    ):
+
+        query = HorseFile.query
+
+        if search_query.get("filters"):
+            search_query["filters"]["horse_id"] = horse_id
+        else:
+            search_query["filters"] = {"horse_id": horse_id}
+
+        query = apply_filters(HorseFile, query, search_query, order_by)
+
+        return query.paginate(
+            page=page, per_page=per_page, error_out=False, max_per_page=max_per_page
+        )
+
+
+
+

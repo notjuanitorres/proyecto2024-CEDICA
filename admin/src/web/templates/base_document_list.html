@@ -4,6 +4,7 @@
 {% from "macros/delete_modal.html" import render_delete_modal %}
 {% from "equestrian/macros/parse_categories.html" import render_category %}
 {% from "macros/flash_message.html" import render_flash_messages %}
+{% from "macros/pagination.html" import render_pagination %}
 
 {% block extra_styles %}
     {{ super() }}
@@ -50,7 +51,124 @@
 </div>
 {% endblock %}
 
+
+
 {% block main_content %}
+
+    {% block add_form_block %}
+        <div class="card">
+            <header class="card-header">
+              <p class="card-header-title is-size-4">
+                <span class="icon mr-3">
+                  <i class="fa-solid fa-plus"></i>
+                </span>
+                Agregar documento
+              </p>
+              <button class="card-header-icon" aria-label="more options">
+                <span class="icon">
+                  <i class="fas fa-angle-down" aria-hidden="true"></i>
+                </span>
+              </button>
+            </header>
+            <div class="card-content">
+              <div class="content">
+        <form method="POST" class="block" enctype="multipart/form-data">
+        {{ add_form.hidden_tag() }}
+        <div class="columns is-multiline">
+         <div class="column is-full">
+            <div class="field">
+              <label class="label">{{ add_form.upload_type.label }}</label>
+              <div class="control is-flex">
+                {% for subfield in add_form.upload_type %}
+                  <label class="radio">
+                    {{ subfield }}
+                    <span class="radio-label">{{ subfield.label }}</span>
+                  </label>
+                {% endfor %}
+              </div>
+              {% if add_form.upload_type.errors %}
+              <p class="help is-danger">{{ add_form.upload_type.errors[0] }}</p>
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="column is-half">
+            <div class="field">
+            <label class="label">{{ add_form.title.label }}</label>
+              <div class="control">
+                {{ add_form.title(class="input", placeholder="Ingrese el título del documento") }}
+              </div>
+              {% if add_form.title.errors %}
+              <p class="help is-danger">{{ add_form.title.errors[0] }}</p>
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="column is-half">
+            <div class="field">
+            <label class="label">{{ add_form.url.label }}</label>
+              <div class="control">
+                {{ add_form.url(class="input", placeholder="Ingrese la url del documento") }}
+              </div>
+              {% if add_form.url.errors %}
+              <p class="help is-danger">{{ add_form.url.errors[0] }}</p>
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="column is-half">
+            <div class="field">
+            <label class="label">{{ add_form.tag.label }}</label>
+              <div class="control">
+                <div class="select is-fullwidth">
+                  {{ add_form.tag(class="is-fullwidth") }}
+                </div>
+              </div>
+              {% if add_form.tag.errors %}
+              <p class="help is-danger">{{ add_form.tag.errors[0] }}</p>
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="column is-half">
+            <div class="field">
+            <label class="label">{{ add_form.file.label }}</label>
+              <div class="file has-name is-fullwidth">
+                <label class="file-label">
+                  {{ add_form.file(class="file-input", multiple="multiple") }}
+                  <span class="file-cta">
+                    <span class="file-icon">
+                      <i class="fas fa-upload"></i>
+                    </span>
+                    <span class="file-label">Elegir archivo</span>
+                  </span>
+                  <span class="file-name">No se ha seleccionado ningún archivo</span>
+                </label>
+              </div>
+              {% if add_form.file.errors %}
+              <p class="help is-danger">{{ add_form.file.errors[0] }}</p>
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="column is-full">
+            <div class="field">
+              <div class="control">
+                <button type="submit" class="button is-fullwidth is-primary">
+                  Agregar documento
+                  <span class="icon ml-1">
+                    <i class="fa-solid fa-file"></i>
+                  </span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+        </div>
+        </div>
+        </div>
+    {% endblock %}
 
     {% block filter_form %}
           <div class="card">
@@ -61,15 +179,15 @@
                 </span>
                 Filtrar
               </p>
-              <button class="card-header-icon" aria-label="more options" id="toggle-search-button">
+              <button class="card-header-icon" aria-label="more options">
                 <span class="icon">
                   <i class="fas fa-angle-down" aria-hidden="true"></i>
                 </span>
               </button>
             </header>
-            <div class="card-content" id="toggle-search">
+            <div class="card-content">
               <div class="content">
-                <form class="form" method="GET" action="{% block form_action %}{{ url_for(request.endpoint) }}{% endblock %}">
+                <form class="form" method="GET" action="{% block form_action %}{% endblock %}">
                   <div class="is-flex is-flex-direction-row is-flex-wrap-wrap is-gap-1">
                     <div class="field">
                       <label class="label">Buscar</label>
@@ -79,7 +197,16 @@
                           </div>
                       </div>
                     </div>
-                    {% block aditional_filters %}{% endblock %}
+                    {% block aditional_filters %}
+                        <div class="field">
+                            <label class="label">Tipo de Documento</label>
+                            <div class="control">
+                                <div class="select">
+                                    {{ search_form.filter_tag() }}
+                                </div>
+                            </div>
+                        </div>
+                    {% endblock %}
                     <div class="field is-flex-grow-1">
                       <label for="filtrar" class="label is-invisible-tablet">Buscar</label>
                       <p class="control has-icons-left">
@@ -113,7 +240,7 @@
                   </div>
                   <div class="field card-footer">
                     <div class="control card-footer-item">
-                      <a href="{% block clear_url %}{{ url_for(request.endpoint) }}{% endblock %}">
+                      <a href="{% block clear_url %}{% endblock %}">
                         Limpiar
                       </a>
                     </div>
@@ -127,159 +254,71 @@
           </div>
       {% endblock %}
 
-<section class="section pt-4 px-0">
-{{ render_flash_messages(messages) }}
-  <div id="documents" class="card">
-    <header class="card-header">
-      <h2 class="card-header-title is-size-4 m-0">Documentación relacionada</h2>
-    </header>
-    <div class="card-content">
-        {% block document_list %}
-            <div class="content mt-4">
-            {% if entity_has_documents %}
-              {% for document in documents %}
-                <div class="card">
-                  <article class="card-content level is-flex is-flex-wrap-wrap is-justify-content-space-between">
-                    <div class="media m-0">
-                      <div class="media-left">
-                        {{ render_file_icon(document.file.filetype, size=1) }}
-                      </div>
-                      <div class="media-content ml-2">
-                        <p>
-                          <strong class="tag is-white">{{ render_category(document.file.tag) }} {{ document.file.is_link | file_type }}</strong>
-                          <small class="ml-1">{{ document.file.uploaded_at | format_date }}</small>
-                          <br />
-                          Título: {{ document.file.title }}
-                          <br />
-                          {% if document.file.is_link %}
-                          Enlace: <a href="{{ document.file.path }}">{{ document.file.path }}</a>
-                          {% endif %}
-                        </p>
-                      </div>
+    {% block top_pagination %}{% endblock %}
+
+    <section class="section pt-4 px-0">
+    {{ render_flash_messages(messages) }}
+      <div id="documents" class="card">
+        <header class="card-header">
+          <h2 class="card-header-title is-size-4 m-0">Documentación relacionada</h2>
+        </header>
+        <div class="card-content">
+            {% block document_list %}
+                <div class="content mt-4">
+                {% if entity_has_documents %}
+                  {% for document in documents %}
+                    <div class="card">
+                      <article class="card-content level is-flex is-flex-wrap-wrap is-justify-content-space-between">
+                        <div class="media m-0">
+                          <div class="media-left">
+                            {{ render_file_icon(document.file.filetype, size=1) }}
+                          </div>
+                          <div class="media-content ml-2">
+                            <p>
+                              <strong class="tag is-white">{{ render_category(document.file.tag) }} {{ document.file.is_link | file_type }}</strong>
+                              <small class="ml-1">{{ document.file.uploaded_at | format_date }}</small>
+                              <br />
+                              Título: {{ document.file.title }}
+                              <br />
+                              {% if document.file.is_link %}
+                              Enlace: <a href="{{ document.file.path }}">{{ document.file.path }}</a>
+                              {% endif %}
+                            </p>
+                          </div>
+                        </div>
+                        <div class="field has-addons">
+                          <div class="control">
+                            <button class="button is-danger hover modal-trigger" data-id="{{ document.file.id }}" data-target="user-delete-modal">
+                              <span class="icon mr-1">
+                                <i class="fa-solid fa-trash"></i>
+                              </span>
+                              Eliminar
+                            </button>
+                          </div>
+                          <div class="control">
+                            <a href="{{ document.download_url if document.download_url else '#' }}"
+                               class="button is-link {{ '' if document.download_url else 'is-disabled' }}"
+                               {% if not document.download_url %} aria-disabled="true" {% endif %}>
+                              <span class="icon mr-1">
+                                <i class="fa-solid fa-download"></i>
+                              </span>
+                              Descargar
+                            </a>
+                          </div>
+                        </div>
+                      </article>
                     </div>
-                    <div class="field has-addons">
-                      <div class="control">
-                        <button class="button is-danger hover modal-trigger" data-id="{{ document.file.id }}" data-target="user-delete-modal">
-                          <span class="icon mr-1">
-                            <i class="fa-solid fa-trash"></i>
-                          </span>
-                          Eliminar
-                        </button>
-                      </div>
-                      <div class="control">
-                        <a href="{{ document.download_url if document.download_url else '#' }}"
-                           class="button is-link {{ '' if document.download_url else 'is-disabled' }}"
-                           {% if not document.download_url %} aria-disabled="true" {% endif %}>
-                          <span class="icon mr-1">
-                            <i class="fa-solid fa-download"></i>
-                          </span>
-                          Descargar
-                        </a>
-                      </div>
-                    </div>
-                  </article>
-                </div>
-              {% endfor %}
-            {% else %}
-                <p>{% block no_documents_text %}{% endblock %}</p>
-            {% endif %}
-          </div>
-            </div>
-          </div>
-        </section>
-            {% block modal %}{% endblock %}
-        {% endblock %}
-
-    {% block add_form_block %}
-            <form method="POST" class="block" enctype="multipart/form-data">
-            {{ add_form.hidden_tag() }}
-            <div class="columns is-multiline">
-             <div class="column is-full">
-                <div class="field">
-                  <label class="label">{{ add_form.upload_type.label }}</label>
-                  <div class="control is-flex">
-                    {{ add_form.upload_type(class="is-flex") }}
-                  </div>
-                  {% if add_form.upload_type.errors %}
-                  <p class="help is-danger">{{ add_form.upload_type.errors[0] }}</p>
-                  {% endif %}
+                  {% endfor %}
+                {% else %}
+                    <p>{% block no_documents_text %}{% endblock %}</p>
+                {% endif %}
+              </div>
                 </div>
               </div>
-
-              <div class="column is-half">
-                <div class="field">
-                <label class="label">{{ add_form.title.label }}</label>
-                  <div class="control">
-                    {{ add_form.title(class="input", placeholder="Ingrese el título del documento") }}
-                  </div>
-                  {% if add_form.title.errors %}
-                  <p class="help is-danger">{{ add_form.title.errors[0] }}</p>
-                  {% endif %}
-                </div>
-              </div>
-
-              <div class="column is-half">
-                <div class="field">
-                <label class="label">{{ add_form.url.label }}</label>
-                  <div class="control">
-                    {{ add_form.url(class="input", placeholder="Ingrese la url del documento") }}
-                  </div>
-                  {% if add_form.url.errors %}
-                  <p class="help is-danger">{{ add_form.url.errors[0] }}</p>
-                  {% endif %}
-                </div>
-              </div>
-
-              <div class="column is-half">
-                <div class="field">
-                <label class="label">{{ add_form.tag.label }}</label>
-                  <div class="control">
-                    <div class="select is-fullwidth">
-                      {{ add_form.tag(class="is-fullwidth") }}
-                    </div>
-                  </div>
-                  {% if add_form.tag.errors %}
-                  <p class="help is-danger">{{ add_form.tag.errors[0] }}</p>
-                  {% endif %}
-                </div>
-              </div>
-
-              <div class="column is-half">
-                <div class="field">
-                <label class="label">{{ add_form.file.label }}</label>
-                  <div class="file has-name is-fullwidth">
-                    <label class="file-label">
-                      {{ add_form.file(class="file-input", multiple="multiple") }}
-                      <span class="file-cta">
-                        <span class="file-icon">
-                          <i class="fas fa-upload"></i>
-                        </span>
-                        <span class="file-label">Elegir archivo</span>
-                      </span>
-                      <span class="file-name">No se ha seleccionado ningún archivo</span>
-                    </label>
-                  </div>
-                  {% if add_form.file.errors %}
-                  <p class="help is-danger">{{ add_form.file.errors[0] }}</p>
-                  {% endif %}
-                </div>
-              </div>
-
-              <div class="column is-full">
-                <div class="field">
-                  <div class="control">
-                    <button type="submit" class="button is-fullwidth is-primary">
-                      Agregar documento
-                      <span class="icon ml-1">
-                        <i class="fa-solid fa-file"></i>
-                      </span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </form>
-        {% endblock %}
+                {% block bottom_pagination %}{% endblock %}
+            </section>
+                {% block modal %}{% endblock %}
+            {% endblock %}
 
 {% endblock %}
 

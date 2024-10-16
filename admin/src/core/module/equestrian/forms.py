@@ -11,7 +11,7 @@ from wtforms.fields import (
 from wtforms.validators import DataRequired, Length
 from wtforms import widgets
 
-from src.core.module.common.forms import BaseSearchForm
+from src.core.module.common.forms import BaseSearchForm, DocumentsSearchForm
 from src.core.module.common.forms import BaseAddDocumentsForm, allowed_filetypes, filetypes_message
 from src.core.module.common import (
     FilesNumber,
@@ -233,4 +233,12 @@ class HorseSearchForm(BaseSearchForm):
         choices=[("", "Ver Todos")] + [(jtype.name, jtype.value) for jtype in JAEnum],
         validate_choice=True,
     )
+
+
+class HorseDocumentSearchForm(DocumentsSearchForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.filter_tag.choices = [
+            ("", "Ver Todos"),
+        ] + [(e.name, e.value) for e in FileTagEnum]
 

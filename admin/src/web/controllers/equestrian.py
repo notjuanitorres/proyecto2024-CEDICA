@@ -5,7 +5,7 @@ from src.core.module.common import AbstractStorageServices
 from src.web.helpers.auth import check_user_permissions
 from src.core.container import Container
 from dependency_injector.wiring import inject, Provide
-from src.core.module.equestrian.forms import HorseCreateForm, HorseEditForm, HorseSearchForm, HorseAddDocumentsForm
+from src.core.module.equestrian.forms import HorseCreateForm, HorseEditForm, HorseSearchForm, HorseAddDocumentsForm, HorseDocumentSearchForm
 from src.core.module.equestrian import AbstractEquestrianRepository
 from src.core.module.equestrian.models import FileTagEnum
 from src.core.module.equestrian.mappers import HorseMapper as Mapper
@@ -153,38 +153,64 @@ def edit_documents(
     equestrian_repository: AbstractEquestrianRepository = Provide[Container.equestrian_repository],
     storage: AbstractStorageServices = Provide[Container.storage_services],
 ):
+    page = request.args.get("page", type=int)
+    per_page = request.args.get("per_page", type=int)
+
+    horse = equestrian_repository.get_only_horse_by_id(horse_id=horse_id)
+    if not horse:
+        flash(f"El caballo con ID = {horse_id} no existe", "danger")
+        return redirect(url_for("equestrian_bp.get_horses"))
+
     add_document_form = HorseAddDocumentsForm()
-    horse = equestrian_repository.get_by_id(horse_id=horse_id)
+    search_document_form = HorseDocumentSearchForm(request.args)
+
+    search_query = {}
+    order_by = []
+    if search_document_form.submit_search.data and search_document_form.validate():
+        order_by = [(search_document_form.order_by.data, search_document_form.order.data)]
+        search_query = {
+            "text": search_document_form.search_text.data,
+            "field": search_document_form.search_by.data,
+        }
+        if search_document_form.filter_tag.data:
+            search_query["filters"] = {"tag": search_document_form.filter_tag.data}
+
+    paginated_files = equestrian_repository.get_file_page(
+        horse_id=horse_id, page=page, per_page=per_page, order_by=order_by, search_query=search_query
+    )
 
     documents = []
-    for file in horse.get("files"):
+    for file in paginated_files:
+        file = file.to_dict()
         if not file.get("is_link"):
             documents.append({"file": file, "download_url": storage.presigned_download_url(file.get("path"))})
         else:
             documents.append({"file": file, "download_url": None})
 
         if not documents[-1].get("file").get("is_link") and not documents[-1].get("download_url"):
-            flash(f"No se pudieron obtener los archivos", "danger")
-            if request.referrer:
-                return redirect(request.referrer)
-            return redirect(url_for("equestrian_bp.edit_horse", horse_id=horse_id))
+            flash(f"Algunos archivos no se pudieron obtener", "warning")
+            break
 
     if request.method == "POST":
-        return update_documents(add_document_form, horse, documents)
+        return update_documents(add_document_form, search_document_form, horse, documents, paginated_files)
 
     return render_template(
         "./equestrian/update_documents.html",
         horse=horse,
         documents=documents,
         add_form=add_document_form,
+        search_form=search_document_form,
+        paginated_files=paginated_files,
     )
 
 
 @inject
 def update_documents(
     add_form: HorseAddDocumentsForm,
+    search_form: HorseDocumentSearchForm,
     horse: dict,
     documents: list[dict],
+    paginated_files,
     equestrian_repository: AbstractEquestrianRepository = Provide[Container.equestrian_repository],
     storage: AbstractStorageServices = Provide[Container.storage_services],
 ):
@@ -194,7 +220,10 @@ def update_documents(
             add_form=add_form,
             horse=horse,
             documents=documents,
+            search_form=search_form,
+            paginated_files=paginated_files,
         )
+
     horse_id = horse["id"]
     if add_form.upload_type.data == 'file':
         uploaded_document = storage.upload_file(

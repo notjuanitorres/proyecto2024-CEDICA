@@ -58,6 +58,17 @@ class HorseMapper:
         return serialized_horse
 
     @classmethod
+    def no_documents_from_entity(cls, horse: Horse) -> Dict:
+        serialized_horse = {"id": horse.id, "name": horse.name, "birth_date": horse.birth_date, "sex": horse.sex,
+                            "breed": horse.breed, "coat": horse.coat, "is_donation": horse.is_donation,
+                            "admission_date": horse.admission_date, "assigned_facility": horse.assigned_facility,
+                            "ja_type": horse.ja_type.value, "inserted_at": horse.inserted_at,
+                            "updated_at": horse.updated_at,
+                            }
+
+        return serialized_horse
+
+    @classmethod
     def from_simple_form(cls, data: Dict):
         return {
             "name": data.get("name"),

@@ -126,3 +126,18 @@ class BaseSearchForm(FlaskForm):
         choices=[("asc", "Ascendente"), ("desc", "Descendente")], validate_choice=True
     )
     submit_search = SubmitField("Buscar")
+
+
+class DocumentsSearchForm(BaseSearchForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.search_by.choices = [
+            ("title", "Título"),
+        ]
+        self.order_by.choices = [
+            ("title", "Título"),
+            ("inserted_at", "Fecha de subida"),
+        ]
+
+    filter_tag = SelectField(
+        choices=[], validate_choice=True)

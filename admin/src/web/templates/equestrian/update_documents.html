@@ -1,6 +1,6 @@
 {% extends "base_document_list.html" %}
 
-{% set entity_has_documents = horse.files %}
+{% set entity_has_documents = documents %}
 
 {% block title %} Caballos - Actualizar documentos {% endblock %}
 
@@ -31,10 +31,22 @@
     </li>
 {% endblock %}
 
+{% block form_action %}{{ url_for("equestrian_bp.edit_documents", horse_id=horse.id ) }}{% endblock %}
+{% block clear_url %}{{ url_for("equestrian_bp.edit_documents", horse_id=horse.id ) }}{% endblock %}
+
 {% block doc_header_title %} Actualizando documentos de {{ horse.name }} {% endblock %}
-{% block doc_header_endpoint %}{{ url_for("equestrian_bp.edit_horse", horse_id=horse.id ) }}{% endblock %}
+{% block doc_header_endpoint %}{{ url_for("equestrian_bp.edit_documents", horse_id=horse.id ) }}{% endblock %}
+
+
+{% block top_pagination %}
+  {{ render_pagination(paginated_files, 'equestrian_bp.edit_documents', {'horse_id': horse.id}) }}
+{% endblock %}
 
 {% block no_documents_text %} No se ha subido ningún documento para este caballo {% endblock %}
+
+{% block bottom_pagination %}
+  {{ render_pagination(paginated_files, 'equestrian_bp.edit_documents', {'horse_id': horse.id}) }}
+{% endblock %}
 
 
 {% block modal %}
