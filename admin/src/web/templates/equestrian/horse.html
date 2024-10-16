@@ -28,7 +28,7 @@
 {% block card_title %}Caballo: {{ horse.name }}{% endblock %}
 
 {% block card_content %}
-    <ul class="grid is-col-min-16">
+    <ul class="grid desktop-is-col-min-16">
         <div class="cell">
             <h4>Información general</h4>
             <li><strong>ID: </strong> {{ horse.id }}</li>
@@ -77,7 +77,7 @@
         </header>
         <div class="card-content">
             <div class="content">
-                <table class="table is-striped is-scrollable is-fullwidth">
+                <table class="table is-striped is-scrollable is-fullwidth is-hidden-touch">
                     <thead>
                     <tr>
                         <th></th>
@@ -118,16 +118,6 @@
                             <td><span
                                     class="is-hidden-tablet has-text-weight-bold">Posición: </span>{{ trainer.position.value }}
                             </td>
-
-                            <td class="is-hidden-tablet is-flex">
-                                <a href="{{ url_for('employee_bp.show_employee', employee_id = trainer.id) }}"
-                                   class="button is-flex-grow-1 ">
-                                        <span class="is-bold">
-                                            Ver en detalle
-                                            <i class="fa-regular fa-eye ml-2"></i>
-                                        </span>
-                                </a>
-                            </td>
                         </tr>
                     {% endfor %}
                     </tbody>
@@ -142,6 +132,23 @@
                     </tr>
                     </tfoot>
                 </table>
+                <div class="box is-hidden-desktop">
+                    {% for trainer in horse_trainers %}
+
+                    <p><strong>ID:</strong> {{ trainer.id }}</p>
+                    <p><strong>Nombre:</strong> {{ trainer.name }}</p>
+                    <p><strong>Apellido:</strong> {{ trainer.lastname }}</p>
+                    <p><strong>Posición:</strong> {{ trainer.position.value }}</p>
+                    <div class="buttons">
+                        <div class="is-hidden-tablet is-flex">
+                            <a href="{{ url_for('employee_bp.show_employee', employee_id = trainer.id) }}"
+                               class="button is-flex-grow-1 ">
+                                    <span class="is-bold">
+                                        Ver en detalle
+                                        <i class="fa-regular fa-eye ml-2"></i>
+                                    </span>
+                            </a>
+                        </div>
                 {% if "ecuestre_update" in permissions or is_admin %}
                     {% block create_button %}
                         <a class="button is-primary level-item" href="{{ url_for('equestrian_bp.edit_horse', horse_id=horse.id) }}#trainers-content">
@@ -152,6 +159,7 @@
                 {% endif %}
 
             </div>
+            {% endfor %}
         </div>
 
     </div>
