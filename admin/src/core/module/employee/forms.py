@@ -242,3 +242,5 @@ class EmployeeSearchForm(FlaskForm):
         choices=[("asc", "Ascendente"), ("desc", "Descendente")], validate_choice=True
     )
     submit_search = SubmitField("Buscar")
+
+    
