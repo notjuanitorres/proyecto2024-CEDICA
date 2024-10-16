@@ -30,7 +30,7 @@ class AbstractEmployeeRepository:
         raise NotImplementedError
 
     @abstractmethod
-    def get_employee(self, employee_id: int) -> Dict:
+    def get_employee(self, employee_id: int, documents: bool = True) -> Dict:
         raise NotImplementedError
 
     @abstractmethod
@@ -62,7 +62,23 @@ class AbstractEmployeeRepository:
         raise NotImplementedError
 
     @abstractmethod
+    def update_document(self, employee_id: int, document_id: int, data: Dict) -> bool:
+        raise NotImplementedError
+
+    @abstractmethod
     def get_trainers(self) -> List:
+        raise NotImplementedError
+
+    @abstractmethod
+    def get_file_page(
+            self,
+            employee_id: int,
+            page: int,
+            per_page: int,
+            max_per_page: int = 10,
+            search_query: Dict = None,
+            order_by: List = None,
+    ):
         raise NotImplementedError
 
 
@@ -104,8 +120,8 @@ class EmployeeRepository(AbstractEmployeeRepository):
             self.db.session.query(Employee).filter(Employee.id == employee_id).first()
         )
 
-    def get_employee(self, employee_id):
-        return Mapper.from_entity(self.__get_by_id(employee_id))
+    def get_employee(self, employee_id, documents=True):
+        return Mapper.from_entity(self.__get_by_id(employee_id), documents=documents)
 
     def __get_by_email(self, email: str) -> Employee | None:
         return self.db.session.query(Employee).filter(Employee.email == email).first()
@@ -164,3 +180,34 @@ class EmployeeRepository(AbstractEmployeeRepository):
             )
             .all()
         )
+
+    def get_file_page(
+            self,
+            employee_id: int,
+            page: int,
+            per_page: int,
+            max_per_page: int = 10,
+            search_query: Dict = None,
+            order_by: List = None,
+    ):
+
+        query = EmployeeFile.query
+
+        if search_query.get("filters"):
+            search_query["filters"]["employee_id"] = employee_id
+        else:
+            search_query["filters"] = {"employee_id": employee_id}
+
+        query = apply_filters(EmployeeFile, query, search_query, order_by)
+
+        return query.paginate(
+            page=page, per_page=per_page, error_out=False, max_per_page=max_per_page
+        )
+
+    def update_document(self, employee_id: int, document_id: int, data: Dict) -> bool:
+        doc_query = self.db.session.query(EmployeeFile).filter_by(employee_id=employee_id, id=document_id)
+        if not doc_query:
+            return False
+        doc_query.update(data)
+        self.save()
+        return True

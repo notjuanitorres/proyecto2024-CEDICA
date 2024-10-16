@@ -1,9 +1,12 @@
 {% extends "base_document_list.html" %}
 
-{% set entity_has_documents = employee.files %}
+{% from "employee/macros/parse_categories.html" import render_category %}
 
-{% block title %} Empleados - Actualizar documentos {% endblock %}
+{# Variables used in base_document_list #}
+{% set entity_has_documents = documents %}
+{% set current_url = url_for('employee_bp.edit_documents', employee_id=employee.id) %}
 
+{% block title %} Equipo - Actualizar documentos {% endblock %}
 
 {% block breadcrumb_items %}
     <li>
@@ -27,15 +30,30 @@
         <span class="icon is-small">
           <i class="fa-solid fa-pen-nib"></i>
         </span>
-        <span>Actualizar miembro</span>
+        <span>Actualizar documentos</span>
       </a>
     </li>
 {% endblock %}
 
-{% block doc_header_title %} Actualizando documentos de {{ employee.name }} {% endblock %}
-{% block doc_header_endpoint %}{{ url_for("employee_bp.edit_employee", employee_id=employee.id ) }}{% endblock %}
+{% block form_action %}{{ url_for("employee_bp.edit_documents", employee_id=employee.id ) }}{% endblock %}
+{% block clear_url %}{{ url_for("employee_bp.edit_documents", employee_id=employee.id ) }}{% endblock %}
+
+{% block doc_header_title %} Actualizando documentos de {{ employee.name }} {{ employee.lastname }} {% endblock %}
+{% block doc_header_endpoint %}{{ url_for("employee_bp.edit_documents", employee_id=employee.id ) }}{% endblock %}
+
+{% block top_pagination %}
+  {{ render_pagination(paginated_files, 'employee_bp.edit_documents', {'employee_id': employee.id}) }}
+{% endblock %}
+
+{% macro render_document_category(document) %}
+    {{ render_category(document.file.tag) }}
+{% endmacro %}
 
 {% block no_documents_text %} No se ha subido ningún documento para este empleado {% endblock %}
+
+{% block bottom_pagination %}
+  {{ render_pagination(paginated_files, 'employee_bp.edit_documents', {'employee_id': employee.id}) }}
+{% endblock %}
 
 {% block modal %}
     {{ render_delete_modal(

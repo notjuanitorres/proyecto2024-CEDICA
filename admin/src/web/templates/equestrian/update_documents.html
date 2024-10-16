@@ -1,5 +1,8 @@
 {% extends "base_document_list.html" %}
 
+{% from "equestrian/macros/parse_categories.html" import render_category %}
+
+{# Variables used in base_document_list #}
 {% set entity_has_documents = documents %}
 {% set current_url = url_for('equestrian_bp.edit_documents', horse_id=horse.id) %}
 
@@ -42,6 +45,10 @@
 {% block top_pagination %}
   {{ render_pagination(paginated_files, 'equestrian_bp.edit_documents', {'horse_id': horse.id}) }}
 {% endblock %}
+
+{% macro render_document_category(document) %}
+    {{ render_category(document.file.tag) }}
+{% endmacro %}
 
 {% block no_documents_text %} No se ha subido ningún documento para este caballo {% endblock %}
 

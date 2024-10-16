@@ -2,7 +2,7 @@
 
 {% from "macros/file_icon.html" import render_file_icon %}
 {% from "macros/delete_modal.html" import render_delete_modal %}
-{% from "equestrian/macros/parse_categories.html" import render_category %}
+
 {% from "macros/flash_message.html" import render_flash_messages %}
 {% from "macros/pagination.html" import render_pagination %}
 
@@ -275,7 +275,7 @@
                           </div>
                           <div class="media-content ml-2">
                             <p>
-                              <strong class="tag is-white">{{ render_category(document.file.tag) }} {{ document.file.is_link | file_type }}</strong>
+                              <strong class="tag is-white">{{ render_document_category(document) }}{{ document.file.is_link | file_type }}</strong>
                               <small class="ml-1">{{ document.file.uploaded_at | format_date }}</small>
                               <br />
                               Título: {{ document.file.title }}

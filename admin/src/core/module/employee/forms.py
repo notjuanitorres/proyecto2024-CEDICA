@@ -14,8 +14,13 @@ from wtforms.fields import (
     HiddenField,
 )
 
-from src.core.module.common.forms import BaseSearchForm
-from src.core.module.common.forms import filetypes_message, allowed_filetypes, BaseManageDocumentsForm
+from src.core.module.common.forms import (
+    filetypes_message,
+    allowed_filetypes,
+    BaseManageDocumentsForm,
+    BaseSearchForm,
+    DocumentsSearchForm,
+)
 from src.core.module.employee.data import (
     ProfessionsEnum,
     JobPositionEnum as PositionEnum,
@@ -214,3 +219,11 @@ class EmployeeSearchForm(BaseSearchForm):
         choices=[("", "Ver Todas")] + [(e.name, e.value) for e in PositionEnum],
         validate_choice=True,
     )
+
+
+class EmployeeDocumentSearchForm(DocumentsSearchForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.filter_tag.choices = [
+            ("", "Ver Todos"),
+        ] + [(e.name, e.value) for e in FileTagEnum]

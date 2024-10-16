@@ -2,23 +2,23 @@
 
 {% block breadcrumb_items %}
     <li>
-      <a href="{{ url_for('equestrian_bp.get_horses') }}">
+      <a href="{{ url_for('employee_bp.get_employees') }}">
         <span class="icon is-small">
-          <i class="fas fa-horse" aria-hidden="true"></i>
+          <i class="fas fa-users" aria-hidden="true"></i>
         </span>
-        <span>Caballos</span>
+        <span>Equipo</span>
       </a>
     </li>
     <li>
-      <a href="{{ url_for('equestrian_bp.show_horse', horse_id=horse.id) }}">
+      <a href="{{ url_for('employee_bp.show_employee', employee_id=employee.id) }}">
         <span class="icon is-small">
-          <i class="fas fa-horse-head" aria-hidden="true"></i>
+          <i class="fas fa-user" aria-hidden="true"></i>
         </span>
-        <span>{{ horse.name }}</span>
+        <span>{{ employee.name }} {{ employee.lastname }}</span>
       </a>
     </li>
     <li>
-      <a href="{{ url_for('equestrian_bp.edit_documents', horse_id=horse.id) }}">
+      <a href="">
         <span class="icon is-small">
           <i class="fa-solid fa-pen-nib"></i>
         </span>
@@ -26,7 +26,7 @@
       </a>
     </li>
     <li>
-      <a href="{{ url_for('equestrian_bp.edit_document', horse_id=horse.id, document_id=document.id) }}">
+      <a href="{{ url_for('employee_bp.edit_document', employee_id=employee.id, document_id=document.id) }}">
         <span class="icon is-small">
           <i class="fa-solid fa-pen-nib"></i>
         </span>

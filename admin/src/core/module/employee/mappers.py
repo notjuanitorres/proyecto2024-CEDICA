@@ -68,7 +68,7 @@ class EmployeeMapper:
         return employee
 
     @classmethod
-    def from_entity(self, employee: Employee) -> "Dict":
+    def from_entity(self, employee: Employee, documents: bool = True) -> "Dict":
         serialized_employee = {
             "id": employee.id,
             "name": employee.name,
@@ -105,7 +105,8 @@ class EmployeeMapper:
             "inserted_at": employee.inserted_at,
             "updated_at": employee.updated_at,
         }
-        serialized_employee["files"] = [ file.to_dict() for file in employee.files if file ]
+        if documents:
+            serialized_employee["files"] = [file.to_dict() for file in employee.files if file ]
 
         return serialized_employee
 
