@@ -194,15 +194,15 @@
                             </button>
                           </div>
                           <div class="control">
-                            <a href="{{ document.download_url if document.download_url else '#' }}"
-                               class="button is-link {{ '' if document.download_url else 'is-disabled' }}"
-                               {% if not document.download_url %} aria-disabled="true" {% endif %}>
-                              <span class="icon mr-1">
-                                <i class="fa-solid fa-download"></i>
-                              </span>
-                              Descargar
-                            </a>
-                          </div>
+                              <a href="{{ url_for('index_bp.download_url', path=document.file.path) if not document.file.is_link else '#' }}"
+                                 class="button is-link {{ '' if not document.file.is_link else 'is-disabled' }}"
+                                 {% if not document.download_url %} aria-disabled="true" {% endif %}>
+                                <span class="icon mr-1">
+                                  <i class="fa-solid fa-download"></i>
+                                </span>
+                                Descargar
+                              </a>
+                            </div>
                           <div class="control">
                             <a href="{{ current_url }}/editar/{{ document.file.id }}"
                                class="button is-primary">
