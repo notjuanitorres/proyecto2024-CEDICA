@@ -200,7 +200,7 @@ class HorseEditForm(HorseManagementForm):
         from src.core.container import Container
 
         container = Container()
-        return container.employee_repository()
+        return container.employee_services()
 
     def get_trainers_choices(self):
         return [
