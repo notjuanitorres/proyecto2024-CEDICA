@@ -1,105 +1,189 @@
 {% extends "base_show.html" %}
 
-{% block title %}Jockey {{ jockey.first_name + " " + jockey.last_name }} - CEDICA{% endblock %}
+{% block title %}Jockey Amazon {{ jockey_amazon.first_name + " " + jockey_amazon.last_name }} - CEDICA{% endblock %}
 
 {% block breadcrumb_items %}
-    <li>
-        <a href="{{ url_for('jockey_amazon_bp.get_jockeys' )}}">
+<li>
+    <a href="{{ url_for('jockey_amazon_bp.get_jockeys') }}">
             <span class="icon is-small">
-                <i class="fas fa-hat-cowboy" aria-hidden="true"></i>
+                <i class="fas fa-user-jockey" aria-hidden="true"></i>
             </span>
-            <span>Jockeys</span>
-        </a>
-    </li>
-    <li>
-        <a href="">
+        <span>Jockeys Amazon</span>
+    </a>
+</li>
+<li>
+    <a href="">
             <span class="icon is-small">
                 <i class="fa-solid fa-user" aria-hidden="true"></i>
             </span>
-            <span>{{ jockey.first_name + " " + jockey.last_name }}</span>
-        </a>
-    </li>
+        <span>{{ jockey_amazon.first_name + " " + jockey_amazon.last_name }}</span>
+    </a>
+</li>
 {% endblock %}
 
-{% block card_title %}Jockey: {{ jockey.first_name + " " + jockey.last_name }}{% endblock %}
+{% block card_title %}Jockey Amazon: {{ jockey_amazon.first_name + " " + jockey_amazon.last_name }}{% endblock %}
 
 {% block card_content %}
 
 <div class="grid is-col-min-16">
     <div id="basic-info" class="cell">
-        <h3>Informacion general</h3>
+        <h3>Información general</h3>
         <ul>
-            <li><strong>ID: </strong> {{ jockey.id }}</li>
-            <li><strong>Nombre: </strong>{{ jockey.first_name }}</li>
-            <li><strong>Apellido: </strong> {{ jockey.last_name }}</li>
-            <li><strong>Telefono: </strong>{{ jockey.phone }}</li>
-            <li><strong>DNI: </strong>{{ jockey.dni }}</li>
-            <li><strong>Dado de alta: </strong>{{ jockey.inserted_at | format_date }}</li>
-            <li><strong>Ultima modificacion: </strong>{{ jockey.updated_at | format_date }}</li>
+            <li><strong>ID: </strong> {{ jockey_amazon.id }}</li>
+            <li><strong>Nombre: </strong>{{ jockey_amazon.first_name }}</li>
+            <li><strong>Apellido: </strong> {{ jockey_amazon.last_name }}</li>
+            <li><strong>DNI: </strong>{{ jockey_amazon.dni }}</li>
+            <li><strong>Edad: </strong> {{ jockey_amazon.age }}</li>
+            <li><strong>Fecha de nacimiento: </strong>{{ jockey_amazon.birth_date }}</li>
+            <li><strong>Lugar de nacimiento: </strong>{{ jockey_amazon.birthplace }}</li>
+            <li><strong>Telefono: </strong>(+{{ jockey_amazon.country_code }}) ({{ jockey_amazon.area_code }}) {{ jockey_amazon.phone }} </li>
+            <li><strong>Dirección: </strong>{{ jockey_amazon.street }} {{ jockey_amazon.number }} {% if jockey_amazon.department %}{{ jockey_amazon.department }}{% endif %}, {{ jockey_amazon.locality }}, {{ jockey_amazon.province }}</li>
+            <li><strong>Fecha de creación: </strong>{{ jockey_amazon.inserted_at | format_date }}</li>
+            <li><strong>Última modificación: </strong>{{ jockey_amazon.updated_at | format_date }}</li>
         </ul>
     </div>
-    <div id="job-info" class="cell">
-        <h3>Datos laborales</h3>
+    <div id="emergency-contact-info" class="cell">
+        <h3>Información de contacto de emergencia</h3>
         <ul>
-            <li><strong>Condición laboral: </strong>{{ jockey.work_condition }}</li>
-            <li><strong>Propuesta de trabajo: </strong>{{ jockey.work_proposal }}</li>
-            <li><strong>Asignación familiar: </strong>{{ jockey.family_assignment }}</li>
+            <li><strong>Contacto de emergencia: </strong> {{ jockey_amazon.emergency_contact_name }}</li>
+            <li><strong>Telefono de emergencia: </strong>{{ jockey_amazon.emergency_contact_phone }}</li>
+        </ul>
+    </div>
+    <div id="scholarship-info" class="cell">
+        <h3>Información de beca</h3>
+        <ul>
+            <li><strong>Tiene beca: </strong>{{ jockey_amazon.is_scholarship | natural_boolean }}</li>
+            {% if jockey_amazon.is_scholarship %}
+            <li><strong>Beca: </strong>{{ jockey_amazon.scholarship_observations }}</li>
+            {% endif %}
+        </ul>
+    </div>
+    <div id="disability-info" class="cell">
+        <h3>Información sobre discapacidad</h3>
+        <ul>
+            <li><strong>Tiene discapacidad: </strong>{{ jockey_amazon.has_disability | natural_boolean }}</li>
+            {% if jockey_amazon.has_disability %}
+            <li><strong>Diagnóstico: </strong>{{ jockey_amazon.disability_diagnosis.value }}</li>
+            <li><strong>Otro diagnóstico: </strong>{{ jockey_amazon.disability_other }}</li>
+            <li><strong>Tipo de discapacidad: </strong>{{ jockey_amazon.disability_type.value  }}</li>
+            {% endif %}
         </ul>
     </div>
 </div>
-<div id="emergency-contact-info has-bab" class="cell box">
-    <h4>Contacto de emergencia</h4>
-    <ul id="emergency-contact">
-        <li><strong>Nombre completo: </strong>{{ jockey.emergency_contact_name }}</li>
-        <li><strong>Telefono: </strong>{{ jockey.emergency_contact_phone }}</li>
+
+<div id="family-assignment-info" class="cell box">
+    <h4>Asignación familiar</h4>
+    <ul>
+        <li><strong>¿Tiene asignación familiar? </strong>{{ jockey_amazon.has_family_assignment | natural_boolean }}</li>
+        {% if jockey_amazon.has_family_assignment %}
+        <li><strong>Tipo de asignación: </strong>{{ jockey_amazon.family_assignment_type.value }}</li>
+        {% endif %}
     </ul>
 </div>
+
+<div id="pension-info" class="cell box">
+    <h4>Información de pensión</h4>
+    <ul>
+        <li><strong>¿Tiene pensión? </strong>{{ jockey_amazon.has_pension | natural_boolean }}</li>
+        {% if jockey_amazon.has_pension %}
+        <li><strong>Detalles: </strong>{{ jockey_amazon.pension_details }}</li>
+        {% endif %}
+    </ul>
+</div>
+<div id="social-security-info" class="cell box">
+    <h4>Información de seguridad social</h4>
+    <ul>
+        <li><strong>Obra Social: </strong>{{ jockey_amazon.social_security }}</li>
+        <li><strong>Número de seguridad social: </strong>{{ jockey_amazon.social_security_number }}</li>
+    </ul>
+</div>
+<div id="curatorship-info" class="cell box">
+    <h4>Información de curadoría</h4>
+    <ul>
+        <li><strong>Tiene curadoría: </strong>{{ jockey_amazon.has_curatorship | natural_boolean }}</li>
+        {% if jockey_amazon.has_curatorship %}
+        <li><strong>Observaciones: </strong>{{ jockey_amazon.curatorship_observations }}</li>
+        {% endif %}
+    </ul>
+</div>
+<div id="school-info" class="cell box">
+    <h4>Información escolar</h4>
+    <ul>
+        <li><strong>Institución escolar: </strong>{{ jockey_amazon.school_institution.name }}</li>
+        <li><strong>Calle: </strong>{{ jockey_amazon.school_institution.street }}</li>
+        <li><strong>Número: </strong>{{ jockey_amazon.school_institution.number }}</li>
+        {% if jockey_amazon.school_institution.department %}
+        <li><strong>Departamento: </strong>{{ jockey_amazon.school_institution.department }}</li>
+        {% endif %}
+        <li><strong>Localidad: </strong>{{ jockey_amazon.school_institution.locality }}</li>
+        <li><strong>Provincia: </strong>{{ jockey_amazon.school_institution.province }}</li>
+        <li><strong>Número de teléfono: </strong>{{ jockey_amazon.school_institution.phone_country_code }} {{ jockey_amazon.school_institution.phone_area_code }} {{ jockey_amazon.school_institution.phone_number }}</li>
+        <li><strong>Año de grado actual: </strong>{{ jockey_amazon.current_grade_year }}</li>
+        <li><strong>Observaciones escolares: </strong>{{ jockey_amazon.school_observations }}</li>
+    </ul>
+</div>
+<div id="professionals-info" class="cell box">
+    <h4>Profesionales</h4>
+    <ul>
+        <li>{{ jockey_amazon.professionals }}</li>
+    </ul>
+</div>
+
+<div id="work-assignment-info" class="cell box">
+    <h4>Asignación laboral</h4>
+    <ul>
+        <li><strong>Propuesta: </strong> {{ jockey_amazon.work_assignment.proposal.value }}</li>
+        <li><strong>Condición: </strong> {{ jockey_amazon.work_assignment.condition.value }}</li>
+        <li><strong>Sede: </strong> {{ jockey_amazon.work_assignment.sede.value }}</li>
+        <li><strong>Días laborales: </strong>
+            {% for day in jockey_amazon.work_assignment.days %}
+            {{ day.value }}{% if not loop.last %}, {% endif %}
+            {% endfor %}
+        </li>
+        <li><strong>Profesor o Terapeuta: </strong> {{ jockey_amazon.work_assignment.professor_or_therapist_id }}</li>
+        <li><strong>Conductor: </strong> {{ jockey_amazon.work_assignment.conductor_id }}</li>
+        <li><strong>Asistente de pista: </strong> {{ jockey_amazon.work_assignment.track_assistant_id }}</li>
+        <li><strong>Caballo: </strong> {{ jockey_amazon.work_assignment.horse_id }}</li>
+    </ul>
+</div>
+
+<div id="family-members-info" class="cell box">
+    <h4>Miembros de la familia</h4>
+    <ul>
+        {% for family_member in jockey_amazon.family_members %}
+        <li>
+            <strong>Relación: </strong> {{ family_member.relationship }}<br>
+            <strong>Nombre: </strong> {{ family_member.first_name }} {{ family_member.last_name }}<br>
+            <strong>DNI: </strong> {{ family_member.dni }}<br>
+            <strong>Dirección: </strong> {{ family_member.street }} {{ family_member.number }} {% if family_member.department %}{{ family_member.department }}{% endif %}, {{ family_member.locality }}, {{ family_member.province }}<br>
+            <strong>Teléfono: </strong> (+{{ family_member.phone_country_code }}) ({{ family_member.phone_area_code }}) {{ family_member.phone_number }}<br>
+            <strong>Email: </strong> {{ family_member.email }}<br>
+            <strong>Nivel educativo: </strong> {{ family_member.education_level.name }}<br>
+            <strong>Ocupación: </strong> {{ family_member.occupation }}<br>
+        </li>
+        <hr>
+        {% endfor %}
+    </ul>
+</div>
+
+
 {% endblock %}
 
 {% block card_actions %}
-    <button href="" class="card-footer-item has-text-danger modal-trigger" data-id="{{ jockey.id }}" data-target="jockey-delete-modal">
+    <button href="" class="card-footer-item has-text-danger modal-trigger" data-id="{{ jockey_amazon.id }}" data-target="jockey-delete-modal">
         Eliminar
     </button>
-    <a href="{{ url_for( "jockey_amazon_bp.edit_jockey", jockey_id=jockey.id )}}" class="card-footer-item has-text-warning">Editar</a>
-{% endblock %}
-
-{% block additional_cards %}
-    <div class="card">
-        <header class="card-header">
-            <p class="card-header-title is-size-4">Documentos anexos</p>
-        </header>
-        <div class="card-content">
-            <div class="content">
-                
-            </div>
-        </div>
-        <footer class="card-footer">
-            <a href="" class="card-footer-item has-text-warning">Editar</a>
-        </footer>
-    </div>
-    <div class="card">
-        <header class="card-header">
-            <p class="card-header-title is-size-4">Usuario asociado a {{ jockey.fullname }}</p>
-        </header>
-        <div class="card-content">
-            <div class="content">
-                <p>No existe un usuario asociado a este integrante</p>
-            </div>
-        </div>
-        <footer class="card-footer">
-            <a href="" class="card-footer-item">Ver</a>
-        </footer>
-    </div>
+    <a href="{{ url_for('jockey_amazon_bp.get_jockeys') }}" class="card-footer-item has-text-warning">Editar</a>
 {% endblock %}
 
 {% block modal %}
-  {{
-    render_delete_modal(
-      field="jockey",
-      endpoint="jockey_amazon_bp.delete_jockey",
-      title="Eliminar",
-      msg="¿Está seguro de que desea eliminar este jockey?",
-      msg_sub="Luego de confirmar, no se podrán revertir los cambios"
-    )
-  }}
+    {{
+        render_delete_modal(
+            field="jockey",
+            endpoint="jockey_amazon_bp.delete_jockey",
+            title="Eliminar",
+            msg="¿Está seguro de que desea eliminar este Jockey Amazon?",
+            msg_sub="Luego de confirmar, no se podrán revertir los cambios"
+        )
+    }}
 {% endblock %}

@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, BooleanField, SelectField, TextAreaField, IntegerField, DateField, FormField, FieldList
+from wtforms import StringField, BooleanField, SelectField, TextAreaField, IntegerField, DateField, FormField, FieldList, SubmitField
 from wtforms.validators import DataRequired, Length, Optional
 from src.core.module.common.forms import AddressForm, PhoneForm, EmergencyContactForm
 from src.core.module.jockey_amazon.models import (
@@ -21,21 +21,21 @@ class SchoolInstitutionForm(FlaskForm):
     phone_number = StringField('Número de Teléfono', validators=[DataRequired(), Length(max=15)])
 
 class FamilyMemberForm(FlaskForm):
-    relationship = StringField('Relación', validators=[DataRequired(), Length(max=50)])
-    first_name = StringField('Nombre', validators=[DataRequired(), Length(max=100)])
-    last_name = StringField('Apellido', validators=[DataRequired(), Length(max=100)])
-    dni = StringField('DNI', validators=[DataRequired(), Length(min=8, max=8)])
-    street = StringField('Calle', validators=[DataRequired(), Length(max=50)])
-    number = IntegerField('Número', validators=[DataRequired()])
+    relationship = StringField('Relación', validators=[Optional(), Length(max=50)])
+    first_name = StringField('Nombre', validators=[Optional(), Length(max=100)])
+    last_name = StringField('Apellido', validators=[Optional(), Length(max=100)])
+    dni = StringField('DNI', validators=[Optional(), Length(min=8, max=8)])
+    street = StringField('Calle', validators=[Optional(), Length(max=50)])
+    number = IntegerField('Número', validators=[Optional()])
     department = StringField('Departamento', validators=[Optional(), Length(max=50)])
-    locality = StringField('Localidad', validators=[DataRequired(), Length(max=50)])
-    province = StringField('Provincia', validators=[DataRequired(), Length(max=50)])
-    phone_country_code = StringField('Código de País', validators=[DataRequired(), Length(max=5)])
-    phone_area_code = StringField('Código de Área', validators=[DataRequired(), Length(max=5)])
-    phone_number = StringField('Número de Teléfono', validators=[DataRequired(), Length(max=15)])
-    email = StringField('Correo Electrónico', validators=[DataRequired(), Length(max=100)])
-    education_level = SelectField('Nivel Educativo', choices=enum_choices(EducationLevelEnum), validators=[DataRequired()])
-    occupation = StringField('Ocupación', validators=[DataRequired(), Length(max=100)])
+    locality = StringField('Localidad', validators=[Optional(), Length(max=50)])
+    province = StringField('Provincia', validators=[Optional(), Length(max=50)])
+    phone_country_code = StringField('Código de País', validators=[Optional(), Length(max=5)])
+    phone_area_code = StringField('Código de Área', validators=[Optional(), Length(max=5)])
+    phone_number = StringField('Número de Teléfono', validators=[Optional(), Length(max=15)])
+    email = StringField('Correo Electrónico', validators=[Optional(), Length(max=100)])
+    education_level = SelectField('Nivel Educativo', choices=enum_choices(EducationLevelEnum), validators=[Optional()])
+    occupation = StringField('Ocupación', validators=[Optional(), Length(max=100)])
 
 class WorkAssignmentForm(FlaskForm):
     proposal = SelectField('Propuesta de Trabajo', choices=enum_choices(WorkProposalEnum), validators=[DataRequired()])
@@ -52,7 +52,6 @@ class JockeyAmazonManagementForm(FlaskForm):
     first_name = StringField('Nombre', validators=[DataRequired(), Length(max=100)])
     last_name = StringField('Apellido', validators=[DataRequired(), Length(max=100)])
     dni = StringField('DNI', validators=[DataRequired(), Length(min=8, max=8)])
-    age = IntegerField('Edad', validators=[DataRequired()])
     birth_date = DateField('Fecha de Nacimiento', validators=[DataRequired()])
     birthplace = StringField('Lugar de Nacimiento', validators=[DataRequired(), Length(max=100)])
     address = FormField(AddressForm)
@@ -76,8 +75,9 @@ class JockeyAmazonManagementForm(FlaskForm):
     current_grade_year = StringField('Grado / Año Actual', validators=[Optional(), Length(max=50)])
     school_observations = TextAreaField('Observaciones sobre la Institución Escolar', validators=[Optional()])
     professionals = TextAreaField('Profesionales que lo atienden', validators=[Optional()])
-    family_members = FieldList(FormField(FamilyMemberForm), min_entries=1)
-    work_assignments = FieldList(FormField(WorkAssignmentForm), min_entries=1)
+    family_member1 = FormField(FamilyMemberForm)
+    family_member2 = FormField(FamilyMemberForm)
+    work_assignments = FormField(WorkAssignmentForm)
 
 class JockeyAmazonCreateForm(JockeyAmazonManagementForm):
     pass
@@ -116,4 +116,4 @@ class JockeyAmazonSearchForm(FlaskForm):
         ],
         validate_choice=True,
     )
-    submit_search = BooleanField('Buscar')
+    submit_search = SubmitField("Buscar")

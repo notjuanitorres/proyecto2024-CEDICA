@@ -9,9 +9,16 @@ class JockeyAmazonMapper:
             "first_name": jockey.first_name,
             "last_name": jockey.last_name,
             "dni": jockey.dni,
-            "age": jockey.age,
             "birth_date": jockey.birth_date,
             "birthplace": jockey.birthplace,
+            "phone_country_code": jockey.country_code,
+            "phone_area_code": jockey.area_code,
+            "phone_number": jockey.phone,
+            "street": jockey.street,
+            "number": jockey.number,
+            "department": jockey.department,
+            "locality": jockey.locality,
+            "province": jockey.province,
             "is_scholarship": jockey.is_scholarship,
             "scholarship_observations": jockey.scholarship_observations,
             "has_disability": jockey.has_disability,
@@ -39,22 +46,30 @@ class JockeyAmazonMapper:
             "family_members": [
                 FamilyMemberMapper.from_entity(member) for member in jockey.family_members
             ],
-            "work_assignments": [
-                WorkAssignmentMapper.from_entity(assignment) for assignment in jockey.work_assignments
-            ],
+            "work_assignment": WorkAssignmentMapper.from_entity(jockey.work_assignment)
         }
 
     @classmethod
     def to_entity(cls, data: Dict) -> JockeyAmazon:
+        phone = data.get("phone", {})
+        address = data.get("address", {})
+        emergency_contact = data.get("emergency_contact", {})
         print(data)
         return JockeyAmazon(
             id=data.get("id"),
             first_name=data.get("first_name"),
             last_name=data.get("last_name"),
             dni=data.get("dni"),
-            age=data.get("age"),
             birth_date=data.get("birth_date"),
             birthplace=data.get("birthplace"),
+            country_code=phone.get("country_code"),
+            area_code=phone.get("area_code"),
+            phone=phone.get("number"),
+            street=address.get("street"),
+            number=address.get("number"),
+            department=address.get("department"),
+            locality=address.get("locality"),
+            province=address.get("province"),
             is_scholarship=data.get("is_scholarship"),
             scholarship_observations=data.get("scholarship_observations"),
             has_disability=data.get("has_disability"),
@@ -69,20 +84,19 @@ class JockeyAmazonMapper:
             social_security_number=data.get("social_security_number"),
             has_curatorship=data.get("has_curatorship"),
             curatorship_observations=data.get("curatorship_observations"),
+            school_institution=SchoolInstitutionMapper.to_entity(data.get("school_institution")),
             school_institution_id=data.get("school_institution_id"),
             current_grade_year=data.get("current_grade_year"),
             school_observations=data.get("school_observations"),
             professionals=data.get("professionals"),
             inserted_at=data.get("inserted_at"),
             updated_at=data.get("updated_at"),
-            emergency_contact_name=data.get("emergency_contact", {}).get("emergency_contact_name"),
-            emergency_contact_phone=data.get("emergency_contact", {}).get("emergency_contact_phone"),
+            emergency_contact_name=emergency_contact.get("emergency_contact_name"),
+            emergency_contact_phone=emergency_contact.get("emergency_contact_phone"),
             family_members=[
                 FamilyMemberMapper.to_entity(member) for member in data.get("family_members", [])
             ],
-            work_assignments=[
-                WorkAssignmentMapper.to_entity(assignment) for assignment in data.get("work_assignments", [])
-            ],
+            work_assignment=WorkAssignmentMapper.to_entity(data.get("work_assignments"))
         )
 
 class FamilyMemberMapper:
@@ -179,7 +193,6 @@ class WorkAssignmentMapper:
             "conductor_id": assignment.conductor_id,
             "track_assistant_id": assignment.track_assistant_id,
             "horse_id": assignment.horse_id,
-            "jockey_amazon_id": assignment.jockey_amazon_id,
         }
 
     @classmethod
@@ -194,7 +207,6 @@ class WorkAssignmentMapper:
             conductor_id=data.get("conductor_id"),
             track_assistant_id=data.get("track_assistant_id"),
             horse_id=data.get("horse_id"),
-            jockey_amazon_id=data.get("jockey_amazon_id"),
         )
 
     @classmethod
@@ -208,7 +220,6 @@ class WorkAssignmentMapper:
             "conductor_id": form.conductor_id.data,
             "track_assistant_id": form.track_assistant_id.data,
             "horse_id": form.horse_id.data,
-            "jockey_amazon_id": form.jockey_amazon_id.data,
         }
 
     @classmethod
@@ -221,4 +232,34 @@ class WorkAssignmentMapper:
         form.conductor_id.data = data.get("conductor_id")
         form.track_assistant_id.data = data.get("track_assistant_id")
         form.horse_id.data = data.get("horse_id")
-        form.jockey_amazon_id.data = data.get("jockey_amazon_id")
+
+class SchoolInstitutionMapper:
+    @classmethod
+    def from_entity(cls, institution: SchoolInstitution) -> Dict:
+        return {
+            "id": institution.id,
+            "name": institution.name,
+            "street": institution.street,
+            "number": institution.number,
+            "department": institution.department,
+            "locality": institution.locality,
+            "province": institution.province,
+            "phone_country_code": institution.phone_country_code,
+            "phone_area_code": institution.phone_area_code,
+            "phone_number": institution.phone_number,
+        }
+
+    @classmethod
+    def to_entity(cls, data: Dict) -> SchoolInstitution:
+        return SchoolInstitution(
+            id=data.get("id"),
+            name=data.get("school_name"),
+            street=data.get("street"),
+            number=data.get("number"),
+            department=data.get("department"),
+            locality=data.get("locality"),
+            province=data.get("province"),
+            phone_country_code=data.get("phone_country_code"),
+            phone_area_code=data.get("phone_area_code"),
+            phone_number=data.get("phone_number"),
+        )

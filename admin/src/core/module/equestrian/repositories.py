@@ -106,3 +106,6 @@ class EquestrianRepository(AbstractEquestrianRepository):
         for trainer_id in trainers_ids:
             self.db.session.add(HorseTrainers(id_horse=horse_id, id_employee=trainer_id))
         self.save()
+
+    def get_horses(self):
+        return Horse.query.all()

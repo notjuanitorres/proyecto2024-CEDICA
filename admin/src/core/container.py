@@ -3,12 +3,8 @@ from dependency_injector import containers, providers
 from .module.accounts import AccountsServices, AccountsRepository
 from .module.employee import EmployeeRepository
 from .module.equestrian import EquestrianServices, EquestrianRepository
-<<<<<<< HEAD
 from .module.jockey_amazon import JockeyAmazonRepository
-
-=======
 from .module.common import StorageServices
->>>>>>> development
 
 class Container(containers.DeclarativeContainer):
     config = providers.Configuration()

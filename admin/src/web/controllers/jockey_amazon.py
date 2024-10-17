@@ -11,6 +11,8 @@ from src.core.module.jockey_amazon.models import jockey_amazon_enums as jockey_a
 from src.core.module.jockey_amazon.models import EducationLevelEnum
 from src.core.module.jockey_amazon.mappers import JockeyAmazonMapper as Mapper
 from src.core.module.jockey_amazon.repositories import AbstractJockeyAmazonRepository
+from src.core.module.employee.repositories import EmployeeRepository
+from src.core.module.equestrian.repositories import EquestrianRepository
 
 jockey_amazon_bp = Blueprint(
     "jockey_amazon_bp",
@@ -51,37 +53,56 @@ def get_jockeys(
 
 @jockey_amazon_bp.route("/crear", methods=["GET", "POST"])
 @check_user_permissions(permissions_required=["jockey_amazon_new"])
-def create_jockey():
+@inject
+def create_jockey(
+    jockeys: AbstractJockeyAmazonRepository = Provide[Container.jockey_amazon_repository],
+    employees: EmployeeRepository = Provide[Container.employee_repository],
+    equestrian: EquestrianRepository = Provide[Container.equestrian_repository]):
 
     create_form = JockeyAmazonCreateForm()
+
+    create_form.work_assignments.professor_or_therapist_id.choices = [(t.id, f"{t.name} {t.lastname}") for t in employees.get_therapist()]
+    create_form.work_assignments.conductor_id.choices = [(r.id, f"{r.name} {r.lastname}") for r in employees.get_rider()]
+    create_form.work_assignments.track_assistant_id.choices = [(a.id, f"{a.name} {a.lastname}") for a in employees.get_track_auxiliary()]
+    create_form.work_assignments.horse_id.choices = [(h.id, h.name) for h in equestrian.get_horses()]
+    
     if request.method == "POST":
-        print(create_form.data)
-        return add_jockey(create_form=create_form)
+        return add_jockey(create_form=create_form, jockeys=jockeys)
+
     return render_template(
         "./jockey_amazon/create_jockey_amazon.html",
         form=create_form,
-        EducationLevelEnum=EducationLevelEnum
+        EducationLevelEnum=EducationLevelEnum,
     )
 
 @inject
 def add_jockey(
     create_form,
     jockeys: AbstractJockeyAmazonRepository = Provide[Container.jockey_amazon_repository],
-):
+    employees: EmployeeRepository = Provide[Container.employee_repository],
+    equestrian: EquestrianRepository = Provide[Container.equestrian_repository]):
+    
     if not create_form.validate_on_submit():
-        print("Formulario no valido")
+        print(create_form.data)
         print(create_form.errors)
+        therapists = employees.get_therapist()
+        riders = employees.get_rider()
+        track_auxiliaries = employees.get_track_auxiliary()
+        horses = equestrian.get_horses()
         return render_template(
             "./jockey_amazon/create_jockey_amazon.html",
             form=create_form,
-            EducationLevelEnum=EducationLevelEnum
+            EducationLevelEnum=EducationLevelEnum,
+            therapists=therapists,
+            riders=riders,
+            track_auxiliaries=track_auxiliaries,
+            horses=horses
         )
-    print("Formulario valido")
     created_jockey = jockeys.add(Mapper.to_entity(create_form.data))
     flash("Jockey/Amazon creado con éxito!", "success")
     
     return redirect(
-        url_for("jockey_amazon_bp.show_jockey", jockey_id=created_jockey["id"])
+        url_for("jockey_amazon_bp.show_jockey", jockey_id=created_jockey.id)
     )
 
 @jockey_amazon_bp.route("/<int:jockey_id>")
@@ -91,11 +112,11 @@ def show_jockey(
     jockey_id: int,
     jockeys: AbstractJockeyAmazonRepository = Provide[Container.jockey_amazon_repository],
 ):
-    jockey = jockeys.get_jockey(jockey_id=jockey_id)
+    jockey = jockeys.get_by_id(jockey_id=jockey_id)
     if not jockey:
         return redirect(url_for("jockey_amazon_bp.get_jockeys"))
 
-    return render_template("./jockey_amazon/jockey_amazon.html", jockey=jockey)
+    return render_template("./jockey_amazon/jockey_amazon.html", jockey_amazon=jockey)
 
 @jockey_amazon_bp.route("/editar/<int:jockey_id>", methods=["GET", "POST"])
 @check_user_permissions(permissions_required=["jockey_amazon_update"])
@@ -104,7 +125,7 @@ def edit_jockey(
     jockey_id: int,
     jockeys: AbstractJockeyAmazonRepository = Provide[Container.jockey_amazon_repository],
 ):
-    jockey = jockeys.get_jockey(jockey_id)
+    jockey = jockeys.get_by_id(jockey_id)
     if not jockey:
         return redirect(url_for("jockey_amazon_bp.get_jockeys"))
 
@@ -128,7 +149,7 @@ def update_jockey(
     update_form,
     jockeys: AbstractJockeyAmazonRepository = Provide[Container.jockey_amazon_repository],
 ):
-    jockey = jockeys.get_jockey(jockey_id)
+    jockey = jockeys.get_by_id(jockey_id)
     if not update_form.validate_on_submit():
         return render_template(
             "./jockey_amazon/update_jockey_amazon.html", form=update_form, jockey=jockey
@@ -145,7 +166,7 @@ def update_jockey(
 @inject
 def delete_jockey(jockey_repository: AbstractJockeyAmazonRepository = Provide[Container.jockey_amazon_repository]):
     jockey_id = request.form["item_id"]
-    deleted = jockey_repository.delete_jockey(jockey_id)
+    deleted = jockey_repository.delete(jockey_id)
     if not deleted:
         flash("El Jockey/Amazon no ha podido ser eliminado, intentelo nuevamente", "danger")
     else:

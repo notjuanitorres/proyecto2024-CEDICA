@@ -1,11 +1,7 @@
 from src.core.database import db
 from src.core.module.accounts.models import User, Role, Permission, RolePermission, PermissionEnum, RoleEnum
 from src.core.module.employee.models import Employee
-from src.core.module.employee.data import (
-    JobPositionEnum as PositionEnum,
-    JobConditionEnum as ConditionEnum,
-    ProfessionsEnum,
-)
+from src.core.module.employee.data import JobPositionEnum, JobConditionEnum, ProfessionsEnum
 from src.core.bcrypt import bcrypt
 from src.core.module.equestrian.models import Horse, JAEnum, HorseTrainers
 from src.core.module.jockey_amazon.models import (
@@ -134,41 +130,41 @@ def seed_employees():
         health_insurance, affiliate_number, job_condition, user_id
         in [
             ("juan.perez@gmail.com", "123456789", "Juan", "Pérez", 12345678, ProfessionsEnum.PSICOLOGO,
-             PositionEnum.TERAPEUTA, "Seguro Salud S.A.", 9876543, ConditionEnum.VOLUNTARIO, 1),
+             JobPositionEnum.TERAPEUTA, "Seguro Salud S.A.", 9876543, JobConditionEnum.VOLUNTARIO, 1),
 
             ("maria.garcia@gmail.com", "987654321", "María", "García", 23456789, ProfessionsEnum.MEDICO,
-             PositionEnum.ADMINISTRATIVO, "Salud y Vida", 8765432, ConditionEnum.VOLUNTARIO, 2),
+             JobPositionEnum.ADMINISTRATIVO, "Salud y Vida", 8765432, JobConditionEnum.VOLUNTARIO, 2),
 
             ("luis.martinez@gmail.com", "456789123", "Luis", "Martínez", 34567890, ProfessionsEnum.KINESIOLOGO,
-             PositionEnum.TERAPEUTA, "Vida y Salud", 7654321, ConditionEnum.PERSONAL_RENTADO, None),
+             JobPositionEnum.TERAPEUTA, "Vida y Salud", 7654321, JobConditionEnum.PERSONAL_RENTADO, None),
 
             ("carla.lopez@gmail.com", "321654987", "Carla", "López", 45678901, ProfessionsEnum.DOCENTE,
-             PositionEnum.DOCENTE_CAPACITACION, "Seguro Médico", 6543210, ConditionEnum.VOLUNTARIO, None),
+             JobPositionEnum.DOCENTE_CAPACITACION, "Seguro Médico", 6543210, JobConditionEnum.VOLUNTARIO, None),
 
             ("jose.fernandez@gmail.com", "654987321", "José", "Fernández", 56789012, ProfessionsEnum.PSICOPEDAGOGO,
-             PositionEnum.TERAPEUTA, "Salud Integral", 5432109, ConditionEnum.VOLUNTARIO, None),
+             JobPositionEnum.TERAPEUTA, "Salud Integral", 5432109, JobConditionEnum.VOLUNTARIO, None),
 
             ("sofia.gonzalez@gmail.com", "789321654", "Sofía", "González", 67890123, ProfessionsEnum.FONOAUDIOLOGO,
-             PositionEnum.ADMINISTRATIVO, "Medicina Prepagada", 4321098, ConditionEnum.VOLUNTARIO, None),
+             JobPositionEnum.ADMINISTRATIVO, "Medicina Prepagada", 4321098, JobConditionEnum.VOLUNTARIO, None),
 
             ("pedro.sanchez@gmail.com", "159753468", "Pedro", "Sánchez", 78901234,
              ProfessionsEnum.TERAPISTA_OCUPACIONAL,
-                PositionEnum.TERAPEUTA, "Plan de Salud", 3210987, ConditionEnum.VOLUNTARIO, None),
+                JobPositionEnum.TERAPEUTA, "Plan de Salud", 3210987, JobConditionEnum.VOLUNTARIO, None),
 
             ("laura.morales@gmail.com", "753159486", "Laura", "Morales", 89012345, ProfessionsEnum.VETERINARIO,
-             PositionEnum.VETERINARIO, "Seguro Veterinario", 2109876, ConditionEnum.VOLUNTARIO, None),
+             JobPositionEnum.VETERINARIO, "Seguro Veterinario", 2109876, JobConditionEnum.VOLUNTARIO, None),
 
             ("francisco.castro@gmail.com", "159258753", "Francisco", "Castro", 90123456, ProfessionsEnum.PSICOLOGO,
-             PositionEnum.TERAPEUTA, "Salud y Bienestar", 1098765, ConditionEnum.VOLUNTARIO, None),
+             JobPositionEnum.TERAPEUTA, "Salud y Bienestar", 1098765, JobConditionEnum.VOLUNTARIO, None),
 
             ("valentina.ramirez@gmail.com", "951753864", "Valentina", "Ramírez", 12345679, ProfessionsEnum.MEDICO,
-             PositionEnum.ADMINISTRATIVO, "Seguros Médicos", 987650, ConditionEnum.PERSONAL_RENTADO, None),
+             JobPositionEnum.ADMINISTRATIVO, "Seguros Médicos", 987650, JobConditionEnum.PERSONAL_RENTADO, None),
 
             ("mateo.gonzalez@gmail.com", "761753864", "Mateo", "Gonzalez", 987654, ProfessionsEnum.VETERINARIO,
-             PositionEnum.ENTRENADOR_CABALLOS, "Seguros Médicos", 987650, ConditionEnum.PERSONAL_RENTADO, None),
+             JobPositionEnum.ENTRENADOR_CABALLOS, "Seguros Médicos", 987650, JobConditionEnum.PERSONAL_RENTADO, None),
 
             ("ivan.pineda@gmail.com", "481753864", "Ivan", "Pineda", 987654321, ProfessionsEnum.VETERINARIO,
-             PositionEnum.CONDUCTOR, "Seguros Médicos", 987650, ConditionEnum.PERSONAL_RENTADO, None),
+             JobPositionEnum.CONDUCTOR, "Seguros Médicos", 987650, JobConditionEnum.PERSONAL_RENTADO, None),
         ]
     ]
 
@@ -282,7 +278,6 @@ def seed_jockey_amazons():
         professor_or_therapist_id=3,
         conductor_id=3,
         track_assistant_id=3,
-        horse_id=3,
-        jockey_amazon_id=jockey1.id
+        horse_id=3
     )
     db.session.add(work_assignment1)

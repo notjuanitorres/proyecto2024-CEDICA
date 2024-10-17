@@ -49,8 +49,8 @@ class WorkProposalEnum(Enum):
     RIDING = "Equitación"
 
 class WorkConditionEnum(Enum):
-    REGULAR = "REGULAR"
-    DISMISSED = "DE BAJA"
+    REGULAR = "Regular"
+    DISMISSED = "De baja"
 
 class SedeEnum(Enum):
     CASJ = "CASJ"
@@ -135,8 +135,6 @@ class WorkAssignment(db.Model):
 
     horse_id = db.Column(db.Integer, db.ForeignKey('horses.id'), nullable=False)
 
-    jockey_amazon_id = db.Column(db.Integer, db.ForeignKey('jockeys_amazons.id'), nullable=False)
-
     inserted_at = db.Column(db.DateTime, default=datetime.now)
     updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
 
@@ -154,7 +152,7 @@ class JockeyAmazon(db.Model, AddressMixin, PhoneMixin, EmergencyContactMixin):
     dni = db.Column(db.String(20), unique=True, nullable=False)
     age = db.Column(db.Integer, nullable=False)
     birth_date = db.Column(db.Date, nullable=False)
-    birthplace = db.Column(db.String(100), nullable=False) 
+    birthplace = db.Column(db.String(100), nullable=False)
 
     is_scholarship = db.Column(db.Boolean, default=False)
     scholarship_observations = db.Column(db.Text, nullable=True)
@@ -184,7 +182,8 @@ class JockeyAmazon(db.Model, AddressMixin, PhoneMixin, EmergencyContactMixin):
     professionals = db.Column(db.Text, nullable=True)
 
     family_members = db.relationship('FamilyMember', secondary='family_member_jockey_amazon', back_populates='jockey_amazon')
-    work_assignments = db.relationship('WorkAssignment', backref='jockey_amazon', cascade="all, delete-orphan")
+    work_assignment_id = db.Column(db.Integer, db.ForeignKey('work_assignments.id'), nullable=True)
+    work_assignment = db.relationship('WorkAssignment')
 
     inserted_at = db.Column(db.DateTime, default=datetime.now)
     updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)

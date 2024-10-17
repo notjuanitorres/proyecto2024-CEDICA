@@ -32,735 +32,799 @@
             <form method="POST">
                 {{ form.hidden_tag() }}
 
-                <div id="general-information" class="field">
-                    <label class="label is-size-4">Información General</label>
-                    <div class="field-body">
-                        <div class="field">
-                            <label class="label">{{ form.first_name.label }}</label>
-                            <div class="control">
-                                {{ form.first_name(class="input", placeholder="Ingrese el nombre") }}
-                            </div>
-                            {% if form.first_name.errors %}
-                                <p class="help is-danger">{{ form.first_name.errors[0] }}</p>
-                            {% endif %}
-                        </div>
-                        <div class="field">
-                            <label class="label">{{ form.last_name.label }}</label>
-                            <div class="control">
-                                {{ form.last_name(class="input", placeholder="Ingrese el apellido") }}
-                            </div>
-                            {% if form.last_name.errors %}
-                                <p class="help is-danger">{{ form.last_name.errors[0] }}</p>
-                            {% endif %}
-                        </div>
-                    </div>
-                    <div class="field">
-                        <label class="label">{{ form.age.label }}</label>
-                        <div class="control">
-                            {{ form.age(class="input", type="number", placeholder="Ingrese la edad", required=true) }}
-                        </div>
-                    </div>
-                    <div class="field">
-                        <label class="label">{{ form.birthplace.label }}</label>
-                        <div class="control">
-                            {{ form.birthplace(class="input", placeholder="Ingrese el lugar de nacimiento", required=true) }}
-                        </div>
-                    </div>
+                <!-- Pestañas -->
+                <div class="tabs is-boxed">
+                    <ul>
+                        <li class="is-active" data-tab="general-info"><a>Información General</a></li>
+                        <li data-tab="emergency-contact"><a>Contacto de Emergencia</a></li>
+                        <li data-tab="disability-info"><a>Información de Discapacidad</a></li>
+                        <li data-tab="family-pension-info"><a>Familia y Pensión</a></li>
+                        <li data-tab="health-info"><a>Información de Salud</a></li>
+                        <li data-tab="curatorship-info"><a>Curaduría</a></li>
+                        <li data-tab="school-info"><a>Información Escolar</a></li>
+                        <li data-tab="professionals-info"><a>Profesionales</a></li>
+                        <li data-tab="family-members-info"><a>Miembros de la Familia</a></li>
+                        <li data-tab="work-assignments-info"><a>Asignaciones de Trabajo</a></li>
+                    </ul>
                 </div>
-                    <div class="field-body pt-2">
-                        <div class="field">
-                            <label class="label">{{ form.dni.label }}</label>
-                            <div class="control">
-                                {{ form.dni(class="input", placeholder="Ingrese el DNI") }}
-                            </div>
-                            {% if form.dni.errors %}
-                                <p class="help is-danger">{{ form.dni.errors[0] }}</p>
-                            {% endif %}
-                        </div>
-                        <div class="field">
-                            <label class="label">{{ form.birth_date.label }}</label>
-                            <div class="control">
-                                {{ form.birth_date(class="input", type="date") }}
-                            </div>
-                            {% if form.birth_date.errors %}
-                                <p class="help is-danger">{{ form.birth_date.errors[0] }}</p>
-                            {% endif %}
-                        </div>
-                    </div>
-
-                    <div class="field-body pt-2">
-                        <div class="field">
-                            <label class="label">{{ form.phone.country_code.label }}</label>
-                            <div class="control">
-                                {{ form.phone.country_code(class="input", placeholder="Código de país") }}
-                            </div>
-                            {% if form.phone.country_code.errors %}
-                                <p class="help is-danger">{{ form.phone.country_code.errors[0] }}</p>
-                            {% endif %}
-                        </div>
-                        <div class="field">
-                            <label class="label">{{ form.phone.area_code.label }}</label>
-                            <div class="control">
-                                {{ form.phone.area_code(class="input", placeholder="Código de área") }}
-                            </div>
-                            {% if form.phone.area_code.errors %}
-                                <p class="help is-danger">{{ form.phone.area_code.errors[0] }}</p>
-                            {% endif %}
-                        </div>
-                        <div class="field">
-                            <label class="label">{{ form.phone.number.label }}</label>
-                            <div class="control">
-                                {{ form.phone.number(class="input", placeholder="Número") }}
-                            </div>
-                            {% if form.phone.number.errors %}
-                                <p class="help is-danger">{{ form.phone.number.errors[0] }}</p>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-
-                <div id="address-info" class="field pt-3">
-                    <label class="label is-size-4">Dirección</label>
-                    <div class="field">
+                <!-- Contenido de las pestañas -->
+                <div class="tab-content">
+                    <!-- General Information -->
+                    <div id="general-info" class="tab-pane is-active" style="display:block;">
+                        <label class="label is-size-4">Información General</label>
                         <div class="field-body">
                             <div class="field">
-                                <label class="label">{{ form.address.province.label }}</label>
+                                <label class="label">{{ form.first_name.label }}</label>
                                 <div class="control">
-                                    {{ form.address.province(class="input", placeholder="Ingrese la provincia") }}
+                                    {{ form.first_name(class="input", placeholder="Ingrese el nombre") }}
                                 </div>
-                                {% if form.address.province.errors %}
-                                    <p class="help is-danger">{{ form.address.province.errors[0] }}</p>
+                                {% if form.first_name.errors %}
+                                    <p class="help is-danger">{{ form.first_name.errors[0] }}</p>
                                 {% endif %}
                             </div>
                             <div class="field">
-                                <label class="label">{{ form.address.locality.label }}</label>
+                                <label class="label">{{ form.last_name.label }}</label>
                                 <div class="control">
-                                    {{ form.address.locality(class="input", placeholder="Ingrese la localidad") }}
+                                    {{ form.last_name(class="input", placeholder="Ingrese el apellido") }}
                                 </div>
-                                {% if form.address.locality.errors %}
-                                    <p class="help is-danger">{{ form.address.locality.errors[0] }}</p>
+                                {% if form.last_name.errors %}
+                                    <p class="help is-danger">{{ form.last_name.errors[0] }}</p>
                                 {% endif %}
                             </div>
                         </div>
-                    </div>
-                    <div class="field-body">
                         <div class="field">
-                            <label class="label">{{ form.address.department.label }}</label>
+                            <label class="label">{{ form.birthplace.label }}</label>
                             <div class="control">
-                                {{ form.address.department(class="input", placeholder="Ingrese el departamento") }}
-                            </div>
-                            {% if form.address.department.errors %}
-                                <p class="help is-danger">{{ form.address.department.errors[0] }}</p>
-                            {% endif %}
-                        </div>
-                        <div class="field">
-                            <label class="label">{{ form.address.street.label }}</label>
-                            <div class="control">
-                                {{ form.address.street(class="input", placeholder="Ingrese la calle") }}
-                            </div>
-                            {% if form.address.street.errors %}
-                                <p class="help is-danger">{{ form.address.street.errors[0] }}</p>
-                            {% endif %}
-                        </div>
-                        <div class="field">
-                            <label class="label">{{ form.address.number.label }}</label>
-                            <div class="control">
-                                {{ form.address.number(class="input", placeholder="Ingrese el número") }}
-                            </div>
-                            {% if form.address.number.errors %}
-                                <p class="help is-danger">{{ form.address.number.errors[0] }}</p>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-                
-                 <!-- Emergency Contact -->
-                 <div id="emergency-contact" class="field">
-                    <label class="label is-size-4">Contacto de Emergencia</label>
-                    <div class="field">
-                        <label class="label">{{ form.emergency_contact.emergency_contact_name.label }}</label>
-                        <div class="control">
-                            {{ form.emergency_contact.emergency_contact_name(class="input", placeholder="Ingrese el nombre del contacto de emergencia", required=true) }}
-                        </div>
-                    </div>
-                    <div class="field">
-                        <label class="label">{{ form.emergency_contact.emergency_contact_phone.label }}</label>
-                        <div class="control">
-                            {{ form.emergency_contact.emergency_contact_phone(class="input", placeholder="Ingrese el teléfono del contacto de emergencia", required=true) }}
-                        </div>
-                    </div>
-                </div>
-
-
-                <div id="disability-info" class="field pt-3">
-                    <label class="label is-size-4">Información de Discapacidad</label>
-                    <div class="field">
-                        <div class="control">
-                            <label class="checkbox">
-                                {{ form.has_disability.label(class="has-text-weight-bold is-size-5") }} 
-                                {{ form.has_disability(class="ml-1", type="checkbox") }}
-                            </label>
-                        </div>
-                        {% if form.has_disability.errors %}
-                            <p class="help is-danger">{{ form.has_disability.errors[0] }}</p>
-                        {% endif %}
-                    </div>
-                    
-                    <div class="field-body">
-                        <div class="field">
-                            <label class="label">{{ form.disability_diagnosis.label }}</label>
-                            <div class="control">
-                                <div class="select">
-                                    {{ form.disability_diagnosis() }}
-                                </div>
-                            </div>
-                            {% if form.disability_diagnosis.errors %}
-                                <p class="help is-danger">{{ form.disability_diagnosis.errors[0] }}</p>
-                            {% endif %}
-                        </div>
-                        <div class="field">
-                            <label class="label">{{ form.disability_type.label }}</label>
-                            <div class="control">
-                                <div class="select">
-                                    {{ form.disability_type() }}
-                                </div>
-                            </div>
-                            {% if form.disability_type.errors %}
-                                <p class="help is-danger">{{ form.disability_type.errors[0] }}</p>
-                            {% endif %}
-                        </div>
-                    </div>
-                    
-                    <div class="field">
-                        <label class="label">{{ form.disability_other.label }}</label>
-                        <div class="control">
-                            {{ form.disability_other(class="input", placeholder="Ingrese otro diagnóstico") }}
-                        </div>
-                        {% if form.disability_other.errors %}
-                            <p class="help is-danger">{{ form.disability_other.errors[0] }}</p>
-                        {% endif %}
-                    </div>
-                </div>
-
-                <div id="family-pension-info" class="field pt-3">
-                    <label class="label is-size-4">Información Familiar y de Pensión</label>
-                    <div class="field">
-                        <div class="control">
-                            <label class="checkbox">
-                                {{ form.has_family_assignment.label(class="has-text-weight-bold is-size-5") }} 
-                                {{ form.has_family_assignment(class="ml-1", type="checkbox") }}
-                            </label>
-                        </div>
-                        {% if form.has_family_assignment.errors %}
-                            <p class="help is-danger">{{ form.has_family_assignment.errors[0] }}</p>
-                        {% endif %}
-                    </div>
-                    
-                    <div class="field">
-                        <label class="label">{{ form.family_assignment_type.label }}</label>
-                        <div class="control">
-                            <div class="select">
-                                {{ form.family_assignment_type() }}
+                                {{ form.birthplace(class="input", placeholder="Ingrese el lugar de nacimiento", required=true) }}
                             </div>
                         </div>
-                        {% if form.family_assignment_type.errors %}
-                            <p class="help is-danger">{{ form.family_assignment_type.errors[0] }}</p>
-                        {% endif %}
-                    </div>
-                    
-                    <div class="field">
-                        <div class="control">
-                            <label class="checkbox">
-                                {{ form.has_pension.label(class="has-text-weight-bold is-size-5") }} 
-                                {{ form.has_pension(class="ml-1", type="checkbox") }}
-                            </label>
-                        </div>
-                        {% if form.has_pension.errors %}
-                            <p class="help is-danger">{{ form.has_pension.errors[0] }}</p>
-                        {% endif %}
-                    </div>
-                    
-                    <div class="field">
-                        <label class="label">{{ form.pension_details.label }}</label>
-                        <div class="control">
-                            {{ form.pension_details(class="textarea", placeholder="Ingrese los detalles de la pensión") }}
-                        </div>
-                        {% if form.pension_details.errors %}
-                            <p class="help is-danger">{{ form.pension_details.errors[0] }}</p>
-                        {% endif %}
-                    </div>
-                </div>
-
-                <div id="health-info" class="field pt-3">
-                    <label class="label is-size-4">Cobertura médica</label>
-                    <div class="field">
-                        <label class="label">{{ form.social_security.label }}</label>
-                        <div class="control">
-                            {{ form.social_security(class="input", placeholder="Ingrese la cobertura médica") }}
-                        </div>
-                        {% if form.social_security.errors %}
-                            <p class="help is-danger">{{ form.social_security.errors[0] }}</p>
-                        {% endif %}
-                    </div>
-                    <div class="field">
-                        <label class="label">{{ form.social_security_number.label }}</label>
-                        <div class="control">
-                            {{ form.social_security_number(class="input", placeholder="Ingrese el número de afiliado") }}
-                        </div>
-                        {% if form.social_security_number.errors %}
-                            <p class="help is-danger">{{ form.social_security_number.errors[0] }}</p>
-                        {% endif %}
-                    </div>
-                </div>
-
-                <div id="curatorship-info" class="field pt-3">
-                    <label class="label is-size-4">Información de Curaduría</label>
-                    <div class="field">
-                        <div class="control">
-                            <label class="checkbox">
-                                {{ form.has_curatorship.label(class="has-text-weight-bold is-size-5") }} 
-                                {{ form.has_curatorship(class="ml-1", type="checkbox") }}
-                            </label>
-                        </div>
-                        {% if form.has_curatorship.errors %}
-                            <p class="help is-danger">{{ form.has_curatorship.errors[0] }}</p>
-                        {% endif %}
-                    </div>
-                    
-                    <div class="field">
-                        <label class="label">{{ form.curatorship_observations.label }}</label>
-                        <div class="control">
-                            {{ form.curatorship_observations(class="textarea", placeholder="Ingrese observaciones sobre la curaduría") }}
-                        </div>
-                        {% if form.curatorship_observations.errors %}
-                            <p class="help is-danger">{{ form.curatorship_observations.errors[0] }}</p>
-                        {% endif %}
-                    </div>
-                </div>
-
-                <div id="school-info" class="field pt-3">
-                  <label class="label is-size-4">Información Escolar</label>
-                  <div class="field">
-                      <label class="label">{{ form.school_institution.school_name.label }}</label>
-                      <div class="control">
-                          {{ form.school_institution.school_name(class="input", placeholder="Ingrese el nombre de la institución escolar") }}
-                      </div>
-                      {% if form.school_institution.school_name.errors %}
-                          <p class="help is-danger">{{ form.school_institution.school_name.errors[0] }}</p>
-                      {% endif %}
-                  </div>
-
-                  <div class="field-body">
-                      <div class="field">
-                          <label class="label">{{ form.school_institution.street.label }}</label>
-                          <div class="control">
-                              {{ form.school_institution.street(class="input", placeholder="Ingrese la calle de la institución escolar") }}
-                          </div>
-                          {% if form.school_institution.street.errors %}
-                              <p class="help is-danger">{{ form.school_institution.street.errors[0] }}</p>
-                          {% endif %}
-                      </div>
-                      <div class="field">
-                          <label class="label">{{ form.school_institution.number.label }}</label>
-                          <div class="control">
-                              {{ form.school_institution.number(class="input", placeholder="Ingrese el número de la institución escolar") }}
-                          </div>
-                          {% if form.school_institution.number.errors %}
-                              <p class="help is-danger">{{ form.school_institution.number.errors[0] }}</p>
-                          {% endif %}
-                      </div>
-                  </div>
-
-                  <div class="field-body">
-                      <div class="field">
-                          <label class="label">{{ form.school_institution.department.label }}</label>
-                          <div class="control">
-                              {{ form.school_institution.department(class="input", placeholder="Ingrese el departamento de la institución escolar") }}
-                          </div>
-                          {% if form.school_institution.department.errors %}
-                              <p class="help is-danger">{{ form.school_institution.department.errors[0] }}</p>
-                          {% endif %}
-                      </div>
-                      <div class="field">
-                          <label class="label">{{ form.school_institution.locality.label }}</label>
-                          <div class="control">
-                              {{ form.school_institution.locality(class="input", placeholder="Ingrese la localidad de la institución escolar") }}
-                          </div>
-                          {% if form.school_institution.locality.errors %}
-                              <p class="help is-danger">{{ form.school_institution.locality.errors[0] }}</p>
-                          {% endif %}
-                      </div>
-                      <div class="field">
-                          <label class="label">{{ form.school_institution.province.label }}</label>
-                          <div class="control">
-                              {{ form.school_institution.province(class="input", placeholder="Ingrese la provincia de la institución escolar") }}
-                          </div>
-                          {% if form.school_institution.province.errors %}
-                              <p class="help is-danger">{{ form.school_institution.province.errors[0] }}</p>
-                          {% endif %}
-                      </div>
-                  </div>
-
-                  <div class="field-body">
-                      <div class="field">
-                          <label class="label">{{ form.school_institution.phone_country_code.label }}</label>
-                          <div class="control">
-                              {{ form.school_institution.phone_country_code(class="input", placeholder="Ingrese el código de país de la institución escolar") }}
-                          </div>
-                          {% if form.school_institution.phone_country_code.errors %}
-                              <p class="help is-danger">{{ form.school_institution.phone_country_code.errors[0] }}</p>
-                          {% endif %}
-                      </div>
-                      <div class="field">
-                          <label class="label">{{ form.school_institution.phone_area_code.label }}</label>
-                          <div class="control">
-                              {{ form.school_institution.phone_area_code(class="input", placeholder="Ingrese el código de área de la institución escolar") }}
-                          </div>
-                          {% if form.school_institution.phone_area_code.errors %}
-                              <p class="help is-danger">{{ form.school_institution.phone_area_code.errors[0] }}</p>
-                          {% endif %}
-                      </div>
-                      <div class="field">
-                          <label class="label">{{ form.school_institution.phone_number.label }}</label>
-                          <div class="control">
-                              {{ form.school_institution.phone_number(class="input", placeholder="Ingrese el número de teléfono de la institución escolar") }}
-                          </div>
-                          {% if form.school_institution.phone_number.errors %}
-                              <p class="help is-danger">{{ form.school_institution.phone_number.errors[0] }}</p>
-                          {% endif %}
-                      </div>
-                  </div>
-
-                  <div class="field">
-                      <label class="label">{{ form.current_grade_year.label }}</label>
-                      <div class="control">
-                          {{ form.current_grade_year(class="input", placeholder="Ingrese el grado/año actual") }}
-                      </div>
-                      {% if form.current_grade_year.errors %}
-                          <p class="help is-danger">{{ form.current_grade_year.errors[0] }}</p>
-                      {% endif %}
-                  </div>
-
-                  <div class="field">
-                      <label class="label">{{ form.school_observations.label }}</label>
-                      <div class="control">
-                          {{ form.school_observations(class="textarea", placeholder="Ingrese observaciones sobre la institución escolar") }}
-                      </div>
-                      {% if form.school_observations.errors %}
-                          <p class="help is-danger">{{ form.school_observations.errors[0] }}</p>
-                      {% endif %}
-                  </div>
-              </div>
-
-                              <!-- Professionals Information -->
-                              <div class="field pt-3">
-                                <label class="label">{{ form.professionals.label }}</label>
+                        <div class="field-body pt-2">
+                            <div class="field">
+                                <label class="label">{{ form.dni.label }}</label>
                                 <div class="control">
-                                    {{ form.professionals(class="textarea", placeholder="Ingrese los profesionales que lo atienden") }}
+                                    {{ form.dni(class="input", placeholder="Ingrese el DNI") }}
                                 </div>
-                                {% if form.professionals.errors %}
-                                    <p class="help is-danger">{{ form.professionals.errors[0] }}</p>
+                                {% if form.dni.errors %}
+                                    <p class="help is-danger">{{ form.dni.errors[0] }}</p>
                                 {% endif %}
                             </div>
+                            <div class="field">
+                                <label class="label">{{ form.birth_date.label }}</label>
+                                <div class="control">
+                                    {{ form.birth_date(class="input", type="date") }}
+                                </div>
+                                {% if form.birth_date.errors %}
+                                    <p class="help is-danger">{{ form.birth_date.errors[0] }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="field-body pt-2">
+                            <div class="field">
+                                <label class="label">{{ form.phone.country_code.label }}</label>
+                                <div class="control">
+                                    {{ form.phone.country_code(class="input", placeholder="Código de país") }}
+                                </div>
+                                {% if form.phone.country_code.errors %}
+                                    <p class="help is-danger">{{ form.phone.country_code.errors[0] }}</p>
+                                {% endif %}
+                            </div>
+                            <div class="field">
+                                <label class="label">{{ form.phone.area_code.label }}</label>
+                                <div class="control">
+                                    {{ form.phone.area_code(class="input", placeholder="Código de área") }}
+                                </div>
+                                {% if form.phone.area_code.errors %}
+                                    <p class="help is-danger">{{ form.phone.area_code.errors[0] }}</p>
+                                {% endif %}
+                            </div>
+                            <div class="field">
+                                <label class="label">{{ form.phone.number.label }}</label>
+                                <div class="control">
+                                    {{ form.phone.number(class="input", placeholder="Número") }}
+                                </div>
+                                {% if form.phone.number.errors %}
+                                    <p class="help is-danger">{{ form.phone.number.errors[0] }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <!-- Address Information -->
+                        <div id="address-info" class="field pt-3">
+                            <label class="label is-size-4">Dirección</label>
+                            <div class="field">
+                                <div class="field-body">
+                                    <div class="field">
+                                        <label class="label">{{ form.address.province.label }}</label>
+                                        <div class="control">
+                                            {{ form.address.province(class="input", placeholder="Ingrese la provincia") }}
+                                        </div>
+                                        {% if form.address.province.errors %}
+                                            <p class="help is-danger">{{ form.address.province.errors[0] }}</p>
+                                        {% endif %}
+                                    </div>
+                                    <div class="field">
+                                        <label class="label">{{ form.address.locality.label }}</label>
+                                        <div class="control">
+                                            {{ form.address.locality(class="input", placeholder="Ingrese la localidad") }}
+                                        </div>
+                                        {% if form.address.locality.errors %}
+                                            <p class="help is-danger">{{ form.address.locality.errors[0] }}</p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="field-body">
+                                <div class="field">
+                                    <label class="label">{{ form.address.department.label }}</label>
+                                    <div class="control">
+                                        {{ form.address.department(class="input", placeholder="Ingrese el departamento") }}
+                                    </div>
+                                    {% if form.address.department.errors %}
+                                        <p class="help is-danger">{{ form.address.department.errors[0] }}</p>
+                                    {% endif %}
+                                </div>
+                                <div class="field">
+                                    <label class="label">{{ form.address.street.label }}</label>
+                                    <div class="control">
+                                        {{ form.address.street(class="input", placeholder="Ingrese la calle") }}
+                                    </div>
+                                    {% if form.address.street.errors %}
+                                        <p class="help is-danger">{{ form.address.street.errors[0] }}</p>
+                                    {% endif %}
+                                </div>
+                                <div class="field">
+                                    <label class="label">{{ form.address.number.label }}</label>
+                                    <div class="control">
+                                        {{ form.address.number(class="input", placeholder="Ingrese el número") }}
+                                    </div>
+                                    {% if form.address.number.errors %}
+                                        <p class="help is-danger">{{ form.address.number.errors[0] }}</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                     <!-- Emergency Contact -->
+                    <div id="emergency-contact" class="tab-pane" style="display:none;">
+                        <label class="label is-size-4">Contacto de Emergencia</label>
+                        <div class="field">
+                            <label class="label">{{ form.emergency_contact.emergency_contact_name.label }}</label>
+                            <div class="control">
+                                {{ form.emergency_contact.emergency_contact_name(class="input", placeholder="Ingrese el nombre del contacto de emergencia", required=true) }}
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label class="label">{{ form.emergency_contact.emergency_contact_phone.label }}</label>
+                            <div class="control">
+                                {{ form.emergency_contact.emergency_contact_phone(class="input", placeholder="Ingrese el teléfono del contacto de emergencia", required=true) }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Disability Information -->
+                    <div id="disability-info" class="tab-pane" style="display:none;">
+                        <label class="label is-size-4">Información de Discapacidad</label>
+                        <div class="field">
+                            <div class="control">
+                                <label class="checkbox">
+                                    {{ form.has_disability.label(class="has-text-weight-bold is-size-5") }}
+                                    {{ form.has_disability(class="ml-1", type="checkbox") }}
+                                </label>
+                            </div>
+                            {% if form.has_disability.errors %}
+                                <p class="help is-danger">{{ form.has_disability.errors[0] }}</p>
+                            {% endif %}
+                        </div>
+
+                        <div class="field-body">
+                            <div class="field">
+                                <label class="label">{{ form.disability_diagnosis.label }}</label>
+                                <div class="control">
+                                    <div class="select">
+                                        {{ form.disability_diagnosis() }}
+                                    </div>
+                                </div>
+                                {% if form.disability_diagnosis.errors %}
+                                    <p class="help is-danger">{{ form.disability_diagnosis.errors[0] }}</p>
+                                {% endif %}
+                            </div>
+                            <div class="field">
+                                <label class="label">{{ form.disability_type.label }}</label>
+                                <div class="control">
+                                    <div class="select">
+                                        {{ form.disability_type() }}
+                                    </div>
+                                </div>
+                                {% if form.disability_type.errors %}
+                                    <p class="help is-danger">{{ form.disability_type.errors[0] }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <label class="label">{{ form.disability_other.label }}</label>
+                            <div class="control">
+                                {{ form.disability_other(class="input", placeholder="Ingrese otro diagnóstico") }}
+                            </div>
+                            {% if form.disability_other.errors %}
+                                <p class="help is-danger">{{ form.disability_other.errors[0] }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Family and Pension Information -->
+                    <div id="family-pension-info" class="tab-pane" style="display:none;">
+                        <label class="label is-size-4">Información Familiar y de Pensión</label>
+                        <div class="field">
+                            <div class="control">
+                                <label class="checkbox">
+                                    {{ form.has_family_assignment.label(class="has-text-weight-bold is-size-5") }}
+                                    {{ form.has_family_assignment(class="ml-1", type="checkbox") }}
+                                </label>
+                            </div>
+                            {% if form.has_family_assignment.errors %}
+                                <p class="help is-danger">{{ form.has_family_assignment.errors[0] }}</p>
+                            {% endif %}
+                        </div>
+
+                        <div class="field">
+                            <label class="label">{{ form.family_assignment_type.label }}</label>
+                            <div class="control">
+                                <div class="select">
+                                    {{ form.family_assignment_type() }}
+                                </div>
+                            </div>
+                            {% if form.family_assignment_type.errors %}
+                                <p class="help is-danger">{{ form.family_assignment_type.errors[0] }}</p>
+                            {% endif %}
+                        </div>
+
+                        <div class="field">
+                            <div class="control">
+                                <label class="checkbox">
+                                    {{ form.has_pension.label(class="has-text-weight-bold is-size-5") }}
+                                    {{ form.has_pension(class="ml-1", type="checkbox") }}
+                                </label>
+                            </div>
+                            {% if form.has_pension.errors %}
+                                <p class="help is-danger">{{ form.has_pension.errors[0] }}</p>
+                            {% endif %}
+                        </div>
+
+                        <div class="field">
+                            <label class="label">{{ form.pension_details.label }}</label>
+                            <div class="control">
+                                {{ form.pension_details(class="textarea", placeholder="Ingrese los detalles de la pensión") }}
+                            </div>
+                            {% if form.pension_details.errors %}
+                                <p class="help is-danger">{{ form.pension_details.errors[0] }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Health Information -->
+                    <div id="health-info" class="tab-pane" style="display:none;">
+                        <label class="label is-size-4">Cobertura médica</label>
+                        <div class="field">
+                            <label class="label">{{ form.social_security.label }}</label>
+                            <div class="control">
+                                {{ form.social_security(class="input", placeholder="Ingrese la cobertura médica") }}
+                            </div>
+                            {% if form.social_security.errors %}
+                                <p class="help is-danger">{{ form.social_security.errors[0] }}</p>
+                            {% endif %}
+                        </div>
+                        <div class="field">
+                            <label class="label">{{ form.social_security_number.label }}</label>
+                            <div class="control">
+                                {{ form.social_security_number(class="input", placeholder="Ingrese el número de afiliado") }}
+                            </div>
+                            {% if form.social_security_number.errors %}
+                                <p class="help is-danger">{{ form.social_security_number.errors[0] }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Curatorship Information -->
+                    <div id="curatorship-info" class="tab-pane" style="display:none;">
+                        <label class="label is-size-4">Información de Curaduría</label>
+                        <div class="field">
+                            <div class="control">
+                                <label class="checkbox">
+                                    {{ form.has_curatorship.label(class="has-text-weight-bold is-size-5") }}
+                                    {{ form.has_curatorship(class="ml-1", type="checkbox") }}
+                                </label>
+                            </div>
+                            {% if form.has_curatorship.errors %}
+                                <p class="help is-danger">{{ form.has_curatorship.errors[0] }}</p>
+                            {% endif %}
+                        </div>
+
+                        <div class="field">
+                            <label class="label">{{ form.curatorship_observations.label }}</label>
+                            <div class="control">
+                                {{ form.curatorship_observations(class="textarea", placeholder="Ingrese observaciones sobre la curaduría") }}
+                            </div>
+                            {% if form.curatorship_observations.errors %}
+                                <p class="help is-danger">{{ form.curatorship_observations.errors[0] }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- School Information -->
+                    <div id="school-info" class="tab-pane" style="display:none;">
+                      <label class="label is-size-4">Información Escolar</label>
+                      <div class="field">
+                          <label class="label">{{ form.school_institution.school_name.label }}</label>
+                          <div class="control">
+                              {{ form.school_institution.school_name(class="input", placeholder="Ingrese el nombre de la institución escolar") }}
+                          </div>
+                          {% if form.school_institution.school_name.errors %}
+                              <p class="help is-danger">{{ form.school_institution.school_name.errors[0] }}</p>
+                          {% endif %}
+                      </div>
+
+                      <div class="field-body">
+                          <div class="field">
+                              <label class="label">{{ form.school_institution.street.label }}</label>
+                              <div class="control">
+                                  {{ form.school_institution.street(class="input", placeholder="Ingrese la calle de la institución escolar") }}
+                              </div>
+                              {% if form.school_institution.street.errors %}
+                                  <p class="help is-danger">{{ form.school_institution.street.errors[0] }}</p>
+                              {% endif %}
+                          </div>
+                          <div class="field">
+                              <label class="label">{{ form.school_institution.number.label }}</label>
+                              <div class="control">
+                                  {{ form.school_institution.number(class="input", placeholder="Ingrese el número de la institución escolar") }}
+                              </div>
+                              {% if form.school_institution.number.errors %}
+                                  <p class="help is-danger">{{ form.school_institution.number.errors[0] }}</p>
+                              {% endif %}
+                          </div>
+                      </div>
+
+                      <div class="field-body">
+                          <div class="field">
+                              <label class="label">{{ form.school_institution.department.label }}</label>
+                              <div class="control">
+                                  {{ form.school_institution.department(class="input", placeholder="Ingrese el departamento de la institución escolar") }}
+                              </div>
+                              {% if form.school_institution.department.errors %}
+                                  <p class="help is-danger">{{ form.school_institution.department.errors[0] }}</p>
+                              {% endif %}
+                          </div>
+                          <div class="field">
+                              <label class="label">{{ form.school_institution.locality.label }}</label>
+                              <div class="control">
+                                  {{ form.school_institution.locality(class="input", placeholder="Ingrese la localidad de la institución escolar") }}
+                              </div>
+                              {% if form.school_institution.locality.errors %}
+                                  <p class="help is-danger">{{ form.school_institution.locality.errors[0] }}</p>
+                              {% endif %}
+                          </div>
+                          <div class="field">
+                              <label class="label">{{ form.school_institution.province.label }}</label>
+                              <div class="control">
+                                  {{ form.school_institution.province(class="input", placeholder="Ingrese la provincia de la institución escolar") }}
+                              </div>
+                              {% if form.school_institution.province.errors %}
+                                  <p class="help is-danger">{{ form.school_institution.province.errors[0] }}</p>
+                              {% endif %}
+                          </div>
+                      </div>
+
+                      <div class="field-body">
+                          <div class="field">
+                              <label class="label">{{ form.school_institution.phone_country_code.label }}</label>
+                              <div class="control">
+                                  {{ form.school_institution.phone_country_code(class="input", placeholder="Ingrese el código de país de la institución escolar") }}
+                              </div>
+                              {% if form.school_institution.phone_country_code.errors %}
+                                  <p class="help is-danger">{{ form.school_institution.phone_country_code.errors[0] }}</p>
+                              {% endif %}
+                          </div>
+                          <div class="field">
+                              <label class="label">{{ form.school_institution.phone_area_code.label }}</label>
+                              <div class="control">
+                                  {{ form.school_institution.phone_area_code(class="input", placeholder="Ingrese el código de área de la institución escolar") }}
+                              </div>
+                              {% if form.school_institution.phone_area_code.errors %}
+                                  <p class="help is-danger">{{ form.school_institution.phone_area_code.errors[0] }}</p>
+                              {% endif %}
+                          </div>
+                          <div class="field">
+                              <label class="label">{{ form.school_institution.phone_number.label }}</label>
+                              <div class="control">
+                                  {{ form.school_institution.phone_number(class="input", placeholder="Ingrese el número de teléfono de la institución escolar") }}
+                              </div>
+                              {% if form.school_institution.phone_number.errors %}
+                                  <p class="help is-danger">{{ form.school_institution.phone_number.errors[0] }}</p>
+                              {% endif %}
+                          </div>
+                      </div>
+
+                      <div class="field">
+                          <label class="label">{{ form.current_grade_year.label }}</label>
+                          <div class="control">
+                              {{ form.current_grade_year(class="input", placeholder="Ingrese el grado/año actual") }}
+                          </div>
+                          {% if form.current_grade_year.errors %}
+                              <p class="help is-danger">{{ form.current_grade_year.errors[0] }}</p>
+                          {% endif %}
+                      </div>
+
+                      <div class="field">
+                          <label class="label">{{ form.school_observations.label }}</label>
+                          <div class="control">
+                              {{ form.school_observations(class="textarea", placeholder="Ingrese observaciones sobre la institución escolar") }}
+                          </div>
+                          {% if form.school_observations.errors %}
+                              <p class="help is-danger">{{ form.school_observations.errors[0] }}</p>
+                          {% endif %}
+                      </div>
+                  </div>
+
+                    <!-- Professionals Information -->
+                    <div id="professionals-info" class="tab-pane" style="display:none;">
+                        <label class="label">{{ form.professionals.label }}</label>
+                        <div class="control">
+                            {{ form.professionals(class="textarea", placeholder="Ingrese los profesionales que lo atienden") }}
+                        </div>
+                        {% if form.professionals.errors %}
+                            <p class="help is-danger">{{ form.professionals.errors[0] }}</p>
+                        {% endif %}
+                    </div>
             
-                <!-- Family Members -->
-                <div id="family-members-container">
-                    <label class="label is-size-4">Miembros de la Familia</label>
-                    <div class="family-member">
+                    <!-- Family Members -->
+                    <div id="family-members-info" class="tab-pane" style="display:none;">
+                        <label class="label is-size-4">Miembros de la Familia</label>
+                        <div id="family-members-container">
+                            <div class="family-member">
+                                <div class="field-body">
+                                    <div class="field">
+                                        <label class="label">Relación</label>
+                                        <div class="control">
+                                            <input type="text" name="family_members-0-relationship" class="input" placeholder="Ingrese la relación" required>
+                                        </div>
+                                    </div>
+                                    <div class="field">
+                                        <label class="label">Nombre</label>
+                                        <div class="control">
+                                            <input type="text" name="family_members-0-first_name" class="input" placeholder="Ingrese el nombre" required>
+                                        </div>
+                                    </div>
+                                    <div class="field">
+                                        <label class="label">Apellido</label>
+                                        <div class="control">
+                                            <input type="text" name="family_members-0-last_name" class="input" placeholder="Ingrese el apellido" required>
+                                        </div>
+                                    </div>
+                                    <div class="field">
+                                        <label class="label">DNI</label>
+                                        <div class="control">
+                                            <input type="text" name="family_members-0-dni" class="input" placeholder="Ingrese el DNI" required maxlength="8">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="field-body">
+                                    <div class="field">
+                                        <label class="label">Calle</label>
+                                        <div class="control">
+                                            <input type="text" name="family_members-0-street" class="input" placeholder="Ingrese la calle" required>
+                                        </div>
+                                    </div>
+                                    <div class="field">
+                                        <label class="label">Número</label>
+                                        <div class="control">
+                                            <input type="number" name="family_members-0-number" class="input" placeholder="Ingrese el número" required>
+                                        </div>
+                                    </div>
+                                    <div class="field">
+                                        <label class="label">Departamento</label>
+                                        <div class="control">
+                                            <input type="text" name="family_members-0-department" class="input" placeholder="Ingrese el departamento" required>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="field-body">
+                                    <div class="field">
+                                        <label class="label">Localidad</label>
+                                        <div class="control">
+                                            <input type="text" name="family_members-0-locality" class="input" placeholder="Ingrese la localidad" required>
+                                        </div>
+                                    </div>
+                                    <div class="field">
+                                        <label class="label">Provincia</label>
+                                        <div class="control">
+                                            <input type="text" name="family_members-0-province" class="input" placeholder="Ingrese la provincia" required>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="field-body">
+                                    <div class="field">
+                                        <label class="label">Código de País</label>
+                                        <div class="control">
+                                            <input type="text" name="family_members-0-phone_country_code" class="input" placeholder="Código de País" required>
+                                        </div>
+                                    </div>
+                                    <div class="field">
+                                        <label class="label">Código de Área</label>
+                                        <div class="control">
+                                            <input type="text" name="family_members-0-phone_area_code" class="input" placeholder="Código de Área" required>
+                                        </div>
+                                    </div>
+                                    <div class="field">
+                                        <label class="label">Número de Teléfono</label>
+                                        <div class="control">
+                                            <input type="text" name="family_members-0-phone_number" class="input" placeholder="Ingrese el número de teléfono" required maxlength="15">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <label class="label">Correo Electrónico</label>
+                                    <div class="control">
+                                        <input type="email" name="family_members-0-email" class="input" placeholder="Ingrese el correo electrónico" required>
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <label class="label">Nivel Educativo</label>
+                                    <div class="control">
+                                        <select name="family_members-0-education_level" class="select" required>
+                                            <option value="">Seleccione el nivel educativo</option>
+                                            {% for key, value in EducationLevelEnum.__members__.items() %}
+                                                <option value="{{ key }}">{{ value.value }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <label class="label">Ocupación</label>
+                                    <div class="control">
+                                        <input type="text" name="family_members-0-occupation" class="input" placeholder="Ingrese la ocupación" required>
+                                    </div>
+                                </div>
+                                <button type="button" class="button is-danger remove-family-member">Eliminar</button>
+                            </div>
+                        </div>
+                        <button type="button" class="button is-primary add-family-member">Agregar Miembro de la Familia</button>
+                    </div>
+
+                    <div id="work-assignments-info" class="tab-pane" style="display:none;">
+                        <label class="label is-size-4">Asignaciones de Trabajo</label>
                         <div class="field">
-                            <label class="label">Relación</label>
+                            <label class="label">{{ form.work_assignments.proposal.label }}</label>
                             <div class="control">
-                                <input type="text" name="family_members-0-relationship" class="input" placeholder="Ingrese la relación" required>
+                                {{ form.work_assignments.proposal(class="select") }}
                             </div>
                         </div>
                         <div class="field">
-                            <label class="label">Nombre</label>
+                            <label class="label">{{ form.work_assignments.condition.label }}</label>
                             <div class="control">
-                                <input type="text" name="family_members-0-first_name" class="input" placeholder="Ingrese el nombre" required>
+                                {{ form.work_assignments.condition(class="select") }}
                             </div>
                         </div>
                         <div class="field">
-                            <label class="label">Apellido</label>
+                            <label class="label">{{ form.work_assignments.sede.label }}</label>
                             <div class="control">
-                                <input type="text" name="family_members-0-last_name" class="input" placeholder="Ingrese el apellido" required>
+                                {{ form.work_assignments.sede(class="select") }}
                             </div>
                         </div>
                         <div class="field">
-                            <label class="label">DNI</label>
+                            <label class="label">{{ form.work_assignments.days.label }}</label>
                             <div class="control">
-                                <input type="text" name="family_members-0-dni" class="input" placeholder="Ingrese el DNI" required maxlength="8">
+                                {{ form.work_assignments.days(class="select") }}
                             </div>
                         </div>
                         <div class="field">
-                            <label class="label">Calle</label>
+                            <label class="label">{{ form.work_assignments.professor_or_therapist_id.label }}</label>
                             <div class="control">
-                                <input type="text" name="family_members-0-street" class="input" placeholder="Ingrese la calle" required>
+                                <div class="select">{{ form.work_assignments.professor_or_therapist_id() }}</div>
                             </div>
                         </div>
                         <div class="field">
-                            <label class="label">Número</label>
+                            <label class="label">{{ form.work_assignments.conductor_id.label }}</label>
                             <div class="control">
-                                <input type="number" name="family_members-0-number" class="input" placeholder="Ingrese el número" required>
+                                <div class="select">{{ form.work_assignments.conductor_id() }}</div>
                             </div>
                         </div>
                         <div class="field">
-                            <label class="label">Localidad</label>
+                            <label class="label">{{ form.work_assignments.track_assistant_id.label }}</label>
                             <div class="control">
-                                <input type="text" name="family_members-0-locality" class="input" placeholder="Ingrese la localidad" required>
+                                <div class="select">{{ form.work_assignments.track_assistant_id() }}</div>
                             </div>
                         </div>
                         <div class="field">
-                            <label class="label">Provincia</label>
+                            <label class="label">{{ form.work_assignments.horse_id.label }}</label>
                             <div class="control">
-                                <input type="text" name="family_members-0-province" class="input" placeholder="Ingrese la provincia" required>
+                                <div class="select">{{ form.work_assignments.horse_id() }}</div>
                             </div>
                         </div>
                         <div class="field">
-                            <label class="label">Código de País</label>
+                            <label class="label">{{ form.work_assignments.jockey_amazon_id.label }}</label>
                             <div class="control">
-                                <input type="text" name="family_members-0-phone_country_code" class="input" placeholder="Código de País" required>
+                                {{ form.work_assignments.jockey_amazon_id(class="input", type="number") }}
                             </div>
                         </div>
-                        <div class="field">
-                            <label class="label">Código de Área</label>
-                            <div class="control">
-                                <input type="text" name="family_members-0-phone_area_code" class="input" placeholder="Código de Área" required>
-                            </div>
-                        </div>
-                        <div class="field">
-                            <label class="label">Número de Teléfono</label>
-                            <div class="control">
-                                <input type="text" name="family_members-0-phone_number" class="input" placeholder="Ingrese el número de teléfono" required maxlength="15">
-                            </div>
-                        </div>
-                        <div class="field">
-                            <label class="label">Correo Electrónico</label>
-                            <div class="control">
-                                <input type="email" name="family_members-0-email" class="input" placeholder="Ingrese el correo electrónico" required>
-                            </div>
-                        </div>
-                        <div class="field">
-                            <label class="label">Nivel Educativo</label>
-                            <div class="control">
-                                <select name="family_members-0-education_level" class="select" required>
-                                    <option value="">Seleccione el nivel educativo</option>
-                                    {% for key, value in EducationLevelEnum.__members__.items() %}
-                                        <option value="{{ key }}">{{ value.value }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                        </div>
-                        <div class="field">
-                            <label class="label">Ocupación</label>
-                            <div class="control">
-                                <input type="text" name="family_members-0-occupation" class="input" placeholder="Ingrese la ocupación" required>
-                            </div>
-                        </div>
-                        <button type="button" class="button is-danger remove-family-member">Eliminar</button>
                     </div>
                 </div>
-                <button type="button" class="button is-primary add-family-member">Agregar Miembro de la Familia</button>
-
-
-              <div id="work-assignments-container">
-                <label class="label is-size-4">Asignaciones de Trabajo</label>
-                <div class="work-assignment">
-                    <div class="field">
-                        <label class="label">{{ form.work_assignments[0].proposal.label }}</label>
-                        <div class="control">
-                            {{ form.work_assignments[0].proposal(class="select") }}
-                        </div>
+                <div class="field mt-5">
+                    <div class="control">
+                        <button class="button is-primary is-medium is-fullwidth" type="submit">
+                            Agregar Jockey/Amazon
+                            <span class="icon ml-1"><i class="fa-solid fa-pen-nib"></i></span>
+                        </button>
                     </div>
-                    <div class="field">
-                        <label class="label">{{ form.work_assignments[0].condition.label }}</label>
-                        <div class="control">
-                            {{ form.work_assignments[0].condition(class="select") }}
-                        </div>
-                    </div>
-                    <div class="field">
-                        <label class="label">{{ form.work_assignments[0].sede.label }}</label>
-                        <div class="control">
-                            {{ form.work_assignments[0].sede(class="select") }}
-                        </div>
-                    </div>
-                    <div class="field">
-                        <label class="label">{{ form.work_assignments[0].days.label }}</label>
-                        <div class="control">
-                            {{ form.work_assignments[0].days(class="select") }}
-                        </div>
-                    </div>
-                    <div class="field">
-                        <label class="label">{{ form.work_assignments[0].professor_or_therapist_id.label }}</label>
-                        <div class="control">
-                            {{ form.work_assignments[0].professor_or_therapist_id(class="input", type="number") }}
-                        </div>
-                    </div>
-                    <div class="field">
-                        <label class="label">{{ form.work_assignments[0].conductor_id.label }}</label>
-                        <div class="control">
-                            {{ form.work_assignments[0].conductor_id(class="input", type="number") }}
-                        </div>
-                    </div>
-                    <div class="field">
-                        <label class="label">{{ form.work_assignments[0].track_assistant_id.label }}</label>
-                        <div class="control">
-                            {{ form.work_assignments[0].track_assistant_id(class="input", type="number") }}
-                        </div>
-                    </div>
-                    <div class="field">
-                        <label class="label">{{ form.work_assignments[0].horse_id.label }}</label>
-                        <div class="control">
-                            {{ form.work_assignments[0].horse_id(class="input", type="number") }}
-                        </div>
-                    </div>
-                    <div class="field">
-                        <label class="label">{{ form.work_assignments[0].jockey_amazon_id.label }}</label>
-                        <div class="control">
-                            {{ form.work_assignments[0].jockey_amazon_id(class="input", type="number") }}
-                        </div>
-                    </div>
-                    <button type="button" class="button is-danger remove-work-assignment">Eliminar Asignación</button>
                 </div>
-            </div>
-            <button type="button" class="button is-primary add-work-assignment">Agregar Asignación de Trabajo</button>
+            </form>
+        </div>
+    </section>
 
-            <div class="field mt-5">
-                <div class="control">
-                    <button class="button is-primary is-medium is-fullwidth" type="submit">
-                        Agregar Jockey/Amazon
-                        <span class="icon ml-1"><i class="fa-solid fa-pen-nib"></i></span>
-                    </button>
-                </div>
-            </div>
-        </form>
-    </div>
-</section>
-
-  
- 
 <script>
-let familyMemberIndex = 1;
-const familyMembersContainer = document.getElementById('family-members-container');
+    document.addEventListener('DOMContentLoaded', () => {
+        // Función para manejar las pestañas
+        const tabs = document.querySelectorAll('.tabs li');
+        const tabContent = document.querySelectorAll('.tab-pane');
 
-function addFamilyMember() {
-    console.log('Adding family member');
-    const newFamilyMember = document.createElement('div');
-    newFamilyMember.classList.add('family-member');
-    newFamilyMember.innerHTML = `
-        <div class="field">
-            <label class="label">Relación</label>
-            <div class="control">
-                <input type="text" name="family_members-${familyMemberIndex}-relationship" class="input" placeholder="Ingrese la relación" required>
-            </div>
-        </div>
-        <div class="field">
-            <label class="label">Nombre</label>
-            <div class="control">
-                <input type="text" name="family_members-${familyMemberIndex}-first_name" class="input" placeholder="Ingrese el nombre" required>
-            </div>
-        </div>
-        <div class="field">
-            <label class="label">Apellido</label>
-            <div class="control">
-                <input type="text" name="family_members-${familyMemberIndex}-last_name" class="input" placeholder="Ingrese el apellido" required>
-            </div>
-        </div>
-        <div class="field">
-            <label class="label">DNI</label>
-            <div class="control">
-                <input type="text" name="family_members-${familyMemberIndex}-dni" class="input" placeholder="Ingrese el DNI" required maxlength="8">
-            </div>
-        </div>
-        <div class="field">
-            <label class="label">Calle</label>
-            <div class="control">
-                <input type="text" name="family_members-${familyMemberIndex}-street" class="input" placeholder="Ingrese la calle" required>
-            </div>
-        </div>
-        <div class="field">
-            <label class="label">Número</label>
-            <div class="control">
-                <input type="number" name="family_members-${familyMemberIndex}-number" class="input" placeholder="Ingrese el número" required>
-            </div>
-        </div>
-        <div class="field">
-            <label class="label">Localidad</label>
-            <div class="control">
-                <input type="text" name="family_members-${familyMemberIndex}-locality" class="input" placeholder="Ingrese la localidad" required>
-            </div>
-        </div>
-        <div class="field">
-            <label class="label">Provincia</label>
-            <div class="control">
-                <input type="text" name="family_members-${familyMemberIndex}-province" class="input" placeholder="Ingrese la provincia" required>
-            </div>
-        </div>
-        <div class="field">
-            <label class="label">Código de País</label>
-            <div class="control">
-                <input type="text" name="family_members-${familyMemberIndex}-phone_country_code" class="input" placeholder="Código de País" required>
-            </div>
-        </div>
-        <div class="field">
-            <label class="label">Código de Área</label>
-            <div class="control">
-                <input type="text" name="family_members-${familyMemberIndex}-phone_area_code" class="input" placeholder="Código de Área" required>
-            </div>
-        </div>
-        <div class="field">
-            <label class="label">Número de Teléfono</label>
-            <div class="control">
-                <input type="text" name="family_members-${familyMemberIndex}-phone_number" class="input" placeholder="Ingrese el número de teléfono" required maxlength="15">
-            </div>
-        </div>
-        <div class="field">
-            <label class="label">Correo Electrónico</label>
-            <div class="control">
-                <input type="email" name="family_members-${familyMemberIndex}-email" class="input" placeholder="Ingrese el correo electrónico" required>
-            </div>
-        </div>
-        <div class="field">
-            <label class="label">Nivel Educativo</label>
-            <div class="control">
-                <select name="family_members-${familyMemberIndex}-education_level" class="select" required>
-                    <option value="PRIMARY">Primario</option>
-                    <option value="SECONDARY">Secundario</option>
-                    <option value="TERTIARY">Terciario</option>
-                    <option value="UNIVERSITY">Universitario</option>
-                </select>
-            </div>
-        </div>
-        <div class="field">
-            <label class="label">Ocupación</label>
-            <div class="control">
-                <input type="text" name="family_members-${familyMemberIndex}-occupation" class="input" placeholder="Ingrese la ocupación" required>
-            </div>
-        </div>
-        <button type="button" class="button is-danger remove-family-member">Eliminar</button>
-    `;
-    familyMembersContainer.appendChild(newFamilyMember);
-    familyMemberIndex++;
-}
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(item => item.classList.remove('is-active'));
+                tab.classList.add('is-active');
 
-document.querySelector('.add-family-member').addEventListener('click', addFamilyMember);
-
-familyMembersContainer.addEventListener('click', (event) => {
-    if (event.target.classList.contains('remove-family-member')) {
-        event.target.parentElement.remove();
-        updateFamilyMemberNames();  // Update indexes after removal
-    }
-});
-
-function updateFamilyMemberNames() {
-    const familyMembers = document.querySelectorAll('.family-member');
-    familyMembers.forEach((member, index) => {
-        member.querySelectorAll('input, select').forEach((input) => {
-            const name = input.getAttribute('name');
-            const updatedName = name.replace(/family_members-\d+-/, `family_members-${index}-`);
-            input.setAttribute('name', updatedName);
+                const target = tab.dataset.tab;
+                tabContent.forEach(content => {
+                    if (content.id === target) {
+                        content.style.display = 'block';  // Muestra el contenido de la pestaña seleccionada
+                    } else {
+                        content.style.display = 'none';   // Oculta los demás contenidos
+                    }
+                });
+            });
         });
+
+        let familyMemberIndex = 1;
+        const familyMembersContainer = document.getElementById('family-members-container');
+
+        function addFamilyMember() {
+            const newFamilyMember = document.createElement('div');
+            newFamilyMember.classList.add('family-member');
+            newFamilyMember.innerHTML = `
+            <div class="field-body">
+                <div class="field">
+                    <label class="label">Relación</label>
+                    <div class="control">
+                        <input type="text" name="family_members-0-relationship" class="input" placeholder="Ingrese la relación" required>
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">Nombre</label>
+                    <div class="control">
+                        <input type="text" name="family_members-0-first_name" class="input" placeholder="Ingrese el nombre" required>
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">Apellido</label>
+                    <div class="control">
+                        <input type="text" name="family_members-0-last_name" class="input" placeholder="Ingrese el apellido" required>
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">DNI</label>
+                    <div class="control">
+                        <input type="text" name="family_members-0-dni" class="input" placeholder="Ingrese el DNI" required maxlength="8">
+                    </div>
+                </div>
+            </div>
+            <div class="field-body">
+                <div class="field">
+                    <label class="label">Calle</label>
+                    <div class="control">
+                        <input type="text" name="family_members-0-street" class="input" placeholder="Ingrese la calle" required>
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">Número</label>
+                    <div class="control">
+                        <input type="number" name="family_members-0-number" class="input" placeholder="Ingrese el número" required>
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">Departamento</label>
+                    <div class="control">
+                        <input type="text" name="family_members-0-department" class="input" placeholder="Ingrese el departamento" required>
+                    </div>
+                </div>
+            </div>
+            <div class="field-body">
+                <div class="field">
+                    <label class="label">Localidad</label>
+                    <div class="control">
+                        <input type="text" name="family_members-0-locality" class="input" placeholder="Ingrese la localidad" required>
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">Provincia</label>
+                    <div class="control">
+                        <input type="text" name="family_members-0-province" class="input" placeholder="Ingrese la provincia" required>
+                    </div>
+                </div>
+            </div>
+            <div class="field-body">
+                <div class="field">
+                    <label class="label">Código de País</label>
+                    <div class="control">
+                        <input type="text" name="family_members-0-phone_country_code" class="input" placeholder="Código de País" required>
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">Código de Área</label>
+                    <div class="control">
+                        <input type="text" name="family_members-0-phone_area_code" class="input" placeholder="Código de Área" required>
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">Número de Teléfono</label>
+                    <div class="control">
+                        <input type="text" name="family_members-0-phone_number" class="input" placeholder="Ingrese el número de teléfono" required maxlength="15">
+                    </div>
+                </div>
+            </div>
+            <div class="field">
+                <label class="label">Correo Electrónico</label>
+                <div class="control">
+                    <input type="email" name="family_members-0-email" class="input" placeholder="Ingrese el correo electrónico" required>
+                </div>
+            </div>
+            <div class="field">
+                <label class="label">Nivel Educativo</label>
+                <div class="control">
+                    <select name="family_members-0-education_level" class="select" required>
+                        <option value="">Seleccione el nivel educativo</option>
+                        {% for key, value in EducationLevelEnum.__members__.items() %}
+                            <option value="{{ key }}">{{ value.value }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="field">
+                <label class="label">Ocupación</label>
+                <div class="control">
+                    <input type="text" name="family_members-0-occupation" class="input" placeholder="Ingrese la ocupación" required>
+                </div>
+            </div>
+            <button type="button" class="button is-danger remove-family-member">Eliminar</button>
+        `;
+            familyMembersContainer.appendChild(newFamilyMember);
+            familyMemberIndex++;
+        }
+
+        // Evento para agregar un miembro de la familia
+        document.querySelector('.add-family-member').addEventListener('click', addFamilyMember);
+
+        // Evento para manejar la eliminación de miembros de la familia y actualizar los índices
+        familyMembersContainer.addEventListener('click', (event) => {
+            if (event.target.classList.contains('remove-family-member')) {
+                event.target.parentElement.remove();
+                updateFamilyMemberNames(); // Actualiza los índices de los miembros después de la eliminación
+            }
+        });
+
+        // Función para actualizar los nombres de los campos de los miembros de la familia
+        function updateFamilyMemberNames() {
+            const familyMembers = document.querySelectorAll('.family-member');
+            familyMembers.forEach((member, index) => {
+                member.querySelectorAll('input, select').forEach((input) => {
+                    const name = input.getAttribute('name');
+                    if (name) {
+                        const updatedName = name.replace(/family_members-\d+-/, `family_members-${index}-`);
+                        input.setAttribute('name', updatedName);
+                    }
+                });
+            });
+            familyMemberIndex = familyMembers.length;
+        }
     });
-    familyMemberIndex = familyMembers.length;
-}
 </script>
-{% endblock %}
+
+{% endblock %}  
