@@ -1,6 +1,8 @@
 from src.core.database import db
 from src.core.module.accounts.models import User, Role, Permission, RolePermission, PermissionEnum, RoleEnum
 from src.core.module.employee.models import Employee
+from src.core.module.payment.models import Payment
+from src.core.module.payment.data import PaymentTypeEnum
 from src.core.module.employee.data import (
     JobPositionEnum as PositionEnum,
     JobConditionEnum as ConditionEnum,
@@ -19,6 +21,8 @@ def seed_all(app):
         db.session.commit()  # employees need to be commited before adding horse_trainers
         seed_equestrian_module()
         print("Commiting equestrian module")
+        seed_payments()
+        print("Commiting payments")
         db.session.commit()
 
 
@@ -202,3 +206,26 @@ def seed_horse_trainers():
         HorseTrainers(id_horse=4, id_employee=12),
     ]
     db.session.add_all(horse_trainers)
+
+def seed_payments():
+     payments = [
+        Payment(amount=100.0, payment_date=date(2023, 1, 15), payment_type=PaymentTypeEnum.HONORARIOS, description='Payment for services', beneficiary_id=1),
+        Payment(amount=200.0, payment_date=date(2023, 2, 20), payment_type=PaymentTypeEnum.PROOVEDOR, description='Payment for goods'),
+        Payment(amount=150.0, payment_date=date(2023, 3, 10), payment_type=PaymentTypeEnum.HONORARIOS, description='Refund', beneficiary_id=3),
+        Payment(amount=250.0, payment_date=date(2023, 4, 5), payment_type=PaymentTypeEnum.GASTOS, description='Payment for subscription'),
+        Payment(amount=300.0, payment_date=date(2023, 5, 25), payment_type=PaymentTypeEnum.HONORARIOS, description='Payment for membership', beneficiary_id=5),
+        Payment(amount=400.0, payment_date=date(2023, 6, 15), payment_type=PaymentTypeEnum.PROOVEDOR, description='Payment for consultancy'),
+        Payment(amount=500.0, payment_date=date(2023, 7, 20), payment_type=PaymentTypeEnum.GASTOS, description='Payment for equipment'),
+        Payment(amount=600.0, payment_date=date(2023, 8, 10), payment_type=PaymentTypeEnum.HONORARIOS, description='Payment for training', beneficiary_id=3),
+        Payment(amount=700.0, payment_date=date(2023, 9, 5), payment_type=PaymentTypeEnum.PROOVEDOR, description='Payment for software'),
+        Payment(amount=800.0, payment_date=date(2023, 10, 25), payment_type=PaymentTypeEnum.GASTOS, description='Payment for hardware'),
+        Payment(amount=900.0, payment_date=date(2023, 11, 15), payment_type=PaymentTypeEnum.HONORARIOS, description='Payment for maintenance', beneficiary_id=1),
+        Payment(amount=1000.0, payment_date=date(2023, 12, 20), payment_type=PaymentTypeEnum.PROOVEDOR, description='Payment for license'),
+        Payment(amount=1100.0, payment_date=date(2024, 1, 10), payment_type=PaymentTypeEnum.GASTOS, description='Payment for support'),
+        Payment(amount=1200.0, payment_date=date(2024, 2, 5), payment_type=PaymentTypeEnum.HONORARIOS, description='Payment for hosting', beneficiary_id=4),
+        Payment(amount=1300.0, payment_date=date(2024, 3, 25), payment_type=PaymentTypeEnum.PROOVEDOR, description='Payment for domain'),
+    ]
+
+     db.session.add_all(payments)
+     db.session.commit()
+     print("Seeding payments completed")
