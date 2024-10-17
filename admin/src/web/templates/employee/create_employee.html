@@ -1,9 +1,10 @@
 {% extends "layout.html" %}
 
+{% from "macros/flash_message.html" import render_flash_messages %}
+
 {% block title %} Equipo - Agregar miembro {% endblock %}
 
 {% block main_content %}
-
     <nav class="breadcrumb" aria-label="breadcrumbs">
         <ul>
             <li>
@@ -36,6 +37,7 @@
     <section class="section pt-4">
         <div class="container">
           <h1 class="title">Agregar miembro</h1>
+          <div class="mb-2">{{ render_flash_messages(messages) }}</div>
           <form method="POST" enctype="multipart/form-data">
             {{ form.hidden_tag() }}
             <div id="general-information" class="field">
@@ -334,12 +336,22 @@
               <p class="help is-danger">{{ form.documents.curriculum_vitae.errors[0] }}</p>
               {% endif %}
             </div>
-            <div class="field mt-5">
-              <div class="control">
-                <button class="button is-primary is-medium is-fullwidth" type="submit">Agregar miembro
-                  <span class="icon ml-1"><i class="fa-solid fa-pen-nib"></i></span>
-                </button>
+            <div class="field-body mt-6">
+              <div class="field">
+                <div class="control">
+                  {{ form.submit_another(class="button is-primary is-medium is-outlined is-fullwidth") }}
+                </div>
               </div>
+              <div class="field">
+                <div class="control">
+                    <button class="button is-primary is-medium is-fullwidth" type="submit">
+                        Guardar y salir
+                        <span class="icon ml-1">
+                            <i class="fa-solid fa-floppy-disk is-size-5"></i>
+                        </span>
+                    </button>
+                </div>
+            </div>
             </div>
           </form>
         </div>

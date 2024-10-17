@@ -59,6 +59,7 @@ class UserManagementForm(FlaskForm):
 
 
 class UserCreateForm(UserManagementForm):
+    current_email = None
     password = PasswordField(
         "Contraseña",
         validators=[
@@ -77,7 +78,8 @@ class UserCreateForm(UserManagementForm):
         ],
     )
 
-    current_email = None
+    submit_another = SubmitField("Agregar otro")
+
 
 
 class UserEditForm(UserManagementForm):

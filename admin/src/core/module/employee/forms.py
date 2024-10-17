@@ -62,7 +62,7 @@ class EmploymentInformationForm(FlaskForm):
         default=datetime.today,
     )
     end_date = DateField("Finalizacion de actividades", validators=[Optional()])
-    is_active = BooleanField("Activo en la organizacion")
+    is_active = BooleanField("Activo en la organizacion", default=True)
 
 
 def max_file_size(size_in_mb: int):
@@ -180,6 +180,7 @@ class EmployeeCreateForm(EmployeeManagementForm):
             email_existence,
         ],
     )
+    submit_another = SubmitField("Agregar otro")
 
 
 class EmployeeEditForm(EmployeeManagementForm):

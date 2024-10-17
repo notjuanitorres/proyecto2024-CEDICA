@@ -100,6 +100,9 @@ def add_employee(
 
     flash("Miembro creado con exito!", "success")
 
+    if create_form.submit_another.data:
+        return redirect(url_for("employee_bp.create_employee"))
+    
     return redirect(
         url_for("employee_bp.show_employee", employee_id=created_employee["id"])
     )

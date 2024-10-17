@@ -91,7 +91,12 @@ def add_user(
 
     user = user_repository.add(UserMapper.to_entity(create_form.data, is_creation=True))
 
+    flash("Usuario creado correctamente", "success")
+    if create_form.submit_another.data:
+        return redirect(url_for("users_bp.create_user"))
+
     return redirect(url_for("users_bp.show_user", user_id=user["id"]))
+        
 
 
 @users_bp.route("/editar/<int:user_id>", methods=["GET", "POST", "PUT"])
