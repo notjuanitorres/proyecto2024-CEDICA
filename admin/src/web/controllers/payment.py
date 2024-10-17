@@ -12,8 +12,8 @@ payment_bp = Blueprint(
 
 
 @payment_bp.route("/", methods=["GET", "POST"])
+@check_user_permissions(permissions_required=['pagos_index'])
 @inject
-@check_user_permissions('pagos_index')
 def get_payments(
     payment_service: PaymentServices = Provide[Container.payment_services],
 ):
@@ -37,8 +37,8 @@ def get_payments(
     return render_template("payments.html", form=form, payments=payments, search_form=form)
 
 @payment_bp.route("/crear", methods=["GET", "POST"])
+@check_user_permissions(permissions_required=['pagos_create'])
 @inject
-@check_user_permissions('pagos_create')
 def create_payment(
     payment_service: PaymentServices = Provide[Container.payment_services],
 ):
@@ -61,8 +61,8 @@ def create_payment(
 
 
 @payment_bp.route("/<int:payment_id>", methods=["GET"])
+@check_user_permissions(permissions_required=['pagos_show'])
 @inject
-@check_user_permissions('pagos_show')
 def show_payment(
     payment_id: int,
     payment_service: PaymentServices = Provide[Container.payment_services],
@@ -72,7 +72,7 @@ def show_payment(
 
 @payment_bp.route("/editar/<int:payment_id>", methods=["GET", "POST"])
 @inject
-@check_user_permissions('pagos_update')
+@check_user_permissions(permissions_required=['pagos_update'])
 def edit_payment(
     payment_id: int,
     payment_service: PaymentServices = Provide[Container.payment_services],
@@ -96,7 +96,7 @@ def edit_payment(
 
 @payment_bp.route("/eliminar", methods=["POST"])
 @inject
-@check_user_permissions('pagos_destroy')
+@check_user_permissions(permissions_required=['pagos_destroy'])
 def delete_payment(
     payment_service: PaymentServices = Provide[Container.payment_services],
 ):

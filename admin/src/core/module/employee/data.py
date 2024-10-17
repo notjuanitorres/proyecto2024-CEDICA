@@ -15,7 +15,7 @@ class ProfessionsEnum(Enum):
     OTRO = "Otro"
 
 
-class PositionEnum(Enum):
+class JobPositionEnum(Enum):
     ADMINISTRATIVO = "Administrativo/a"
     TERAPEUTA = "Terapeuta"
     CONDUCTOR = "Conductor"
@@ -30,14 +30,20 @@ class PositionEnum(Enum):
     OTRO = "Otro"
 
 
-class ConditionEnum(Enum):
+class JobConditionEnum(Enum):
     VOLUNTARIO = "Voluntario"
     PERSONAL_RENTADO = "Personal Rentado"
     OTRO = "Otro"
 
 
-enums = {
+class FileTagEnum(Enum):
+    DNI = "DNI"
+    TITLE = "Titulo"
+    CURRICULUM_VITAE = "Curriculum Vitae"
+
+
+employment_enums = {
     "professions": ProfessionsEnum,
-    "positions": PositionEnum,
-    "conditions": ConditionEnum,
+    "positions": JobPositionEnum,
+    "conditions": JobConditionEnum,
 }
