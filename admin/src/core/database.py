@@ -1,5 +1,4 @@
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import text
 
 db = SQLAlchemy()
 
@@ -43,12 +42,7 @@ def reset(app):
     from .module.jockey_amazon.models import JockeyAmazon
 
     with app.app_context():
-        connection = db.engine.connect()
         print("Dropping the database... ")
-        connection.execute(text("DROP TABLE IF EXISTS work_assignments CASCADE"))
-        connection.execute(text("DROP TABLE IF EXISTS jockeys_amazons CASCADE"))
-        connection.execute(text("DROP TABLE IF EXISTS horses CASCADE"))
-        connection.execute(text("DROP TABLE IF EXISTS users CASCADE"))
         db.drop_all()
         print("Recreating the database... ")
         db.create_all()

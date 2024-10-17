@@ -245,7 +245,6 @@ def seed_jockey_amazons():
         first_name="María",
         last_name="González",
         dni="87654321",
-        age=25,
         birth_date=date(1996, 5, 15),
         birthplace="Ciudad 1",
         is_scholarship=True,

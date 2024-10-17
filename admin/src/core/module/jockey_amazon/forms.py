@@ -46,7 +46,6 @@ class WorkAssignmentForm(FlaskForm):
     conductor_id = IntegerField('ID del Conductor', validators=[DataRequired()])
     track_assistant_id = IntegerField('ID del Asistente de Pista', validators=[DataRequired()])
     horse_id = IntegerField('ID del Caballo', validators=[DataRequired()])
-    jockey_amazon_id = IntegerField('ID del Jockey/Amazon', validators=[DataRequired()])
 
 class JockeyAmazonManagementForm(FlaskForm):
     first_name = StringField('Nombre', validators=[DataRequired(), Length(max=100)])
