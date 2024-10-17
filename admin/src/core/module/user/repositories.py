@@ -85,8 +85,9 @@ class UserRepository(AbstractUserRepository):
 
     def get_active_users(self, page: int = 1, search: str = ""):
         per_page = 7
-        
-        query = User.query.filter(and_(User.enabled, User.employee is None))
+
+        query = self.db.session.query(User).filter(and_(User.enabled == True, User.employee == None))
+
         if search:
             search_fields = ["alias", "email"]
             query = apply_multiple_search_criteria(
