@@ -97,6 +97,13 @@ def add_employee(
     created_employee = employees.add(
         employee=Mapper.to_entity(create_form.data, uploaded_documents),
     )
+    for doc in uploaded_documents:
+        for file in doc[1]:
+            if not file:
+                flash(f"No se pudo subir el archivo {doc[0]}", "danger")
+                return redirect(
+                    url_for("employee_bp.show_employee", employee_id=created_employee["id"])
+                )
 
     flash("Miembro creado con exito!", "success")
 
@@ -276,10 +283,15 @@ def edit_documents(
 ):
     add_document_form = EmployeeAddDocumentsForm()
     employee = employees.get_employee(employee_id=employee_id)
-    documents = [
-        {"file": file, "url": storage.presigned_download_url(file.get("filename"))}
-        for file in employee.get("files")
-    ]
+
+    documents = []
+    for file in employee.get("files"):
+        documents.append({"file": file, "url": storage.presigned_download_url(file.get("filename"))})
+        if not documents[-1].get("url"):
+            flash(f"No se pudieron obtener los documentos", "danger")
+            if request.referrer:
+                return redirect(request.referrer)
+            return redirect(url_for("employee_bp.edit_employee", employee_id=employee_id))
 
     if request.method == "POST":
         return update_documents(add_document_form, employee, documents)
@@ -311,6 +323,11 @@ def update_documents(
     uploaded_document = storage.upload_file(
         file=add_form.file.data, path=employees.storage_path
     )
+
+    if not uploaded_document:
+        flash("No se pudo subir el archivo, inténtelo nuevamente", "danger")
+        return redirect(url_for("employee_bp.edit_documents", employee_id=employee_id))
+
     employees.add_document(
         employee_id=employee_id,
         document=Mapper.create_file(
@@ -334,7 +351,11 @@ def delete_document(
     document_id = request.form["item_id"]
     document = employees.get_document(employee_id, document_id)
 
-    storage.delete_file(document.get("filename"))
+    deleted_in_bucket = storage.delete_file(document.get("filename"))
+    if not deleted_in_bucket:
+        flash("No se ha podido eliminar el documento, inténtelo nuevamente", "danger")
+        return redirect(url_for("employee_bp.edit_documents", employee_id=employee_id))
+
     employees.delete_document(employee_id, document_id)
 
     flash(

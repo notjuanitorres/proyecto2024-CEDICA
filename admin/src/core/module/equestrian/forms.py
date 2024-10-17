@@ -100,19 +100,19 @@ class HorseEditForm(HorseManagementForm):
         super(HorseEditForm, self).__init__(*args, **kwargs)
         self.trainers.choices = self.get_trainers_choices()
 
-    def import_services(self):
+    def import_repository(self):
         # Needed to import the container dynamically at run time
         # It is in order to work along with WTForms instantiation at definition
         # pylint: disable="C0415"
         from src.core.container import Container
 
         container = Container()
-        return container.employee_services()
+        return container.employee_repository()
 
     def get_trainers_choices(self):
         return [
             (trainer.id, f"{trainer.fullname} ({trainer.position.value})")
-            for trainer in self.import_services().employee_repository().get_trainers()
+            for trainer in self.import_repository().get_trainers()
         ]
 
     trainers = MultiCheckboxField(

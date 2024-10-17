@@ -96,11 +96,14 @@
                   <span class="file-icon">
                     <i class="fas fa-upload"></i>
                   </span>
-                  <span class="file-label"> Elegir archivos </span>
+                  <span class="file-label"> Elegir archivo </span>
                 </span>
-                <span class="file-name">No se ha seleccionado ningun archivo</span>
+                <span class="file-name">No se ha seleccionado ningún archivo</span>
               </label>
             </div>
+            {% if add_form.file.errors %}
+                <p class="help is-danger">{{ add_form.file.errors[0] }}</p>
+            {% endif %}
           </div>
         </div>
         <div class="field">
