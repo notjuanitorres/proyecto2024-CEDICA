@@ -28,5 +28,6 @@ class UserMapper:
             "system_admin": user.system_admin,
             "role_id": user.role_id,
             "inserted_at": user.inserted_at,
-            "updated_at": user.updated_at
+            "updated_at": user.updated_at,
+            "assigned_to": user.employee[0].id if user.employee else None
         }

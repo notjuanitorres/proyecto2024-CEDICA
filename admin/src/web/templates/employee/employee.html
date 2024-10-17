@@ -24,7 +24,14 @@
     </li>
 {% endblock %}
 
-{% block card_title %}Miembro: {{ employee.name + " " + employee.lastname }}{% endblock %}
+{% block card_title %}
+Miembro: {{ employee.name + " " + employee.lastname }}
+{% if employee.employment_information.is_active %}
+    <p class="tag is-success is-medium ml-2">Activo</p>
+{% else %}
+    <p class="tag is-danger is-medium ml-2">Bloqueado</p>
+{% endif %}
+{% endblock %}
 
 {% block card_content %}
 
@@ -73,13 +80,27 @@
     <button href="" class="card-footer-item has-text-danger modal-trigger" data-id="{{ employee.id }}" data-target="employee-delete-modal">
         Eliminar
     </button>
+    <a href="{{ url_for("employee_bp.toggle_activation", employee_id=employee.id )}}" class="card-footer-item">
+        {% if employee.employment_information.is_active %}Deshabilitar{% else %}Habilitar{% endif %}
+    </a>
     <a href="{{ url_for( "employee_bp.edit_employee", employee_id=employee.id )}}" class="card-footer-item has-text-warning">Actualizar</a>
 {% endblock %}
 
 {% block additional_cards %}
     <div id="account" class="card">
         <header class="card-header">
-            <h2 class="card-header-title is-size-4">Usuario asociado a {{ employee.name }}</h2>
+            <h2 class="card-header-title is-size-4">
+                Usuario asociado a {{ employee.name }}
+                {% if not account %}
+                <span class="tag is-info is-medium ml-2">Sin informacion</span>
+                {% else %}
+                {% if account.enabled %}
+                <span class="tag is-success is-medium ml-2">Activo</span>
+                {% else %}
+                <span class="tag is-danger is-medium ml-2">Bloqueado</span>
+                {% endif %}
+                {% endif %}
+            </h2>
         </header>
         {% if account %}
         <div class="card-content">
@@ -93,9 +114,11 @@
                     <div class="media-content">
                         <div class="content">
                             <p>
-                                <strong class="is-size-5">{{ account.alias }}</strong> <small>{{ account.inserted_at | format_date }}</small>
+                                <strong class="is-size-5">{{ account.alias }}</strong> 
+                                <small>{{ account.inserted_at | format_date }}</small>
                                 <br />
                                 {{ account.email }}
+                                <br />
                             </p>
                         </div>
                     </div>
@@ -104,7 +127,6 @@
         </div>
         <footer class="card-footer">
             <a href="{{ url_for( "employee_bp.unlink_account", employee_id=employee.id ) }}" class="card-footer-item has-text-link">Desasociar</a>
-            <a href="" class="card-footer-item has-text-link">Ver</a>
         </footer>
         {% else %}
         <div class="card-content">
@@ -116,8 +138,6 @@
             <a href="{{ url_for( "employee_bp.link_account", employee_id=employee.id ) }}" class="card-footer-item has-text-link">Asociar cuenta</a>
         </footer>
         {% endif %}
-        </div>
-
     </div>
     <div id="documents" class="panel">
         <div class="panel-heading has-background-black-bis">

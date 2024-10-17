@@ -69,6 +69,13 @@ class AbstractEmployeeRepository:
     def link_account(self, employee_id: int, account_id: int | None) -> bool:
         pass
 
+    @abstractmethod
+    def toggled_activation(self, employee_id: int) -> bool:
+        pass
+
+    @abstractmethod
+    def is_employee_active(self, employee_id: int) -> bool:
+        pass
 
 class EmployeeRepository(AbstractEmployeeRepository):
     def __init__(self):
@@ -179,3 +186,15 @@ class EmployeeRepository(AbstractEmployeeRepository):
         employee.user_id = account_id
         self.save()
         return True
+
+    def toggled_activation(self, employee_id: int) -> bool:
+        employee = self.__get_by_id(employee_id)
+        employee.is_active = not employee.is_active
+        self.save()
+        return employee.is_active
+
+    def is_employee_active(self, employee_id: int) -> bool:
+        if not employee_id:
+            return False
+        employee = self.__get_by_id(employee_id)
+        return employee.is_active

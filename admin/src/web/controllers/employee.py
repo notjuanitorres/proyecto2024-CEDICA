@@ -255,14 +255,12 @@ def unlink_account(
 ):
     employee = employees.get_employee(employee_id)
     employees.link_account(employee_id, None)
-    
+
     flash(
         f"Se ha desasociado correctamente a {employee.get("name")} de su cuenta",
         "warning",
     )
     return redirect(url_for("employee_bp.show_employee", employee_id=employee_id))
-
- 
 
 
 @employee_bp.route("/editar/<int:employee_id>/documentos/", methods=["GET", "POST"])
@@ -341,3 +339,22 @@ def delete_document(
         "success",
     )
     return redirect(url_for("employee_bp.edit_documents", employee_id=employee_id))
+
+
+@employee_bp.route("/toggle-activation/<int:employee_id>")
+@inject
+def toggle_activation(
+    employee_id: int,
+    employees: AbstractEmployeeRepository = Provide[Container.employee_repository],
+    users: AbstractUserRepository = Provide[Container.user_repository],
+):
+    employee = employees.get_employee(employee_id)
+    account = employee.get("user_id")
+    is_active = employees.toggled_activation(employee_id)
+    if account:
+        if is_active and not users.is_user_enabled(account):
+            users.toggle_activation(account)
+        elif not is_active and users.is_user_enabled(account):
+            users.toggle_activation(account)
+    flash("La operacion fue un exito", "success")
+    return redirect(request.referrer or url_for("index_bp.home"))

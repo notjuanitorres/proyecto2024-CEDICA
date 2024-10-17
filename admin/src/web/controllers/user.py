@@ -7,6 +7,7 @@ from src.core.module.user import (
     UserSearchForm,
     UserMapper
 )
+from src.core.module.employee import AbstractEmployeeRepository
 from src.core.container import Container
 
 
@@ -56,13 +57,18 @@ def get_users(user_repository: AbstractUserRepository = Provide[Container.user_r
 @users_bp.route("/<int:user_id>")
 @inject
 def show_user(
-    user_id: int, user_repository: AbstractUserRepository = Provide[Container.user_repository]
+    user_id: int, user_repository: AbstractUserRepository = Provide[Container.user_repository],
+    employees: AbstractEmployeeRepository = Provide[Container.employee_repository]
 ):
     user = user_repository.get_user(user_id)
+    assigned_to = user.get("assigned_to")
     if not user:
         flash(f"El usuario con ID = {user_id} no existe", "danger")
-        return get_users()
-    return render_template("user.html", user=user)
+        return redirect(url_for("user_bp.get_users"))
+    employee: dict | None = None
+    if assigned_to:
+        employee = employees.get_employee(assigned_to)
+    return render_template("user.html", user=user, employee=employee)
 
 
 @users_bp.route("/crear", methods=["GET", "POST"])
