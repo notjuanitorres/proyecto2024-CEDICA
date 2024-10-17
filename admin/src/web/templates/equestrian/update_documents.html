@@ -41,6 +41,9 @@
 {% block doc_header_title %} Actualizando documentos de {{ horse.name }} {% endblock %}
 {% block doc_header_endpoint %}{{ url_for("equestrian_bp.edit_documents", horse_id=horse.id ) }}{% endblock %}
 
+{% block create_endpoint %}
+    {{ url_for('equestrian_bp.create_document',horse_id=horse.id) }}
+{% endblock %}
 
 {% block top_pagination %}
   {{ render_pagination(paginated_files, 'equestrian_bp.edit_documents', {'horse_id': horse.id}) }}

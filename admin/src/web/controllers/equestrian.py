@@ -50,7 +50,7 @@ def get_horses(equestrian_repository: AbstractEquestrianRepository = Provide[Con
 @inject
 def show_horse(horse_id: int,
                equestrian_repository: AbstractEquestrianRepository = Provide[Container.equestrian_repository]):
-    horse = equestrian_repository.get_by_id(horse_id)
+    horse = equestrian_repository.get_by_id(horse_id, documents=False)
 
     if not horse:
         flash(f"El caballo con ID = {horse_id} no existe", "danger")
@@ -74,29 +74,63 @@ def create_horse():
 @inject
 def add_horse(create_form: HorseCreateForm,
               equestrian_repository: AbstractEquestrianRepository = Provide[Container.equestrian_repository],
-              storage: AbstractStorageServices = Provide[Container.storage_services],
               ):
 
     if not create_form.validate_on_submit():
         return render_template("create_horse.html", form=create_form)
 
-    documents = create_form.documents.data
-    uploaded_documents = [
-        (tag.name, storage.upload_batch(documents.get(tag.name.lower()), equestrian_repository.storage_path))
-        for tag in FileTagEnum
-    ]
-    horse = equestrian_repository.add(HorseMapper.to_entity(create_form.data, uploaded_documents))
-
-    for doc in uploaded_documents:
-        for file in doc[1]:
-            if not file:
-                flash(f"No se pudo subir el archivo {doc[0]}", "danger")
-                return redirect(
-                    url_for("equestrian_bp.show_horse", horse_id=horse["id"])
-                )
+    horse = equestrian_repository.add(HorseMapper.to_entity(create_form.data, []))
 
     flash("Caballo creado con exito!", "success")
-    return redirect(url_for("equestrian_bp.show_horse", horse_id=horse["id"]))
+    return redirect(url_for("equestrian_bp.create_document", horse_id=horse["id"]))
+
+
+@equestrian_bp.route("/editar/<int:horse_id>/documentos/crear", methods=["GET", "POST"])
+@check_user_permissions(permissions_required=["ecuestre_update"])
+@inject
+def create_document(horse_id: int,
+                    equestrian_repository: AbstractEquestrianRepository = Provide[Container.equestrian_repository]):
+
+    horse = equestrian_repository.get_by_id(horse_id)
+    if not horse:
+        flash(f"El caballo con ID = {horse_id} no existe", "danger")
+        return redirect(url_for("equestrian_bp.get_horses"))
+
+    create_form = HorseAddDocumentsForm()
+    if request.method == "POST":
+        return add_document(horse=horse, create_form=create_form)
+
+    return render_template("create_document.html", form=create_form, horse=horse)
+
+
+@inject
+def add_document(horse,
+                 create_form: HorseAddDocumentsForm,
+                 equestrian_repository: AbstractEquestrianRepository = Provide[Container.equestrian_repository],
+                 storage: AbstractStorageServices = Provide[Container.storage_services],
+                 ):
+
+    if not create_form.validate_on_submit():
+        return render_template("create_document.html", form=create_form, horse=horse)
+
+    if create_form.upload_type.data == "file":
+        uploaded_document = storage.upload_file(
+            file=create_form.file.data, path=equestrian_repository.storage_path, title=create_form.title.data)
+
+        if not uploaded_document:
+            flash(f"No se pudo subir el archivo, inténtelo nuevamente", "danger")
+            return redirect(url_for("equestrian_bp.create_document", horse_id=horse["id"]))
+    else:
+        uploaded_document = FileMapper.file_from_form(create_form.data)
+
+    equestrian_repository.add_document(
+        horse_id=horse["id"],
+        document=HorseMapper.create_file(
+            document_type=create_form.tag.data, file_information=uploaded_document
+        ))
+
+    flash(f"El documento {uploaded_document.get('title')} se ha subido exitosamente", "success")
+    return redirect(url_for("equestrian_bp.create_document", horse_id=horse["id"]))
 
 
 @equestrian_bp.route("/editar/<int:horse_id>", methods=["GET", "POST", "PUT"])
@@ -149,7 +183,7 @@ def delete_horse(equestrian_repository: AbstractEquestrianRepository = Provide[C
     return redirect(url_for("equestrian_bp.get_horses"))
 
 
-@equestrian_bp.route("/editar/<int:horse_id>/documentos/", methods=["GET", "POST"])
+@equestrian_bp.route("/editar/<int:horse_id>/documentos/", methods=["GET"])
 @check_user_permissions(permissions_required=["ecuestre_update"])
 @inject
 def edit_documents(
@@ -195,9 +229,6 @@ def edit_documents(
             flash(f"Algunos archivos no se pudieron obtener", "warning")
             break
 
-    if request.method == "POST":
-        return update_documents(add_document_form, search_document_form, horse, documents, paginated_files)
-
     return render_template(
         "./equestrian/update_documents.html",
         horse=horse,
@@ -206,54 +237,6 @@ def edit_documents(
         search_form=search_document_form,
         paginated_files=paginated_files,
     )
-
-
-@inject
-def update_documents(
-    add_form: HorseAddDocumentsForm,
-    search_form: HorseDocumentSearchForm,
-    horse: dict,
-    documents: list[dict],
-    paginated_files,
-    equestrian_repository: AbstractEquestrianRepository = Provide[Container.equestrian_repository],
-    storage: AbstractStorageServices = Provide[Container.storage_services],
-):
-    if not add_form.validate_on_submit():
-        return render_template(
-            "./equestrian/update_documents.html",
-            add_form=add_form,
-            horse=horse,
-            documents=documents,
-            search_form=search_form,
-            paginated_files=paginated_files,
-        )
-
-    horse_id = horse["id"]
-    if add_form.upload_type.data == 'file':
-        uploaded_document = storage.upload_file(
-            file=add_form.file.data, path=equestrian_repository.storage_path, title=add_form.title.data
-        )
-    else:
-        uploaded_document = {
-                    "path": add_form.url.data,
-                    "filetype": None,
-                    "filesize": None,
-                    "title": add_form.title.data,
-                    "is_link": True,
-                }
-
-    if not uploaded_document:
-        flash("No se pudo subir el archivo, inténtelo nuevamente", "danger")
-        return redirect(url_for("equestrian_bp.edit_documents", horse_id=horse_id))
-
-    equestrian_repository.add_document(
-        horse_id=horse_id,
-        document=HorseMapper.create_file(
-            document_type=add_form.tag.data, file_information=uploaded_document
-        ),
-    )
-    flash(f"El documento {uploaded_document.get("title")} se ha subido exitosamente", "success")
-    return redirect(url_for("equestrian_bp.edit_documents", horse_id=horse_id))
 
 
 @equestrian_bp.route("/editar/<int:horse_id>/documentos/eliminar", methods=["POST"])
@@ -304,7 +287,7 @@ def edit_document(
         "./equestrian/edit_document.html",
         horse=horse,
         document=document,
-        edit_form=edit_form,
+        form=edit_form,
     )
 
 
@@ -330,7 +313,7 @@ def update_document(horse_id: int,
 
     uploaded_document = previous_doc
     if edit_form.upload_type.data == 'url':
-        uploaded_document = FileMapper.file_from_edit_form(edit_form.data)
+        uploaded_document = FileMapper.file_from_form(edit_form.data)
         if was_file:
             deleted_in_bucket = storage.delete_file(previous_doc["path"])
             if not deleted_in_bucket:
@@ -352,7 +335,7 @@ def update_document(horse_id: int,
                     title=edit_form.title.data
                 )
         else:
-            uploaded_document = FileMapper.file_from_edit_form(edit_form.data)
+            uploaded_document = FileMapper.file_from_form(edit_form.data)
 
         if not uploaded_document:
             flash("No se pudo modificar el archivo, inténtelo nuevamente", "danger")

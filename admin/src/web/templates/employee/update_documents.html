@@ -41,6 +41,10 @@
 {% block doc_header_title %} Actualizando documentos de {{ employee.name }} {{ employee.lastname }} {% endblock %}
 {% block doc_header_endpoint %}{{ url_for("employee_bp.edit_documents", employee_id=employee.id ) }}{% endblock %}
 
+{% block create_endpoint %}
+    {{ url_for('employee_bp.create_document',employee_id=employee.id) }}
+{% endblock %}
+
 {% block top_pagination %}
   {{ render_pagination(paginated_files, 'employee_bp.edit_documents', {'employee_id': employee.id}) }}
 {% endblock %}

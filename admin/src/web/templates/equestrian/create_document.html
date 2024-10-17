@@ -1,6 +1,6 @@
 {% extends "base_document_management.html" %}
 
-{% block title %}Editar documento{% endblock %}
+{% block title %}Crear documento{% endblock %}
 
 {% block breadcrumb_items %}
     <li>
@@ -20,35 +20,19 @@
       </a>
     </li>
     <li>
-      <a href="{{ url_for('equestrian_bp.edit_documents', horse_id=horse.id) }}">
+      <a href="{{ url_for('equestrian_bp.create_document', horse_id=horse.id) }}">
         <span class="icon is-small">
           <i class="fa-solid fa-pen-nib"></i>
         </span>
-        <span>Actualizar documentos</span>
-      </a>
-    </li>
-    <li>
-      <a href="{{ url_for('equestrian_bp.edit_document', horse_id=horse.id, document_id=document.id) }}">
-        <span class="icon is-small">
-          <i class="fa-solid fa-pen-nib"></i>
-        </span>
-        <span>Documento: {{ document.title }}</span>
+        <span>Crear documento</span>
       </a>
     </li>
 {% endblock %}
 
 {% block card_title %}
-	Modifcar documento
-{% endblock %}
-
-{% block filename %}
-	{% if not document.is_link %}
-        Se usará el archivo previamente cargado
-      {% else %}
-        No se ha seleccionado ningún archivo
-      {% endif %}
+	Crear documento
 {% endblock %}
 
 {% block submit_label %}
-	Modificar
+	Guardar
 {% endblock %}

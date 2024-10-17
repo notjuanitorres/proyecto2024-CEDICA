@@ -67,6 +67,8 @@
         <a href="{{ url_for('equestrian_bp.edit_horse', horse_id=horse.id) }}"
            class="card-footer-item has-text-warning">Editar</a>
     {% endif %}
+    <a href="{{ url_for('equestrian_bp.edit_documents', horse_id=horse.id) }}"
+           class="card-footer-item has-text-link">Ver documentos</a>
 {% endblock %}
 
 {% block additional_cards %}
@@ -162,33 +164,6 @@
             {% endfor %}
         </div>
 
-    </div>
-
-    <div id="documents" class="panel">
-        <div class="panel-heading has-background-black-bis">
-            <p class="card-header-title is-size-4">Documentos asociados</p>
-        </div>
-        {% if horse.files %}
-
-        {% for document in horse.files %}
-        <div class="panel-block is-active">
-            <span class="panel-icon">
-            {{ render_file_icon(document.filetype, 5) }}
-            </span>
-            <span class="tag is-white">{{ render_category(document.tag) }} {{ document.is_link | file_type }}</span>
-            <p class="ml-2"> {{ document.title}} </p>
-        </div>
-        {% endfor %}
-        {% else %}
-        <div class="panel-block">
-            <p>No se se ha subido ningun documento</p>
-        </div>
-        {% endif %}
-        <div class="panel-block">
-            <a href="{{ url_for("equestrian_bp.edit_documents", horse_id=horse.id ) }}" class="card-footer-item has-text-warning">
-                Actualizar
-            </a>
-        </div>
     </div>
 
 {% endblock %}

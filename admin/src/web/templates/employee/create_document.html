@@ -1,6 +1,6 @@
 {% extends "base_document_management.html" %}
 
-{% block title %}Editar documento{% endblock %}
+{% block title %}Crear documento{% endblock %}
 
 {% block breadcrumb_items %}
     <li>
@@ -32,23 +32,15 @@
         <span class="icon is-small">
           <i class="fa-solid fa-pen-nib"></i>
         </span>
-        <span>Documento: {{ document.title }}</span>
+        <span>Crear documento</span>
       </a>
     </li>
 {% endblock %}
 
 {% block card_title %}
-	Modificar documento
-{% endblock %}
-
-{% block filename %}
-	{% if not document.is_link %}
-        Se usará el archivo previamente cargado
-      {% else %}
-        No se ha seleccionado ningún archivo
-      {% endif %}
+	Crear documento
 {% endblock %}
 
 {% block submit_label %}
-	Modificar
+	Guardar
 {% endblock %}

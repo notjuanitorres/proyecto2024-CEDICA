@@ -9,7 +9,7 @@ from wtforms.fields import (
     MultipleFileField, FormField,
 )
 from wtforms.validators import DataRequired, Length
-from wtforms import widgets
+from wtforms import widgets, FieldList
 
 from src.core.module.common.forms import BaseSearchForm, DocumentsSearchForm
 from src.core.module.common.forms import BaseManageDocumentsForm, allowed_filetypes, filetypes_message
@@ -182,8 +182,6 @@ class HorseManagementForm(FlaskForm):
             DataRequired(),
         ],
     )
-
-    documents = FormField(HorseDocumentsForm)
 
 
 class HorseCreateForm(HorseManagementForm):

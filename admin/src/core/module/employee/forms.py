@@ -143,7 +143,6 @@ class EmployeeManagementForm(FlaskForm):
     health_insurance = TextAreaField("Obra Social", validators=[Optional()])
     affiliate_number = StringField("Numero de afiliado", validators=[Optional()])
     emergency_contact = FormField(EmergencyContactForm)
-    documents = FormField(EmployeeDocumentsForm)
 
     # TODO: Find a way to relationate an account's email or id
 

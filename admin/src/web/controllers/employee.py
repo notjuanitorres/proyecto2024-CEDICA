@@ -73,42 +73,67 @@ def create_employee():
 def add_employee(
     create_form,
     employees: AbstractEmployeeRepository = Provide[Container.employee_repository],
-    storage: AbstractStorageServices = Provide[Container.storage_services],
 ):
     if not create_form.validate_on_submit():
         return render_template("./employee/create_employee.html", form=create_form)
 
-    documents = create_form.documents.data
-
-    uploaded_documents = [
-        ("DNI", storage.upload_batch(documents.get("dni"), employees.storage_path)),
-        ("TITLE", storage.upload_batch(documents.get("title"), employees.storage_path)),
-        (
-            "CURRICULUM_VITAE",
-            [
-                storage.upload_file(
-                    documents.get("curriculum_vitae"), employees.storage_path
-                )
-            ],
-        ),
-    ]
-
     created_employee = employees.add(
-        employee=EmployeeMapper.to_entity(create_form.data, uploaded_documents),
+        employee=EmployeeMapper.to_entity(create_form.data, []),
     )
-    for doc in uploaded_documents:
-        for file in doc[1]:
-            if not file:
-                flash(f"No se pudo subir el archivo {doc[0]}", "danger")
-                return redirect(
-                    url_for("employee_bp.show_employee", employee_id=created_employee["id"])
-                )
 
     flash("Miembro creado con exito!", "success")
 
     return redirect(
-        url_for("employee_bp.show_employee", employee_id=created_employee["id"])
+        url_for("employee_bp.create_document", employee_id=created_employee["id"])
     )
+
+
+@employee_bp.route("/editar/<int:employee_id>/documentos/crear", methods=["GET", "POST"])
+@check_user_permissions(permissions_required=["equipo_update"])
+@inject
+def create_document(employee_id: int,
+                    employees: AbstractEmployeeRepository = Provide[Container.employee_repository]):
+
+    employee = employees.get_employee(employee_id, documents=False)
+    if not employee:
+        flash(f"El empleado con ID = {employee_id} no existe", "danger")
+        return redirect(url_for("employee_bp.get_employees"))
+
+    create_form = EmployeeAddDocumentsForm()
+    if request.method == "POST":
+        return add_document(employee=employee, create_form=create_form)
+
+    return render_template("./employee/create_document.html", form=create_form, employee=employee)
+
+
+@inject
+def add_document(employee,
+                 create_form: EmployeeAddDocumentsForm,
+                 employees: AbstractEmployeeRepository = Provide[Container.employee_repository],
+                 storage: AbstractStorageServices = Provide[Container.storage_services],
+                 ):
+
+    if not create_form.validate_on_submit():
+        return render_template("./employee/create_document.html", form=create_form, employee=employee)
+
+    if create_form.upload_type.data == "file":
+        uploaded_document = storage.upload_file(
+            file=create_form.file.data, path=employees.storage_path, title=create_form.title.data)
+
+        if not uploaded_document:
+            flash(f"No se pudo subir el archivo, inténtelo nuevamente", "danger")
+            return redirect(url_for("employee_bp.create_document", employee_id=employee["id"]))
+    else:
+        uploaded_document = FileMapper.file_from_form(create_form.data)
+
+    employees.add_document(
+        employee_id=employee["id"],
+        document=EmployeeMapper.create_file(
+            document_type=create_form.tag.data, file_information=uploaded_document
+        ))
+
+    flash(f"El documento {uploaded_document.get('title')} se ha subido exitosamente", "success")
+    return redirect(url_for("employee_bp.create_document", employee_id=employee["id"]))
 
 
 @employee_bp.route("/<int:employee_id>")
@@ -184,7 +209,7 @@ def delete_employee(employee_repository: AbstractEmployeeRepository = Provide[Co
     return redirect(url_for("employee_bp.get_employees"))
 
 
-@employee_bp.route("/editar/<int:employee_id>/documentos/", methods=["GET", "POST"])
+@employee_bp.route("/editar/<int:employee_id>/documentos/", methods=["GET"])
 @check_user_permissions(permissions_required=["employee_update"])
 @inject
 def edit_documents(
@@ -229,9 +254,6 @@ def edit_documents(
         if not documents[-1].get("file").get("is_link") and not documents[-1].get("download_url"):
             flash(f"Algunos archivos no se pudieron obtener", "warning")
             break
-
-    if request.method == "POST":
-        return update_documents(add_document_form, search_document_form, employee, documents, paginated_files)
 
     return render_template(
         "./employee/update_documents.html",
@@ -339,7 +361,7 @@ def edit_document(
         "./employee/edit_document.html",
         employee=employee,
         document=document,
-        edit_form=edit_form,
+        form=edit_form,
     )
 
 
@@ -365,7 +387,7 @@ def update_document(employee_id: int,
 
     uploaded_document = previous_doc
     if edit_form.upload_type.data == 'url':
-        uploaded_document = FileMapper.file_from_edit_form(edit_form.data)
+        uploaded_document = FileMapper.file_from_form(edit_form.data)
         if was_file:
             deleted_in_bucket = storage.delete_file(previous_doc["path"])
             if not deleted_in_bucket:
@@ -385,7 +407,7 @@ def update_document(employee_id: int,
                     employee_repository.storage_path,
                     title=edit_form.title.data)
         else:
-            uploaded_document = FileMapper.file_from_edit_form(edit_form.data)
+            uploaded_document = FileMapper.file_from_form(edit_form.data)
 
         if not uploaded_document:
             flash("No se pudo modificar el archivo, inténtelo nuevamente", "danger")

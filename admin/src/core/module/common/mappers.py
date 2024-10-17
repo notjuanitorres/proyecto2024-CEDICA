@@ -15,7 +15,7 @@ class FileMapper:
         return file_dict
 
     @classmethod
-    def file_from_edit_form(cls, data: Dict):
+    def file_from_form(cls, data: Dict):
         """
         Transforms edit form data into a dictionary that can be used to update a file.
 
