@@ -117,6 +117,7 @@
             <thead>
                 <tr>
                     <th></th>
+                    <th>id</th>
                     <th>Monto</th>
                     <th>Fecha de pago</th>
                     <th>Tipo de pago</th>
@@ -146,6 +147,7 @@
                         )
                         }}
                     </td>
+                    <td>{{ payment.id }}</td>
                     <td>{{ payment.amount }}</td>
                     <td>{{ payment.payment_date.strftime('%d-%m-%Y') }}</td>
                     <td>{{ payment.payment_type.name | capitalize }}</td>
@@ -156,6 +158,7 @@
             <tfoot>
                 <tr>
                     <th></th>
+                    <th>id</th>
                     <th>Monto</th>
                     <th>Fecha de pago</th>
                     <th>Tipo de pago</th>
@@ -167,40 +170,18 @@
     </div>
         {% for payment in payments.items %}
                 <div class="box is-hidden-desktop">
+                    <p><strong>ID:</strong> {{ payment.id }}</p>
                     <p><strong>Monto:</strong> {{ payment.amount }}</p>
                     <p><strong>Fecha de pago:</strong> {{ payment.payment_date.strftime('%d-%m-%Y') }}</p>
                     <p><strong>Tipo de pago:</strong> {{ payment.payment_type.name | capitalize }}</p>
                     <p><strong>Beneficiario:</strong> {{ payment.beneficiary.name if payment.beneficiary else '-' }}</p>
-                    <div class="buttons">
-                        {% if 'pagos_show' in permissions or is_admin %}
-                        <a href="{{ url_for('payment_bp.show_payment', payment_id=payment.id) }}" class="button is-small is-info">
-                            <span class="icon is-small">
-                                <i class="fas fa-eye"></i>
-                            </span>
-                            <span>Mostrar</span>
+                    <div class="is-hidden-tablet is-flex">
+                        <a href="{{ url_for('payment_bp.show_payment', payment_id=payment.id)}}" class="button  is-flex-grow-1 ">
+                          <span class=" is-bold ">
+                              Ver pago
+                              <i class="fa-regular fa-eye ml-2"></i>
+                          </span>
                         </a>
-                        {% endif %}
-                        
-                        {% if 'pagos_update' in permissions or is_admin %}
-                        <a href="{{ url_for('payment_bp.edit_payment', payment_id=payment.id) }}" class="button is-small is-warning">
-                            <span class="icon is-small">
-                                <i class="fas fa-edit"></i>
-                            </span>
-                            <span>Editar</span>
-                        </a>
-                        {% endif %}
-                        
-                        {% if 'pagos_destroy' in permissions or is_admin %}
-                        <form action="{{ url_for('payment_bp.delete_payment') }}" method="POST" style="display:inline;">
-                            <input type="hidden" name="item_id" value="{{ payment.id }}">
-                            <button type="submit" class="button is-small is-danger" onclick="return confirm('¿Estás seguro de que deseas eliminar este pago?');">
-                                <span class="icon is-small">
-                                    <i class="fas fa-trash"></i>
-                                </span>
-                                <span>Eliminar</span>
-                            </button>
-                        </form>
-                        {% endif %}
                     </div>
                 </div>
                 {% endfor %}
