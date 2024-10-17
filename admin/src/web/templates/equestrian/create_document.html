@@ -36,3 +36,12 @@
 {% block submit_label %}
 	Guardar
 {% endblock %}
+
+{% block exit_button %}
+	<a href="{{ url_for('equestrian_bp.edit_documents', horse_id=horse.id) }}" class="button is-half is-danger">
+        Cerrar
+        <span class="icon ml-1">
+            <i class="fa-solid fa-exit"></i>
+        </span>
+    </a>
+{% endblock %}

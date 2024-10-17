@@ -336,7 +336,7 @@ def delete_document(
 
 
 @employee_bp.route("/editar/<int:employee_id>/documentos/editar/<int:document_id>", methods=["GET", "POST"])
-@check_user_permissions(permissions_required=["employee_update"])
+@check_user_permissions(permissions_required=["equipo_update"])
 @inject
 def edit_document(
     employee_id: int,
@@ -355,7 +355,7 @@ def edit_document(
 
     edit_form = EmployeeAddDocumentsForm(data=FileMapper.to_form(document))
     if request.method == "POST":
-        return update_document(employee_id, document_id, edit_form, document)
+        return update_document(employee, document, edit_form)
 
     return render_template(
         "./employee/edit_document.html",
@@ -366,61 +366,50 @@ def edit_document(
 
 
 @inject
-def update_document(employee_id: int,
-                    document_id: int,
+def update_document(employee: dict,
+                    document: dict,
                     edit_form: EmployeeAddDocumentsForm,
-                    previous_doc: Dict,
                     employee_repository: AbstractEmployeeRepository = Provide[Container.employee_repository],
                     storage: AbstractStorageServices = Provide[Container.storage_services],):
 
-    was_file = not previous_doc["is_link"]
     if not (edit_form.is_submitted()
             and
-            edit_form.validate(is_file_already_uploaded=was_file)):
+            edit_form.validate(is_file_already_uploaded=not document.get("is_link"))):
 
         return render_template(
             "./employee/edit_document.html",
-            employee_id=employee_id,
-            document_id=document_id,
-            edit_form=edit_form,
+            employee=employee,
+            document=document,
+            form=edit_form,
         )
 
-    uploaded_document = previous_doc
+    uploaded_document = {}
     if edit_form.upload_type.data == 'url':
         uploaded_document = FileMapper.file_from_form(edit_form.data)
-        if was_file:
-            deleted_in_bucket = storage.delete_file(previous_doc["path"])
-            if not deleted_in_bucket:
-                flash("No se ha podido modificar el documento, inténtelo nuevamente", "danger")
-                return redirect(url_for("employee_bp.edit_documents", employee_id=employee_id))
 
     if edit_form.upload_type.data == 'file':
         if edit_form.file.data:
-            if was_file:  # If the previous document was a file, we overwrite it
-                uploaded_document = storage.upload_file(
-                    edit_form.file.data,
-                    path=employee_repository.storage_path,
-                    title=edit_form.title.data)
-            else:
-                uploaded_document = storage.upload_file(
-                    edit_form.file.data,
-                    employee_repository.storage_path,
-                    title=edit_form.title.data)
+            uploaded_document = storage.upload_file(
+                edit_form.file.data,
+                employee_repository.storage_path,
+                title=edit_form.title.data
+            )
         else:
             uploaded_document = FileMapper.file_from_form(edit_form.data)
 
         if not uploaded_document:
             flash("No se pudo modificar el archivo, inténtelo nuevamente", "danger")
-            return redirect(url_for("employee_bp.edit_documents", employee_id=employee_id))
+            return redirect(url_for("employee_bp.edit_documents", employee_id=employee["id"]))
 
     success = employee_repository.update_document(
-        employee_id=employee_id,
-        document_id=document_id,
+        employee_id=employee["id"],
+        document_id=document["id"],
         data=uploaded_document,
     )
+
     if success:
         flash(f"El documento {edit_form.title.data} ha sido modificado correctamente", "success")
     else:
         flash(f"El documento {edit_form.title.data} no ha podido ser modificado", "danger")
 
-    return redirect(url_for("employee_bp.edit_documents", employee_id=employee_id))
+    return redirect(url_for("employee_bp.edit_documents", employee_id=employee["id"]))

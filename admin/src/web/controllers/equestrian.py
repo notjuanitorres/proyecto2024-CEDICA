@@ -281,7 +281,7 @@ def edit_document(
 
     edit_form = HorseAddDocumentsForm(data=FileMapper.to_form(document))
     if request.method == "POST":
-        return update_document(horse_id, document_id, edit_form, document)
+        return update_document(horse, document, edit_form)
 
     return render_template(
         "./equestrian/edit_document.html",
@@ -292,58 +292,44 @@ def edit_document(
 
 
 @inject
-def update_document(horse_id: int,
-                    document_id: int,
+def update_document(horse: dict,
+                    document: dict,
                     edit_form: HorseAddDocumentsForm,
-                    previous_doc: Dict,
                     equestrian_repository: AbstractEquestrianRepository = Provide[Container.equestrian_repository],
                     storage: AbstractStorageServices = Provide[Container.storage_services],):
 
-    was_file = not previous_doc["is_link"]
     if not (edit_form.is_submitted()
             and
-            edit_form.validate(is_file_already_uploaded=was_file)):
+            edit_form.validate(is_file_already_uploaded=not document.get("is_link"))):
 
         return render_template(
             "./equestrian/edit_document.html",
-            horse_id=horse_id,
-            document_id=document_id,
-            edit_form=edit_form,
+            horse=horse,
+            document=document,
+            form=edit_form,
         )
 
-    uploaded_document = previous_doc
+    uploaded_document = {}
     if edit_form.upload_type.data == 'url':
         uploaded_document = FileMapper.file_from_form(edit_form.data)
-        if was_file:
-            deleted_in_bucket = storage.delete_file(previous_doc["path"])
-            if not deleted_in_bucket:
-                flash("No se ha podido modificar el documento, inténtelo nuevamente", "danger")
-                return redirect(url_for("equestrian_bp.edit_documents", horse_id=horse_id))
 
     if edit_form.upload_type.data == 'file':
         if edit_form.file.data:
-            if was_file:  # If the previous document was a file, we overwrite it
-                uploaded_document = storage.upload_file(
-                    edit_form.file.data,
-                    path=equestrian_repository.storage_path,
-                    title=edit_form.title.data
-                )
-            else:
-                uploaded_document = storage.upload_file(
-                    edit_form.file.data,
-                    equestrian_repository.storage_path,
-                    title=edit_form.title.data
-                )
+            uploaded_document = storage.upload_file(
+                edit_form.file.data,
+                equestrian_repository.storage_path,
+                title=edit_form.title.data
+            )
         else:
             uploaded_document = FileMapper.file_from_form(edit_form.data)
 
         if not uploaded_document:
             flash("No se pudo modificar el archivo, inténtelo nuevamente", "danger")
-            return redirect(url_for("equestrian_bp.edit_documents", horse_id=horse_id))
+            return redirect(url_for("equestrian_bp.edit_documents", horse_id=horse["id"]))
 
     success = equestrian_repository.update_document(
-        horse_id=horse_id,
-        document_id=document_id,
+        horse_id=horse["id"],
+        document_id=document["id"],
         data=uploaded_document,
     )
 
@@ -352,6 +338,6 @@ def update_document(horse_id: int,
     else:
         flash(f"El documento {edit_form.title.data} no ha podido ser modificado", "danger")
 
-    return redirect(url_for("equestrian_bp.edit_documents", horse_id=horse_id))
+    return redirect(url_for("equestrian_bp.edit_documents", horse_id=horse["id"]))
 
 

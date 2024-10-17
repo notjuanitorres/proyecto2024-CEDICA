@@ -44,3 +44,12 @@
 {% block submit_label %}
 	Guardar
 {% endblock %}
+
+{% block exit_button %}
+	<a href="{{ url_for('employee_bp.edit_documents', employee_id=employee.id) }}" class="button is-half is-danger">
+        Cerrar
+        <span class="icon ml-1">
+            <i class="fa-solid fa-exit"></i>
+        </span>
+    </a>
+{% endblock %}

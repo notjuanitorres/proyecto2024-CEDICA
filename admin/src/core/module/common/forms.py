@@ -56,7 +56,8 @@ class BaseManageDocumentsForm(FlaskForm):
     upload_type = RadioField(
         'Tipo de subida',
         choices=[('file', 'Archivo'), ('url', 'URL')],
-        validators=[DataRequired(message="Debe seleccionar el tipo de subida")]
+        validators=[DataRequired(message="Debe seleccionar el tipo de subida")],
+        default='url'
     )
 
     title = StringField(
@@ -87,7 +88,8 @@ class BaseManageDocumentsForm(FlaskForm):
         validators=[
             Optional(),
             URL(message="Debe proporcionar una URL válida")
-        ]
+        ],
+        default="https://"
     )
 
     def validate(self, *args, is_file_already_uploaded: bool = False, **kwargs):

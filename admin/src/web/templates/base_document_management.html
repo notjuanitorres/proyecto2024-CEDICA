@@ -19,117 +19,128 @@
     </ul>
   </nav>
 
-<div class="card">
+  <div class="card">
     {{ render_flash_messages(messages) }}
-        <header class="card-header">
-          <p class="card-header-title is-size-4">
+    <header class="card-header">
+        <p class="card-header-title is-size-4">
             {% block card_title %}{% endblock %}
-          </p>
-        </header>
-        <div class="card-content">
-          <div class="content">
-    <form method="POST" class="block" enctype="multipart/form-data">
-    {{ form.hidden_tag() }}
-    <div class="columns is-multiline">
-     <div class="column is-full">
-        <div class="field">
-          <label class="label">{{ form.upload_type.label }}</label>
-          <div class="control is-flex">
-            {% for subfield in form.upload_type %}
-              <label class="radio">
-                {{ subfield }}
-                <span class="radio-label">{{ subfield.label }}</span>
-              </label>
-            {% endfor %}
-          </div>
-          {% if form.upload_type.errors %}
-          <p class="help is-danger">{{ form.upload_type.errors[0] }}</p>
-          {% endif %}
-        </div>
-      </div>
+        </p>
+    </header>
+    <div class="card-content">
+        <div class="content">
+            <form method="POST" class="block" enctype="multipart/form-data">
+                {{ form.hidden_tag() }}
+                <div class="columns is-multiline">
 
-      <div class="column is-half">
-        <div class="field">
-        <label class="label">{{ form.title.label }}</label>
-          <div class="control">
-            {{ form.title(class="input", placeholder="Ingrese el título del documento") }}
-          </div>
-          {% if form.title.errors %}
-          <p class="help is-danger">{{ form.title.errors[0] }}</p>
-          {% endif %}
-        </div>
-      </div>
+                    {% block upload_type %}
+                    <div class="column is-full {% block visibility %}{% endblock %}">
+                        <div class="field">
+                            <label class="label">{{ form.upload_type.label }}</label>
+                            <div class="control is-flex">
+                                {% for subfield in form.upload_type %}
+                                <label class="radio">
+                                    {{ subfield }}
+                                    <span class="radio-label">{{ subfield.label }}</span>
+                                </label>
+                                {% endfor %}
+                            </div>
+                            {% if form.upload_type.errors %}
+                            <p class="help is-danger">{{ form.upload_type.errors[0] }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endblock %}
 
-      <div class="column is-half">
-        <div class="field">
-        <label class="label">{{ form.url.label }}</label>
-          <div class="control">
-            {{ form.url(class="input", placeholder="Ingrese la url del documento") }}
-          </div>
-          {% if form.url.errors %}
-          <p class="help is-danger">{{ form.url.errors[0] }}</p>
-          {% endif %}
-        </div>
-      </div>
+                    <div class="column is-half">
+                        <div class="field">
+                            <label class="label">{{ form.title.label }}</label>
+                            <div class="control">
+                                {{ form.title(class="input", placeholder="Ingrese el título del documento") }}
+                            </div>
+                            {% if form.title.errors %}
+                            <p class="help is-danger">{{ form.title.errors[0] }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
 
-      <div class="column is-half">
-        <div class="field">
-        <label class="label">{{ form.tag.label }}</label>
-          <div class="control">
-            <div class="select is-fullwidth">
-              {{ form.tag(class="is-fullwidth") }}
-            </div>
-          </div>
-          {% if form.tag.errors %}
-          <p class="help is-danger">{{ form.tag.errors[0] }}</p>
-          {% endif %}
-        </div>
-      </div>
+                    {% block url_field %}
 
-      <div class="column is-half">
-        <div class="field">
-        <label class="label">{{ form.file.label }}</label>
-          <div class="file has-name is-fullwidth">
-            <label class="file-label">
-              {{ form.file(class="file-input", multiple="multiple") }}
-              <span class="file-cta">
-                <span class="file-icon">
-                  <i class="fas fa-upload"></i>
-                </span>
-                <span class="file-label">Elegir archivo</span>
-              </span>
-              <span class="file-name">
-                  {% block filename %}No se ha seleccionado ningun archivo{% endblock %}
-              </span>
-            </label>
-          </div>
-          {% if form.file.errors %}
-          <p class="help is-danger">{{ form.file.errors[0] }}</p>
-          {% endif %}
-        </div>
-      </div>
+                    <div id="url-field" class="column is-half">
+                        <div class="field">
+                            <label class="label">{{ form.url.label }}</label>
+                            <div class="control">
+                                {{ form.url(class="input", placeholder="Ingrese la url del documento") }}
+                            </div>
+                            {% if form.url.errors %}
+                            <p class="help is-danger">{{ form.url.errors[0] }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
 
-      <div class="column is-full">
-        <div class="field">
-          <div class="control">
-            <button type="submit" class="button is-fullwidth is-primary">
-              {% block submit_label %}Guardar{% endblock %}
-              <span class="icon ml-1">
-                <i class="fa-solid fa-file"></i>
-              </span>
-            </button>
-          </div>
+                    {% endblock %}
+
+                    {% block file_field %}
+                    <div id="file-field" class="column is-half">
+                        <div class="field">
+                            <label class="label">{{ form.file.label }}</label>
+                            <div class="file has-name is-fullwidth">
+                                <label class="file-label">
+                                    {{ form.file(class="file-input") }}
+                                    <span class="file-cta">
+                                        <span class="file-icon">
+                                            <i class="fas fa-upload"></i>
+                                        </span>
+                                        <span class="file-label">Elegir archivo</span>
+                                    </span>
+                                    <span class="file-name">
+                                        {% block filename %}No se ha seleccionado ningun archivo{% endblock %}
+                                    </span>
+                                </label>
+                            </div>
+                            {% if form.file.errors %}
+                            <p class="help is-danger">{{ form.file.errors[0] }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endblock %}
+
+                    <div class="column is-half">
+                        <div class="field">
+                            <label class="label">{{ form.tag.label }}</label>
+                            <div class="control">
+                                <div class="select is-fullwidth">
+                                    {{ form.tag(class="is-fullwidth") }}
+                                </div>
+                            </div>
+                            {% if form.tag.errors %}
+                            <p class="help is-danger">{{ form.tag.errors[0] }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+
+
+                    <div class="column is-full">
+                        <div class="field">
+                            <div class="control">
+                                <button type="submit" class="button is-half is-primary">
+                                    {% block submit_label %}Crear{% endblock %}
+                                </button>
+                                {% block exit_button %}{% endblock %}
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </form>
         </div>
-      </div>
     </div>
-  </form>
-    </div>
-    </div>
-    </div>
+</div>
 
 {% endblock %}
 
 {% block extra_scripts %}
     {{ super() }}
     <script src="{{ url_for('static', filename='js/file-input.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/upload_type.js') }}"></script>
 {% endblock %}
