@@ -43,7 +43,6 @@ class FamilyAssignmentEnum(Enum):
 
 
 class PensionEnum(Enum):
-    NONE = "No"
     PROVINCIAL = "Provincial"
     NATIONAL = "Nacional"
 
@@ -181,8 +180,10 @@ class JockeyAmazon(db.Model, AddressMixin, PhoneMixin, EmergencyContactMixin):
     birth_date = db.Column(db.Date, nullable=False)
     birthplace = db.Column(db.String(100), nullable=False)
 
-    is_scholarship = db.Column(db.Boolean, default=False)
+    has_scholarship = db.Column(db.Boolean, default=False)
     scholarship_observations = db.Column(db.Text, nullable=True)
+    scholarship_percentage = db.Column(db.Float, nullable=True)
+
 
     has_disability = db.Column(db.Boolean, default=False)
     disability_diagnosis = db.Column(SQLAEnum(DisabilityDiagnosisEnum), nullable=True)
@@ -192,7 +193,8 @@ class JockeyAmazon(db.Model, AddressMixin, PhoneMixin, EmergencyContactMixin):
     has_family_assignment = db.Column(db.Boolean, default=False)
     family_assignment_type = db.Column(SQLAEnum(FamilyAssignmentEnum), nullable=True)
 
-    has_pension = db.Column(SQLAEnum(PensionEnum), default=PensionEnum.NONE, nullable=False)
+    has_pension = db.Column(db.Boolean, default=False)
+    pension_type = db.Column(SQLAEnum(PensionEnum), nullable=True)
     pension_details = db.Column(db.String(100), nullable=True)
 
     social_security = db.Column(db.String(100), nullable=True)

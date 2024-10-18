@@ -39,6 +39,7 @@
                         <li data-tab="emergency-contact"><a>Contacto de Emergencia</a></li>
                         <li data-tab="disability-info"><a>Información de Discapacidad</a></li>
                         <li data-tab="family-pension-info"><a>Familia y Pensión</a></li>
+                        <li data-tab="scholarship-info"><a>Beca</a></li>
                         <li data-tab="health-info"><a>Información de Salud</a></li>
                         <li data-tab="curatorship-info"><a>Curaduría</a></li>
                         <li data-tab="school-info"><a>Información Escolar</a></li>
@@ -202,11 +203,12 @@
                     </div>
 
                     <!-- Disability Information -->
+                     
                     <div id="disability-info" class="tab-pane" style="display:none;">
-                        <label class="label is-size-4">Información de Discapacidad</label>
+                        <label class="label is-size-5">Información de Discapacidad</label>
                         <div class="field">
                             <div class="control">
-                                <label class="checkbox">
+                                <label class="checkbox is-small">
                                     {{ form.has_disability.label(class="has-text-weight-bold is-size-5") }}
                                     {{ form.has_disability(class="ml-1", type="checkbox") }}
                                 </label>
@@ -215,46 +217,37 @@
                                 <p class="help is-danger">{{ form.has_disability.errors[0] }}</p>
                             {% endif %}
                         </div>
-
-                        <div class="field-body">
-                            <div class="field">
-                                <label class="label">{{ form.disability_diagnosis.label }}</label>
-                                <div class="control">
-                                    <div class="select">
-                                        {{ form.disability_diagnosis() }}
-                                    </div>
-                                </div>
-                                {% if form.disability_diagnosis.errors %}
-                                    <p class="help is-danger">{{ form.disability_diagnosis.errors[0] }}</p>
-                                {% endif %}
-                            </div>
-                            <div class="field">
-                                <label class="label">{{ form.disability_type.label }}</label>
-                                <div class="control">
-                                    <div class="select">
-                                        {{ form.disability_type() }}
-                                    </div>
-                                </div>
-                                {% if form.disability_type.errors %}
-                                    <p class="help is-danger">{{ form.disability_type.errors[0] }}</p>
-                                {% endif %}
-                            </div>
-                        </div>
-
-                        <div class="field">
-                            <label class="label">{{ form.disability_other.label }}</label>
+                    
+                        <div class="field" id="disability-details" style="display: none;">
+                            <label class="label">Diagnóstico de Discapacidad</label>
                             <div class="control">
-                                {{ form.disability_other(class="input", placeholder="Ingrese otro diagnóstico") }}
+                                {{ form.disability_diagnosis(class="textarea is-small", placeholder="Ingrese el diagnóstico de discapacidad") }}
+                            </div>
+                            {% if form.disability_diagnosis.errors %}
+                                <p class="help is-danger">{{ form.disability_diagnosis.errors[0] }}</p>
+                            {% endif %}
+                        
+                            <label class="label is-size-6">Otra Discapacidad</label>
+                            <div class="control">
+                                {{ form.disability_other(class="textarea is-small", placeholder="Ingrese otra discapacidad") }}
                             </div>
                             {% if form.disability_other.errors %}
                                 <p class="help is-danger">{{ form.disability_other.errors[0] }}</p>
+                            {% endif %}
+                    
+                            <label class="label is-size-6">Tipo de Discapacidad</label>
+                            <div class="control">
+                                {{ form.disability_type(class="textarea is-small", placeholder="Ingrese el tipo de discapacidad") }}
+                            </div>
+                            {% if form.disability_type.errors %}
+                                <p class="help is-danger">{{ form.disability_type.errors[0] }}</p>
                             {% endif %}
                         </div>
                     </div>
 
                     <!-- Family and Pension Information -->
                     <div id="family-pension-info" class="tab-pane" style="display:none;">
-                        <label class="label is-size-4">Información Familiar y de Pensión</label>
+                        <label class="label is-size-5">Información de Asignación Familiar</label>
                         <div class="field">
                             <div class="control">
                                 <label class="checkbox">
@@ -266,19 +259,17 @@
                                 <p class="help is-danger">{{ form.has_family_assignment.errors[0] }}</p>
                             {% endif %}
                         </div>
-
-                        <div class="field">
-                            <label class="label">{{ form.family_assignment_type.label }}</label>
+                    
+                        <div class="field" id="family-assignment-details" style="display: none;">
+                            <label class="label">Tipo de Asignación Familiar</label>
                             <div class="control">
-                                <div class="select">
-                                    {{ form.family_assignment_type() }}
-                                </div>
+                                {{ form.family_assignment_type(class="textarea", placeholder="Ingrese el tipo de asignación familiar") }}
                             </div>
                             {% if form.family_assignment_type.errors %}
                                 <p class="help is-danger">{{ form.family_assignment_type.errors[0] }}</p>
                             {% endif %}
                         </div>
-
+                        
                         <div class="field">
                             <div class="control">
                                 <label class="checkbox">
@@ -290,11 +281,19 @@
                                 <p class="help is-danger">{{ form.has_pension.errors[0] }}</p>
                             {% endif %}
                         </div>
-
-                        <div class="field">
-                            <label class="label">{{ form.pension_details.label }}</label>
+                    
+                        <div class="field" id="pension-details" style="display: none;">
+                            <label class="label">Tipo de Pensión</label>
                             <div class="control">
-                                {{ form.pension_details(class="textarea", placeholder="Ingrese los detalles de la pensión") }}
+                                {{ form.pension_type(class="input", placeholder="Ingrese el tipo de pensión") }}
+                            </div>
+                            {% if form.pension_type.errors %}
+                                <p class="help is-danger">{{ form.pension_type.errors[0] }}</p>
+                            {% endif %}
+                    
+                            <label class="label">Detalles de Pensión</label>
+                            <div class="control">
+                                {{ form.pension_details(class="textarea", placeholder="Ingrese detalles de la pensión") }}
                             </div>
                             {% if form.pension_details.errors %}
                                 <p class="help is-danger">{{ form.pension_details.errors[0] }}</p>
@@ -302,6 +301,41 @@
                         </div>
                     </div>
 
+                    <!-- Scholarship info -->
+
+                        <div id="scholarship-info" class="tab-pane" style="display:none;">
+                            <label class="label is-size-4">Información de Beca</label>
+                            <div class="field">
+                                <div class="control">
+                                    <label class="checkbox">
+                                        {{ form.has_scholarship.label(class="has-text-weight-bold is-size-5") }}
+                                        {{ form.has_scholarship(class="ml-1", type="checkbox") }}
+                                    </label>
+                                </div>
+                                {% if form.has_scholarship.errors %}
+                                    <p class="help is-danger">{{ form.has_scholarship.errors[0] }}</p>
+                                {% endif %}
+                            </div>
+                        
+                            <div class="field" id="scholarship-details" style="display: none;">
+                                <label class="label">Porcentaje de Beca</label>
+                                <div class="control">
+                                    {{ form.scholarship_percentage(class="input", placeholder="Ingrese el porcentaje de beca") }}
+                                </div>
+                                {% if form.scholarship_percentage.errors %}
+                                    <p class="help is-danger">{{ form.scholarship_percentage.errors[0] }}</p>
+                                {% endif %}
+                        
+                                <label class="label">Observaciones de Beca</label>
+                                <div class="control">
+                                    {{ form.scholarship_observations(class="textarea", placeholder="Ingrese observaciones de la beca") }}
+                                </div>
+                                {% if form.scholarship_observations.errors %}
+                                    <p class="help is-danger">{{ form.scholarship_observations.errors[0] }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    
                     <!-- Health Information -->
                     <div id="health-info" class="tab-pane" style="display:none;">
                         <label class="label is-size-4">Cobertura médica</label>
@@ -327,7 +361,7 @@
 
                     <!-- Curatorship Information -->
                     <div id="curatorship-info" class="tab-pane" style="display:none;">
-                        <label class="label is-size-4">Información de Curaduría</label>
+                        <label class="label is-size-4">Información de Curatela</label>
                         <div class="field">
                             <div class="control">
                                 <label class="checkbox">
@@ -339,11 +373,11 @@
                                 <p class="help is-danger">{{ form.has_curatorship.errors[0] }}</p>
                             {% endif %}
                         </div>
-
-                        <div class="field">
-                            <label class="label">{{ form.curatorship_observations.label }}</label>
+                    
+                        <div class="field" id="curatorship-details" style="display: none;">
+                            <label class="label">Observaciones de Curatela</label>
                             <div class="control">
-                                {{ form.curatorship_observations(class="textarea", placeholder="Ingrese observaciones sobre la curaduría") }}
+                                {{ form.curatorship_observations(class="textarea", placeholder="Ingrese observaciones de la curatela") }}
                             </div>
                             {% if form.curatorship_observations.errors %}
                                 <p class="help is-danger">{{ form.curatorship_observations.errors[0] }}</p>
@@ -720,7 +754,9 @@
                         <div class="field">
                             <label class="label">{{ form.work_assignments.days.label }}</label>
                             <div class="control">
-                                {{ form.work_assignments.days(class="select") }}
+                                <div class="select is-multiple"> 
+                                        {{ form.work_assignments.days(multiple=True) }}
+                                </div>
                             </div>
                         </div>
                         <div class="field">
@@ -761,55 +797,130 @@
         </div>
     </section>
 
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-    // Código existente para manejar las pestañas
-    const tabs = document.querySelectorAll('.tabs li');
-    const tabContent = document.querySelectorAll('.tab-pane');
-
-    tabs.forEach(tab => {
-        tab.addEventListener('click', () => {
-            tabs.forEach(item => item.classList.remove('is-active'));
-            tab.classList.add('is-active');
-
-            const target = tab.dataset.tab;
-            tabContent.forEach(content => {
-                if (content.id === target) {
-                    content.style.display = 'block';
-                } else {
-                    content.style.display = 'none';
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Código existente para manejar las pestañas
+            const tabs = document.querySelectorAll('.tabs li');
+            const tabContent = document.querySelectorAll('.tab-pane');
+    
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    tabs.forEach(item => item.classList.remove('is-active'));
+                    tab.classList.add('is-active');
+    
+                    const target = tab.dataset.tab;
+                    tabContent.forEach(content => {
+                        if (content.id === target) {
+                            content.style.display = 'block';
+                        } else {
+                            content.style.display = 'none';
+                        }
+                    });
+                });
+            });
+    
+            // Funcionalidad para agregar miembros de la familia
+            const addFamilyMemberButton = document.querySelector('.add-family-member');
+            const familyMemberContainer = document.getElementById('family-members-info');
+            const secondFamilyMember = document.querySelector('.family-member[style="display: none;"]');
+    
+            addFamilyMemberButton.addEventListener('click', function () {
+                secondFamilyMember.style.display = 'block';
+                addFamilyMemberButton.style.display = 'none'; // Ocultar el botón después de agregar el segundo miembro
+            });
+    
+            // Maneja el evento de eliminar un miembro de la familia
+            familyMemberContainer.addEventListener('click', function (event) {
+                if (event.target.classList.contains('remove-family-member')) {
+                    const familyMember = event.target.closest('.family-member');
+                    if (familyMember) {
+                        familyMember.style.display = 'none'; // Ocultar en lugar de eliminar
+                        
+                        // Limpiar los campos
+                        familyMember.querySelectorAll('input, select').forEach(input => {
+                            input.value = '';
+                        });
+    
+                        addFamilyMemberButton.style.display = 'block'; // Mostrar el botón de agregar nuevamente
+                    }
                 }
             });
-        });
-    });
-
-    // Funcionalidad para agregar miembros de la familia
-    const addFamilyMemberButton = document.querySelector('.add-family-member');
-    const familyMemberContainer = document.getElementById('family-members-info');
-    const secondFamilyMember = document.querySelector('.family-member[style="display: none;"]');
-
-    addFamilyMemberButton.addEventListener('click', function () {
-        secondFamilyMember.style.display = 'block';
-        addFamilyMemberButton.style.display = 'none'; // Ocultar el botón después de agregar el segundo miembro
-    });
-
-    // Maneja el evento de eliminar un miembro de la familia
-    familyMemberContainer.addEventListener('click', function (event) {
-        if (event.target.classList.contains('remove-family-member')) {
-            const familyMember = event.target.closest('.family-member');
-            if (familyMember) {
-                familyMember.style.display = 'none'; // Ocultar en lugar de eliminar
-                
-                // Limpiar los campos
-                familyMember.querySelectorAll('input, select').forEach(input => {
-                    input.value = '';
-                });
-
-                addFamilyMemberButton.style.display = 'block'; // Mostrar el botón de agregar nuevamente
+    
+            // Funcionalidad para mostrar/ocultar detalles de la beca
+            const hasScholarshipCheckbox = document.querySelector('input[name="has_scholarship"]');
+            const scholarshipDetails = document.getElementById('scholarship-details');
+    
+            function toggleScholarshipDetails() {
+                if (hasScholarshipCheckbox.checked) {
+                    scholarshipDetails.style.display = 'block';
+                } else {
+                    scholarshipDetails.style.display = 'none';
+                }
             }
-        }
-    });
-});
-</script>
-
+    
+            hasScholarshipCheckbox.addEventListener('change', toggleScholarshipDetails);
+            toggleScholarshipDetails();  // Initial check
+    
+            // Funcionalidad para mostrar/ocultar detalles de la discapacidad
+            const hasDisabilityCheckbox = document.querySelector('input[name="has_disability"]');
+            const disabilityDetails = document.getElementById('disability-details');
+    
+            function toggleDisabilityDetails() {
+                if (hasDisabilityCheckbox.checked) {
+                    disabilityDetails.style.display = 'block';
+                } else {
+                    disabilityDetails.style.display = 'none';
+                }
+            }
+    
+            hasDisabilityCheckbox.addEventListener('change', toggleDisabilityDetails);
+            toggleDisabilityDetails();  // Initial check
+    
+            // Funcionalidad para mostrar/ocultar detalles de la asignación familiar
+            const hasFamilyAssignmentCheckbox = document.querySelector('input[name="has_family_assignment"]');
+            const familyAssignmentDetails = document.getElementById('family-assignment-details');
+    
+            function toggleFamilyAssignmentDetails() {
+                if (hasFamilyAssignmentCheckbox.checked) {
+                    familyAssignmentDetails.style.display = 'block';
+                } else {
+                    familyAssignmentDetails.style.display = 'none';
+                }
+            }
+    
+            hasFamilyAssignmentCheckbox.addEventListener('change', toggleFamilyAssignmentDetails);
+            toggleFamilyAssignmentDetails();  // Initial check
+    
+            // Funcionalidad para mostrar/ocultar detalles de la curatela
+            const hasCuratorshipCheckbox = document.querySelector('input[name="has_curatorship"]');
+            const curatorshipDetails = document.getElementById('curatorship-details');
+    
+            function toggleCuratorshipDetails() {
+                if (hasCuratorshipCheckbox.checked) {
+                    curatorshipDetails.style.display = 'block';
+                } else {
+                    curatorshipDetails.style.display = 'none';
+                }
+            }
+    
+            hasCuratorshipCheckbox.addEventListener('change', toggleCuratorshipDetails);
+            toggleCuratorshipDetails();  // Initial check
+    
+            // Funcionalidad para mostrar/ocultar detalles de la pensión
+            const hasPensionCheckbox = document.querySelector('input[name="has_pension"]');
+            const pensionDetails = document.getElementById('pension-details');
+    
+            function togglePensionDetails() {
+                if (hasPensionCheckbox.checked) {
+                    pensionDetails.style.display = 'block';
+                } else {
+                    pensionDetails.style.display = 'none';
+                }
+            }
+    
+            hasPensionCheckbox.addEventListener('change', togglePensionDetails);
+            togglePensionDetails();  // Initial check
+        });
+    </script>
+    
 {% endblock %}

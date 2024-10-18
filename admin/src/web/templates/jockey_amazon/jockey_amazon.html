@@ -33,7 +33,7 @@
             <li><strong>Nombre: </strong>{{ jockey_amazon.first_name }}</li>
             <li><strong>Apellido: </strong> {{ jockey_amazon.last_name }}</li>
             <li><strong>DNI: </strong>{{ jockey_amazon.dni }}</li>
-            <li><strong>Edad: </strong> {{ jockey_amazon.age }}</li>
+            <li><strong>Edad: </strong> <span id="jockey-age"></span></li>
             <li><strong>Fecha de nacimiento: </strong>{{ jockey_amazon.birth_date }}</li>
             <li><strong>Lugar de nacimiento: </strong>{{ jockey_amazon.birthplace }}</li>
             <li><strong>Telefono: </strong>(+{{ jockey_amazon.country_code }}) ({{ jockey_amazon.area_code }}) {{ jockey_amazon.phone }} </li>
@@ -52,9 +52,10 @@
     <div id="scholarship-info" class="cell">
         <h3>Información de beca</h3>
         <ul>
-            <li><strong>Tiene beca: </strong>{{ jockey_amazon.is_scholarship | natural_boolean }}</li>
-            {% if jockey_amazon.is_scholarship %}
-            <li><strong>Beca: </strong>{{ jockey_amazon.scholarship_observations }}</li>
+            <li><strong>Tiene beca: </strong>{{ jockey_amazon.has_scholarship | natural_boolean }}</li>
+            {% if jockey_amazon.has_scholarship %}
+            <li><strong>Porcentaje de beca: </strong>{{ jockey_amazon.scholarship_percentage }}</li>
+            <li><strong>Detalles de la beca: </strong>{{ jockey_amazon.scholarship_observations }}</li>
             {% endif %}
         </ul>
     </div>
@@ -86,6 +87,7 @@
     <ul>
         <li><strong>¿Tiene pensión? </strong>{{ jockey_amazon.has_pension | natural_boolean }}</li>
         {% if jockey_amazon.has_pension %}
+        <li><strong>Tipo de pensión: </strong>{{ jockey_amazon.pension_type.value }}</li>
         <li><strong>Detalles: </strong>{{ jockey_amazon.pension_details }}</li>
         {% endif %}
     </ul>
@@ -162,7 +164,7 @@
             <strong>Dirección: </strong> {{ family_member.street }} {{ family_member.number }} {% if family_member.department %}{{ family_member.department }}{% endif %}, {{ family_member.locality }}, {{ family_member.province }}<br>
             <strong>Teléfono: </strong> (+{{ family_member.phone_country_code }}) ({{ family_member.phone_area_code }}) {{ family_member.phone_number }}<br>
             <strong>Email: </strong> {{ family_member.email }}<br>
-            <strong>Nivel educativo: </strong> {{ family_member.education_level.name }}<br>
+            <strong>Nivel educativo: </strong> {{ family_member.education_level.value }}<br>
             <strong>Ocupación: </strong> {{ family_member.occupation }}<br>
         </li>
         <hr>
@@ -191,4 +193,20 @@
             msg_sub="Luego de confirmar, no se podrán revertir los cambios"
         )
     }}
+
+    <script>
+        function calculateAge(birthDate) {
+            const today = new Date();
+            const birth = new Date(birthDate);
+            let age = today.getFullYear() - birth.getFullYear();
+            const monthDiff = today.getMonth() - birth.getMonth();
+            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+                age--;
+            }
+            return age;
+        }
+        
+        document.getElementById('jockey-age').textContent = calculateAge('{{ jockey_amazon.birth_date }}');
+        </script>
+
 {% endblock %}

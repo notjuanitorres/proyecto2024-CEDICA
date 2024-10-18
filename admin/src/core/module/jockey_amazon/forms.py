@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, BooleanField, SelectField, TextAreaField, IntegerField, DateField, FormField, FieldList, SubmitField
+from wtforms import StringField, BooleanField, SelectField, TextAreaField, IntegerField, DateField, FormField, FloatField, SubmitField
 from wtforms.validators import DataRequired, Length, Optional
 
 from src.core.module.jockey_amazon.models import FileTagEnum
@@ -60,15 +60,17 @@ class JockeyAmazonManagementForm(FlaskForm):
     address = FormField(AddressForm)
     phone = FormField(PhoneForm)
     emergency_contact = FormField(EmergencyContactForm)
-    is_scholarship = BooleanField('¿Está becado?')
+    has_scholarship = BooleanField('¿Está becado?')
     scholarship_observations = TextAreaField('Observaciones sobre la Beca', validators=[Optional()])
+    scholarship_percentage = FloatField('Porcentaje de Beca', validators=[Optional()])
     has_disability = BooleanField('¿Posee Certificado de Discapacidad?')
     disability_diagnosis = SelectField('Diagnóstico', choices=enum_choices(DisabilityDiagnosisEnum), validators=[Optional()])
     disability_other = StringField('Otro diagnóstico', validators=[Optional(), Length(max=100)])
     disability_type = SelectField('Tipo de Discapacidad', choices=enum_choices(DisabilityTypeEnum), validators=[Optional()])
     has_family_assignment = BooleanField('¿Percibe alguna Asignación Familiar?')
     family_assignment_type = SelectField('Tipo de Asignación Familiar', choices=enum_choices(FamilyAssignmentEnum), validators=[Optional()])
-    has_pension = SelectField('¿Es beneficiario de alguna pensión?', choices=enum_choices(PensionEnum), validators=[DataRequired()])
+    has_pension = BooleanField('¿Posee alguna Pensión?')  # Checkbox
+    pension_type = SelectField('Tipo de Pensión', choices=[(choice.name, choice.value) for choice in PensionEnum], validators=[Optional()])
     pension_details = StringField('Detalles de la Pensión', validators=[Optional(), Length(max=100)])
     social_security = StringField('Obra Social del Alumno', validators=[Optional(), Length(max=100)])
     social_security_number = StringField('Número de Afiliado', validators=[Optional(), Length(max=50)])
