@@ -1,0 +1,215 @@
+{% extends "layout.html" %}
+
+{% from "macros/file_icon.html" import render_file_icon %}
+{% from "macros/delete_modal.html" import render_delete_modal %}
+
+{% from "macros/flash_message.html" import render_flash_messages %}
+{% from "macros/pagination.html" import render_pagination %}
+
+{% block extra_styles %}
+    {{ super() }}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/components/table.css' )}}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/documents/buttons.css' )}}">
+{% endblock%}
+
+{% block main_content %}
+    <nav class="breadcrumb mb-2" aria-label="breadcrumbs">
+    <ul>
+      <li>
+        <a href="{{ url_for('index_bp.home')}}">
+          <span class="icon is-small">
+            <i class="fas fa-home" aria-hidden="true"></i>
+          </span>
+          <span>Inicio</span>
+        </a>
+      </li>
+      {% block breadcrumb_items %}{% endblock %}
+    </ul>
+</nav>
+    {% block doc_header %}
+    {% endblock %}
+    <section class="is-fullheight-with-navbar pt-4">
+    <h2 class="title is-size-3 has-text-centered">
+      {% block inner_title %}
+      {% endblock %}
+    </h2>
+    </section>
+      <div class="column is-full">
+        <div class="field">
+          <div class="control">
+            <a href="{% block create_endpoint %}{% endblock %}" class="button is-fullwidth is-primary">
+              Agregar documento
+              <span class="icon ml-1">
+                <i class="fa-solid fa-file"></i>
+              </span>
+            </a>
+          </div>
+        </div>
+      </div>
+
+    {% block filter_form %}
+          <div class="card">
+            <header class="card-header">
+              <p class="card-header-title is-size-4">
+                <span class="icon mr-3">
+                  <i class="fa-solid fa-filter"></i>
+                </span>
+                Filtrar
+              </p>
+              <button class="card-header-icon" aria-label="more options">
+                <span class="icon">
+                  <i class="fas fa-angle-down" aria-hidden="true"></i>
+                </span>
+              </button>
+            </header>
+            <div class="card-content">
+              <div class="content">
+                <form class="form" method="GET" action="{% block form_action %}{% endblock %}">
+                  <div class="is-flex is-flex-direction-row is-flex-wrap-wrap is-gap-1">
+                    <div class="field">
+                      <label class="label">Buscar</label>
+                      <div class="control">
+                          <div class="select">
+                              {{ search_form.search_by() }}
+                          </div>
+                      </div>
+                    </div>
+                    {% block aditional_filters %}
+                        <div class="field">
+                            <label class="label">Tipo de Documento</label>
+                            <div class="control">
+                                <div class="select">
+                                    {{ search_form.filter_tag() }}
+                                </div>
+                            </div>
+                        </div>
+                    {% endblock %}
+                    <div class="field is-flex-grow-1">
+                      <label for="filtrar" class="label is-invisible-tablet">Buscar</label>
+                      <p class="control has-icons-left">
+                        {{ search_form.search_text(class="input", placeholder="Buscar") }}
+                        <span class="icon is-left">
+                          <i class="fas fa-search" aria-hidden="true"></i>
+                        </span>
+                      </p>
+                      {% if search_form.search_text.errors %}
+                      <p class="help is-danger">{{ search_form.search_text.errors[0] }}</p>
+                      {% endif %}
+                    </div>
+                  </div>
+                  <div class="grid is-flex-tablet is-row-gap-0 is-column-gap-1 pt-3" >
+                    <div class="field">
+                      <label class="label">Ordenar por</label>
+                      <div class="control">
+                          <div class="select">
+                              {{ search_form.order_by() }}
+                          </div>
+                      </div>
+                    </div>
+                    <div class="field">
+                      <label class="label">En orden</label>
+                      <div class="control">
+                          <div class="select">
+                              {{ search_form.order() }}
+                          </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="field card-footer">
+                    <div class="control card-footer-item">
+                      <a href="{% block clear_url %}{% endblock %}">
+                        Limpiar
+                      </a>
+                    </div>
+                    <div class="control card-footer-item">
+                      {{ search_form.submit_search(class="button is-flex-grow-1 is-link")}}
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+      {% endblock %}
+
+    {% block top_pagination %}{% endblock %}
+
+    <section class="section pt-4 px-0">
+    {{ render_flash_messages(messages) }}
+      <div id="documents" class="card">
+        <header class="card-header">
+          <h2 class="card-header-title is-size-4 m-0">Documentación relacionada</h2>
+        </header>
+        <div class="card-content">
+            {% block document_list %}
+                <div class="content mt-4">
+                {% if entity_has_documents %}
+                  {% for document in documents %}
+                    <div class="card">
+                      <article class="card-content level is-flex is-flex-wrap-wrap is-justify-content-space-between">
+                        <div class="media m-0">
+                          <div class="media-left">
+                            {{ render_file_icon(document.file.filetype, size=1) }}
+                          </div>
+                          <div class="media-content ml-2">
+                            <p>
+                              <strong class="tag is-white">{{ render_document_category(document) }}{{ document.file.is_link | file_type }}</strong>
+                              <small class="ml-1">{{ document.file.uploaded_at | format_date }}</small>
+                              <br />
+                              Título: {{ document.file.title }}
+                              <br />
+                              {% if document.file.is_link %}
+                              Enlace: <a href="{{ document.file.path }}">{{ document.file.path }}</a>
+                              {% endif %}
+                            </p>
+                          </div>
+                        </div>
+                        <div class="field has-addons">
+                          <div class="control">
+                            <button class="button is-danger hover modal-trigger" data-id="{{ document.file.id }}" data-target="user-delete-modal">
+                              <span class="icon mr-1">
+                                <i class="fa-solid fa-trash"></i>
+                              </span>
+                              Eliminar
+                            </button>
+                          </div>
+                          <div class="control">
+                              <a href="{{ url_for('index_bp.download_url', path=document.file.path) if not document.file.is_link else '#' }}"
+                                 class="button is-link {{ '' if not document.file.is_link else 'is-disabled' }}"
+                                 {% if not document.download_url %} aria-disabled="true" {% endif %}>
+                                <span class="icon mr-1">
+                                  <i class="fa-solid fa-download"></i>
+                                </span>
+                                Descargar
+                              </a>
+                            </div>
+                          <div class="control">
+                            <a href="{{ current_url }}/editar/{{ document.file.id }}"
+                               class="button is-primary">
+                              <span class="icon mr-1">
+                                <i class="fa-solid fa-pen-nib"></i>
+                              </span>
+                              Editar
+                            </a>
+                          </div>
+                        </div>
+                      </article>
+                    </div>
+                  {% endfor %}
+                {% else %}
+                    <p>{% block no_documents_text %}{% endblock %}</p>
+                {% endif %}
+              </div>
+                </div>
+              </div>
+                {% block bottom_pagination %}{% endblock %}
+            </section>
+                {% block modal %}{% endblock %}
+            {% endblock %}
+
+{% endblock %}
+
+{% block extra_scripts %}
+    {{ super() }}
+    <script src="{{ url_for('static', filename='js/file-input.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/toggle-search-bar.js') }}"></script>
+{% endblock %}

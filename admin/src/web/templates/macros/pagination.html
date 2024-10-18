@@ -1,10 +1,15 @@
-{% macro render_pagination(pagination, endpoint) %}
+{% macro render_pagination(pagination, endpoint, additional_params={}) %}
   {% set args = request.args.to_dict() %}
   {% if 'page' in args %}
     {% set _ = args.pop('page') %}
   {% endif %}
 
-  <nav class="pagination is-centered" role="navigation" aria-label="pagination">
+  {# Merge additional_params with args #}
+  {% for key, value in additional_params.items() %}
+    {% set _ = args.update({key: value}) %}
+  {% endfor %}
+
+  <nav id="pagination"class="pagination is-centered" role="navigation" aria-label="pagination">
     {% if pagination.has_prev %}
       <a href="{{ url_for(endpoint, page=pagination.prev_num, **args) }}" class="pagination-previous">Anterior</a>
     {% else %}

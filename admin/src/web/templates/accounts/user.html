@@ -21,7 +21,14 @@
     </li>
 {% endblock %}
 
-{% block card_title %}Usuario: {{ user.alias }}{% endblock %}
+{% block card_title %}
+Usuario: {{ user.alias }}
+{% if user.enabled %}
+<span class="tag is-success is-medium ml-2">Activo</span>
+{% else %}
+<span class="tag is-danger is-medium ml-2">Bloqueado</span>
+{% endif %}
+{% endblock %}
 
 {% block card_content %}
     <ul>
@@ -45,22 +52,58 @@
 {% endblock %}
 
 {% block additional_cards %}
-    <div class="card">
+    <div id="employee" class="card">
         <header class="card-header">
-            <p class="card-header-title is-size-4">Miembro del equipo asociado</p>
+            <h2 class="card-header-title is-size-4">
+                Empleado asociado a {{ user.alias }}
+                {% if not employee %}
+                    <span class="tag is-info is-medium ml-2">Sin informacion</span>
+                {% else %}
+                {% if employee.employment_information.is_active %}
+                <span class="tag is-success is-medium ml-2">Activo</span>
+                {% else %}
+                <span class="tag is-danger is-medium ml-2">Inactivo</span>
+                {% endif %}
+                {% endif %}
+            </h2>
         </header>
-        <div class="card-content">
-            <div class="content"></div>
+    <div class="card-content">
+        <div class="content">
+            {% if employee %}
+            <article class="media">
+                <div class="media-left">
+                </div>
+                <div class="media-content">
+                    <div class="content">
+                        <p>
+                            <strong class="is-size-5">{{ employee.name }} {{ employee.lastname }}</strong>
+                            <small class="ml-1">{{ employee.inserted_at | format_date }}</small>
+                            <br />
+                            <strong class="is-size-5">{{ employee.employment_information.position }}</strong>
+                            <br />
+                            <small>Desde</small><strong> {{ employee.employment_information.start_date }}</strong>
+                            {% if employee.employment_information.end_date %}
+                            <small>Hasta</small><strong> {{ employee.employment_information.end_date }}</strong>
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            </article>
+            <footer class="card-footer">
+                <a href="{{ url_for( "employee_bp.show_employee", employee_id=employee.id ) }}" class="card-footer-item has-text-link">Ver</a>
+            </footer>
+            {% else %}
+            <p>
+                <strong class="is-size-5">No existe un empleado asociado a esta cuenta<strong> 
+            </p>
+            {% endif %}
         </div>
-        <footer class="card-footer">
-            <a href="" class="card-footer-item">Ver</a>
-        </footer>
     </div>
 {% endblock %}
 
 {% block modal %}
     {{ render_delete_modal(
-        url_for("users_bp.delete_user"),
+        "users_bp.delete_user",
         title="Eliminar",
         msg="¿Está seguro de que desea eliminar al usuario?",
         msg_sub="Luego de confirmar, no se podrán revertir los cambios"

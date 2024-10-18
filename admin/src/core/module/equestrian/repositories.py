@@ -1,16 +1,21 @@
 from abc import abstractmethod
 from typing import List, Dict
 
+from sqlalchemy.orm import Mapper
+
 from src.core.module.common.repositories import apply_filters
-from src.core.module.equestrian.models import Horse, HorseTrainers
+from src.core.module.equestrian.models import Horse, HorseTrainers, HorseFile
 from src.core.database import db as database
 from src.core.module.employee.models import Employee
+from src.core.module.equestrian.mappers import HorseMapper
 
 
 class AbstractEquestrianRepository:
+    def __init__(self):
+        self.storage_path = "equestrian/"
 
     @abstractmethod
-    def add(self, horse: Horse) -> Horse:
+    def add(self, horse: Horse) -> Dict:
         pass
 
     @abstractmethod
@@ -18,14 +23,14 @@ class AbstractEquestrianRepository:
             self,
             page: int,
             per_page: int,
-            max_per_page: int,
+            max_per_page: int = 10,
             search_query: Dict = None,
             order_by: list = None,
     ):
         pass
 
     @abstractmethod
-    def get_by_id(self, horse_id: int) -> Horse:
+    def get_by_id(self, horse_id: int, documents: bool = True) -> Dict | None:
         pass
 
     @abstractmethod
@@ -41,25 +46,58 @@ class AbstractEquestrianRepository:
         pass
 
     @abstractmethod
-    def set_horse_trainers(self, horse_id: int, trainers_ids: List[int]):
+    def add_horse_trainers(self, horse_id: int, trainers_ids: List[int]):
         pass
+
+    @abstractmethod
+    def add_document(self, horse_id: int, document: HorseFile) -> None:
+        raise NotImplementedError
+
+    @abstractmethod
+    def get_document(self, horse_id: int, document_id: int) -> HorseFile:
+        raise NotImplementedError
+
+    @abstractmethod
+    def delete_document(self, horse_id: int, document_id: int) -> None:
+        raise NotImplementedError
+
+    @abstractmethod
+    def update_document(self, horse_id: int, document_id: int, data: Dict) -> bool:
+        raise NotImplementedError
+
+    @abstractmethod
+    def get_file_page(
+            self,
+            horse_id: int,
+            page: int,
+            per_page: int,
+            max_per_page: int = 10,
+            search_query: Dict = None,
+            order_by: List = None,
+    ):
+        raise NotImplementedError
+
+    @abstractmethod
+    def remove_horse_trainer(self, horse_id: int, trainer_id: int) -> bool:
+        raise NotImplementedError
 
 
 class EquestrianRepository(AbstractEquestrianRepository):
     def __init__(self):
+        super().__init__()
         self.db = database
 
     def add(self, horse: Horse):
         self.db.session.add(horse)
         self.db.session.flush()
         self.save()
-        return horse
+        return HorseMapper.from_entity(horse)
 
     def get_page(
             self,
             page: int,
             per_page: int,
-            max_per_page: int,
+            max_per_page: int = 10,
             search_query: Dict = None,
             order_by: List = None,
     ):
@@ -71,7 +109,13 @@ class EquestrianRepository(AbstractEquestrianRepository):
             page=page, per_page=per_page, error_out=False, max_per_page=max_per_page
         )
 
-    def get_by_id(self, horse_id: int) -> Horse | None:
+    def get_by_id(self, horse_id: int, documents: bool = True) -> Dict | None:
+        horse = self.__get_by_id(horse_id)
+        if not horse:
+            return None
+        return HorseMapper.from_entity(horse, documents=documents)
+
+    def __get_by_id(self, horse_id: int) -> Horse:
         return self.db.session.query(Horse).filter(Horse.id == horse_id).first()
 
     def update(self, horse_id: int, data: Dict):
@@ -86,7 +130,7 @@ class EquestrianRepository(AbstractEquestrianRepository):
         horse = Horse.query.filter_by(id=horse_id)
         if not horse:
             return False
-        horse.delete()
+        horse.update({"is_deleted": True})
         self.save()
         return True
 
@@ -101,11 +145,71 @@ class EquestrianRepository(AbstractEquestrianRepository):
         return (self.db.session.query(Employee)
                 .filter(Employee.id.in_([ht.id_employee for ht in horse_trainers])).all())
 
-    def set_horse_trainers(self, horse_id: int, trainers_ids: List[int]):
-        self.db.session.query(HorseTrainers).filter(HorseTrainers.id_horse == horse_id).delete()
+    def add_horse_trainers(self, horse_id: int, trainers_ids: List[int]):
         for trainer_id in trainers_ids:
             self.db.session.add(HorseTrainers(id_horse=horse_id, id_employee=trainer_id))
         self.save()
+
+    def add_document(self, horse_id: int, document: HorseFile):
+        horse: Horse = self.__get_by_id(horse_id)
+        horse.files.append(document)
+        self.save()
+
+    def __get_document(self, horse_id: int, document_id: int) -> HorseFile:
+        document = (
+            self.db.session.query(HorseFile)
+            .filter_by(horse_id=horse_id, id=document_id)
+            .first()
+        )
+        return document
+
+    def get_document(self, horse_id: int, document_id: int) -> Dict:
+        return self.__get_document(horse_id, document_id).to_dict()
+
+    def delete_document(self, horse_id: int, document_id):
+        horse: Horse = self.__get_by_id(horse_id)
+        document = self.__get_document(horse.id, document_id)
+        horse.files.remove(document)
+        self.save()
+
+    def get_file_page(
+            self,
+            horse_id: int,
+            page: int,
+            per_page: int,
+            max_per_page: int = 10,
+            search_query: Dict = None,
+            order_by: List = None,
+    ):
+
+        query = HorseFile.query
+
+        if search_query.get("filters"):
+            search_query["filters"]["horse_id"] = horse_id
+        else:
+            search_query["filters"] = {"horse_id": horse_id}
+
+        query = apply_filters(HorseFile, query, search_query, order_by)
+
+        return query.paginate(
+            page=page, per_page=per_page, error_out=False, max_per_page=max_per_page
+        )
+
+    def update_document(self, horse_id: int, document_id: int, data: Dict) -> bool:
+        doc_query = self.db.session.query(HorseFile).filter_by(horse_id=horse_id, id=document_id)
+        if not doc_query:
+            return False
+        doc_query.update(data)
+        self.save()
+        return True
+
+    def remove_horse_trainer(self, horse_id: int, trainer_id: int) -> bool:
+        trainer = self.db.session.query(HorseTrainers).filter_by(id_horse=horse_id, id_employee=trainer_id)
+        if not trainer:
+            return False
+        trainer.delete()
+        self.save()
+        return True
 
     def get_horses(self):
         return Horse.query.all()

@@ -1,5 +1,5 @@
 {% macro render_actions_menu(to_left, endpoints, field, value,
- permission_to_show, permission_to_edit, permission_to_delete, user_permissions, is_admin) %}
+ permission_to_show, permission_to_edit, permission_to_delete, user_permissions, is_admin, delete_text="Eliminar") %}
     {% if to_left == true %}
     <div class="dropdown is-left is-hoverable">        
     {% else %}
@@ -29,7 +29,7 @@
                 <a href="{{ url_for(endpoints.edit, **{field: value}) }}" class="dropdown-item has-text-warning">Editar</a>
             {% endif %}
             {% if permission_to_delete in user_permissions or is_admin%}
-                <button class="dropdown-item has-text-danger modal-trigger" data-id="{{ value }}" data-target="user-delete-modal">Eliminar</button>
+                <button class="dropdown-item has-text-danger modal-trigger" data-id="{{ value }}" data-target="user-delete-modal">{{ delete_text }}</button>
             {% endif %}
         </div>
         </div>

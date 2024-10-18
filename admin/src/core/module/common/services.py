@@ -19,7 +19,7 @@ FilesType = List[FileType]
 
 class AbstractStorageServices(object):
     @abstractmethod
-    def upload_file(self, file: FileStorage, path: str = "") -> Dict | None:
+    def upload_file(self, file: FileStorage, path: str = "", title: str = "") -> Dict | None:
         raise NotImplementedError
 
     @abstractmethod
@@ -42,6 +42,10 @@ class AbstractStorageServices(object):
     def presigned_upload_url(self, filename: str, path: str = "") -> str | None:
         raise NotImplementedError
 
+    @abstractmethod
+    def modify_file(self, file: FileStorage, full_path: str) -> bool:
+        raise NotImplementedError
+
 
 class StorageServices(AbstractStorageServices):
     def __init__(self):
@@ -50,10 +54,9 @@ class StorageServices(AbstractStorageServices):
         self.expiration_get = 1
         self.storage: Minio = current_app.storage.client
 
-    def upload_file(self, file: FileStorage, path: str = ""):
+    def upload_file(self, file: FileStorage, path: str = "", title: str = ""):
         ulid: str = ULID().from_datetime(datetime.now()).hex
-        original_name = secure_filename(file.filename)
-        filename = self.__construct_path(path, f"{ulid}{original_name}")
+        filename = self.__construct_path(path, f"{ulid}{title}")
         file.seek(0, os.SEEK_END)
         size = file.tell()
         file.seek(0)
@@ -68,10 +71,11 @@ class StorageServices(AbstractStorageServices):
                     content_type=file.content_type,
                 )
                 uploaded_file = {
-                    "filename": filename,
+                    "path": filename,
                     "filetype": file.mimetype,
                     "filesize": size,
-                    "original_filename": original_name
+                    "title": title,
+                    "is_link": False,
                 }
             except MaxRetryError as e:
                 uploaded_file = None

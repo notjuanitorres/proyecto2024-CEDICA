@@ -1,5 +1,5 @@
 from datetime import datetime
-from sqlalchemy.orm import column_property
+from sqlalchemy.orm import column_property, declared_attr
 from src.core.database import db
 from src.core.module.common import AddressMixin, EmergencyContactMixin, PhoneMixin, File
 from src.core.module.employee.data import (
@@ -13,7 +13,7 @@ class EmployeeFile(File):
     __mapper_args__ = {
         "polymorphic_identity": "employee",
     }
-    owner_id = db.Column(db.Integer, db.ForeignKey("employees.id"))
+    employee_id = db.Column(db.Integer, db.ForeignKey("employees.id"))
     owner = db.relationship("Employee", back_populates="files")
 
 
@@ -39,7 +39,7 @@ class Employee(db.Model, AddressMixin, PhoneMixin, EmergencyContactMixin):
 
     # One to one
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True)
-    user = db.relationship("User", backref=db.backref("employee"), uselist=False)
+    user = db.relationship("User", backref=db.backref("employee", uselist=False))
 
     files = db.relationship("EmployeeFile", back_populates="owner")
 
