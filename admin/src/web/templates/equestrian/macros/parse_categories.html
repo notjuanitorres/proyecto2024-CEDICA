@@ -1,0 +1,15 @@
+{% macro render_category(tag) %}
+  {% if tag == "FICHA_GENERAL" %}
+    Ficha general del caballo
+  {% elif tag == "PLANIFICACION_ENTRENAMIENTO" %}
+    Planificación de Entrenamiento
+  {% elif tag == "INFORME_EVOLUCION" %}
+    Informe de Evolución
+  {% elif tag == "CARGA_IMAGENES" %}
+    Carga de Imágenes
+  {% elif tag == "REGISTRO_VETERINARIO" %}
+    Registro veterinario
+  {% else %}
+    Otro
+  {% endif %}
+{% endmacro %}

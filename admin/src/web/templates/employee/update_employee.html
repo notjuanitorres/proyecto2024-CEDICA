@@ -1,4 +1,7 @@
-{% extends "layout.html" %} 
+{% extends "layout.html" %}
+{% from "macros/flash_message.html" import render_flash_messages %}
+
+
 {% block title %} Equipo - Actualizar miembro {% endblock %}
 
 {% block main_content %}
@@ -38,6 +41,8 @@
     </li>
   </ul>
 </nav>
+
+    {{ render_flash_messages(messages) }}
 
 <div class="container">
   <h4 class="title is-fullwidth has-text-centered">Actualizando a {{ employee.name + " " + employee.lastname }}</h4>

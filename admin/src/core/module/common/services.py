@@ -2,6 +2,8 @@ import os
 from typing import List, Dict
 from datetime import datetime, timedelta
 from abc import abstractmethod
+
+from urllib3.exceptions import MaxRetryError
 from urllib3 import HTTPResponse
 from ulid import ULID
 from minio import Minio
@@ -17,7 +19,7 @@ FilesType = List[FileType]
 
 class AbstractStorageServices(object):
     @abstractmethod
-    def upload_file(self, file: FileStorage, path: str = ""):
+    def upload_file(self, file: FileStorage, path: str = "", title: str = "") -> Dict | None:
         raise NotImplementedError
 
     @abstractmethod
@@ -29,15 +31,19 @@ class AbstractStorageServices(object):
         raise NotImplementedError
 
     @abstractmethod
-    def delete_file(self, filename: str):
+    def delete_file(self, filename: str) -> bool:
         raise NotImplementedError
 
     @abstractmethod
-    def presigned_download_url(self, filename: str) -> str:
+    def presigned_download_url(self, filename: str) -> str | None:
         raise NotImplementedError
 
     @abstractmethod
-    def presigned_upload_url(self, filename: str, path: str = "") -> str:
+    def presigned_upload_url(self, filename: str, path: str = "") -> str | None:
+        raise NotImplementedError
+
+    @abstractmethod
+    def modify_file(self, file: FileStorage, full_path: str) -> bool:
         raise NotImplementedError
 
 
@@ -45,31 +51,36 @@ class StorageServices(AbstractStorageServices):
     def __init__(self):
         # TODO: Remove the hardcoded bucket_name
         self.bucket_name = "grupo19"
-        self.expiration_get = 2
+        self.expiration_get = 1
         self.storage: Minio = current_app.storage.client
 
-    def upload_file(self, file: FileStorage, path: str = ""):
+    def upload_file(self, file: FileStorage, path: str = "", title: str = ""):
         ulid: str = ULID().from_datetime(datetime.now()).hex
-        original_name = secure_filename(file.filename)
-        filename = self.__construct_path(path, f"{ulid}{original_name}")
+        filename = self.__construct_path(path, f"{ulid}{title}")
         file.seek(0, os.SEEK_END)
         size = file.tell()
         file.seek(0)
         uploaded_file = {}
         if size > 0:
-            self.storage.put_object(
-                bucket_name=self.bucket_name,
-                object_name=filename,
-                data=file.stream,
-                length=size,
-                content_type=file.content_type,
-            )
-            uploaded_file = {
-                "filename": filename,
-                "filetype": file.mimetype,
-                "filesize": size,
-                "original_filename": original_name
-            }
+            try:
+                self.storage.put_object(
+                    bucket_name=self.bucket_name,
+                    object_name=filename,
+                    data=file.stream,
+                    length=size,
+                    content_type=file.content_type,
+                )
+                uploaded_file = {
+                    "path": filename,
+                    "filetype": file.mimetype,
+                    "filesize": size,
+                    "title": title,
+                    "is_link": False,
+                }
+            except MaxRetryError as e:
+                uploaded_file = None
+                print("No se pudo establecer conexion con minio. Error: ", e)
+
         return uploaded_file
 
     def upload_batch(self, files: List[FileStorage], path: str = "") -> FilesType:
@@ -93,21 +104,34 @@ class StorageServices(AbstractStorageServices):
         return response.data
 
     def presigned_download_url(self, filename: str) -> str:
-        return self.storage.presigned_get_object(
-            self.bucket_name,
-            filename,
-            expires=timedelta(hours=self.expiration_get),
-        )
+        try:
+            return self.storage.presigned_get_object(
+                self.bucket_name,
+                filename,
+                expires=timedelta(hours=self.expiration_get),
+            )
+        except MaxRetryError as e:
+            print("No se pudo establecer conexion con minio. Error: ", e)
+            return None
 
     def presigned_upload_url(self, filename: str, path: str = "") -> str:
-        return self.storage.presigned_put_object(
-            self.bucket_name, self.__construct_path(path, filename)
-        )
+        try:
+            return self.storage.presigned_put_object(
+                self.bucket_name, self.__construct_path(path, filename)
+            )
+        except MaxRetryError as e:
+            print("No se pudo establecer conexion con minio. Error: ", e)
+            return None
 
     def delete_file(self, filename: str) -> None:
-        self.storage.remove_object(
-            self.bucket_name, filename
-        )
+        try:
+            self.storage.remove_object(
+                self.bucket_name, filename
+            )
+            return True
+        except MaxRetryError as e:
+            print("No se pudo establecer conexion con minio. Error: ", e)
+            return False
 
     def __construct_path(self, path: str = "", filename: str = "") -> str:
         return f"{path}{filename}" if path.endswith("/") else f"{path}/{filename}"

@@ -77,13 +77,21 @@ Miembro: {{ employee.name + " " + employee.lastname }}
 {% endblock %}
 
 {% block card_actions %}
+    {% if "equipo_destroy" in permissions or is_admin %}
     <button href="" class="card-footer-item has-text-danger modal-trigger" data-id="{{ employee.id }}" data-target="employee-delete-modal">
         Eliminar
     </button>
-    <a href="{{ url_for("employee_bp.toggle_activation", employee_id=employee.id )}}" class="card-footer-item">
-        {% if employee.employment_information.is_active %}Deshabilitar{% else %}Habilitar{% endif %}
-    </a>
-    <a href="{{ url_for( "employee_bp.edit_employee", employee_id=employee.id )}}" class="card-footer-item has-text-warning">Actualizar</a>
+    {% endif %}
+    {% if "equipo_update" in permissions or is_admin %}
+        <a href="{{ url_for( "employee_bp.edit_employee", employee_id=employee.id )}}" class="card-footer-item has-text-warning">Actualizar</a>
+        <a href="{{ url_for("employee_bp.toggle_activation", employee_id=employee.id )}}" class="card-footer-item">
+            {% if employee.employment_information.is_active %}Deshabilitar{% else %}Habilitar{% endif %}
+        </a>
+    {% endif %}
+
+    <a href="{{ url_for('employee_bp.edit_documents', employee_id=employee.id) }}"
+               class="card-footer-item has-text-link">Ver documentos</a>
+
 {% endblock %}
 
 {% block additional_cards %}
@@ -139,31 +147,10 @@ Miembro: {{ employee.name + " " + employee.lastname }}
         </footer>
         {% endif %}
     </div>
-    <div id="documents" class="panel">
-        <div class="panel-heading has-background-black-bis">
-            <h2 class="card-header-title is-size-4">Documentos asociados</h2>
-        </div>
-        {% if employee.files %}
 
-        {% for document in employee.files %}
-        <div class="panel-block is-active">
-            <span class="panel-icon">
-            {{ render_file_icon(document.filetype, 5) }}
-            </span>
-            <span class="tag is-white">{{ render_category(document.tag) }}</span>
-            <p class="ml-2"> {{ document.original_filename}} </p>
-        </div>
-        {% endfor %}
-        {% else %}
-        <div class="panel-block">
-            <p>No se se ha subido ningun documento</p>
-        </div>
-        {% endif %}
-        <div class="panel-block">
-            <a href="{{ url_for("employee_bp.edit_documents", employee_id=employee.id ) }}" class="card-footer-item has-text-warning">
-                Actualizar
-            </a>
-        </div>
+
+
+
     </div>
 {% endblock %}
 

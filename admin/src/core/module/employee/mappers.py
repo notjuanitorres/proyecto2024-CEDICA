@@ -6,10 +6,11 @@ class EmployeeMapper:
     @classmethod
     def create_file(self, document_type, file_information):
         employee_file = EmployeeFile(
-            filename=file_information.get("filename"),
+            path=file_information.get("path"),
+            title=file_information.get("title"),
+            is_link=file_information.get("is_link"),
             filetype=file_information.get("filetype"),
             filesize=file_information.get("filesize"),
-            original_filename=file_information.get("original_filename"),
             tag=document_type,
         )
         return employee_file
@@ -61,12 +62,13 @@ class EmployeeMapper:
         if files:
             employee_files = self.create_files(files)
             for file in employee_files:
-                employee.files.append(file)
+                if file:
+                    employee.files.append(file)
 
         return employee
 
     @classmethod
-    def from_entity(self, employee: Employee) -> "Dict":
+    def from_entity(self, employee: Employee, documents: bool = True) -> "Dict":
         serialized_employee = {
             "id": employee.id,
             "name": employee.name,
@@ -103,7 +105,8 @@ class EmployeeMapper:
             "inserted_at": employee.inserted_at,
             "updated_at": employee.updated_at,
         }
-        serialized_employee["files"] = [ file.to_dict() for file in employee.files if file ]
+        if documents:
+            serialized_employee["files"] = [file.to_dict() for file in employee.files if file ]
 
         return serialized_employee
 

@@ -3,7 +3,7 @@ from dependency_injector import containers, providers
 from .module.auth import AuthRepository, AuthServices
 from .module.user import UserRepository
 from .module.employee import EmployeeRepository
-from .module.equestrian import EquestrianServices, EquestrianRepository
+from .module.equestrian import EquestrianRepository
 from .module.common import StorageServices
 
 
@@ -21,8 +21,4 @@ class Container(containers.DeclarativeContainer):
 
     auth_services = providers.Factory(
         AuthServices, auth_repository=auth_repository, user_repository=user_repository
-    )
-
-    equestrian_services = providers.Factory(
-        EquestrianServices, equestrian_repository=equestrian_repository
     )

@@ -1,3 +1,2 @@
-from .repositories import EquestrianRepository
-from .services import EquestrianServices, AbstractEquestrianServices
+from .repositories import EquestrianRepository, AbstractEquestrianRepository
 from .forms import HorseCreateForm, HorseEditForm

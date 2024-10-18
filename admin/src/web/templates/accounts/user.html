@@ -103,7 +103,7 @@ Usuario: {{ user.alias }}
 
 {% block modal %}
     {{ render_delete_modal(
-        url_for("users_bp.delete_user"),
+        "users_bp.delete_user",
         title="Eliminar",
         msg="¿Está seguro de que desea eliminar al usuario?",
         msg_sub="Luego de confirmar, no se podrán revertir los cambios"

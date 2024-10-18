@@ -1,5 +1,5 @@
 from datetime import datetime
-from sqlalchemy.orm import declarative_mixin
+from sqlalchemy.orm import declarative_mixin, declared_attr
 from src.core.database import db
 
 
@@ -7,11 +7,14 @@ class File(db.Model):
     __tablename__ = "files"
 
     id = db.Column(db.Integer, primary_key=True)
-    filename = db.Column(db.String())
-    filetype = db.Column(db.String())
+    title = db.Column(db.String(length=100))
+    path = db.Column(db.String(length=255))
+    is_link = db.Column(db.Boolean, default=False)
+    tag = db.Column(db.String(length=30))
+
+    filetype = db.Column(db.String(length=25))
     filesize = db.Column(db.Integer)
-    original_filename = db.Column(db.String())
-    tag = db.Column(db.String(length=25))
+
     inserted_at = db.Column(db.DateTime, default=datetime.now)
     deleted = db.Column(db.Boolean, default=False)
     deleted_at = db.Column(db.DateTime, nullable=True)
@@ -24,12 +27,13 @@ class File(db.Model):
     def to_dict(self) -> dict:
         return {
             "id": self.id,
-            "filename": self.filename,
+            "path": self.path,
             "filetype": self.filetype,
             "filesize": self.filesize,
-            "original_filename": self.original_filename,
+            "title": self.title,
             "tag": self.tag,
-            "uploaded_at": self.inserted_at
+            "uploaded_at": self.inserted_at,
+            "is_link": self.is_link,
         }
 
 
