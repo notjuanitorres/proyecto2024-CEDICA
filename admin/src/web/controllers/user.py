@@ -5,7 +5,7 @@ from src.core.module.user import (
     UserEditForm,
     AbstractUserRepository,
     UserSearchForm,
-    UserMapper
+    UserMapper,
 )
 from src.core.module.employee import AbstractEmployeeRepository
 from src.core.container import Container
@@ -25,13 +25,15 @@ def require_login_and_sys_admin(user_repository=Provide[Container.user_repositor
 
 @users_bp.route("/")
 @inject
-def get_users(user_repository: AbstractUserRepository = Provide[Container.user_repository]):
+def get_users(
+    user_repository: AbstractUserRepository = Provide[Container.user_repository],
+):
     page = request.args.get("page", type=int)
-    per_page = request.args.get("per_page", type=int)
+    need_archive = bool(request.args.get("archive", default=False))
     search = UserSearchForm(request.args)
     search_query = {}
     order_by = []
-
+    search_query["filters"] = {"is_deleted": need_archive}
     if search.submit_search.data and search.validate():
         order_by = [(search.order_by.data, search.order.data)]
         search_query = {
@@ -44,11 +46,11 @@ def get_users(user_repository: AbstractUserRepository = Provide[Container.user_r
             search_query["filters"]["role_id"] = int(search.filter_role_id.data)
 
     paginated_users = user_repository.get_page(
-        page=page, per_page=per_page, order_by=order_by, search_query=search_query
+        page=page, order_by=order_by, search_query=search_query
     )
 
     return render_template(
-        "users.html",
+        "users.html" if not need_archive else "users_archived.html",
         users=paginated_users,
         search_form=search,
     )
@@ -57,8 +59,9 @@ def get_users(user_repository: AbstractUserRepository = Provide[Container.user_r
 @users_bp.route("/<int:user_id>")
 @inject
 def show_user(
-    user_id: int, user_repository: AbstractUserRepository = Provide[Container.user_repository],
-    employees: AbstractEmployeeRepository = Provide[Container.employee_repository]
+    user_id: int,
+    user_repository: AbstractUserRepository = Provide[Container.user_repository],
+    employees: AbstractEmployeeRepository = Provide[Container.employee_repository],
 ):
     user = user_repository.get_user(user_id)
     assigned_to = user.get("assigned_to")
@@ -96,13 +99,13 @@ def add_user(
         return redirect(url_for("users_bp.create_user"))
 
     return redirect(url_for("users_bp.show_user", user_id=user["id"]))
-        
 
 
 @users_bp.route("/editar/<int:user_id>", methods=["GET", "POST", "PUT"])
 @inject
 def edit_user(
-    user_id: int, user_repository: AbstractUserRepository = Provide[Container.user_repository]
+    user_id: int,
+    user_repository: AbstractUserRepository = Provide[Container.user_repository],
 ):
     user = user_repository.get_user(user_id)
 
@@ -110,7 +113,7 @@ def edit_user(
         flash("No se puede editar a un administrador del sistema")
         return redirect(url_for("users_bp.get_users"))
 
-    if not user:
+    if not user or user.get("is_deleted"):
         flash("El usuario no existe")
         return redirect(url_for("users_bp.get_users"))
 
@@ -144,22 +147,55 @@ def update_user(
     return redirect(url_for("users_bp.show_user", user_id=user_id))
 
 
+@users_bp.route("/archive/", methods=["POST"])
+@inject
+def archive_user(
+    user_repository: AbstractUserRepository = Provide[Container.user_repository],
+):
+    user_id = request.form["item_id"]
+    archived = user_repository.archive(user_id)
+
+    if not archived:
+        flash("El usuario no existe o no puede ser archivado", "warning")
+
+    flash("El usuario ha sido archivado correctamente", "success")
+    return redirect(url_for("users_bp.show_user", user_id=user_id))
+
+@users_bp.route("/recover/", methods=["POST"])
+@inject
+def recover_user(
+    user_repository: AbstractUserRepository = Provide[Container.user_repository],
+):
+    user_id = request.form.get("user_id")
+    recovered = user_repository.recover(user_id)
+
+    if not recovered:
+        flash("El usuario no existe o no puede ser recuperado", "warning")
+
+    flash("El usuario ha sido recuperado correctamente", "success")
+    return redirect(url_for("users_bp.show_user", user_id=user_id))
+
+
 @users_bp.route("/delete/", methods=["POST"])
 @inject
-def delete_user(user_repository: AbstractUserRepository = Provide[Container.user_repository]):
+def delete_user(
+    user_repository: AbstractUserRepository = Provide[Container.user_repository],
+):
     user_id = request.form["item_id"]
     deleted = user_repository.delete(user_id)
+
     if not deleted:
         flash("El usuario no ha podido ser eliminado, intentelo nuevamente", "danger")
 
     flash("El usuario ha sido eliminado correctamente", "success")
-    return redirect(url_for("users_bp.get_users"))
+    return redirect(url_for("users_bp.get_users", archive=True))
 
 
 @users_bp.route("/toggle-activation/<int:user_id>")
 @inject
 def toggle_activation(
-    user_id: int, user_repository: AbstractUserRepository = Provide[Container.user_repository]
+    user_id: int,
+    user_repository: AbstractUserRepository = Provide[Container.user_repository],
 ):
     toggled = user_repository.toggle_activation(user_id)
 

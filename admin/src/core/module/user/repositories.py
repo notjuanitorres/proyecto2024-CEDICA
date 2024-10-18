@@ -40,7 +40,15 @@ class AbstractUserRepository:
         pass
 
     @abstractmethod
+    def archive(self, user_id: int) -> bool:
+        pass
+
+    @abstractmethod
     def delete(self, user_id: int) -> bool:
+        pass
+
+    @abstractmethod
+    def recover(self, user_id: int) -> bool:
         pass
 
     @abstractmethod
@@ -121,6 +129,25 @@ class UserRepository(AbstractUserRepository):
         if not user:
             return False
         self.db.session.delete(user)
+        self.save()
+        return True
+    
+    def archive(self, user_id):
+        user = User.query.get(user_id)
+        if not user or user.system_admin or user.is_deleted:
+            return False
+        user.is_deleted = True
+        user.enabled = False
+        if user.employee:
+            user.employee.user_id = None
+        self.save()
+        return True
+    
+    def recover(self, user_id):
+        user = User.query.get(user_id)
+        if not user or not user.is_deleted:
+            return False
+        user.is_deleted = False
         self.save()
         return True
 
