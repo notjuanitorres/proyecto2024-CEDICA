@@ -261,3 +261,19 @@ class EmployeeSearchForm(FlaskForm):
 
 class EmployeeAccountLinkForm(FlaskForm):
     positive_submit = SubmitField("Asociar")
+
+
+class EmployeeSelectForm(FlaskForm):
+    selected_employee = HiddenField(
+        "Empleado seleccionado",
+        validators=[DataRequired("Se debe seleccionar un empleado"), IsNumber()],
+    )
+    submit_employee = SubmitField("Asociar")
+
+    def set_selected_employee(self, account_id):
+        self.selected_employee.data = account_id
+
+
+class EmployeeMiniSearchForm(FlaskForm):
+    search_text = StringField(validators=[Length(message="Debe ingresar un texto", min=1, max=50)])
+    submit_search = SubmitField("Buscar")

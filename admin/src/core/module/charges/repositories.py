@@ -24,7 +24,7 @@ class AbstractChargeRepository:
         pass
 
     @abstractmethod
-    def get_by_id(self, charge_id: int) -> Charge | None:
+    def get_by_id(self, charge_id: int) -> Dict | None:
         pass
 
     @abstractmethod
@@ -81,9 +81,10 @@ class ChargeRepository(AbstractChargeRepository):
             page=page, per_page=per_page, error_out=False, max_per_page=max_per_page
         )
 
-    def get_by_id(self, charge_id: int) -> Charge | None:
+    def get_by_id(self, charge_id: int) -> Dict | None:
         charge = self.db.session.query(Charge).filter(Charge.id == charge_id).first()
-        return charge
+        print(type(charge))
+        return Mapper.from_entity(charge) if charge else None
 
     def update_charge(self, charge_id: int, data: Dict) -> bool:
         charge = Charge.query.filter_by(id=charge_id)

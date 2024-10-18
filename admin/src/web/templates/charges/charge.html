@@ -70,33 +70,106 @@
 {% endblock %}
 
 {% block additional_cards %}
-    <div class="card">
+    <div id="employee" class="card">
         <header class="card-header">
-            <p class="card-header-title is-size-4">Empleado asociado al cobro</p>
+            <h2 class="card-header-title is-size-4">
+                Empleado asociado al cobro
+
+                {#    NOTE: employee should always be true    #}
+                {% if not employee %}
+                <span class="tag is-info is-medium ml-2">Sin informacion</span>
+                {% endif %}
+            </h2>
         </header>
+        {% if employee %}
         <div class="card-content">
             <div class="content">
-                <p></p>
+                <article class="media">
+                    <div class="media-left">
+                        <figure class="image is-64x64">
+                            <img src="https://bulma.io/assets/images/placeholders/128x128.png" alt="Image" />
+                        </figure>
+                    </div>
+                    <div class="media-content">
+                        <div class="content">
+                            <p>
+                                <strong class="is-size-5">{{ employee.name }}</strong>
+                                <small>{{ employee.inserted_at | format_date }}</small>
+                                <br />
+                                {{ employee.email }}
+                                <br />
+                            </p>
+                        </div>
+                    </div>
+                </article>
             </div>
         </div>
         <footer class="card-footer">
-            <a href="" class="card-footer-item">Ver</a>
+            <a href="{{ url_for('employee_bp.show_employee', employee_id=employee.id) }}" class="card-footer-item has-text-warning">Ver</a>
+            <a href="{{ url_for( "charges_bp.change_employee", charge_id=charge.id ) }}" class="card-footer-item has-text-link">Cambiar</a>
         </footer>
+        {% else %}
+        <div class="card-content">
+            <div class="content">
+                <p>No existe un empleado asociado a este cobro</p>
+            </div>
+        </div>
+        <footer class="card-footer">
+            <a href="{{ url_for( "charges_bp.change_employee", charge_id=charge.id ) }}" class="card-footer-item has-text-link">Asociar empleado</a>
+        </footer>
+        {% endif %}
     </div>
 
-    <div class="card">
+    <div id="jya" class="card">
         <header class="card-header">
-            <p class="card-header-title is-size-4">JYA asociado al cobro</p>
+            <h2 class="card-header-title is-size-4">
+                Jinete asociado al cobro
+
+                {#    NOTE: employee should always be true    #}
+                {% if not jya %}
+                <span class="tag is-info is-medium ml-2">Sin informacion</span>
+                {% endif %}
+            </h2>
         </header>
+        {% if jya %}
         <div class="card-content">
             <div class="content">
-                <p></p>
+                <article class="media">
+                    <div class="media-left">
+                        <figure class="image is-64x64">
+                            <img src="https://bulma.io/assets/images/placeholders/128x128.png" alt="Image" />
+                        </figure>
+                    </div>
+                    <div class="media-content">
+                        <div class="content">
+                            <p>
+                                <strong class="is-size-5">{{ jya.name }}</strong>
+                                <small>{{ employee.inserted_at | format_date }}</small>
+                                <br />
+                                {{ jya.email }}
+                                <br />
+                            </p>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </div>
+
+        <footer class="card-footer">
+          <a href="{{ url_for('charges_bp.change_jya', charge_id=charge.id) }}" class="card-footer-item has-text-link">Cambiar</a>
+        </footer>
+        {% else %}
+        <div class="card-content">
+            <div class="content">
+                <p>No existe un jinete asociado a este cobro</p>
             </div>
         </div>
         <footer class="card-footer">
-            <a href="" class="card-footer-item">Ver</a>
+            <a href="{{ url_for( "charges_bp.change_jya", charge_id=charge.id ) }}" class="card-footer-item has-text-link">Asociar jinete</a>
         </footer>
+        {% endif %}
     </div>
+
 {% endblock %}
 
 {% block modal %}
