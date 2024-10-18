@@ -25,7 +25,7 @@ from src.core.module.user import (
 employee_bp = Blueprint(
     "employee_bp",
     __name__,
-    template_folder="./templates/employee/",
+    template_folder="../templates/employee/",
     url_prefix="/equipo/",
 )
 
@@ -59,7 +59,7 @@ def get_employees(
     )
 
     return render_template(
-        "./employee/employees.html",
+        "/employees.html",
         employees=paginated_employees,
         employment_information=employment_information,
         search_form=search,
@@ -74,7 +74,7 @@ def create_employee():
     if request.method == "POST":
         return add_employee(create_form=create_form)
 
-    return render_template("./employee/create_employee.html", form=create_form)
+    return render_template("/create/create_employee.html", form=create_form)
 
 
 @inject
@@ -83,17 +83,13 @@ def add_employee(
     employees: AbstractEmployeeRepository = Provide[Container.employee_repository],
 ):
     if not create_form.validate_on_submit():
-        return render_template("./employee/create_employee.html", form=create_form)
+        return render_template("/create/create_employee.html", form=create_form)
 
     created_employee = employees.add(
         employee=EmployeeMapper.to_entity(create_form.data, []),
     )
 
     flash("Miembro creado con exito!", "success")
-
-    if create_form.submit_another.data:
-        return redirect(url_for("employee_bp.create_employee"))
-    
     return redirect(
         url_for("employee_bp.create_document", employee_id=created_employee["id"])
     )
@@ -114,7 +110,7 @@ def create_document(employee_id: int,
     if request.method == "POST":
         return add_document(employee=employee, create_form=create_form)
 
-    return render_template("./employee/create_document.html", form=create_form, employee=employee)
+    return render_template("/create/create_document.html", form=create_form, employee=employee)
 
 
 @inject
@@ -125,7 +121,7 @@ def add_document(employee,
                  ):
 
     if not create_form.validate_on_submit():
-        return render_template("./employee/create_document.html", form=create_form, employee=employee)
+        return render_template("/create/create_document.html", form=create_form, employee=employee)
 
     if create_form.upload_type.data == "file":
         uploaded_document = storage.upload_file(
@@ -161,7 +157,7 @@ def show_employee(
         return redirect(url_for("employee_bp.get_employees"))
 
     return render_template(
-        "./employee/employee.html", employee=employee, account=employee_account
+        "employee.html", employee=employee, account=employee_account
     )
 
 
@@ -187,7 +183,7 @@ def edit_employee(
         return update_employee(update_form=update_form, employee_id=employee_id)
 
     return render_template(
-        "./employee/update_employee.html", form=update_form, employee=employee
+        "/update/update_employee.html", form=update_form, employee=employee
     )
 
 
@@ -200,12 +196,12 @@ def update_employee(
     employee = employees.get_employee(employee_id)
     if not update_form.validate_on_submit():
         return render_template(
-            "./employee/update_employee.html", form=update_form, employee=employee
+            "/update/update_employee.html", form=update_form, employee=employee
         )
 
     if not employees.update(employee_id, EmployeeMapper.flat_form(update_form.data)):
         flash("No se ha podido actualizar al miembro del equipo", "warning")
-        return render_template("./employee/update_employee.html")
+        return render_template("/update/update_employee.html")
 
     flash("El miembro del equipo ha sido actualizado exitosamente ")
     return redirect(url_for("employee_bp.show_employee", employee_id=employee_id))
@@ -252,7 +248,7 @@ def link_account(
         )
 
     return render_template(
-        "./employee/update_account.html",
+        "/update/update_account.html",
         employee=employee,
         accounts=accounts,
         search_form=search_account,
@@ -270,7 +266,7 @@ def set_employee_account(
 ):
     if not (select_form.submit_account.data and select_form.validate()):
         return render_template(
-            "./employee/update_account.html",
+            "/update/update_account.html",
             employee=employee,
             accounts=active_accounts,
             search_form=search_form,
@@ -352,7 +348,7 @@ def edit_documents(
             break
 
     return render_template(
-        "./employee/update_documents.html",
+        "/update/update_documents.html",
         employee=employee,
         documents=documents,
         add_form=add_document_form,
@@ -373,7 +369,7 @@ def update_documents(
 ):
     if not add_form.validate_on_submit():
         return render_template(
-            "./employee/update_documents.html",
+            "/update/update_documents.html",
             add_form=add_form,
             employee=employee,
             documents=documents,
@@ -474,7 +470,7 @@ def edit_document(
         return update_document(employee, document, edit_form)
 
     return render_template(
-        "./employee/edit_document.html",
+        "/update/edit_document.html",
         employee=employee,
         document=document,
         form=edit_form,
@@ -493,7 +489,7 @@ def update_document(employee: dict,
             edit_form.validate(is_file_already_uploaded=not document.get("is_link"))):
 
         return render_template(
-            "./employee/edit_document.html",
+            "/update/edit_document.html",
             employee=employee,
             document=document,
             form=edit_form,

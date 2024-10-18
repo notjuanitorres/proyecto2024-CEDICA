@@ -167,7 +167,6 @@ class EmployeeCreateForm(EmployeeManagementForm):
             email_existence,
         ],
     )
-    submit_another = SubmitField("Agregar otro")
 
 
 class EmployeeEditForm(EmployeeManagementForm):
