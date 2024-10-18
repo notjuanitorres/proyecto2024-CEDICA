@@ -96,8 +96,13 @@
             </td>
             <td><span class="is-hidden-tablet has-text-weight-bold">Condicion: </span>{{ employee.job_condition.value }}
             </td>
-            <td><span
-                    class="is-hidden-tablet has-text-weight-bold">Activo: </span>{{ employee.is_active | natural_boolean }}
+            <td>
+              <p class="is-hidden-tablet has-text-weight-bold">Activo:</p>
+              {% if employee.is_active %}
+                <span class="tag is-success">{{ employee.is_active | natural_boolean }}</span>    
+              {% else %}
+                <span class="tag is-warning">{{ employee.is_active | natural_boolean }}</span>    
+              {% endif %}
             </td>
             <td><span
                     class="is-hidden-tablet has-text-weight-bold">Inicio: </span>{{ employee.start_date | format_date('%d/%m/%Y') }}
