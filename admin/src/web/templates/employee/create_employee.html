@@ -1,9 +1,10 @@
 {% extends "layout.html" %}
 
+{% from "macros/flash_message.html" import render_flash_messages %}
+
 {% block title %} Equipo - Agregar miembro {% endblock %}
 
 {% block main_content %}
-
     <nav class="breadcrumb" aria-label="breadcrumbs">
         <ul>
             <li>
@@ -36,6 +37,7 @@
     <section class="section pt-4">
         <div class="container">
           <h1 class="title">Agregar miembro</h1>
+          <div class="mb-2">{{ render_flash_messages(messages) }}</div>
           <form method="POST" enctype="multipart/form-data">
             {{ form.hidden_tag() }}
             <div id="general-information" class="field">

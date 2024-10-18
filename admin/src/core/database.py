@@ -37,7 +37,8 @@ def reset(app):
     # It should have the app context
     # pylint: disable=C0415,W0611
     from .module.equestrian.models import Horse
-    from .module.accounts.models import User
+    from .module.user.models import User
+    from .module.auth.models import Role, Permission, RolePermission
     from .module.employee.models import Employee
 
     with app.app_context():

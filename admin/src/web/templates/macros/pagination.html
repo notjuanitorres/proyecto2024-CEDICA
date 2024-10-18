@@ -6,10 +6,10 @@
 
   {# Merge additional_params with args #}
   {% for key, value in additional_params.items() %}
-    {% set _ = args.update({key: value}) %}
+    {% do args.update({key: value}) %}
   {% endfor %}
 
-  <nav class="pagination is-centered" role="navigation" aria-label="pagination">
+  <nav id="pagination"class="pagination is-centered" role="navigation" aria-label="pagination">
     {% if pagination.has_prev %}
       <a href="{{ url_for(endpoint, page=pagination.prev_num, **args) }}" class="pagination-previous">Anterior</a>
     {% else %}

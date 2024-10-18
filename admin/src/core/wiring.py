@@ -1,6 +1,6 @@
 from src.web.helpers import auth as auth_helper
 from src.web.controllers import user, auth, employee, equestrian, index
-from src.core.module.accounts import validators
+from src.core.module.user import validators
 from .container import Container
 
 

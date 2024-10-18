@@ -71,7 +71,7 @@ class EmploymentInformationForm(FlaskForm):
         default=datetime.today,
     )
     end_date = DateField("Finalización de actividades", validators=[Optional()])
-    is_active = BooleanField("Activo en la organización")
+    is_active = BooleanField("Activo en la organización", default=True)
 
 
 class EmployeeDocumentsForm(FlaskForm):
@@ -167,6 +167,7 @@ class EmployeeCreateForm(EmployeeManagementForm):
             email_existence,
         ],
     )
+    submit_another = SubmitField("Agregar otro")
 
 
 class EmployeeEditForm(EmployeeManagementForm):
@@ -213,7 +214,14 @@ class EmployeeSearchForm(BaseSearchForm):
             ("dni", "DNI"),
             ("email", "Email"),
         ]
-
+    filter_is_active = SelectField(
+        choices=[
+            ("", "Ver Todos"),
+            ("true", "Activo"),
+            ("false", "Inactivo"),
+        ],
+        validate_choice=True,
+    )
     filter_job_position = SelectField(
         "Puesto laboral",
         choices=[("", "Ver Todas")] + [(e.name, e.value) for e in PositionEnum],

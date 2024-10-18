@@ -1,6 +1,5 @@
 {% extends "base_show.html" %}
 
-
 {% from "macros/file_icon.html" import render_file_icon %}
 {% from "employee/macros/parse_categories.html" import render_category %}
 
@@ -25,7 +24,14 @@
     </li>
 {% endblock %}
 
-{% block card_title %}Miembro: {{ employee.name + " " + employee.lastname }}{% endblock %}
+{% block card_title %}
+Miembro: {{ employee.name + " " + employee.lastname }}
+{% if employee.employment_information.is_active %}
+    <p class="tag is-success is-medium ml-2">Activo</p>
+{% else %}
+    <p class="tag is-danger is-medium ml-2">Bloqueado</p>
+{% endif %}
+{% endblock %}
 
 {% block card_content %}
 
@@ -62,7 +68,7 @@
     </div>
 </div>
 <div id="emergency-contact-info has-bab" class="cell box">
-    <h4>Contacto de emergencia</h4>
+    <h3>Contacto de emergencia</h3>
     <ul id="emergency-contact">
         <li><strong>Nombre completo: </strong>{{ employee.emergency_contact.emergency_contact_name }}</li>
         <li><strong>Telefono: </strong>{{ employee.emergency_contact.emergency_contact_phone }}</li>
@@ -78,6 +84,9 @@
     {% endif %}
     {% if "equipo_update" in permissions or is_admin %}
         <a href="{{ url_for( "employee_bp.edit_employee", employee_id=employee.id )}}" class="card-footer-item has-text-warning">Actualizar</a>
+        <a href="{{ url_for("employee_bp.toggle_activation", employee_id=employee.id )}}" class="card-footer-item">
+            {% if employee.employment_information.is_active %}Deshabilitar{% else %}Habilitar{% endif %}
+        </a>
     {% endif %}
 
     <a href="{{ url_for('employee_bp.edit_documents', employee_id=employee.id) }}"
@@ -88,16 +97,55 @@
 {% block additional_cards %}
     <div id="account" class="card">
         <header class="card-header">
-            <p class="card-header-title is-size-4">Usuario asociado a {{ employee.fullname }}</p>
+            <h2 class="card-header-title is-size-4">
+                Usuario asociado a {{ employee.name }}
+                {% if not account %}
+                <span class="tag is-info is-medium ml-2">Sin informacion</span>
+                {% else %}
+                {% if account.enabled %}
+                <span class="tag is-success is-medium ml-2">Activo</span>
+                {% else %}
+                <span class="tag is-danger is-medium ml-2">Bloqueado</span>
+                {% endif %}
+                {% endif %}
+            </h2>
         </header>
+        {% if account %}
+        <div class="card-content">
+            <div class="content">
+                <article class="media">
+                    <div class="media-left">
+                        <figure class="image is-64x64">
+                            <img src="https://bulma.io/assets/images/placeholders/128x128.png" alt="Image" />
+                        </figure>
+                    </div>
+                    <div class="media-content">
+                        <div class="content">
+                            <p>
+                                <strong class="is-size-5">{{ account.alias }}</strong> 
+                                <small>{{ account.inserted_at | format_date }}</small>
+                                <br />
+                                {{ account.email }}
+                                <br />
+                            </p>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </div>
+        <footer class="card-footer">
+            <a href="{{ url_for( "employee_bp.unlink_account", employee_id=employee.id ) }}" class="card-footer-item has-text-link">Desasociar</a>
+        </footer>
+        {% else %}
         <div class="card-content">
             <div class="content">
                 <p>No existe un usuario asociado a este integrante</p>
             </div>
         </div>
         <footer class="card-footer">
-            <a href="" class="card-footer-item has-text-link">Ver</a>
+            <a href="{{ url_for( "employee_bp.link_account", employee_id=employee.id ) }}" class="card-footer-item has-text-link">Asociar cuenta</a>
         </footer>
+        {% endif %}
     </div>
 
 

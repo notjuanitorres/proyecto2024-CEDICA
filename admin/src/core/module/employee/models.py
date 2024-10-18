@@ -39,7 +39,7 @@ class Employee(db.Model, AddressMixin, PhoneMixin, EmergencyContactMixin):
 
     # One to one
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True)
-    user = db.relationship("User", backref=db.backref("employee"), uselist=False)
+    user = db.relationship("User", backref=db.backref("employee", uselist=False))
 
     files = db.relationship("EmployeeFile", back_populates="owner")
 
