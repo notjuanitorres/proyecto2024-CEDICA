@@ -106,7 +106,12 @@ def edit_user(
 ):
     user = user_repository.get_user(user_id)
 
+    if user.get("system_admin"):
+        flash("No se puede editar a un administrador del sistema")
+        return redirect(url_for("users_bp.get_users"))
+
     if not user:
+        flash("El usuario no existe")
         return redirect(url_for("users_bp.get_users"))
 
     edit_form = UserEditForm(data=user, current_email=user["email"])
@@ -131,7 +136,6 @@ def update_user(
         data={
             "email": edit_form.email.data,
             "alias": edit_form.alias.data,
-            "enabled": edit_form.enabled.data,
             "system_admin": edit_form.system_admin.data,
             "role_id": edit_form.role_id.data,
         },

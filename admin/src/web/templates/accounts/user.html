@@ -42,6 +42,7 @@ Usuario: {{ user.alias }}
 {% endblock %}
 
 {% block card_actions %}
+    {% if not user.system_admin %}
     <button href="" class="card-footer-item has-text-danger modal-trigger" data-id="{{ user.id }}" data-target="user-delete-modal">
         Eliminar
     </button>
@@ -49,6 +50,7 @@ Usuario: {{ user.alias }}
         {% if user.enabled %}Deshabilitar{% else %}Habilitar{% endif %}
     </a>
     <a href="{{ url_for('users_bp.edit_user', user_id=user.id)}}" class="card-footer-item has-text-warning">Editar</a>
+    {% endif %}
 {% endblock %}
 
 {% block additional_cards %}

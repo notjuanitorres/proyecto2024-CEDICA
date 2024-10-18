@@ -54,8 +54,6 @@ class UserManagementForm(FlaskForm):
     )
     alias = StringField("Alias", validators=[DataRequired(), Length(min=3, max=15)])
 
-    enabled = BooleanField("Habilitado", default=True)
-
     system_admin = BooleanField("System Admin", default=False)
 
 
@@ -84,7 +82,6 @@ class UserCreateForm(UserManagementForm):
 
 
 class UserEditForm(UserManagementForm):
-
     def __init__(self, *args, **kwargs):
         self.current_email = kwargs.pop("current_email", None)
         super(UserEditForm, self).__init__(*args, **kwargs)
