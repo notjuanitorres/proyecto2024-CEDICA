@@ -1,7 +1,10 @@
 from abc import abstractmethod
 from typing import List, Dict
 from src.core.database import db as database
-from src.core.module.common.repositories import apply_filters, apply_multiple_search_criteria
+from src.core.module.common.repositories import (
+    apply_filters,
+    apply_multiple_search_criteria,
+)
 from .models import User
 from .mappers import UserMapper
 from sqlalchemy import and_
@@ -55,6 +58,10 @@ class AbstractUserRepository:
     def is_user_enabled(self, user_id: int) -> bool:
         pass
 
+    @abstractmethod
+    def can_be_linked(self, email: str) -> int | None:
+        pass
+
 
 class UserRepository(AbstractUserRepository):
     def __init__(self):
@@ -86,7 +93,9 @@ class UserRepository(AbstractUserRepository):
     def get_active_users(self, page: int = 1, search: str = ""):
         per_page = 7
 
-        query = self.db.session.query(User).filter(and_(User.enabled == True, User.employee == None))
+        query = self.db.session.query(User).filter(
+            and_(User.enabled == True, User.employee == None)
+        )
 
         if search:
             search_fields = ["alias", "email"]
@@ -146,3 +155,14 @@ class UserRepository(AbstractUserRepository):
 
     def save(self):
         self.db.session.commit()
+
+    def can_be_linked(self, email: str) -> int | None:
+        user = self.get_by_email(email)
+        # if user.is_deleted:
+        #     return None
+        if not user or user.employee:
+            return None
+        if user.email == email:
+            return user.id
+
+        return None

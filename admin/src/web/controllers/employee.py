@@ -9,6 +9,7 @@ from src.core.module.employee import (
     EmployeeEditForm,
     EmployeeSearchForm,
     EmployeeAddDocumentsForm,
+    EmployeeAccountLinkForm,
     employment_enums as employment_information,
 )
 from src.core.module.common import AbstractStorageServices
@@ -38,7 +39,6 @@ def get_employees(
     search = EmployeeSearchForm(request.args)
     order_by = []
     search_query = {}
-
 
     if search.submit_search.data and search.validate():
         order_by = [(search.order_by.data, search.order.data)]
@@ -79,6 +79,7 @@ def add_employee(
     create_form,
     employees: AbstractEmployeeRepository = Provide[Container.employee_repository],
     storage: AbstractStorageServices = Provide[Container.storage_services],
+    users: AbstractUserRepository = Provide[Container.user_repository],
 ):
     if not create_form.validate_on_submit():
         return render_template("./employee/create_employee.html", form=create_form)
@@ -101,15 +102,66 @@ def add_employee(
     created_employee = employees.add(
         employee=Mapper.to_entity(create_form.data, uploaded_documents),
     )
+    employee_id = created_employee.get("id")
 
     flash("Miembro creado con exito!", "success")
 
+    account = users.can_be_linked(created_employee.get("email"))
+    if account:
+        return redirect(
+            url_for(
+                "employee_bp.confirm_link", employee_id=employee_id, account_id=account
+            )
+        )
+
     if create_form.submit_another.data:
         return redirect(url_for("employee_bp.create_employee"))
-    
     return redirect(
         url_for("employee_bp.show_employee", employee_id=created_employee["id"])
     )
+
+
+@employee_bp.route(
+    "/confirmar-cuenta/<int:employee_id>/<int:account_id>", methods=["GET", "POST"]
+)
+@check_user_permissions(permissions_required=["equipo_show"])
+@inject
+def confirm_link(
+    employee_id: int,
+    account_id: int,
+    employees: AbstractEmployeeRepository = Provide[Container.employee_repository],
+    users: AbstractUserRepository = Provide[Container.user_repository],
+):
+    employee = employees.get_employee(employee_id)
+    account = users.get_user(account_id)
+    confirm_form = EmployeeAccountLinkForm()
+
+    if request.method == "GET" and request.referrer == url_for(
+        "employee_bp.create_employee", _external=True
+    ):
+        flash(
+            f"Hemos detectado una cuenta creada con el email {employee.get("email")}",
+            "info",
+        )
+        return render_template(
+            "./employee/confirm_link.html",
+            form=confirm_form,
+            employee=employee,
+            account=account,
+        )
+
+    if request.method == "POST" and request.referrer == url_for(
+        "employee_bp.confirm_link",
+        employee_id=employee_id,
+        account_id=account_id,
+        _external=True,
+    ):
+        link_is_accepted = request.form.get("positive_submit")
+        if link_is_accepted:
+            employees.link_account(employee_id, account_id)
+            flash("Cuenta sincronizada con éxito!")
+
+    return redirect(url_for("employee_bp.show_employee", employee_id=employee_id))
 
 
 @employee_bp.route("/<int:employee_id>")

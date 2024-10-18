@@ -253,4 +253,5 @@ class EmployeeSearchForm(FlaskForm):
     )
     submit_search = SubmitField("Buscar")
 
-    
+class EmployeeAccountLinkForm(FlaskForm):
+    positive_submit = SubmitField("Asociar")
