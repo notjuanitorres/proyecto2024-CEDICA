@@ -241,7 +241,21 @@ def seed_jockey_amazons():
         education_level=EducationLevelEnum.SECONDARY,
         occupation="Empleado"
     )
+
     db.session.add(family_member1)
+        
+        
+    work_assignment1 = WorkAssignment(
+        proposal=WorkProposalEnum.HIPOTHERAPY,
+        condition=WorkConditionEnum.REGULAR,
+        sede=SedeEnum.CASJ,
+        days=[DayEnum.MONDAY, DayEnum.WEDNESDAY, DayEnum.FRIDAY],
+        professor_or_therapist_id=3,
+        conductor_id=3,
+        track_assistant_id=3,
+        horse_id=3  
+    )
+    db.session.add(work_assignment1)
 
     jockey1 = JockeyAmazon(
         first_name="María",
@@ -268,18 +282,8 @@ def seed_jockey_amazons():
         current_grade_year="5to Año",
         school_observations="Observaciones escolares",
         professionals="Profesionales involucrados",
-        family_members=[family_member1]
+        family_members=[family_member1],    
+        work_assignment=work_assignment1
     )
     db.session.add(jockey1)
     db.session.commit() # jockey1 needs to be commited before adding work_assignments
-    work_assignment1 = WorkAssignment(
-        proposal=WorkProposalEnum.HIPOTHERAPY,
-        condition=WorkConditionEnum.REGULAR,
-        sede=SedeEnum.CASJ,
-        days=[DayEnum.MONDAY, DayEnum.WEDNESDAY, DayEnum.FRIDAY],
-        professor_or_therapist_id=3,
-        conductor_id=3,
-        track_assistant_id=3,
-        horse_id=3
-    )
-    db.session.add(work_assignment1)

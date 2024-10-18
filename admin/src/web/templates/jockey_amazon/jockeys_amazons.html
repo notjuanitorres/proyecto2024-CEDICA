@@ -14,12 +14,12 @@
 {% endblock %}
 
 {% block inner_title %}
-  Jockeys
+  Jinetes y Amazonas
 {% endblock %}
 
 {% block create_button %}
   <a class="button is-primary level-item" href="{{ url_for('jockey_amazon_bp.create_jockey')}}">
-    Agregar jockey
+    Agregar Jinete/Amazona
     <i class="fa-solid fa-hat-cowboy ml-2 is-size-5"></i>
   </a>
 {% endblock %}
@@ -29,14 +29,13 @@
 
 {% block table_header %}
   <th></th>
-  <th>ID</th>
   <th>Nombre</th>
   <th>Apellido</th>
   <th>DNI</th>
   <th>Fecha de Nacimiento</th>
   <th>Teléfono</th>
-  <th>Propuesta de Trabajo</th>
-  <th></th>
+  <th>Fecha de creación</th>
+  <th>Propuesta de trabajo</th>
 {% endblock %}
 
 {% block top_pagination %}
@@ -65,14 +64,13 @@
         )
       }}
     </td>
-    <td><span class="is-hidden-tablet has-text-weight-bold">ID: </span>{{ jockey.id }}</td>
     <td><span class="is-hidden-tablet has-text-weight-bold">Nombre: </span>{{ jockey.first_name }}</td>
     <td><span class="is-hidden-tablet has-text-weight-bold">Apellido: </span>{{ jockey.last_name }}</td>
     <td><span class="is-hidden-tablet has-text-weight-bold">DNI: </span>{{ jockey.dni }}</td>
-    <td><span class="is-hidden-tablet has-text-weight-bold">Fecha de Nacimiento: </span>{{ jockey.birth_date | format_date }}</td>
-    <td><span class="is-hidden-tablet has-text-weight-bold">Dirección: </span>{{ jockey.address }}</td>
+    <td><span class="is-hidden-tablet has-text-weight-bold">Fecha de Nacimiento: </span>{{ jockey.birth_date.strftime('%d-%m-%Y') }}</td>
     <td><span class="is-hidden-tablet has-text-weight-bold">Teléfono: </span>{{ jockey.phone }}</td>
-    <td><span class="is-hidden-tablet has-text-weight-bold">Propuesta de Trabajo: </span>{{ jockey.work_proposal }}</td>
+    <td><span class="is-hidden-tablet has-text-weight-bold">Fecha de creación: </span>{{ jockey.inserted_at.strftime('%d-%m-%Y') }}</td>
+    <td><span class="is-hidden-tablet has-text-weight-bold">Propuesta de Trabajo: </span>{{ jockey.work_assignment.proposal.value }}</td>
     <td class="is-hidden-tablet is-flex">
       <a href="{{ url_for('jockey_amazon_bp.show_jockey', jockey_id=jockey.id)}}" class="button is-flex-grow-1 ">
         <span class="is-bold">
