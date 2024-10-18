@@ -1,9 +1,12 @@
 document.addEventListener('DOMContentLoaded', function() {
-  const toggleButton = document.querySelector('#toggle-search-button');
-  const toggleCard = document.querySelector('#toggle-search');
+  const toggleButtons = document.querySelectorAll('.card-header-icon');
 
-    toggleButton.addEventListener('click', function() {
+  toggleButtons.forEach(button => {
+    button.addEventListener('click', function() {
+      const card = this.closest('.card');
+      const toggleCard = card.querySelector('.card-content');
       const icon = this.querySelector('.fas');
+
       if (toggleCard.style.display === "none") {
         toggleCard.style.display = "block";
         icon.classList.replace('fa-angle-down', 'fa-angle-up');
@@ -13,3 +16,4 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
   });
+});

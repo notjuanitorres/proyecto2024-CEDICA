@@ -276,67 +276,10 @@
               {% endif %}
             </div>
             </div>
-            <div id="adittional-documents" class="field pt-3">
-              <label class="label is-size-4">Documentos adicionales</label>
-              <p class="has-text-weight-light">Formatos permitidos: <span class="is-italic">PDF, DOC, XLS, JPEG</span></p>
-              <div class="field pt-3">
-                <label for="dni" class="label">Copia DNI <span class="has-text-weight-light	is-italic"></span></label>
-                <div class="file has-name is-fullwidth">
-                  <label class="file-label">
-                    {{ form.documents.dni(class="file-input", multiple="multiple") }}
-                    <span class="file-cta">
-                      <span class="file-icon">
-                        <i class="fas fa-upload"></i>
-                      </span>
-                      <span class="file-label"> Elegir archivos </span>
-                    </span>
-                    <span class="file-name"> DNI tag </span>
-                  </label>
-                </div>
-                {% if form.documents.dni.errors %}
-                <p class="help is-danger">{{ form.documents.dni.errors[0] }}</p>
-                {% endif %}
-              </div>
-              <div class="field pt-3">
-                <label for="title" class="label">Titulo<span class="has-text-weight-light	is-italic"></span></label>
-                <div class="file has-name is-fullwidth">
-                  <label class="file-label">
-                    {{ form.documents.title(class="file-input", multiple="multiple") }}
-                    <span class="file-cta">
-                      <span class="file-icon">
-                        <i class="fas fa-upload"></i>
-                      </span>
-                      <span class="file-label"> Elegir archivos </span>
-                    </span>
-                    <span class="file-name"> Titulo tag </span>
-                  </label>
-                </div>
-                {% if form.documents.title.errors %}
-                <p class="help is-danger">{{ form.documents.title.errors[0] }}</p>
-                {% endif %}
-              </div>
-              <div class="field pt-3">
-                <label for="curriculum" class="label">CV Actualizado<span class="has-text-weight-light	is-italic"></span></label>
-                <div class="file has-name is-fullwidth">
-                  <label class="file-label">
-                    {{ form.documents.curriculum_vitae(class="file-input") }}
-                    <span class="file-cta">
-                    <span class="file-icon">
-                      <i class="fas fa-upload"></i>
-                    </span>
-                      <span class="file-label"> Elegir archivo </span>
-                    </span>
-                    <span class="file-name"> CV tag </span>
-                  </label>
-                </div>
-              </div>
-              {% if form.documents.curriculum_vitae.errors %}
-              <p class="help is-danger">{{ form.documents.curriculum_vitae.errors[0] }}</p>
-              {% endif %}
-            </div>
+
             <div class="field mt-5">
               <div class="control">
-                <button class="button is-primary is-medium is-fullwidth" type="submit">Agregar miembro
+                <button class="button is-primary is-medium is-fullwidth" type="submit">Continuar
                   <span class="icon ml-1"><i class="fa-solid fa-pen-nib"></i></span>
                 </button>
               </div>

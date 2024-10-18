@@ -1,13 +1,14 @@
 from typing import Dict, List
 from abc import abstractmethod
-from sqlalchemy import or_
+from sqlalchemy import or_, and_, not_
 from flask_sqlalchemy import SQLAlchemy
 from flask_sqlalchemy.pagination import Pagination
 from src.core.database import db as database
 from src.core.module.employee.models import Employee, EmployeeFile
-from src.core.module.common.repositories import apply_filters
+from src.core.module.common.repositories import apply_filters, apply_multiple_search_criteria
 from src.core.module.employee.data import JobPositionEnum as PositionEnum
 from .mappers import EmployeeMapper as Mapper
+from ..equestrian.models import HorseTrainers
 
 
 class AbstractEmployeeRepository:
@@ -30,7 +31,7 @@ class AbstractEmployeeRepository:
         raise NotImplementedError
 
     @abstractmethod
-    def get_employee(self, employee_id: int) -> Dict:
+    def get_employee(self, employee_id: int, documents: bool = True) -> Dict:
         raise NotImplementedError
 
     @abstractmethod
@@ -62,7 +63,30 @@ class AbstractEmployeeRepository:
         raise NotImplementedError
 
     @abstractmethod
-    def get_trainers(self) -> List:
+    def update_document(self, employee_id: int, document_id: int, data: Dict) -> bool:
+        raise NotImplementedError
+
+    @abstractmethod
+    def get_file_page(
+            self,
+            employee_id: int,
+            page: int,
+            per_page: int,
+            max_per_page: int = 10,
+            search_query: Dict = None,
+            order_by: List = None,
+    ):
+        raise NotImplementedError
+
+    @abstractmethod
+    def get_paginated_trainers(
+            self,
+            page: int,
+            per_page: int = 7,
+            max_per_page: int = 10,
+            search_query: Dict = None,
+            order_by: List = None,
+    ) -> Pagination:
         raise NotImplementedError
 
 
@@ -104,8 +128,8 @@ class EmployeeRepository(AbstractEmployeeRepository):
             self.db.session.query(Employee).filter(Employee.id == employee_id).first()
         )
 
-    def get_employee(self, employee_id):
-        return Mapper.from_entity(self.__get_by_id(employee_id))
+    def get_employee(self, employee_id, documents=True):
+        return Mapper.from_entity(self.__get_by_id(employee_id), documents=documents)
 
     def __get_by_email(self, email: str) -> Employee | None:
         return self.db.session.query(Employee).filter(Employee.email == email).first()
@@ -136,7 +160,7 @@ class EmployeeRepository(AbstractEmployeeRepository):
     def __get_document(self, employee_id: int, document_id: int) -> EmployeeFile:
         document = (
             self.db.session.query(EmployeeFile)
-            .filter_by(owner_id=employee_id, id=document_id)
+            .filter_by(employee_id=employee_id, id=document_id)
             .first()
         )
         return document
@@ -153,14 +177,85 @@ class EmployeeRepository(AbstractEmployeeRepository):
     def delete(self, employee_id: int) -> bool:
         pass
 
-    def get_trainers(self):
+    def __get_query_trainers(self, query,):
         return (
-            self.db.session.query(Employee)
+            query
             .filter(
                 or_(
                     Employee.position == PositionEnum["CONDUCTOR"],
                     Employee.position == PositionEnum["ENTRENADOR_CABALLOS"],
                 )
             )
-            .all()
+
+        )
+
+    def get_file_page(
+            self,
+            employee_id: int,
+            page: int,
+            per_page: int,
+            max_per_page: int = 10,
+            search_query: Dict = None,
+            order_by: List = None,
+    ):
+
+        query = EmployeeFile.query
+
+        if search_query.get("filters"):
+            search_query["filters"]["employee_id"] = employee_id
+        else:
+            search_query["filters"] = {"employee_id": employee_id}
+
+        query = apply_filters(EmployeeFile, query, search_query, order_by)
+
+        return query.paginate(
+            page=page, per_page=per_page, error_out=False, max_per_page=max_per_page
+        )
+
+    def update_document(self, employee_id: int, document_id: int, data: Dict) -> bool:
+        doc_query = self.db.session.query(EmployeeFile).filter_by(employee_id=employee_id, id=document_id)
+        if not doc_query:
+            return False
+        doc_query.update(data)
+        self.save()
+        return True
+
+    @abstractmethod
+    def get_paginated_trainers(
+            self,
+            page: int,
+            per_page: int = 7,
+            max_per_page: int = 10,
+            search_query: Dict = None,
+            order_by: List = None,
+    ) -> Pagination:
+
+        query = Employee.query
+
+        if search_query.get("filters"):
+            if search_query.get("filters").get("only_horse_id"):
+                # Get trainers that are already assigned to the horse
+                query2 = HorseTrainers.query.filter_by(id_horse=search_query["filters"]["only_horse_id"])
+                ids_employees = [ht.id_employee for ht in query2.all()]
+
+                # Get them
+                query = query.filter(Employee.id.in_(ids_employees))
+
+                return query.paginate(
+                    page=page, per_page=per_page, error_out=False, max_per_page=max_per_page
+                )
+
+            if search_query.get("filters").get("not_horse_id"):
+                # Get trainers that are already assigned to the horse
+                query2 = HorseTrainers.query.filter_by(id_horse=search_query["filters"]["not_horse_id"])
+                ids_employees = [ht.id_employee for ht in query2.all()]
+
+                # Remove them
+                query = query.filter(Employee.id.notin_(ids_employees))
+
+        query = self.__get_query_trainers(query)
+        query = apply_filters(Employee, query, search_query, order_by, )
+
+        return query.paginate(
+            page=page, per_page=per_page, error_out=False, max_per_page=max_per_page
         )

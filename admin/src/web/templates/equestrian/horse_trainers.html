@@ -1,0 +1,177 @@
+{% extends "base_list.html" %}
+
+{% block title %}Caballos - CEDICA{% endblock %}
+
+
+{% block breadcrumb_items %}
+    <li>
+      <a href="{{ url_for('equestrian_bp.get_horses') }}">
+        <span class="icon is-small">
+          <i class="fas fa-horse" aria-hidden="true"></i>
+        </span>
+        <span>Caballos</span>
+      </a>
+    </li>
+    <li>
+      <a
+        href="{{ url_for('equestrian_bp.show_horse', horse_id=horse.id) }}">
+        <span class="icon is-small">
+          <i class="fas fa-horse-head" aria-hidden="true"></i>
+        </span>
+        <span>{{ horse.name }}</span>
+      </a>
+    </li>
+    <li>
+      <a href="{{ url_for('equestrian_bp.link_trainer', horse_id=horse.id) }}">
+        <span class="icon is-small">
+          <i class="fas fa-user-tie" aria-hidden="true"></i>
+        </span>
+        <span>Ver entrenadores</span>
+      </a>
+    </li>
+{% endblock %}
+
+{% block doc_header %}
+	<div class="container">
+        <h4 class="title is-fullwidth has-text-centered">Actualizando a {{ horse.name }}</h4>
+        <div class="tabs is-toggle is-fullwidth is-toggle-rounded is-centered is-medium">
+            <ul>
+                <li >
+                    <a>
+                          <span class="icon is-small">
+                              <i class="fa fa-info-circle" aria-hidden="true"></i>
+                          </span>
+                        <span>Informacion General</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for("equestrian_bp.edit_documents",  horse_id=horse.id ) }}">
+                          <span class="icon is-small">
+                              <i class="far fa-file-alt" aria-hidden="true"></i>
+                          </span>
+                        <span>Documentacion Anexa</span>
+                    </a>
+                </li>
+                <li class="is-active">
+                    <a href="{{ url_for("equestrian_bp.get_horse_trainers",  horse_id=horse.id ) }}">
+                          <span class="icon is-small">
+                              <i class="far fa-user" aria-hidden="true"></i>
+                          </span>
+                        <span>Entrenadores asociados</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+{% endblock %}
+
+
+{% block create_button %}
+    {% if "ecuestre_update" in permissions or is_admin %}
+        <a class="button is-primary level-item" href="{{ url_for('equestrian_bp.link_trainer', horse_id=horse.id) }}">
+            Agregar entrenador
+            <i class="fa-solid fa-user ml-2 is-size-5"></i>
+        </a>
+    {% endif %}
+{% endblock %}
+
+
+{% block form_action %}{{ url_for("equestrian_bp.get_horse_trainers", horse_id=horse["id"]) }}{% endblock %}
+{% block clear_url %}{{ url_for("equestrian_bp.get_horse_trainers", horse_id=horse["id"]) }}{% endblock %}
+
+{% block aditional_filters %}
+    <div class="field">
+      <label class="label">{{ search_form.filter_job_position.label}}</label>
+      <div class="control">
+        <div class="select">
+          {{ search_form.filter_job_position }}
+        </div>
+      </div>
+    </div>
+{% endblock %}
+
+
+{% block table_header %}
+    <th></th>
+    <th>ID</th>
+    <th>Email</th>
+    <th>Nombre</th>
+    <th>Apellido</th>
+    <th>Profesión</th>
+    <th>Posición</th>
+    <th>Condición</th>
+    <th>Activo</th>
+    <th></th>
+{% endblock %}
+
+{% block top_pagination %}
+    {{ render_pagination(trainers, 'equestrian_bp.get_horse_trainers') }}
+{% endblock %}
+
+
+{% block table_body %}
+    {% for employee in trainers %}
+        <tr class="">
+            <td class="is-hidden-mobile">
+                {{ render_actions_menu(
+                field="employee_id",
+                value=employee.id,
+                to_left=true,
+                endpoints={
+                  'show':'employee_bp.show_employee',
+                  'edit': 'employee_bp.edit_employee',
+                  'delete':''
+                },
+                permission_to_show="equipo_show",
+                permission_to_edit="equipo_update",
+                permission_to_delete="equipo_destroy",
+                user_permissions=permissions,
+                is_admin=is_admin,
+                delete_text="Desvincular"
+                        )
+                }}
+            </td>
+            <td><span class="is-hidden-tablet has-text-weight-bold">ID: </span>{{ employee.id }}</td>
+            <td><span class="is-hidden-tablet has-text-weight-bold">Email: </span>{{ employee.email }}</td>
+            <td><span class="is-hidden-tablet has-text-weight-bold">Nombre: </span>{{ employee.name }}</td>
+            <td><span class="is-hidden-tablet has-text-weight-bold">Apellido: </span>{{ employee.lastname }}</td>
+            <td><span class="is-hidden-tablet has-text-weight-bold">Profesion: </span>{{ employee.profession.value }}
+            </td>
+            <td><span class="is-hidden-tablet has-text-weight-bold">Posición: </span>{{ employee.position.value }}
+            </td>
+            <td><span class="is-hidden-tablet has-text-weight-bold">Condicion: </span>{{ employee.job_condition.value }}
+            </td>
+            <td><span
+                    class="is-hidden-tablet has-text-weight-bold">Activo: </span>{{ employee.active | natural_boolean }}
+            </td>
+            <td class="is-hidden-tablet is-flex">
+                <a href="{{ url_for('employee_bp.show_employee', employee_id=employee.id) }}"
+                   class="button  is-flex-grow-1 ">
+                    <span class=" is-bold ">
+                        Ver en detalle
+                        <i class="fa-regular fa-eye ml-2"></i>
+                    </span>
+                </a>
+            </td>
+        </tr>
+    {% endfor %}
+{% endblock %}
+
+{% block table_footer %}
+
+{% endblock %}
+
+{% block bottom_pagination %}
+    {{ render_pagination(trainers, 'equestrian_bp.get_horse_trainers') }}
+{% endblock %}
+
+{% block delete_modal %}
+  {{
+    render_delete_modal(
+      endpoint=url_for('equestrian_bp.unlink_horse_trainer', horse_id=horse["id"]),
+      title="Desvincular",
+      msg="¿Está seguro de que desea desvincular al entrenador?",
+      msg_sub="",
+      delete_text="Desvincular"
+    )
+  }}{# Trainer id is also needed but is passed in the modal #}
+{% endblock %}
