@@ -486,25 +486,25 @@
                                     <div class="field">
                                         <label class="label">Relación</label>
                                         <div class="control">
-                                            <input type="text" name="family_members-0-relationship" class="input" placeholder="Ingrese la relación" required>
+                                            <input type="text" name="family_member1-relationship" class="input" placeholder="Ingrese la relación" required>
                                         </div>
                                     </div>
                                     <div class="field">
                                         <label class="label">Nombre</label>
                                         <div class="control">
-                                            <input type="text" name="family_members-0-first_name" class="input" placeholder="Ingrese el nombre" required>
+                                            <input type="text" name="family_member1-first_name" class="input" placeholder="Ingrese el nombre" required>
                                         </div>
                                     </div>
                                     <div class="field">
                                         <label class="label">Apellido</label>
                                         <div class="control">
-                                            <input type="text" name="family_members-0-last_name" class="input" placeholder="Ingrese el apellido" required>
+                                            <input type="text" name="family_member1-last_name" class="input" placeholder="Ingrese el apellido" required>
                                         </div>
                                     </div>
                                     <div class="field">
                                         <label class="label">DNI</label>
                                         <div class="control">
-                                            <input type="text" name="family_members-0-dni" class="input" placeholder="Ingrese el DNI" required maxlength="8">
+                                            <input type="text" name="family_member1-dni" class="input" placeholder="Ingrese el DNI" required maxlength="8">
                                         </div>
                                     </div>
                                 </div>
@@ -512,19 +512,19 @@
                                     <div class="field">
                                         <label class="label">Calle</label>
                                         <div class="control">
-                                            <input type="text" name="family_members-0-street" class="input" placeholder="Ingrese la calle" required>
+                                            <input type="text" name="family_member1-street" class="input" placeholder="Ingrese la calle" required>
                                         </div>
                                     </div>
                                     <div class="field">
                                         <label class="label">Número</label>
                                         <div class="control">
-                                            <input type="number" name="family_members-0-number" class="input" placeholder="Ingrese el número" required>
+                                            <input type="number" name="family_member1-number" class="input" placeholder="Ingrese el número" required>
                                         </div>
                                     </div>
                                     <div class="field">
                                         <label class="label">Departamento</label>
                                         <div class="control">
-                                            <input type="text" name="family_members-0-department" class="input" placeholder="Ingrese el departamento" required>
+                                            <input type="text" name="family_member1-department" class="input" placeholder="Ingrese el departamento" required>
                                         </div>
                                     </div>
                                 </div>
@@ -532,13 +532,13 @@
                                     <div class="field">
                                         <label class="label">Localidad</label>
                                         <div class="control">
-                                            <input type="text" name="family_members-0-locality" class="input" placeholder="Ingrese la localidad" required>
+                                            <input type="text" name="family_member1-locality" class="input" placeholder="Ingrese la localidad" required>
                                         </div>
                                     </div>
                                     <div class="field">
                                         <label class="label">Provincia</label>
                                         <div class="control">
-                                            <input type="text" name="family_members-0-province" class="input" placeholder="Ingrese la provincia" required>
+                                            <input type="text" name="family_member1-province" class="input" placeholder="Ingrese la provincia" required>
                                         </div>
                                     </div>
                                 </div>
@@ -546,32 +546,32 @@
                                     <div class="field">
                                         <label class="label">Código de País</label>
                                         <div class="control">
-                                            <input type="text" name="family_members-0-phone_country_code" class="input" placeholder="Código de País" required>
+                                            <input type="text" name="family_member1-phone_country_code" class="input" placeholder="Código de País" required>
                                         </div>
                                     </div>
                                     <div class="field">
                                         <label class="label">Código de Área</label>
                                         <div class="control">
-                                            <input type="text" name="family_members-0-phone_area_code" class="input" placeholder="Código de Área" required>
+                                            <input type="text" name="family_member1-phone_area_code" class="input" placeholder="Código de Área" required>
                                         </div>
                                     </div>
                                     <div class="field">
                                         <label class="label">Número de Teléfono</label>
                                         <div class="control">
-                                            <input type="text" name="family_members-0-phone_number" class="input" placeholder="Ingrese el número de teléfono" required maxlength="15">
+                                            <input type="text" name="family_member1-phone_number" class="input" placeholder="Ingrese el número de teléfono" required maxlength="15">
                                         </div>
                                     </div>
                                 </div>
                                 <div class="field">
                                     <label class="label">Correo Electrónico</label>
                                     <div class="control">
-                                        <input type="email" name="family_members-0-email" class="input" placeholder="Ingrese el correo electrónico" required>
+                                        <input type="email" name="family_member1-email" class="input" placeholder="Ingrese el correo electrónico" required>
                                     </div>
                                 </div>
                                 <div class="field">
                                     <label class="label">Nivel Educativo</label>
                                     <div class="control">
-                                        <select name="family_members-0-education_level" class="select" required>
+                                        <select name="family_member1-education_level" class="select" required>
                                             <option value="">Seleccione el nivel educativo</option>
                                             {% for key, value in EducationLevelEnum.__members__.items() %}
                                                 <option value="{{ key }}">{{ value.value }}</option>
@@ -582,13 +582,119 @@
                                 <div class="field">
                                     <label class="label">Ocupación</label>
                                     <div class="control">
-                                        <input type="text" name="family_members-0-occupation" class="input" placeholder="Ingrese la ocupación" required>
+                                        <input type="text" name="family_member1-occupation" class="input" placeholder="Ingrese la ocupación" required>
                                     </div>
                                 </div>
-                                <button type="button" class="button is-danger remove-family-member">Eliminar</button>
                             </div>
                         </div>
                         <button type="button" class="button is-primary add-family-member">Agregar Miembro de la Familia</button>
+
+                        <div class="family-member" style="display: none;">
+                            <div class="field-body">
+                                <div class="field">
+                                    <label class="label">Relación</label>
+                                    <div class="control">
+                                        <input type="text" name="family_member2-relationship" class="input" placeholder="Ingrese la relación" required>
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <label class="label">Nombre</label>
+                                    <div class="control">
+                                        <input type="text" name="family_member2-first_name" class="input" placeholder="Ingrese el nombre" required>
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <label class="label">Apellido</label>
+                                    <div class="control">
+                                        <input type="text" name="family_member2-last_name" class="input" placeholder="Ingrese el apellido" required>
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <label class="label">DNI</label>
+                                    <div class="control">
+                                        <input type="text" name="family_member2-dni" class="input" placeholder="Ingrese el DNI" required maxlength="8">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="field-body">
+                                <div class="field">
+                                    <label class="label">Calle</label>
+                                    <div class="control">
+                                        <input type="text" name="family_member2-street" class="input" placeholder="Ingrese la calle" required>
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <label class="label">Número</label>
+                                    <div class="control">
+                                        <input type="number" name="family_member2-number" class="input" placeholder="Ingrese el número" required>
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <label class="label">Departamento</label>
+                                    <div class="control">
+                                        <input type="text" name="family_member2-department" class="input" placeholder="Ingrese el departamento" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="field-body">
+                                <div class="field">
+                                    <label class="label">Localidad</label>
+                                    <div class="control">
+                                        <input type="text" name="family_member2-locality" class="input" placeholder="Ingrese la localidad" required>
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <label class="label">Provincia</label>
+                                    <div class="control">
+                                        <input type="text" name="family_member2-province" class="input" placeholder="Ingrese la provincia" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="field-body">
+                                <div class="field">
+                                    <label class="label">Código de País</label>
+                                    <div class="control">
+                                        <input type="text" name="family_member2-phone_country_code" class="input" placeholder="Código de País" required>
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <label class="label">Código de Área</label>
+                                    <div class="control">
+                                        <input type="text" name="family_member2-phone_area_code" class="input" placeholder="Código de Área" required>
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <label class="label">Número de Teléfono</label>
+                                    <div class="control">
+                                        <input type="text" name="family_member2-phone_number" class="input" placeholder="Ingrese el número de teléfono" required maxlength="15">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="field">
+                                <label class="label">Correo Electrónico</label>
+                                <div class="control">
+                                    <input type="email" name="family_member2-email" class="input" placeholder="Ingrese el correo electrónico" required>
+                                </div>
+                            </div>
+                            <div class="field">
+                                <label class="label">Nivel Educativo</label>
+                                <div class="control">
+                                    <select name="family_member2-education_level" class="select" required>
+                                        <option value="">Seleccione el nivel educativo</option>
+                                        {% for key, value in EducationLevelEnum.__members__.items() %}
+                                        <option value="{{ key }}">{{ value.value }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="field">
+                                <label class="label">Ocupación</label>
+                                <div class="control">
+                                    <input type="text" name="family_member2-occupation" class="input" placeholder="Ingrese la ocupación" required>
+                                </div>
+                            </div>
+                            <button type="button" class="button is-danger remove-family-member">Eliminar</button>
+                        </div>
                     </div>
 
                     <div id="work-assignments-info" class="tab-pane" style="display:none;">
@@ -620,25 +726,25 @@
                         <div class="field">
                             <label class="label">{{ form.work_assignments.professor_or_therapist_id.label }}</label>
                             <div class="control">
-                                <div class="select">{{ form.work_assignments.professor_or_therapist_id() }}</div>
+                                {{ form.work_assignments.professor_or_therapist_id(class="input", type="number") }}
                             </div>
                         </div>
                         <div class="field">
                             <label class="label">{{ form.work_assignments.conductor_id.label }}</label>
                             <div class="control">
-                                <div class="select">{{ form.work_assignments.conductor_id() }}</div>
+                                {{ form.work_assignments.conductor_id(class="input", type="number") }}
                             </div>
                         </div>
                         <div class="field">
                             <label class="label">{{ form.work_assignments.track_assistant_id.label }}</label>
                             <div class="control">
-                                <div class="select">{{ form.work_assignments.track_assistant_id() }}</div>
+                                {{ form.work_assignments.track_assistant_id(class="input", type="number") }}
                             </div>
                         </div>
                         <div class="field">
                             <label class="label">{{ form.work_assignments.horse_id.label }}</label>
                             <div class="control">
-                                <div class="select">{{ form.work_assignments.horse_id() }}</div>
+                                {{ form.work_assignments.horse_id(class="input", type="number") }}
                             </div>
                         </div>
                     </div>
@@ -657,168 +763,53 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        // Función para manejar las pestañas
-        const tabs = document.querySelectorAll('.tabs li');
-        const tabContent = document.querySelectorAll('.tab-pane');
+    // Código existente para manejar las pestañas
+    const tabs = document.querySelectorAll('.tabs li');
+    const tabContent = document.querySelectorAll('.tab-pane');
 
-        tabs.forEach(tab => {
-            tab.addEventListener('click', () => {
-                tabs.forEach(item => item.classList.remove('is-active'));
-                tab.classList.add('is-active');
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            tabs.forEach(item => item.classList.remove('is-active'));
+            tab.classList.add('is-active');
 
-                const target = tab.dataset.tab;
-                tabContent.forEach(content => {
-                    if (content.id === target) {
-                        content.style.display = 'block';  // Muestra el contenido de la pestaña seleccionada
-                    } else {
-                        content.style.display = 'none';   // Oculta los demás contenidos
-                    }
-                });
+            const target = tab.dataset.tab;
+            tabContent.forEach(content => {
+                if (content.id === target) {
+                    content.style.display = 'block';
+                } else {
+                    content.style.display = 'none';
+                }
             });
         });
+    });
 
-        let familyMemberIndex = 1;
-        const familyMembersContainer = document.getElementById('family-members-container');
+    // Funcionalidad para agregar miembros de la familia
+    const addFamilyMemberButton = document.querySelector('.add-family-member');
+    const familyMemberContainer = document.getElementById('family-members-info');
+    const secondFamilyMember = document.querySelector('.family-member[style="display: none;"]');
 
-        function addFamilyMember() {
-            const newFamilyMember = document.createElement('div');
-            newFamilyMember.classList.add('family-member');
-            newFamilyMember.innerHTML = `
-            <div class="field-body">
-                <div class="field">
-                    <label class="label">Relación</label>
-                    <div class="control">
-                        <input type="text" name="family_members-0-relationship" class="input" placeholder="Ingrese la relación" required>
-                    </div>
-                </div>
-                <div class="field">
-                    <label class="label">Nombre</label>
-                    <div class="control">
-                        <input type="text" name="family_members-0-first_name" class="input" placeholder="Ingrese el nombre" required>
-                    </div>
-                </div>
-                <div class="field">
-                    <label class="label">Apellido</label>
-                    <div class="control">
-                        <input type="text" name="family_members-0-last_name" class="input" placeholder="Ingrese el apellido" required>
-                    </div>
-                </div>
-                <div class="field">
-                    <label class="label">DNI</label>
-                    <div class="control">
-                        <input type="text" name="family_members-0-dni" class="input" placeholder="Ingrese el DNI" required maxlength="8">
-                    </div>
-                </div>
-            </div>
-            <div class="field-body">
-                <div class="field">
-                    <label class="label">Calle</label>
-                    <div class="control">
-                        <input type="text" name="family_members-0-street" class="input" placeholder="Ingrese la calle" required>
-                    </div>
-                </div>
-                <div class="field">
-                    <label class="label">Número</label>
-                    <div class="control">
-                        <input type="number" name="family_members-0-number" class="input" placeholder="Ingrese el número" required>
-                    </div>
-                </div>
-                <div class="field">
-                    <label class="label">Departamento</label>
-                    <div class="control">
-                        <input type="text" name="family_members-0-department" class="input" placeholder="Ingrese el departamento" required>
-                    </div>
-                </div>
-            </div>
-            <div class="field-body">
-                <div class="field">
-                    <label class="label">Localidad</label>
-                    <div class="control">
-                        <input type="text" name="family_members-0-locality" class="input" placeholder="Ingrese la localidad" required>
-                    </div>
-                </div>
-                <div class="field">
-                    <label class="label">Provincia</label>
-                    <div class="control">
-                        <input type="text" name="family_members-0-province" class="input" placeholder="Ingrese la provincia" required>
-                    </div>
-                </div>
-            </div>
-            <div class="field-body">
-                <div class="field">
-                    <label class="label">Código de País</label>
-                    <div class="control">
-                        <input type="text" name="family_members-0-phone_country_code" class="input" placeholder="Código de País" required>
-                    </div>
-                </div>
-                <div class="field">
-                    <label class="label">Código de Área</label>
-                    <div class="control">
-                        <input type="text" name="family_members-0-phone_area_code" class="input" placeholder="Código de Área" required>
-                    </div>
-                </div>
-                <div class="field">
-                    <label class="label">Número de Teléfono</label>
-                    <div class="control">
-                        <input type="text" name="family_members-0-phone_number" class="input" placeholder="Ingrese el número de teléfono" required maxlength="15">
-                    </div>
-                </div>
-            </div>
-            <div class="field">
-                <label class="label">Correo Electrónico</label>
-                <div class="control">
-                    <input type="email" name="family_members-0-email" class="input" placeholder="Ingrese el correo electrónico" required>
-                </div>
-            </div>
-            <div class="field">
-                <label class="label">Nivel Educativo</label>
-                <div class="control">
-                    <select name="family_members-0-education_level" class="select" required>
-                        <option value="">Seleccione el nivel educativo</option>
-                        {% for key, value in EducationLevelEnum.__members__.items() %}
-                            <option value="{{ key }}">{{ value.value }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-            </div>
-            <div class="field">
-                <label class="label">Ocupación</label>
-                <div class="control">
-                    <input type="text" name="family_members-0-occupation" class="input" placeholder="Ingrese la ocupación" required>
-                </div>
-            </div>
-            <button type="button" class="button is-danger remove-family-member">Eliminar</button>
-        `;
-            familyMembersContainer.appendChild(newFamilyMember);
-            familyMemberIndex++;
-        }
+    addFamilyMemberButton.addEventListener('click', function () {
+        secondFamilyMember.style.display = 'block';
+        addFamilyMemberButton.style.display = 'none'; // Ocultar el botón después de agregar el segundo miembro
+    });
 
-        // Evento para agregar un miembro de la familia
-        document.querySelector('.add-family-member').addEventListener('click', addFamilyMember);
+    // Maneja el evento de eliminar un miembro de la familia
+    familyMemberContainer.addEventListener('click', function (event) {
+        if (event.target.classList.contains('remove-family-member')) {
+            const familyMember = event.target.closest('.family-member');
+            if (familyMember) {
+                familyMember.style.display = 'none'; // Ocultar en lugar de eliminar
+                
+                // Limpiar los campos
+                familyMember.querySelectorAll('input, select').forEach(input => {
+                    input.value = '';
+                });
 
-        // Evento para manejar la eliminación de miembros de la familia y actualizar los índices
-        familyMembersContainer.addEventListener('click', (event) => {
-            if (event.target.classList.contains('remove-family-member')) {
-                event.target.parentElement.remove();
-                updateFamilyMemberNames(); // Actualiza los índices de los miembros después de la eliminación
+                addFamilyMemberButton.style.display = 'block'; // Mostrar el botón de agregar nuevamente
             }
-        });
-
-        // Función para actualizar los nombres de los campos de los miembros de la familia
-        function updateFamilyMemberNames() {
-            const familyMembers = document.querySelectorAll('.family-member');
-            familyMembers.forEach((member, index) => {
-                member.querySelectorAll('input, select').forEach((input) => {
-                    const name = input.getAttribute('name');
-                    if (name) {
-                        const updatedName = name.replace(/family_members-\d+-/, `family_members-${index}-`);
-                        input.setAttribute('name', updatedName);
-                    }
-                });
-            });
-            familyMemberIndex = familyMembers.length;
         }
     });
+});
 </script>
 
-{% endblock %}  
+{% endblock %}

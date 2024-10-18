@@ -21,21 +21,21 @@ class SchoolInstitutionForm(FlaskForm):
     phone_number = StringField('Número de Teléfono', validators=[DataRequired(), Length(max=15)])
 
 class FamilyMemberForm(FlaskForm):
-    relationship = StringField('Relación', validators=[Optional(), Length(max=50)])
-    first_name = StringField('Nombre', validators=[Optional(), Length(max=100)])
-    last_name = StringField('Apellido', validators=[Optional(), Length(max=100)])
-    dni = StringField('DNI', validators=[Optional(), Length(min=8, max=8)])
-    street = StringField('Calle', validators=[Optional(), Length(max=50)])
-    number = IntegerField('Número', validators=[Optional()])
+    relationship = StringField('Relación', validators=[DataRequired(), Length(max=50)])
+    first_name = StringField('Nombre', validators=[DataRequired(), Length(max=100)])
+    last_name = StringField('Apellido', validators=[DataRequired(), Length(max=100)])
+    dni = StringField('DNI', validators=[DataRequired(), Length(min=8, max=8)])
+    street = StringField('Calle', validators=[DataRequired(), Length(max=50)])
+    number = IntegerField('Número', validators=[DataRequired()])
     department = StringField('Departamento', validators=[Optional(), Length(max=50)])
-    locality = StringField('Localidad', validators=[Optional(), Length(max=50)])
-    province = StringField('Provincia', validators=[Optional(), Length(max=50)])
-    phone_country_code = StringField('Código de País', validators=[Optional(), Length(max=5)])
-    phone_area_code = StringField('Código de Área', validators=[Optional(), Length(max=5)])
-    phone_number = StringField('Número de Teléfono', validators=[Optional(), Length(max=15)])
-    email = StringField('Correo Electrónico', validators=[Optional(), Length(max=100)])
-    education_level = SelectField('Nivel Educativo', choices=enum_choices(EducationLevelEnum), validators=[Optional()])
-    occupation = StringField('Ocupación', validators=[Optional(), Length(max=100)])
+    locality = StringField('Localidad', validators=[DataRequired(), Length(max=50)])
+    province = StringField('Provincia', validators=[DataRequired(), Length(max=50)])
+    phone_country_code = StringField('Código de País', validators=[DataRequired(), Length(max=5)])
+    phone_area_code = StringField('Código de Área', validators=[DataRequired(), Length(max=5)])
+    phone_number = StringField('Número de Teléfono', validators=[DataRequired(), Length(max=15)])
+    email = StringField('Correo Electrónico', validators=[DataRequired(), Length(max=100)])
+    education_level = SelectField('Nivel Educativo', choices=enum_choices(EducationLevelEnum), validators=[DataRequired()])
+    occupation = StringField('Ocupación', validators=[DataRequired(), Length(max=100)])
 
 class WorkAssignmentForm(FlaskForm):
     proposal = SelectField('Propuesta de Trabajo', choices=enum_choices(WorkProposalEnum), validators=[DataRequired()])
@@ -77,6 +77,17 @@ class JockeyAmazonManagementForm(FlaskForm):
     family_member1 = FormField(FamilyMemberForm)
     family_member2 = FormField(FamilyMemberForm)
     work_assignments = FormField(WorkAssignmentForm)
+
+    def validate(self, extra_validators=None):
+        if not super().validate(extra_validators):
+            return False
+        
+        if not self.family_member1.first_name.data:
+            self.family_member1.first_name.errors.append('Este campo es obligatorio.')
+            return False
+        
+        return True
+
 
 class JockeyAmazonCreateForm(JockeyAmazonManagementForm):
     pass

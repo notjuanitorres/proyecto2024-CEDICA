@@ -54,7 +54,19 @@ class JockeyAmazonMapper:
         phone = data.get("phone", {})
         address = data.get("address", {})
         emergency_contact = data.get("emergency_contact", {})
-        print(data)
+        family_members = []
+
+        if 'family_member1' in data:
+            family_member1_data = data['family_member1']
+            family_member1 = FamilyMemberMapper.to_entity(family_member1_data)
+            family_members.append(family_member1)
+        
+        if 'family_member2' in data:
+            family_member2_data = data['family_member2']
+            if any(family_member2_data.values()):  # Check if family_member2 data is not empty
+                family_member2 = FamilyMemberMapper.to_entity(family_member2_data)
+                family_members.append(family_member2)
+
         return JockeyAmazon(
             id=data.get("id"),
             first_name=data.get("first_name"),
@@ -93,9 +105,7 @@ class JockeyAmazonMapper:
             updated_at=data.get("updated_at"),
             emergency_contact_name=emergency_contact.get("emergency_contact_name"),
             emergency_contact_phone=emergency_contact.get("emergency_contact_phone"),
-            family_members=[
-                FamilyMemberMapper.to_entity(member) for member in data.get("family_members", [])
-            ],
+            family_members=family_members,
             work_assignment=WorkAssignmentMapper.to_entity(data.get("work_assignments"))
         )
 
