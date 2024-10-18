@@ -229,6 +229,15 @@ class EmployeeSearchForm(FlaskForm):
         choices=[("", "Ver Todas")] + [(e.name, e.value) for e in PositionEnum],
         validate_choice=True,
     )
+    filter_is_active = SelectField(
+        choices=[
+            ("", "Ver Todos"),
+            ("true", "Activo"),
+            ("false", "Inactivo"),
+        ],
+        validate_choice=True,
+    )
+
     order_by = SelectField(
         choices=[
             ("id", "ID"),

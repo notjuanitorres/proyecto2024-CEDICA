@@ -36,17 +36,21 @@ def get_employees(
     page = request.args.get("page", type=int, default=1)
     per_page = request.args.get("per_page", type=int, default=10)
     search = EmployeeSearchForm(request.args)
-    search_query = {}
     order_by = []
+    search_query = {}
+
+
     if search.submit_search.data and search.validate():
         order_by = [(search.order_by.data, search.order.data)]
         search_query = {
             "text": search.search_text.data,
             "field": search.search_by.data,
         }
+        search_query["filters"] = {}
         if search.filter_job_position.data:
-            search_query["filters"] = {"position": search.filter_job_position.data}
-
+            search_query["filters"]["position"] = search.filter_job_position.data
+        if search.filter_is_active.data:
+            search_query["filters"]["is_active"] = search.filter_is_active.data
     paginated_employees = employees.get_page(
         page=page, per_page=per_page, order_by=order_by, search_query=search_query
     )
