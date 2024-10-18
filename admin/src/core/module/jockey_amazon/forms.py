@@ -1,10 +1,14 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, BooleanField, SelectField, TextAreaField, IntegerField, DateField, FormField, FieldList, SubmitField
 from wtforms.validators import DataRequired, Length, Optional
-from src.core.module.common.forms import AddressForm, PhoneForm, EmergencyContactForm
+
+from src.core.module.jockey_amazon.models import FileTagEnum
+from src.core.module.common.forms import AddressForm, PhoneForm, EmergencyContactForm, DocumentsSearchForm, \
+    BaseManageDocumentsForm
 from src.core.module.jockey_amazon.models import (
     DisabilityDiagnosisEnum, DisabilityTypeEnum, FamilyAssignmentEnum, PensionEnum, WorkProposalEnum, WorkConditionEnum, SedeEnum, DayEnum, EducationLevelEnum
 )
+
 
 def enum_choices(enum):
     return [(choice.name, choice.value) for choice in enum]
@@ -127,3 +131,23 @@ class JockeyAmazonSearchForm(FlaskForm):
         validate_choice=True,
     )
     submit_search = SubmitField("Buscar")
+
+
+class JockeyAmazonAddDocumentsForm(BaseManageDocumentsForm):
+    tag = SelectField(
+        "Tag",
+        choices=[(e.name, e.value) for e in FileTagEnum],
+        validators=[
+            DataRequired(
+                message="Debe seleccionar lo que representa este archivo",
+            )
+        ],
+    )
+
+
+class JockeyAmazonDocumentSearchForm(DocumentsSearchForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.filter_tag.choices = [
+            ("", "Ver Todos"),
+        ] + [(e.name, e.value) for e in FileTagEnum]

@@ -1,8 +1,11 @@
 from datetime import datetime
 from enum import Enum
 from sqlalchemy import Enum as SQLAEnum
+
+from src.core.module.common import File
 from src.core.database import db
 from src.core.module.common import AddressMixin, EmergencyContactMixin, PhoneMixin
+
 
 class DisabilityDiagnosisEnum(Enum):
     ECNE = "ECNE"
@@ -25,21 +28,25 @@ class DisabilityDiagnosisEnum(Enum):
     EATING_DISORDER = "Trastorno Alimentario"
     OTHER = "OTRO"
 
+
 class DisabilityTypeEnum(Enum):
     MENTAL = "Mental"
     MOTOR = "Motora"
     SENSORY = "Sensorial"
     VISCERAL = "Visceral"
 
+
 class FamilyAssignmentEnum(Enum):
     UNIVERSAL_WITH_CHILD = "Asignación Universal por hijo"
     UNIVERSAL_WITH_DISABLED_CHILD = "Asignación Universal por hijo con Discapacidad"
     ANNUAL_SCHOOL_HELP = "Asignación por ayuda escolar anual"
 
+
 class PensionEnum(Enum):
     NONE = "No"
     PROVINCIAL = "Provincial"
     NATIONAL = "Nacional"
+
 
 class WorkProposalEnum(Enum):
     HIPOTHERAPY = "Hipoterapia"
@@ -48,14 +55,17 @@ class WorkProposalEnum(Enum):
     RECREATIONAL_ACTIVITIES = "Actividades Recreativas"
     RIDING = "Equitación"
 
+
 class WorkConditionEnum(Enum):
     REGULAR = "Regular"
     DISMISSED = "De baja"
+
 
 class SedeEnum(Enum):
     CASJ = "CASJ"
     HLP = "HLP"
     OTHER = "OTRO"
+
 
 class DayEnum(Enum):
     MONDAY = "Lunes"
@@ -66,11 +76,13 @@ class DayEnum(Enum):
     SATURDAY = "Sábado"
     SUNDAY = "Domingo"
 
+
 class EducationLevelEnum(Enum):
     PRIMARY = "Primario"
     SECONDARY = "Secundario"
     TERTIARY = "Terciario"
     UNIVERSITY = "Universitario"
+
 
 jockey_amazon_enums = {
     "disability_diagnosis": DisabilityDiagnosisEnum,
@@ -83,6 +95,16 @@ jockey_amazon_enums = {
     "day": DayEnum,
     "education_level": EducationLevelEnum,
 }
+
+
+class FileTagEnum(Enum):
+    ENTREVISTA = "entrevista"
+    EVALUACION = "evaluación"
+    PLANIFICACIONES = "planificaciones"
+    EVOLUCION = "evolución"
+    CRONICAS = "crónicas"
+    DOCUMENTAL = "documental"
+
 
 class SchoolInstitution(db.Model):
     __tablename__ = 'school_institutions'
@@ -97,6 +119,7 @@ class SchoolInstitution(db.Model):
     phone_country_code = db.Column(db.String(5), nullable=False)
     phone_area_code = db.Column(db.String(5), nullable=False)
     phone_number = db.Column(db.String(15), nullable=False)
+
 
 class FamilyMember(db.Model):
     __tablename__ = 'family_members'
@@ -118,7 +141,9 @@ class FamilyMember(db.Model):
     education_level = db.Column(SQLAEnum(EducationLevelEnum), nullable=False)
     occupation = db.Column(db.String(100), nullable=False)
 
-    jockey_amazon = db.relationship('JockeyAmazon', secondary='family_member_jockey_amazon', back_populates='family_members')
+    jockey_amazon = db.relationship('JockeyAmazon', secondary='family_member_jockey_amazon',
+                                    back_populates='family_members')
+
 
 class WorkAssignment(db.Model):
     __tablename__ = 'work_assignments'
@@ -138,10 +163,13 @@ class WorkAssignment(db.Model):
     inserted_at = db.Column(db.DateTime, default=datetime.now)
     updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
 
-    professor_or_therapist = db.relationship('Employee', foreign_keys=[professor_or_therapist_id], backref='work_assignments_as_professor_or_therapist')
+    professor_or_therapist = db.relationship('Employee', foreign_keys=[professor_or_therapist_id],
+                                             backref='work_assignments_as_professor_or_therapist')
     conductor = db.relationship('Employee', foreign_keys=[conductor_id], backref='work_assignments_as_conductor')
-    track_assistant = db.relationship('Employee', foreign_keys=[track_assistant_id], backref='work_assignments_as_track_assistant')
+    track_assistant = db.relationship('Employee', foreign_keys=[track_assistant_id],
+                                      backref='work_assignments_as_track_assistant')
     horse = db.relationship('Horse')
+
 
 class JockeyAmazon(db.Model, AddressMixin, PhoneMixin, EmergencyContactMixin):
     __tablename__ = 'jockeys_amazons'
@@ -180,14 +208,27 @@ class JockeyAmazon(db.Model, AddressMixin, PhoneMixin, EmergencyContactMixin):
 
     professionals = db.Column(db.Text, nullable=True)
 
-    family_members = db.relationship('FamilyMember', secondary='family_member_jockey_amazon', back_populates='jockey_amazon')
+    family_members = db.relationship('FamilyMember', secondary='family_member_jockey_amazon',
+                                     back_populates='jockey_amazon')
     work_assignment_id = db.Column(db.Integer, db.ForeignKey('work_assignments.id'), nullable=True)
     work_assignment = db.relationship('WorkAssignment')
 
     inserted_at = db.Column(db.DateTime, default=datetime.now)
     updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
 
-family_member_jockey_amazon = db.Table('family_member_jockey_amazon',
-    db.Column('family_member_id', db.Integer, db.ForeignKey('family_members.id'), primary_key=True),
-    db.Column('jockey_amazon_id', db.Integer, db.ForeignKey('jockeys_amazons.id'), primary_key=True)
-)
+    family_member_jockey_amazon = db.Table('family_member_jockey_amazon',
+                                           db.Column('family_member_id', db.Integer, db.ForeignKey('family_members.id'),
+                                                     primary_key=True),
+                                           db.Column('jockey_amazon_id', db.Integer,
+                                                     db.ForeignKey('jockeys_amazons.id'), primary_key=True)
+                                           )
+    files = db.relationship("JockeyAmazonFile", back_populates="owner")
+
+
+class JockeyAmazonFile(File):
+    __mapper_args__ = {
+        "polymorphic_identity": "jockey_amazon",
+    }
+
+    jockey_amazon_id = db.Column(db.Integer, db.ForeignKey("jockeys_amazons.id"))
+    owner = db.relationship("JockeyAmazon", back_populates="files")

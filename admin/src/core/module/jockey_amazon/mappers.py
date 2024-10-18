@@ -1,53 +1,91 @@
 from typing import Dict, List
-from .models import JockeyAmazon, SchoolInstitution, FamilyMember, WorkAssignment, EducationLevelEnum, WorkConditionEnum, WorkProposalEnum, FamilyAssignmentEnum, DisabilityDiagnosisEnum, DisabilityTypeEnum, PensionEnum
+from .models import (
+    JockeyAmazon,
+    SchoolInstitution,
+    FamilyMember, WorkAssignment,
+    EducationLevelEnum,
+    WorkConditionEnum,
+    WorkProposalEnum,
+    FamilyAssignmentEnum,
+    DisabilityDiagnosisEnum,
+    DisabilityTypeEnum,
+    PensionEnum, JockeyAmazonFile
+)
+
 
 class JockeyAmazonMapper:
     @classmethod
-    def from_entity(cls, jockey: JockeyAmazon) -> Dict:
-        return {
-            "id": jockey.id,
-            "first_name": jockey.first_name,
-            "last_name": jockey.last_name,
-            "dni": jockey.dni,
-            "birth_date": jockey.birth_date,
-            "birthplace": jockey.birthplace,
-            "phone_country_code": jockey.country_code,
-            "phone_area_code": jockey.area_code,
-            "phone_number": jockey.phone,
-            "street": jockey.street,
-            "number": jockey.number,
-            "department": jockey.department,
-            "locality": jockey.locality,
-            "province": jockey.province,
-            "is_scholarship": jockey.is_scholarship,
-            "scholarship_observations": jockey.scholarship_observations,
-            "has_disability": jockey.has_disability,
-            "disability_diagnosis": jockey.disability_diagnosis.value if jockey.disability_diagnosis else None,
-            "disability_other": jockey.disability_other,
-            "disability_type": jockey.disability_type.value if jockey.disability_type else None,
-            "has_family_assignment": jockey.has_family_assignment,
-            "family_assignment_type": jockey.family_assignment_type.value if jockey.family_assignment_type else None,
-            "has_pension": jockey.has_pension.value if jockey.has_pension else None,
-            "pension_details": jockey.pension_details,
-            "social_security": jockey.social_security,
-            "social_security_number": jockey.social_security_number,
-            "has_curatorship": jockey.has_curatorship,
-            "curatorship_observations": jockey.curatorship_observations,
-            "school_institution_id": jockey.school_institution_id,
-            "current_grade_year": jockey.current_grade_year,
-            "school_observations": jockey.school_observations,
-            "professionals": jockey.professionals,
-            "inserted_at": jockey.inserted_at,
-            "updated_at": jockey.updated_at,
-            "emergency_contact": {
-                "emergency_contact_name": jockey.emergency_contact_name,
-                "emergency_contact_phone": jockey.emergency_contact_phone,
-            },
-            "family_members": [
-                FamilyMemberMapper.from_entity(member) for member in jockey.family_members
-            ],
-            "work_assignment": WorkAssignmentMapper.from_entity(jockey.work_assignment)
-        }
+    def create_file(cls, document_type, file_information):
+        horse_file = JockeyAmazonFile(
+            path=file_information.get("path"),
+            title=file_information.get("title"),
+            is_link=file_information.get("is_link"),
+            filetype=file_information.get("filetype"),
+            filesize=file_information.get("filesize"),
+            tag=document_type,
+        )
+        return horse_file
+
+    @classmethod
+    def create_files(cls, files):
+        created_files = []
+        for doc_type, files_info in files:
+            for file_info in files_info:
+                if file_info:
+                    created_files.append(cls.create_file(doc_type, file_info))
+        return created_files
+
+    @classmethod
+    def from_entity(cls, jockey: JockeyAmazon) -> Dict | None:
+        jockey_dict = {}
+        if JockeyAmazon:
+            jockey_dict = {
+                "id": jockey.id,
+                "first_name": jockey.first_name,
+                "last_name": jockey.last_name,
+                "dni": jockey.dni,
+                "birth_date": jockey.birth_date,
+                "birthplace": jockey.birthplace,
+                "phone_country_code": jockey.country_code,
+                "phone_area_code": jockey.area_code,
+                "phone_number": jockey.phone,
+                "street": jockey.street,
+                "number": jockey.number,
+                "department": jockey.department,
+                "locality": jockey.locality,
+                "province": jockey.province,
+                "is_scholarship": jockey.is_scholarship,
+                "scholarship_observations": jockey.scholarship_observations,
+                "has_disability": jockey.has_disability,
+                "disability_diagnosis": jockey.disability_diagnosis.value if jockey.disability_diagnosis else None,
+                "disability_other": jockey.disability_other,
+                "disability_type": jockey.disability_type.value if jockey.disability_type else None,
+                "has_family_assignment": jockey.has_family_assignment,
+                "family_assignment_type": jockey.family_assignment_type.value
+                if jockey.family_assignment_type else None,
+
+                "has_pension": jockey.has_pension.value if jockey.has_pension else None,
+                "pension_details": jockey.pension_details,
+                "social_security": jockey.social_security,
+                "social_security_number": jockey.social_security_number,
+                "has_curatorship": jockey.has_curatorship,
+                "curatorship_observations": jockey.curatorship_observations,
+                "school_institution_id": jockey.school_institution_id,
+                "current_grade_year": jockey.current_grade_year,
+                "school_observations": jockey.school_observations,
+                "professionals": jockey.professionals,
+                "inserted_at": jockey.inserted_at,
+                "updated_at": jockey.updated_at,
+                "emergency_contact": {
+                    "emergency_contact_name": jockey.emergency_contact_name,
+                    "emergency_contact_phone": jockey.emergency_contact_phone,
+                },
+                "family_members": [
+                    FamilyMemberMapper.from_entity(member) for member in jockey.family_members
+                ],
+                "work_assignment": WorkAssignmentMapper.from_entity(jockey.work_assignment)
+            }
+            return jockey_dict
 
     @classmethod
     def to_entity(cls, data: Dict) -> JockeyAmazon:
@@ -108,6 +146,7 @@ class JockeyAmazonMapper:
             family_members=family_members,
             work_assignment=WorkAssignmentMapper.to_entity(data.get("work_assignments"))
         )
+
 
 class FamilyMemberMapper:
     @classmethod
@@ -190,20 +229,24 @@ class FamilyMemberMapper:
         form.education_level.data = data.get("education_level")
         form.occupation.data = data.get("occupation")
 
+
 class WorkAssignmentMapper:
     @classmethod
     def from_entity(cls, assignment: WorkAssignment) -> Dict:
-        return {
-            "id": assignment.id,
-            "proposal": assignment.proposal.value,
-            "condition": assignment.condition.value,
-            "sede": assignment.sede.value,
-            "days": assignment.days.value,
-            "professor_or_therapist_id": assignment.professor_or_therapist_id,
-            "conductor_id": assignment.conductor_id,
-            "track_assistant_id": assignment.track_assistant_id,
-            "horse_id": assignment.horse_id,
-        }
+        dict = {}
+        if assignment:
+            dict = {
+                "id": assignment.id,
+                "proposal": assignment.proposal.value,
+                "condition": assignment.condition.value,
+                "sede": assignment.sede.value,
+                "days": assignment.days.value,
+                "professor_or_therapist_id": assignment.professor_or_therapist_id,
+                "conductor_id": assignment.conductor_id,
+                "track_assistant_id": assignment.track_assistant_id,
+                "horse_id": assignment.horse_id,
+            }
+        return dict
 
     @classmethod
     def to_entity(cls, data: Dict) -> WorkAssignment:
@@ -242,6 +285,7 @@ class WorkAssignmentMapper:
         form.conductor_id.data = data.get("conductor_id")
         form.track_assistant_id.data = data.get("track_assistant_id")
         form.horse_id.data = data.get("horse_id")
+
 
 class SchoolInstitutionMapper:
     @classmethod

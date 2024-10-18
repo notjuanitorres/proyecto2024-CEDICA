@@ -131,20 +131,24 @@
 
 <div id="work-assignment-info" class="cell box">
     <h4>Asignación laboral</h4>
-    <ul>
-        <li><strong>Propuesta: </strong> {{ jockey_amazon.work_assignment.proposal.value }}</li>
-        <li><strong>Condición: </strong> {{ jockey_amazon.work_assignment.condition.value }}</li>
-        <li><strong>Sede: </strong> {{ jockey_amazon.work_assignment.sede.value }}</li>
-        <li><strong>Días laborales: </strong>
-            {% for day in jockey_amazon.work_assignment.days %}
-            {{ day.value }}{% if not loop.last %}, {% endif %}
-            {% endfor %}
-        </li>
-        <li><strong>Profesor o Terapeuta: </strong> {{ jockey_amazon.work_assignment.professor_or_therapist_id }}</li>
-        <li><strong>Conductor: </strong> {{ jockey_amazon.work_assignment.conductor_id }}</li>
-        <li><strong>Asistente de pista: </strong> {{ jockey_amazon.work_assignment.track_assistant_id }}</li>
-        <li><strong>Caballo: </strong> {{ jockey_amazon.work_assignment.horse_id }}</li>
-    </ul>
+    {% if jockey_amazon.work_assignment %}
+        <ul>
+            <li><strong>Propuesta: </strong> {{ jockey_amazon.work_assignment.proposal.value }}</li>
+            <li><strong>Condición: </strong> {{ jockey_amazon.work_assignment.condition.value }}</li>
+            <li><strong>Sede: </strong> {{ jockey_amazon.work_assignment.sede.value }}</li>
+            <li><strong>Días laborales: </strong>
+                {% for day in jockey_amazon.work_assignment.days %}
+                {{ day.value }}{% if not loop.last %}, {% endif %}
+                {% endfor %}
+            </li>
+            <li><strong>Profesor o Terapeuta: </strong> {{ jockey_amazon.work_assignment.professor_or_therapist_id }}</li>
+            <li><strong>Conductor: </strong> {{ jockey_amazon.work_assignment.conductor_id }}</li>
+            <li><strong>Asistente de pista: </strong> {{ jockey_amazon.work_assignment.track_assistant_id }}</li>
+            <li><strong>Caballo: </strong> {{ jockey_amazon.work_assignment.horse_id }}</li>
+        </ul>
+    {% else %}
+        <p>No tiene asignación laboral</p>
+    {% endif %}
 </div>
 
 <div id="family-members-info" class="cell box">
@@ -174,6 +178,7 @@
         Eliminar
     </button>
     <a href="{{ url_for('jockey_amazon_bp.get_jockeys') }}" class="card-footer-item has-text-warning">Editar</a>
+    <a href="{{ url_for('jockey_amazon_bp.edit_documents', jockey_id=jockey_amazon.id) }}" class="card-footer-item has-text-link">Ver documentos</a>
 {% endblock %}
 
 {% block modal %}

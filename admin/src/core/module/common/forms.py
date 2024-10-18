@@ -89,7 +89,7 @@ class BaseManageDocumentsForm(FlaskForm):
             Optional(),
             URL(message="Debe proporcionar una URL válida")
         ],
-        default="https://"
+        default="https://ejemplo.com"
     )
 
     def validate(self, *args, is_file_already_uploaded: bool = False, **kwargs):
