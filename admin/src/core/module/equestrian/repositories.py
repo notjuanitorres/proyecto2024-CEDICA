@@ -46,7 +46,7 @@ class AbstractEquestrianRepository:
         pass
 
     @abstractmethod
-    def set_horse_trainers(self, horse_id: int, trainers_ids: List[int]):
+    def add_horse_trainers(self, horse_id: int, trainers_ids: List[int]):
         pass
 
     @abstractmethod
@@ -75,6 +75,10 @@ class AbstractEquestrianRepository:
             search_query: Dict = None,
             order_by: List = None,
     ):
+        raise NotImplementedError
+
+    @abstractmethod
+    def remove_horse_trainer(self, horse_id: int, trainer_id: int) -> bool:
         raise NotImplementedError
 
 
@@ -141,8 +145,7 @@ class EquestrianRepository(AbstractEquestrianRepository):
         return (self.db.session.query(Employee)
                 .filter(Employee.id.in_([ht.id_employee for ht in horse_trainers])).all())
 
-    def set_horse_trainers(self, horse_id: int, trainers_ids: List[int]):
-        self.db.session.query(HorseTrainers).filter(HorseTrainers.id_horse == horse_id).delete()
+    def add_horse_trainers(self, horse_id: int, trainers_ids: List[int]):
         for trainer_id in trainers_ids:
             self.db.session.add(HorseTrainers(id_horse=horse_id, id_employee=trainer_id))
         self.save()
@@ -200,6 +203,13 @@ class EquestrianRepository(AbstractEquestrianRepository):
         self.save()
         return True
 
+    def remove_horse_trainer(self, horse_id: int, trainer_id: int) -> bool:
+        trainer = self.db.session.query(HorseTrainers).filter_by(id_horse=horse_id, id_employee=trainer_id)
+        if not trainer:
+            return False
+        trainer.delete()
+        self.save()
+        return True
 
 
 

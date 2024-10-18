@@ -35,6 +35,31 @@
     </li>
 {% endblock %}
 
+{% block doc_header %}
+	<div class="container">
+  <h4 class="title is-fullwidth has-text-centered">Actualizando a {{ employee.name + " " + employee.lastname }}</h4>
+  <div class="tabs is-toggle is-fullwidth is-toggle-rounded is-centered is-medium">
+    <ul>
+      <li>
+        <a href="{{ url_for('employee_bp.edit_employee', employee_id=employee.id) }}">
+          <span class="icon is-small">
+              <i class="fa fa-info-circle" aria-hidden="true"></i>
+          </span>
+          <span>Informacion General</span>
+        </a>
+      </li>
+      <li class="is-active">
+        <a href="{{ url_for("employee_bp.edit_documents",  employee_id=employee.id ) }}">
+          <span class="icon is-small">
+              <i class="far fa-file-alt" aria-hidden="true"></i>
+          </span>
+          <span>Documentos Anexos</span>
+        </a>
+      </li>
+    </ul>
+  </div>
+{% endblock %}
+
 {% block form_action %}{{ url_for("employee_bp.edit_documents", employee_id=employee.id ) }}{% endblock %}
 {% block clear_url %}{{ url_for("employee_bp.edit_documents", employee_id=employee.id ) }}{% endblock %}
 

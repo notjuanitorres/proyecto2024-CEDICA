@@ -1,6 +1,7 @@
 from datetime import datetime
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileAllowed, FileSize
+from wtforms import SubmitField
 from wtforms.validators import DataRequired, Email, Length, Optional
 from wtforms.fields import (
     StringField,
@@ -226,3 +227,21 @@ class EmployeeDocumentSearchForm(DocumentsSearchForm):
         self.filter_tag.choices = [
             ("", "Ver Todos"),
         ] + [(e.name, e.value) for e in FileTagEnum]
+
+
+class TrainerSearchForm(FlaskForm):
+    search_text = StringField(
+        "Buscar por nombre o email", validators=[Length(message="Debe ingresar un texto", min=1, max=50)]
+    )
+    submit_search = SubmitField("Buscar")
+
+
+class TrainerSelectForm(FlaskForm):
+    selected_trainer = HiddenField(
+        "Cuenta seleccionada",
+        validators=[DataRequired("Se debe seleccionar una cuenta"), IsNumber()],
+    )
+    submit_trainer = SubmitField("Asociar")
+
+    def set_selected_account(self, account_id):
+        self.selected_trainer.data = account_id

@@ -5,11 +5,9 @@ from wtforms.fields import (
     BooleanField,
     SelectField,
     DateField,
-    SelectMultipleField,
-    MultipleFileField, FormField,
+    MultipleFileField,
 )
 from wtforms.validators import DataRequired, Length
-from wtforms import widgets, FieldList
 
 from src.core.module.common.forms import BaseSearchForm, DocumentsSearchForm
 from src.core.module.common.forms import BaseManageDocumentsForm, allowed_filetypes, filetypes_message
@@ -18,19 +16,6 @@ from src.core.module.common import (
     max_file_size,
 )
 from src.core.module.equestrian.models import JAEnum, Horse, FileTagEnum
-
-
-class MultiCheckboxField(SelectMultipleField):
-    """
-    https://wtforms.readthedocs.io/en/3.0.x/specific_problems/?highlight=listwidget#specialty-field-tricks
-    A multiple-select, except displays a list of checkboxes.
-
-    Iterating the field will produce subfields, allowing custom rendering of
-    the enclosed checkbox fields.
-    """
-
-    widget = widgets.ListWidget(prefix_label=False)
-    option_widget = widgets.CheckboxInput()
 
 
 class HorseDocumentsForm(FlaskForm):
@@ -191,27 +176,6 @@ class HorseCreateForm(HorseManagementForm):
 class HorseEditForm(HorseManagementForm):
     def __init__(self, *args, **kwargs):
         super(HorseEditForm, self).__init__(*args, **kwargs)
-        self.trainers.choices = self.get_trainers_choices()
-
-    def import_repository(self):
-        # Needed to import the container dynamically at run time
-        # It is in order to work along with WTForms instantiation at definition
-        # pylint: disable="C0415"
-        from src.core.container import Container
-
-        container = Container()
-        return container.employee_repository()
-
-    def get_trainers_choices(self):
-        return [
-            (trainer.id, f"{trainer.fullname} ({trainer.position.value})")
-            for trainer in self.import_repository().get_trainers()
-        ]
-
-    trainers = MultiCheckboxField(
-        "Entrenadores y conductores",
-        choices=[],
-    )
 
 
 class HorseSearchForm(BaseSearchForm):

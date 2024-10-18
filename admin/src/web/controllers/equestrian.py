@@ -2,6 +2,8 @@ from typing import Dict
 
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 
+from src.core.module.employee import AbstractEmployeeRepository
+from src.core.module.employee.forms import TrainerSearchForm, TrainerSelectForm, EmployeeSearchForm
 from src.core.module.common import AbstractStorageServices, FileMapper
 from src.web.helpers.auth import check_user_permissions
 from src.core.container import Container
@@ -75,7 +77,6 @@ def create_horse():
 def add_horse(create_form: HorseCreateForm,
               equestrian_repository: AbstractEquestrianRepository = Provide[Container.equestrian_repository],
               ):
-
     if not create_form.validate_on_submit():
         return render_template("create_horse.html", form=create_form)
 
@@ -90,7 +91,6 @@ def add_horse(create_form: HorseCreateForm,
 @inject
 def create_document(horse_id: int,
                     equestrian_repository: AbstractEquestrianRepository = Provide[Container.equestrian_repository]):
-
     horse = equestrian_repository.get_by_id(horse_id)
     if not horse:
         flash(f"El caballo con ID = {horse_id} no existe", "danger")
@@ -109,7 +109,6 @@ def add_document(horse,
                  equestrian_repository: AbstractEquestrianRepository = Provide[Container.equestrian_repository],
                  storage: AbstractStorageServices = Provide[Container.storage_services],
                  ):
-
     if not create_form.validate_on_submit():
         return render_template("create_document.html", form=create_form, horse=horse)
 
@@ -144,8 +143,7 @@ def edit_horse(horse_id: int,
         flash(f"Su búsqueda no devolvió un caballo existente", "danger")
         return redirect(url_for("equestrian_bp.get_horses"))
 
-    trainers = [str(trainer.id) for trainer in equestrian_repository.get_trainers_of_horse(horse_id)]
-    edit_form = HorseEditForm(data=horse, trainers=trainers)
+    edit_form = HorseEditForm(data=horse)
 
     if request.method in ["POST", "PUT"]:
         return update_horse(horse_id=horse_id, edit_form=edit_form)
@@ -156,7 +154,6 @@ def edit_horse(horse_id: int,
 @inject
 def update_horse(horse_id: int, edit_form: HorseEditForm,
                  equestrian_repository: AbstractEquestrianRepository = Provide[Container.equestrian_repository]):
-
     if not edit_form.validate_on_submit():
         return render_template("edit_horse.html", form=edit_form)
 
@@ -187,9 +184,9 @@ def delete_horse(equestrian_repository: AbstractEquestrianRepository = Provide[C
 @check_user_permissions(permissions_required=["ecuestre_update"])
 @inject
 def edit_documents(
-    horse_id: int,
-    equestrian_repository: AbstractEquestrianRepository = Provide[Container.equestrian_repository],
-    storage: AbstractStorageServices = Provide[Container.storage_services],
+        horse_id: int,
+        equestrian_repository: AbstractEquestrianRepository = Provide[Container.equestrian_repository],
+        storage: AbstractStorageServices = Provide[Container.storage_services],
 ):
     page = request.args.get("page", type=int)
     per_page = request.args.get("per_page", type=int)
@@ -242,9 +239,9 @@ def edit_documents(
 @equestrian_bp.route("/editar/<int:horse_id>/documentos/eliminar", methods=["POST"])
 @inject
 def delete_document(
-    horse_id: int,
-    equestrian_repository: AbstractEquestrianRepository = Provide[Container.equestrian_repository],
-    storage: AbstractStorageServices = Provide[Container.storage_services],
+        horse_id: int,
+        equestrian_repository: AbstractEquestrianRepository = Provide[Container.equestrian_repository],
+        storage: AbstractStorageServices = Provide[Container.storage_services],
 ):
     document_id = int(request.form["item_id"])
     document = equestrian_repository.get_document(horse_id, document_id)
@@ -265,9 +262,9 @@ def delete_document(
 @check_user_permissions(permissions_required=["ecuestre_update"])
 @inject
 def edit_document(
-    horse_id: int,
-    document_id: int,
-    equestrian_repository: AbstractEquestrianRepository = Provide[Container.equestrian_repository],
+        horse_id: int,
+        document_id: int,
+        equestrian_repository: AbstractEquestrianRepository = Provide[Container.equestrian_repository],
 ):
     horse = equestrian_repository.get_by_id(horse_id=horse_id, documents=False)
     if not horse:
@@ -296,12 +293,10 @@ def update_document(horse: dict,
                     document: dict,
                     edit_form: HorseAddDocumentsForm,
                     equestrian_repository: AbstractEquestrianRepository = Provide[Container.equestrian_repository],
-                    storage: AbstractStorageServices = Provide[Container.storage_services],):
-
+                    storage: AbstractStorageServices = Provide[Container.storage_services], ):
     if not (edit_form.is_submitted()
             and
             edit_form.validate(is_file_already_uploaded=not document.get("is_link"))):
-
         return render_template(
             "./equestrian/edit_document.html",
             horse=horse,
@@ -341,3 +336,122 @@ def update_document(horse: dict,
     return redirect(url_for("equestrian_bp.edit_documents", horse_id=horse["id"]))
 
 
+@equestrian_bp.route("/sincronizar-entrenador/<int:horse_id>", methods=["GET", "POST"])
+@check_user_permissions(permissions_required=["ecuestre_update"])
+@inject
+def link_trainer(
+        horse_id: int,
+        horses: AbstractEquestrianRepository = Provide[Container.equestrian_repository],
+        employees: AbstractEmployeeRepository = Provide[Container.employee_repository],
+):
+    page = request.args.get("page", type=int, default=1)
+
+    search_trainer = TrainerSearchForm(request.args)
+    select_trainer = TrainerSelectForm()
+    horse = horses.get_by_id(horse_id, documents=False)
+
+    if not horse:
+        flash(f"El caballo con ID = {horse_id} no existe", "danger")
+        return redirect(url_for("equestrian_bp.get_horses"))
+
+    search_query = {}
+
+    if request.method == "GET" and search_trainer.validate():
+        search_fields = ["name", "email"]
+        search_query = {"text": search_trainer.search_text.data, "fields": search_fields}
+
+    search_query["filters"] = {"not_horse_id": horse_id}
+
+    trainers = employees.get_paginated_trainers(
+        page=page, search_query=search_query
+    )
+
+    if request.method == "POST":
+        return add_horse_trainer(horse, search_trainer, select_trainer, trainers)
+
+    return render_template(
+        "./equestrian/update_trainer.html",
+        horse=horse,
+        trainers=trainers,
+        search_form=search_trainer,
+        select_form=select_trainer,
+    )
+
+
+@inject
+def add_horse_trainer(
+        horse,
+        search_form,
+        select_form,
+        paginated_trainers,
+        horses: AbstractEquestrianRepository = Provide[Container.equestrian_repository],
+):
+    if not (select_form.submit_trainer.data and select_form.validate()):
+        return render_template(
+            "./equestrian/update_trainer.html",
+            horse=horse,
+            trainers=paginated_trainers,
+            search_form=search_form,
+            select_form=select_form,
+        )
+
+    horse_id = horse.get("id")
+    trainer_id = select_form.selected_trainer.data
+
+    horses.add_horse_trainers(horse_id, [trainer_id])
+
+    flash(
+        f"Se ha asociado correctamente a {horse.get('name')} con su entrenador",
+        "success",
+    )
+    return redirect(url_for("equestrian_bp.get_horse_trainers", horse_id=horse_id))
+
+
+@equestrian_bp.route("/ver-entrenadores/<int:horse_id>", methods=["GET", "POST"])
+@check_user_permissions(permissions_required=["ecuestre_index"])
+@inject
+def get_horse_trainers(
+        horse_id: int,
+        horses: AbstractEquestrianRepository = Provide[Container.equestrian_repository],
+        employees: AbstractEmployeeRepository = Provide[Container.employee_repository],
+):
+    page = request.args.get("page", type=int, default=1)
+    per_page = request.args.get("per_page", type=int)
+
+    horse = horses.get_by_id(horse_id, documents=False)
+
+    if not horse:
+        flash(f"El caballo con ID = {horse_id} no existe", "danger")
+        return redirect(url_for("equestrian_bp.get_horses"))
+
+    search = EmployeeSearchForm(request.args)
+    search_query = {}
+    order_by = []
+    search_query["filters"] = {"only_horse_id": horse_id}
+
+    trainers = employees.get_paginated_trainers(
+        page=page, per_page=per_page, search_query=search_query, order_by=order_by
+    )
+
+    return render_template(
+        "./equestrian/horse_trainers.html",
+        horse=horse,
+        trainers=trainers,
+        search_form=search
+    )
+
+
+@equestrian_bp.route("/desvincular-entrenador/<int:horse_id>/", methods=["POST"])
+@check_user_permissions(permissions_required=["ecuestre_update"])
+@inject
+def unlink_horse_trainer(horse_id: int,
+                         equestrian_repository: AbstractEquestrianRepository = Provide[Container.equestrian_repository]):
+
+    trainer_id = request.form["item_id"]
+    deleted = equestrian_repository.remove_horse_trainer(int(horse_id), int(trainer_id))
+    if not deleted:
+        flash("El entrenador no ha podido ser desvinculado, inténtelo nuevamente", "danger")
+    else:
+        flash("El entrenador ha sido desvinculado correctamente", "success")
+
+    return redirect(url_for("equestrian_bp.get_horse_trainers", horse_id=horse_id))
