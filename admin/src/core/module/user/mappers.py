@@ -29,5 +29,5 @@ class UserMapper:
             "role_id": user.role_id,
             "inserted_at": user.inserted_at,
             "updated_at": user.updated_at,
-            "assigned_to": user.employee[0].id if user.employee else None
+            "assigned_to": user.employee.id if user.employee else None
         }
