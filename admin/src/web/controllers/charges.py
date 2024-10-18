@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 
 from src.core.module.employee.forms import EmployeeMiniSearchForm, EmployeeSelectForm
 from src.core.module.employee import EmployeeSearchForm
@@ -84,13 +84,14 @@ def create_charge():
 
 
 @inject
-def add_charge(create_form: ChargeCreateForm, charges_repository: ACR = Provide[Container.charges_repository]):
+def add_charge(create_form: ChargeCreateForm):
     if not create_form.validate_on_submit():
         return render_template("create_charge.html", form=create_form)
 
-    charge = charges_repository.add_charge(Mapper.to_entity(Mapper.from_form(create_form.data)))
+    session["charge"] = Mapper.to_session(Mapper.from_form(create_form.data))
 
-    return redirect(url_for("charges_bp.show_charge", charge_id=charge["id"]))
+    flash("Datos del cobro enviados correctamente!", "success")
+    return redirect(url_for("charges_bp.link_employee"))
 
 
 @charges_bp.route("/editar/<int:charge_id>", methods=["GET", "POST", "PUT"])
@@ -100,7 +101,7 @@ def edit_charge(charge_id: int,
                 charges_repository: ACR = Provide[Container.charges_repository],
                 employee_services: AbstractEmployeeRepository = Provide[Container.employee_repository],
                 ):
-    # TODO: traerme el jya del cobro
+
     charge = charges_repository.get_by_id(charge_id)
 
     if not charge:
@@ -123,7 +124,6 @@ def update_charge(charge_id: int, edit_form: ChargeEditForm,
     if not edit_form.validate_on_submit():
         return render_template("edit_charge.html", form=edit_form)
 
-    print(edit_form.data)
     charges_repository.update_charge(charge_id, Mapper.from_form(edit_form.data))
 
     return redirect(url_for("charges_bp.show_charge", charge_id=charge_id))
@@ -154,32 +154,163 @@ def change_employee(
     per_page = request.args.get("per_page", type=int, default=10)
     search_query = {}
 
-    search_employee = EmployeeMiniSearchForm(request.args)
-    select_employee = EmployeeSelectForm()
+    search_jya = EmployeeMiniSearchForm(request.args)
+    select_jya = EmployeeSelectForm()
 
     charge = charges_repository.get_by_id(charge_id)
     if not charge:
         flash(f"El cobro con ID = {charge_id} no existe", "danger")
         return redirect(url_for("charges_bp.get_charges"))
 
-    if request.method == "GET" and search_employee.validate():
+    if request.method == "GET" and search_jya.validate():
         search_fields = ["name", "email"]
-        search_query = {"text": search_employee.search_text.data, "fields": search_fields}
+        search_query = {"text": search_jya.search_text.data, "fields": search_fields}
 
     employees = employees.get_page(
         page=page, search_query=search_query, per_page=per_page
     )
 
     if request.method == "POST":
-        return add_charge_employee(charge, search_employee, select_employee, employees)
+        return add_charge_employee(charge, search_jya, select_jya, employees)
 
     return render_template(
         "./charges/update_employee.html",
         charge=charge,
         employees=employees,
-        search_form=search_employee,
-        select_form=select_employee,
+        search_form=search_jya,
+        select_form=select_jya,
     )
+
+
+@charges_bp.route("/asignar-empleado/", methods=["GET", "POST"])
+@check_user_permissions(permissions_required=["cobros_update"])
+@inject
+def link_employee(
+        employees: AbstractEmployeeRepository = Provide[Container.employee_repository],
+):
+
+    if not session.get("charge"):
+        flash(f"Esta pagina solo puede ser accedida al crear un cobro", "danger")
+        return redirect(url_for("charges_bp.get_charges"))
+
+    charge = Mapper.from_session(session.get("charge"))
+    page = request.args.get("page", type=int, default=1)
+    per_page = request.args.get("per_page", type=int, default=10)
+    search_query = {}
+
+    search_jya = EmployeeMiniSearchForm(request.args)
+    select_jya = EmployeeSelectForm()
+
+    if request.method == "GET" and search_jya.validate():
+        search_fields = ["name", "email"]
+        search_query = {"text": search_jya.search_text.data, "fields": search_fields}
+
+    employees = employees.get_page(
+        page=page, search_query=search_query, per_page=per_page
+    )
+
+    if request.method == "POST":
+        return link_charge_employee(charge, search_jya, select_jya, employees)
+
+    return render_template(
+        "./charges/create_employee.html",
+        charge=charge,
+        employees=employees,
+        search_form=search_jya,
+        select_form=select_jya,
+    )
+
+
+@inject
+def link_charge_employee(
+        charge,
+        search_form,
+        select_form,
+        paginated_employees,
+):
+
+    if not (select_form.submit_employee.data and select_form.validate()):
+        return render_template(
+            "./charges/create_employee.html",
+            charge=charge,
+            employees=paginated_employees,
+            search_form=search_form,
+            select_form=select_form,
+        )
+
+    employee_id = select_form.selected_employee.data
+
+    session["charge"]["employee_id"] = employee_id
+
+    flash("El empleado asociado al cobro se envio correctamente!", "success")
+    return redirect(url_for("charges_bp.link_jya"))
+
+
+@charges_bp.route("/asignar-jya/", methods=["GET", "POST"])
+@check_user_permissions(permissions_required=["cobros_update"])
+@inject
+def link_jya(
+        employees: AbstractEmployeeRepository = Provide[Container.employee_repository],
+):
+    if not session.get("charge"):
+        flash(f"Esta pagina solo puede ser accedida al crear un cobro", "danger")
+        return redirect(url_for("charges_bp.get_charges"))
+
+    charge = Mapper.from_session(session.get("charge"))
+    page = request.args.get("page", type=int, default=1)
+    per_page = request.args.get("per_page", type=int, default=10)
+    search_query = {}
+
+    search_jya = EmployeeMiniSearchForm(request.args)
+    select_jya = EmployeeSelectForm()
+
+    if request.method == "GET" and search_jya.validate():
+        search_fields = ["name", "email"]
+        search_query = {"text": search_jya.search_text.data, "fields": search_fields}
+
+    jyas = employees.get_page(
+        page=page, search_query=search_query, per_page=per_page
+    )
+
+    if request.method == "POST":
+        return link_charge_jya(charge, search_jya, select_jya, jyas)
+
+    return render_template(
+        "./charges/create_jya.html",
+        charge=charge,
+        jyas=jyas,
+        search_form=search_jya,
+        select_form=select_jya,
+    )
+
+
+@inject
+def link_charge_jya(
+        charge,
+        search_form,
+        select_form,
+        paginated_jyas,
+        charges_repository: ACR = Provide[Container.charges_repository],
+):
+    if not (select_form.submit_employee.data and select_form.validate()):
+        return render_template(
+            "./charges/create_jya.html",
+            charge=charge,
+            jyas=paginated_jyas,
+            search_form=search_form,
+            select_form=select_form,
+        )
+
+    jya_id = select_form.selected_employee.data
+
+    session["charge"]["jya_id"] = jya_id
+
+    charge = Mapper.from_session(session.get("charge"))
+    charge = charges_repository.add_charge(Mapper.to_entity(charge))
+    session.pop("charge")
+
+    flash("El cobro se creo correctamente!", "success")
+    return redirect(url_for("charges_bp.show_charge", charge_id=charge["id"]))
 
 
 @inject
@@ -220,4 +351,4 @@ def add_charge_employee(
 @inject
 def change_jya(charge_id: int,
                ):
-    pass
+    return ""

@@ -75,26 +75,6 @@ class ChargeManagementForm(FlaskForm):
 
     observations = StringField("Observaciones", validators=[Length(max=255), DataRequired()])
 
-    employee_info = StringField(
-        "Empleado",
-        validators=[DataRequired()],
-        render_kw={"readonly": True}  # Hacer que el campo sea de solo lectura
-    )
-    employee_id = HiddenField(
-        "ID del empleado",
-        validators=[DataRequired()],
-    )
-
-    jya_info = StringField(
-        "jya",
-        validators=[Optional()],
-        render_kw={"readonly": True}  # Hacer que el campo sea de solo lectura
-    )
-    jya_id = HiddenField(
-        "jya_id",
-        validators=[Optional()],
-    )
-
 
 class ChargeCreateForm(ChargeManagementForm):
     pass

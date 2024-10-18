@@ -1,10 +1,11 @@
 {% extends "layout.html" %}
 {% from "macros/modal_search.html" import modal_search_field %}
+{% from "macros/flash_message.html" import render_flash_messages %}
 
 {% block title %}Cobros - Editar cobro{% endblock %}
 
 {% block main_content %}
-
+{{ render_flash_messages(messages) }}
     <nav class="breadcrumb" aria-label="breadcrumbs">
   <ul>
     <li>
@@ -123,27 +124,6 @@
                     {% endif %}
                 </div>
 
-                {{ modal_search_field(
-                    form_field=form.jya_info,
-                    form_id_field=form.jya_id,
-                    button_id="openModalButtonJya",
-                    modal_id="jyaModal",
-                    search_id="searchJya",
-                    list_id="jyaList",
-                    modal_title="Seleccionar Jinete o Amazona",
-                    placeholder="No se seleccionó jinete o amazona"
-                ) }}
-
-                {{ modal_search_field(
-                    form_field=form.employee_info,
-                    form_id_field=form.employee_id,
-                    button_id="openModalButton",
-                    modal_id="employeeModal",
-                    search_id="searchEmployee",
-                    list_id="employeeList",
-                    modal_title="Seleccionar Empleado",
-                    placeholder="No se seleccionó empleado"
-                ) }}
 
                 <div class="field">
                     <div class="control">
@@ -157,6 +137,4 @@
 
 {% block extra_scripts %}
     {{ super() }}
-    <script src="{{ url_for('static', filename='js/modal-search.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/charges-modal-search.js') }}"></script>
 {% endblock %}

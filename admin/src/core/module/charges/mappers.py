@@ -35,12 +35,34 @@ class ChargeMapper:
             "observations": data.get("observations"),
             "payment_method": data.get("payment_method"),
             "date_of_charge": data.get("date_of_charge"),
-            "employee_id": data.get("employee_id"),
+            # "employee_id": data.get("employee_id"),
             # "jya_id": data.get("jya_id"),
         }
 
     @classmethod
     def to_form(cls, data: Dict) -> Dict:
+        return {
+            "amount": data.get("amount"),
+            "observations": data.get("observations"),
+            "payment_method": data.get("payment_method"),
+            "date_of_charge": data.get("date_of_charge"),
+            # "employee_id": data.get("employee_id"),
+            # "jya_id": data.get("jya_id"),
+        }
+
+    @classmethod
+    def from_session(cls, data: Dict):
+        return {
+            "amount": data.get("amount"),
+            "observations": data.get("observations"),
+            "payment_method": data.get("payment_method"),
+            "date_of_charge": data.get("date_of_charge"),
+            "employee_id": data.get("employee_id"),
+            # "jya_id": data.get("jya_id"),
+        }
+
+    @classmethod
+    def to_session(cls, data: Dict):
         return {
             "amount": data.get("amount"),
             "observations": data.get("observations"),
