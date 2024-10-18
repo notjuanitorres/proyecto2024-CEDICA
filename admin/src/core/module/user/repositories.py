@@ -8,6 +8,9 @@ from sqlalchemy import and_
 
 
 class AbstractUserRepository:
+    def __init__(self):
+        self.storage_path = "users/"
+
     @abstractmethod
     def add(self, user: User) -> User | None:
         pass
@@ -58,6 +61,7 @@ class AbstractUserRepository:
 
 class UserRepository(AbstractUserRepository):
     def __init__(self):
+        super().__init__()
         self.db = database
 
     def add(self, user: User):

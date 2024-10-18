@@ -6,7 +6,7 @@
     <section class="section">
         <div class="container">
             <h1 class="title">Editar usuario</h1>
-            <form method="POST">
+            <form method="POST" enctype="multipart/form-data">
                 {{ form.hidden_tag() }}
                 
                 <div class="field">
@@ -53,7 +53,15 @@
                         </label>
                     </div>
                 </div>
-
+                <div class="field">
+                    <label class="label">{{ form.profile_image.label }}</label>
+                    <div class="control">
+                        {{ form.profile_image(class="input", type="file") }}
+                    </div>
+                    {% if form.profile_image.errors %}
+                        <p class="help is-danger">{{ form.profile_image.errors[0] }}</p>
+                    {% endif %}
+                </div>
                 <div class="field">
                     <div class="control">
                         <button class="button is-primary" type="submit">Guardar cambios</button>

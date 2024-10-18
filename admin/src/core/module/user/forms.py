@@ -1,5 +1,7 @@
 from flask_wtf import FlaskForm
+from flask_wtf.file import FileAllowed, FileSize, FileRequired
 from wtforms import (
+    FileField,
     StringField,
     PasswordField,
     BooleanField,
@@ -17,11 +19,20 @@ def email_existence(form, field):
     validator = EmailExistence(message="Email en uso")
     validator(form, field)
 
+def max_file_size(size_in_mb: int):
+    BYTES_PER_MB = 1024 * 1024
+
+    size_in_bytes = size_in_mb * BYTES_PER_MB
+    return size_in_bytes
+
+allowed_filetypes = ["pdf", "jpg", "jpeg", "png", "webp"]
+formatted_filetypes = ", ".join(f".{ext}" for ext in allowed_filetypes[:-1]) + f" y .{allowed_filetypes[-1]}"
+filetypes_message = f"Formato no reconocido. Formato válido: {formatted_filetypes}"
 
 class UserManagementForm(FlaskForm):
+    
     def __init__(self, *args, **kwargs):
         super(UserManagementForm, self).__init__(*args, **kwargs)
-
         self.role_id.choices = self.get_role_choices()
 
     def get_role_choices(self):
@@ -83,7 +94,15 @@ class UserCreateForm(UserManagementForm):
 
 
 class UserEditForm(UserManagementForm):
-
+    profile_image = FileField('Profile Image', 
+            validators=[FileSize(
+                max_size=max_file_size(size_in_mb=5),
+                message="El archivo es demasiado grande",
+            ),
+            FileAllowed(
+                upload_set=allowed_filetypes,
+                message=filetypes_message,
+            )] )
     def __init__(self, *args, **kwargs):
         self.current_email = kwargs.pop("current_email", None)
         super(UserEditForm, self).__init__(*args, **kwargs)
@@ -143,3 +162,5 @@ class AccountSelectForm(FlaskForm):
 
     def set_selected_account(self, account_id):
         self.selected_account.data = account_id
+
+

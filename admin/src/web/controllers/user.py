@@ -8,6 +8,7 @@ from src.core.module.user import (
     UserMapper
 )
 from src.core.module.employee import AbstractEmployeeRepository
+from src.core.module.common import AbstractStorageServices
 from src.core.container import Container
 
 
@@ -105,15 +106,15 @@ def edit_user(
     user_id: int, user_repository: AbstractUserRepository = Provide[Container.user_repository]
 ):
     user = user_repository.get_user(user_id)
-
     if not user:
         return redirect(url_for("users_bp.get_users"))
 
     edit_form = UserEditForm(data=user, current_email=user["email"])
 
     if request.method in ["POST", "PUT"]:
+        print(dir(request.files["profile_image"]))
+        edit_form.profile_image.data = request.files["profile_image"]
         return update_user(user_id=user_id, edit_form=edit_form)
-
     return render_template("edit_user.html", form=edit_form)
 
 
@@ -122,10 +123,15 @@ def update_user(
     user_id: int,
     edit_form: UserEditForm,
     user_repository: AbstractUserRepository = Provide[Container.user_repository],
+    storage_service:AbstractStorageServices=Provide[Container.storage_services]
 ):
     if not edit_form.validate_on_submit():
         return render_template("edit_user.html", form=edit_form)
 
+    profile_image_url=None
+    if edit_form.profile_image:
+        file = edit_form.profile_image.data
+        profile_image_url = storage_service.upload_file(file, path=user_repository.storage_path)
     user_repository.update(
         user_id=user_id,
         data={
@@ -134,6 +140,7 @@ def update_user(
             "enabled": edit_form.enabled.data,
             "system_admin": edit_form.system_admin.data,
             "role_id": edit_form.role_id.data,
+            "profile_image_url": profile_image_url["filename"] if profile_image_url else None
         },
     )
 
