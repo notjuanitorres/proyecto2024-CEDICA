@@ -52,7 +52,7 @@ class HorseMapper:
                             "breed": horse.breed, "coat": horse.coat, "is_donation": horse.is_donation,
                             "admission_date": horse.admission_date, "assigned_facility": horse.assigned_facility,
                             "ja_type": horse.ja_type.value, "inserted_at": horse.inserted_at,
-                            "updated_at": horse.updated_at,
+                            "updated_at": horse.updated_at, "is_deleted": horse.is_deleted
                             }
 
         if documents:
@@ -72,4 +72,5 @@ class HorseMapper:
             "admission_date": data.get("admission_date"),
             "assigned_facility": data.get("assigned_facility"),
             "ja_type": data.get("ja_type"),
+            "is_deleted": data.get("is_deleted", False),
         }

@@ -130,7 +130,7 @@ class EquestrianRepository(AbstractEquestrianRepository):
         horse = Horse.query.filter_by(id=horse_id)
         if not horse:
             return False
-        horse.delete()
+        horse.update({"is_deleted": True})
         self.save()
         return True
 

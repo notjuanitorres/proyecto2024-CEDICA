@@ -26,6 +26,7 @@ class Horse(db.Model):
     assigned_facility = db.Column(db.String(100), nullable=False)
     ja_type = db.Column(db.Enum(JAEnum), nullable=False)
     files = db.relationship("HorseFile", back_populates="owner")
+    is_deleted = db.Column(db.Boolean, default=False)
 
     inserted_at = db.Column(db.DateTime, default=datetime.now)
     updated_at = db.Column(

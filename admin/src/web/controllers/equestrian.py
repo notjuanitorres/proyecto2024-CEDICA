@@ -40,6 +40,11 @@ def get_horses(equestrian_repository: AbstractEquestrianRepository = Provide[Con
         if search.filter_ja_type.data:
             search_query["filters"] = {"ja_type": search.filter_ja_type.data}
 
+    if search_query.get("filters"):
+        search_query["filters"]["is_deleted"] = False
+    else:
+        search_query["filters"] = {"is_deleted": False}
+
     paginated_horses = equestrian_repository.get_page(
         page=page, per_page=per_page, order_by=order_by, search_query=search_query
     )
