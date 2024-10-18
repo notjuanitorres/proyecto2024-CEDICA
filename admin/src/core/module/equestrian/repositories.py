@@ -155,21 +155,21 @@ class EquestrianRepository(AbstractEquestrianRepository):
         horse.files.append(document)
         self.save()
 
-    def __get_document(self, horse_id: int, document_id: int) -> HorseFile:
-        document = (
+    def __get_document_query(self, horse_id: int, document_id: int):
+        query = (
             self.db.session.query(HorseFile)
             .filter_by(horse_id=horse_id, id=document_id)
-            .first()
         )
-        return document
+        return query
 
     def get_document(self, horse_id: int, document_id: int) -> Dict:
-        return self.__get_document(horse_id, document_id).to_dict()
+        doc = self.__get_document_query(horse_id, document_id).first()
+        return doc.to_dict() if doc else {}
 
     def delete_document(self, horse_id: int, document_id):
         horse: Horse = self.__get_by_id(horse_id)
-        document = self.__get_document(horse.id, document_id)
-        horse.files.remove(document)
+        doc_query = self.__get_document_query(horse.id, document_id)
+        doc_query.delete()
         self.save()
 
     def get_file_page(

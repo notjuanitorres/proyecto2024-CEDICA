@@ -101,6 +101,7 @@ class AbstractEmployeeRepository:
     def is_employee_active(self, employee_id: int) -> bool:
         pass
 
+
 class EmployeeRepository(AbstractEmployeeRepository):
     def __init__(self):
         super().__init__()
@@ -124,19 +125,8 @@ class EmployeeRepository(AbstractEmployeeRepository):
     def __get_by_email(self, email: str) -> Employee | None:
         return self.db.session.query(Employee).filter(Employee.email == email).first()
 
-    def __get_by_email(self, email: str) -> Employee | None:
-        return self.db.session.query(Employee).filter(Employee.email == email).first()
-
     def __get_by_dni(self, dni: str) -> Employee | None:
         return self.db.session.query(Employee).filter(Employee.dni == dni).first()
-
-    def __get_document(self, employee_id: int, document_id: int) -> EmployeeFile:
-        document = (
-            self.db.session.query(EmployeeFile)
-            .filter_by(owner_id=employee_id, id=document_id)
-            .first()
-        )
-        return document
 
     def get_page(
         self,
@@ -154,11 +144,6 @@ class EmployeeRepository(AbstractEmployeeRepository):
 
         return query.paginate(
             page=page, per_page=per_page, error_out=False, max_per_page=max_per_page
-        )
-
-    def __get_by_id(self, employee_id: int) -> Employee:
-        return (
-            self.db.session.query(Employee).filter(Employee.id == employee_id).first()
         )
 
     def get_employee(self, employee_id, documents=True):
@@ -187,21 +172,21 @@ class EmployeeRepository(AbstractEmployeeRepository):
         employee.files.append(document)
         self.save()
 
-    def __get_document(self, employee_id: int, document_id: int) -> EmployeeFile:
-        document = (
+    def __get_document_query(self, employee_id: int, document_id: int):
+        query = (
             self.db.session.query(EmployeeFile)
             .filter_by(employee_id=employee_id, id=document_id)
-            .first()
         )
-        return document
+        return query
 
     def get_document(self, employee_id: int, document_id: int) -> Dict:
-        return self.__get_document(employee_id, document_id).to_dict()
+        doc = self.__get_document_query(employee_id, document_id).first()
+        return doc.to_dict() if doc else {}
 
     def delete_document(self, employee_id: int, document_id):
         employee: Employee = self.__get_by_id(employee_id)
-        document = self.__get_document(employee.id, document_id)
-        employee.files.remove(document)
+        doc_query = self.__get_document_query(employee.id, document_id)
+        doc_query.delete()
         self.save()
 
     def __get_query_trainers(self, query):
