@@ -91,7 +91,14 @@
     <td><span class="is-hidden-tablet has-text-weight-bold">ID: </span>{{ user.id }}</td>
     <td><span class="is-hidden-tablet has-text-weight-bold">Email: </span>{{ user.email }}</td>
     <td><span class="is-hidden-tablet has-text-weight-bold">Alias: </span>{{ user.alias }}</td>
-    <td><span class="is-hidden-tablet has-text-weight-bold">Habilitado: </span>{{ user.enabled | natural_boolean }}</td>
+    <td class="has-text-centered">
+      <p class="is-hidden-tablet has-text-weight-bold">Habilitado:</p>
+      {% if user.enabled %}
+        <span class="tag is-success">{{ user.enabled | natural_boolean }}</span>    
+      {% else %}
+      <span class="tag is-warning">{{ user.enabled | natural_boolean }}</span>    
+      {% endif %}
+    </td>
     <td><span class="is-hidden-tablet has-text-weight-bold">Rol: </span>{{ user.role_id | role }}</td>
     <td><span class="is-hidden-tablet has-text-weight-bold">Administrador del Sistema: </span>{{ user.system_admin | natural_boolean }}</td>
     <td><span class="is-hidden-tablet has-text-weight-bold">Creado: </span>{{ user.inserted_at | format_date }}</td>

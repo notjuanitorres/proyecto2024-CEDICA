@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, url_for, redirect, flash, jsonify
+from flask import Blueprint, render_template, request, url_for, redirect, flash
 from dependency_injector.wiring import inject, Provide
 from src.web.helpers.auth import check_user_permissions
 from src.core.container import Container
@@ -9,9 +9,15 @@ from src.core.module.employee import (
     EmployeeEditForm,
     EmployeeSearchForm,
     EmployeeAddDocumentsForm,
+    EmployeeAccountLinkForm,
     employment_enums as employment_information,
 )
 from src.core.module.common import AbstractStorageServices
+from src.core.module.user import (
+    AbstractUserRepository,
+    AccountSearchForm,
+    AccountSelectForm,
+)
 
 
 employee_bp = Blueprint(
@@ -28,11 +34,11 @@ employee_bp = Blueprint(
 def get_employees(
     employees: AbstractEmployeeRepository = Provide[Container.employee_repository],
 ):
-    page = request.args.get("page", type=int)
-    per_page = request.args.get("per_page", type=int)
+    page = request.args.get("page", type=int, default=1)
+    per_page = request.args.get("per_page", type=int, default=10)
     search = EmployeeSearchForm(request.args)
-    search_query = {}
     order_by = []
+    search_query = {}
 
     if search.submit_search.data and search.validate():
         order_by = [(search.order_by.data, search.order.data)]
@@ -40,9 +46,11 @@ def get_employees(
             "text": search.search_text.data,
             "field": search.search_by.data,
         }
+        search_query["filters"] = {}
         if search.filter_job_position.data:
-            search_query["filters"] = {"position": search.filter_job_position.data}
-
+            search_query["filters"]["position"] = search.filter_job_position.data
+        if search.filter_is_active.data:
+            search_query["filters"]["is_active"] = search.filter_is_active.data
     paginated_employees = employees.get_page(
         page=page, per_page=per_page, order_by=order_by, search_query=search_query
     )
@@ -71,6 +79,7 @@ def add_employee(
     create_form,
     employees: AbstractEmployeeRepository = Provide[Container.employee_repository],
     storage: AbstractStorageServices = Provide[Container.storage_services],
+    users: AbstractUserRepository = Provide[Container.user_repository],
 ):
     if not create_form.validate_on_submit():
         return render_template("./employee/create_employee.html", form=create_form)
@@ -93,19 +102,66 @@ def add_employee(
     created_employee = employees.add(
         employee=Mapper.to_entity(create_form.data, uploaded_documents),
     )
-    for doc in uploaded_documents:
-        for file in doc[1]:
-            if not file:
-                flash(f"No se pudo subir el archivo {doc[0]}", "danger")
-                return redirect(
-                    url_for("employee_bp.show_employee", employee_id=created_employee["id"])
-                )
+    employee_id = created_employee.get("id")
 
     flash("Miembro creado con exito!", "success")
 
+    account = users.can_be_linked(created_employee.get("email"))
+    if account:
+        return redirect(
+            url_for(
+                "employee_bp.confirm_link", employee_id=employee_id, account_id=account
+            )
+        )
+
+    if create_form.submit_another.data:
+        return redirect(url_for("employee_bp.create_employee"))
     return redirect(
         url_for("employee_bp.show_employee", employee_id=created_employee["id"])
     )
+
+
+@employee_bp.route(
+    "/confirmar-cuenta/<int:employee_id>/<int:account_id>", methods=["GET", "POST"]
+)
+@check_user_permissions(permissions_required=["equipo_show"])
+@inject
+def confirm_link(
+    employee_id: int,
+    account_id: int,
+    employees: AbstractEmployeeRepository = Provide[Container.employee_repository],
+    users: AbstractUserRepository = Provide[Container.user_repository],
+):
+    employee = employees.get_employee(employee_id)
+    account = users.get_user(account_id)
+    confirm_form = EmployeeAccountLinkForm()
+
+    if request.method == "GET" and request.referrer == url_for(
+        "employee_bp.create_employee", _external=True
+    ):
+        flash(
+            f"Hemos detectado una cuenta creada con el email {employee.get("email")}",
+            "info",
+        )
+        return render_template(
+            "./employee/confirm_link.html",
+            form=confirm_form,
+            employee=employee,
+            account=account,
+        )
+
+    if request.method == "POST" and request.referrer == url_for(
+        "employee_bp.confirm_link",
+        employee_id=employee_id,
+        account_id=account_id,
+        _external=True,
+    ):
+        link_is_accepted = request.form.get("positive_submit")
+        if link_is_accepted:
+            employees.link_account(employee_id, account_id)
+            flash("Cuenta sincronizada con éxito!")
+
+    return redirect(url_for("employee_bp.show_employee", employee_id=employee_id))
 
 
 @employee_bp.route("/<int:employee_id>")
@@ -114,12 +170,16 @@ def add_employee(
 def show_employee(
     employee_id: int,
     employees: AbstractEmployeeRepository = Provide[Container.employee_repository],
+    accounts: AbstractUserRepository = Provide[Container.user_repository],
 ):
     employee = employees.get_employee(employee_id=employee_id)
+    employee_account = accounts.get_user(employee.get("user_id"))
     if not employee:
         return redirect(url_for("employee_bp.get_employees"))
 
-    return render_template("./employee/employee.html", employee=employee)
+    return render_template(
+        "./employee/employee.html", employee=employee, account=employee_account
+    )
 
 
 @employee_bp.route("/editar/<int:employee_id>", methods=["GET", "POST"])
@@ -170,7 +230,11 @@ def update_employee(
 
 @employee_bp.route("/delete/", methods=["POST"])
 @inject
-def delete_employee(employee_repository: AbstractEmployeeRepository = Provide[Container.employee_repository]):
+def delete_employee(
+    employee_repository: AbstractEmployeeRepository = Provide[
+        Container.employee_repository
+    ],
+):
     employee_id = request.form["item_id"]
     deleted = employee_repository.delete_employee(employee_id)
     if not deleted:
@@ -179,6 +243,83 @@ def delete_employee(employee_repository: AbstractEmployeeRepository = Provide[Co
         flash("El empleado ha sido eliminado correctamente", "success")
 
     return redirect(url_for("employee_bp.get_employees"))
+
+
+@employee_bp.route("/sincronizar-cuenta/<int:employee_id>", methods=["GET", "POST"])
+@check_user_permissions(permissions_required=["equipo_update"])
+@inject
+def link_account(
+    employee_id: int,
+    page: int = 1,
+    employees: AbstractEmployeeRepository = Provide[Container.employee_repository],
+    users: AbstractUserRepository = Provide[Container.user_repository],
+):
+    page = request.args.get("page", type=int, default=1)
+    search_account = AccountSearchForm()
+    select_account = AccountSelectForm()
+    employee = employees.get_employee(employee_id)
+    accounts = users.get_active_users(page=page)
+
+    if request.method == "POST":
+        return set_employee_account(employee, search_account, select_account, accounts)
+
+    if search_account.submit_search.data and search_account.validate():
+        accounts = users.get_active_users(
+            page=page, search=search_account.search_text.data
+        )
+
+    return render_template(
+        "./employee/update_account.html",
+        employee=employee,
+        accounts=accounts,
+        search_form=search_account,
+        select_form=select_account,
+    )
+
+
+@inject
+def set_employee_account(
+    employee,
+    search_form,
+    select_form,
+    active_accounts,
+    employees: AbstractEmployeeRepository = Provide[Container.employee_repository],
+):
+    if not (select_form.submit_account.data and select_form.validate()):
+        return render_template(
+            "./employee/update_account.html",
+            employee=employee,
+            accounts=active_accounts,
+            search_form=search_form,
+            select_form=select_form,
+        )
+    employee_id = employee.get("id")
+    account_id = select_form.selected_account.data
+
+    employees.link_account(employee_id, account_id)
+
+    flash(
+        f"Se ha asociado correctamente a {employee.get("name")} con su cuenta",
+        "success",
+    )
+    return redirect(url_for("employee_bp.show_employee", employee_id=employee_id))
+
+
+@employee_bp.route("/quitar-cuenta/<int:employee_id>", methods=["GET", "POST"])
+@check_user_permissions(permissions_required=["equipo_update"])
+@inject
+def unlink_account(
+    employee_id: int,
+    employees: AbstractEmployeeRepository = Provide[Container.employee_repository],
+):
+    employee = employees.get_employee(employee_id)
+    employees.link_account(employee_id, None)
+
+    flash(
+        f"Se ha desasociado correctamente a {employee.get("name")} de su cuenta",
+        "warning",
+    )
+    return redirect(url_for("employee_bp.show_employee", employee_id=employee_id))
 
 
 @employee_bp.route("/editar/<int:employee_id>/documentos/", methods=["GET", "POST"])
@@ -191,15 +332,10 @@ def edit_documents(
 ):
     add_document_form = EmployeeAddDocumentsForm()
     employee = employees.get_employee(employee_id=employee_id)
-
-    documents = []
-    for file in employee.get("files"):
-        documents.append({"file": file, "url": storage.presigned_download_url(file.get("filename"))})
-        if not documents[-1].get("url"):
-            flash(f"No se pudieron obtener los documentos", "danger")
-            if request.referrer:
-                return redirect(request.referrer)
-            return redirect(url_for("employee_bp.edit_employee", employee_id=employee_id))
+    documents = [
+        {"file": file, "url": storage.presigned_download_url(file.get("filename"))}
+        for file in employee.get("files")
+    ]
 
     if request.method == "POST":
         return update_documents(add_document_form, employee, documents)
@@ -231,18 +367,16 @@ def update_documents(
     uploaded_document = storage.upload_file(
         file=add_form.file.data, path=employees.storage_path
     )
-
-    if not uploaded_document:
-        flash("No se pudo subir el archivo, inténtelo nuevamente", "danger")
-        return redirect(url_for("employee_bp.edit_documents", employee_id=employee_id))
-
     employees.add_document(
         employee_id=employee_id,
         document=Mapper.create_file(
             document_type=add_form.tag.data, file_information=uploaded_document
         ),
     )
-    flash(f"El documento {uploaded_document.get("original_filename")} se ha subido exitosamente", "success")
+    flash(
+        f"El documento {uploaded_document.get("original_filename")} se ha subido exitosamente",
+        "success",
+    )
     return redirect(url_for("employee_bp.edit_documents", employee_id=employee_id))
 
 
@@ -256,36 +390,30 @@ def delete_document(
     document_id = request.form["item_id"]
     document = employees.get_document(employee_id, document_id)
 
-    deleted_in_bucket = storage.delete_file(document.get("filename"))
-    if not deleted_in_bucket:
-        flash("No se ha podido eliminar el documento, inténtelo nuevamente", "danger")
-        return redirect(url_for("employee_bp.edit_documents", employee_id=employee_id))
-
+    storage.delete_file(document.get("filename"))
     employees.delete_document(employee_id, document_id)
 
-    flash(f"El documento {document.get("original_filename")} ha sido eliminado correctamente", "success")
+    flash(
+        f"El documento {document.get("original_filename")} ha sido eliminado correctamente",
+        "success",
+    )
     return redirect(url_for("employee_bp.edit_documents", employee_id=employee_id))
 
 
-@employee_bp.route("/api", methods=["GET"])
-@check_user_permissions(permissions_required=["equipo_index"])
+@employee_bp.route("/toggle-activation/<int:employee_id>")
 @inject
-def api_get_employees(
+def toggle_activation(
+    employee_id: int,
     employees: AbstractEmployeeRepository = Provide[Container.employee_repository],
+    users: AbstractUserRepository = Provide[Container.user_repository],
 ):
-    search_query = request.args.get("search", type=str, default="")
-    search_query = search_query.strip().lower()
-
-    if not search_query:
-        return jsonify([])
-
-    search_results = employees.search_by_email(search_query)
-
-    return jsonify([
-        {
-            "id": employee.id,
-            "name": employee.fullname,
-            "email": employee.email,
-        }
-        for employee in search_results
-    ])
+    employee = employees.get_employee(employee_id)
+    account = employee.get("user_id")
+    is_active = employees.toggled_activation(employee_id)
+    if account:
+        if is_active and not users.is_user_enabled(account):
+            users.toggle_activation(account)
+        elif not is_active and users.is_user_enabled(account):
+            users.toggle_activation(account)
+    flash("La operacion fue un exito", "success")
+    return redirect(request.referrer or url_for("index_bp.home"))

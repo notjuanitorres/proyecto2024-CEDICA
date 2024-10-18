@@ -4,7 +4,7 @@
 
 {% block breadcrumb_items %}
     <li>
-        <a href="">
+        <a href="{{ url_for("employee_bp.get_employees") }}">
       <span class="icon is-small">
         <i class="fas fa-users" aria-hidden="true"></i>
       </span>
@@ -38,6 +38,14 @@
         </div>
       </div>
     </div>
+    <div class="field">
+      <label class="label">Estado</label>
+      <div class="control">
+          <div class="select">
+              {{ search_form.filter_is_active() }}
+          </div>
+      </div>
+  </div>
 {% endblock %}
 
 
@@ -88,8 +96,13 @@
             </td>
             <td><span class="is-hidden-tablet has-text-weight-bold">Condicion: </span>{{ employee.job_condition.value }}
             </td>
-            <td><span
-                    class="is-hidden-tablet has-text-weight-bold">Activo: </span>{{ employee.active | natural_boolean }}
+            <td>
+              <p class="is-hidden-tablet has-text-weight-bold">Activo:</p>
+              {% if employee.is_active %}
+                <span class="tag is-success">{{ employee.is_active | natural_boolean }}</span>    
+              {% else %}
+                <span class="tag is-warning">{{ employee.is_active | natural_boolean }}</span>    
+              {% endif %}
             </td>
             <td><span
                     class="is-hidden-tablet has-text-weight-bold">Inicio: </span>{{ employee.start_date | format_date('%d/%m/%Y') }}

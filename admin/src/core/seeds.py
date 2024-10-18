@@ -1,6 +1,8 @@
 from src.core.module.charges.models import Charge, PaymentMethodEnum
 from src.core.database import db
-from src.core.module.accounts.models import User, Role, Permission, RolePermission, PermissionEnum, RoleEnum
+from src.core.module.user.models import User
+from src.core.module.auth.models import  Role, Permission, RolePermission
+from src.core.module.auth.data import PermissionEnum, RoleEnum
 from src.core.module.employee.models import Employee
 from src.core.module.employee.data import (
     JobPositionEnum as PositionEnum,

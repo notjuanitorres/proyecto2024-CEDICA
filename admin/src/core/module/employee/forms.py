@@ -67,7 +67,7 @@ class EmploymentInformationForm(FlaskForm):
         default=datetime.today,
     )
     end_date = DateField("Finalización de actividades", validators=[Optional()])
-    is_active = BooleanField("Activo en la organización")
+    is_active = BooleanField("Activo en la organización", default=True)
 
 
 def max_file_size(size_in_mb: int):
@@ -185,6 +185,7 @@ class EmployeeCreateForm(EmployeeManagementForm):
             email_existence,
         ],
     )
+    submit_another = SubmitField("Agregar otro")
 
 
 class EmployeeEditForm(EmployeeManagementForm):
@@ -233,6 +234,15 @@ class EmployeeSearchForm(FlaskForm):
         choices=[("", "Ver Todas")] + [(e.name, e.value) for e in PositionEnum],
         validate_choice=True,
     )
+    filter_is_active = SelectField(
+        choices=[
+            ("", "Ver Todos"),
+            ("true", "Activo"),
+            ("false", "Inactivo"),
+        ],
+        validate_choice=True,
+    )
+
     order_by = SelectField(
         choices=[
             ("id", "ID"),
@@ -247,3 +257,7 @@ class EmployeeSearchForm(FlaskForm):
         choices=[("asc", "Ascendente"), ("desc", "Descendente")], validate_choice=True
     )
     submit_search = SubmitField("Buscar")
+
+
+class EmployeeAccountLinkForm(FlaskForm):
+    positive_submit = SubmitField("Asociar")

@@ -1,11 +1,16 @@
-from random import choices
-
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SelectField, SubmitField
+from wtforms import (
+    StringField,
+    PasswordField,
+    BooleanField,
+    SelectField,
+    SubmitField,
+    HiddenField,
+)
 from wtforms.validators import DataRequired, Email, Length, EqualTo, Optional
+from src.core.module.common.validators import IsNumber
+from src.core.module.auth.data import RoleEnum
 from .validators import EmailExistence
-
-from src.core.module.accounts.models import RoleEnum
 
 
 def email_existence(form, field):
@@ -29,7 +34,7 @@ class UserManagementForm(FlaskForm):
         from src.core.container import Container
 
         container = Container()
-        return container.accounts_services()
+        return container.auth_services()
 
     role_id = SelectField(
         "Rol",
@@ -43,7 +48,7 @@ class UserManagementForm(FlaskForm):
             DataRequired(),
             Email(message="Email inválido"),
             email_existence,
-            Length(max=100)
+            Length(max=100),
         ],
     )
     alias = StringField("Alias", validators=[DataRequired(), Length(min=3, max=15)])
@@ -54,6 +59,7 @@ class UserManagementForm(FlaskForm):
 
 
 class UserCreateForm(UserManagementForm):
+    current_email = None
     password = PasswordField(
         "Contraseña",
         validators=[
@@ -72,74 +78,15 @@ class UserCreateForm(UserManagementForm):
         ],
     )
 
-    current_email = None
+    submit_another = SubmitField("Agregar otro")
+
 
 
 class UserEditForm(UserManagementForm):
 
     def __init__(self, *args, **kwargs):
-        self.current_email = kwargs.pop('current_email', None)
+        self.current_email = kwargs.pop("current_email", None)
         super(UserEditForm, self).__init__(*args, **kwargs)
-
-
-class UserLoginForm(FlaskForm):
-    email = StringField(
-        "Email",
-        validators=[
-            DataRequired(),
-            Email(message="Email inválido"),
-            Length(max=100)],
-    )
-
-    password = PasswordField(
-        "Contraseña",
-        validators=[
-            DataRequired(),
-            Length(
-                min=8, max=255, message="La contraseña debe tener más de 8 caracteres"
-            ),
-        ],
-    )
-
-
-class UserRegisterForm(FlaskForm):
-    current_email = None
-
-    email = StringField(
-        "Email",
-        validators=[
-            DataRequired(),
-            Email(message="Email inválido"),
-            email_existence,
-            Length(max=100),
-        ],
-    )
-
-    password = PasswordField(
-        "Contraseña",
-        validators=[
-            DataRequired(),
-            Length(
-                min=8, max=255, message="La contraseña debe tener más de 8 caracteres"
-            ),
-        ],
-    )
-
-    confirm_password = PasswordField(
-        "Confirmar contraseña",
-        validators=[
-            DataRequired(),
-            EqualTo("password", message="Las contraseñas deben coincidir"),
-        ],
-    )
-
-    alias = StringField(
-        "Alias",
-        validators=[
-            DataRequired(),
-            Length(min=3, max=15)
-        ]
-    )
 
 
 class UserSearchForm(FlaskForm):
@@ -164,8 +111,8 @@ class UserSearchForm(FlaskForm):
     )
 
     filter_role_id = SelectField(
-        choices=[('', 'Todos')] +
-                [(str(index + 1), role.value) for index, role in enumerate(RoleEnum)],
+        choices=[("", "Todos")]
+        + [(str(index + 1), role.value) for index, role in enumerate(RoleEnum)],
     )
 
     order_by = SelectField(
@@ -179,3 +126,20 @@ class UserSearchForm(FlaskForm):
         choices=[("asc", "Ascendente"), ("desc", "Descendente")], validate_choice=True
     )
     submit_search = SubmitField("Buscar")
+
+
+class AccountSearchForm(FlaskForm):
+    search_text = StringField(
+        "Buscar por nombre o email", validators=[Length(message="Debe ingresar un texto", min=1, max=50)]
+    )
+    submit_search = SubmitField("Buscar")
+
+class AccountSelectForm(FlaskForm):
+    selected_account = HiddenField(
+        "Cuenta seleccionada",
+        validators=[DataRequired("Se debe seleccionar una cuenta"), IsNumber()],
+    )
+    submit_account = SubmitField("Asociar")
+
+    def set_selected_account(self, account_id):
+        self.selected_account.data = account_id

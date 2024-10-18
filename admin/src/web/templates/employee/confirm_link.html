@@ -1,0 +1,53 @@
+{% extends 'base_show.html' %}
+
+{% block title %}Confirmar cuenta - CEDICA{% endblock %}
+
+{% block card_title %}
+Asociar cuenta de: {{ employee.name + " " + employee.lastname }}
+{% endblock %}
+
+{% block card_content %}
+<p class="has-text-centered pb-4">¿Desea asociar la cuenta al miembro recién creado?</p>
+<div class="container is-flex-tablet is-justify-content-space-evenly	">
+    <div class="level mb-0"><i class="fa-solid fa-user is-size-1"></i></div>
+    <article class="media">
+      <div class="media-content">
+        <div class="content">
+          <h3 class="m-2 has-text-centered">Usuario</h3>
+          <small>{{ account.inserted_at | format_date }}</small>
+          <p class="mt-2">
+            <strong>Alias: </strong>{{ account.alias }}
+            <br>
+            <strong>Email: </strong>{{ account.email }}
+            <br>
+          </p>
+        </div>
+      </div>
+    </article>
+    <div class="level mb-0"><i class="fa-solid fa-users-rectangle is-size-1"></i></div>
+    <article class="media">
+      <div class="media-content">
+        <div class="content">
+          <h3 class="m-2 has-text-centered">Miembro</h3>
+          <small>{{ employee.inserted_at | format_date }}</small>
+          <p class="mt-2">
+            <strong>Nombre: </strong>{{ employee.name }} {{employee.lastname}}
+            <br>
+            <strong>Email: </strong>{{ employee.email }}
+            <br>
+          </p>
+        </div>
+      </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block card_actions %}
+<a href="{{ url_for("employee_bp.show_employee", employee_id=employee.id ) }}" 
+  class="card-footer-item button is-fullwidth is-link mr-2">
+  Saltar</a>
+<form method="POST" class="card-footer-item">
+  {{ form.hidden_tag() }}
+  {{ form.positive_submit(class="button is-fullwidth is-primary") }}
+</form>
+{% endblock %}
