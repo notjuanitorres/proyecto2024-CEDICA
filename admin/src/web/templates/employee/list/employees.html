@@ -17,6 +17,24 @@
     Equipo
 {% endblock %}
 
+{% block tabs %}
+<div class="tabs is-medium is-toggle is-toggle-rounded is-centered">
+  <ul>
+    <li class="is-active">
+      <a href="{{ url_for("employee_bp.get_employees")}}">
+        <span class="icon is-small"><i class="fa-solid fa-users"></i></span>
+        <span>Todos</span>
+      </a>
+    </li>
+    <li>
+      <a href="{{ url_for("employee_bp.get_deleted_employees")}}">
+        <span class="icon is-small"><i class="fa-solid fa-box-archive"></i></span>
+        <span>Archivo</span>
+      </a>
+    </li>
+  </ul>
+</div>
+{% endblock %}
 
 {% block create_button %}
     <a class="button is-primary level-item" href="{{ url_for("employee_bp.create_employee") }}">
@@ -55,11 +73,24 @@
     <th>Email</th>
     <th>Nombre</th>
     <th>Apellido</th>
-    <th>Profesion</th>
+    <th>Puesto</th>
     <th>Condicion</th>
     <th>Activo</th>
     <th>Inicio</th>
     <th></th>
+{% endblock %}
+
+{% block table_footer %}
+  <th></th>
+  <th>ID</th>
+  <th>Email</th>
+  <th>Nombre</th>
+  <th>Apellido</th>
+  <th>Puesto</th>
+  <th>Condicion</th>
+  <th>Activo</th>
+  <th>Inicio</th>
+  <th></th>
 {% endblock %}
 
 {% block top_pagination %}
@@ -78,7 +109,7 @@
                 endpoints={
                   'show':'employee_bp.show_employee',
                   'edit': 'employee_bp.edit_employee',
-                  'delete':''
+                  'archive':'employee_bp.archive_employee'
                 },
                 permission_to_show="equipo_show",
                 permission_to_edit="equipo_update",
@@ -92,7 +123,7 @@
             <td><span class="is-hidden-tablet has-text-weight-bold">Email: </span>{{ employee.email }}</td>
             <td><span class="is-hidden-tablet has-text-weight-bold">Nombre: </span>{{ employee.name }}</td>
             <td><span class="is-hidden-tablet has-text-weight-bold">Apellido: </span>{{ employee.lastname }}</td>
-            <td><span class="is-hidden-tablet has-text-weight-bold">Profesion: </span>{{ employee.profession.value }}
+            <td><span class="is-hidden-tablet has-text-weight-bold">Profesion: </span>{{ employee.position.value }}
             </td>
             <td><span class="is-hidden-tablet has-text-weight-bold">Condicion: </span>{{ employee.job_condition.value }}
             </td>
@@ -110,18 +141,14 @@
             <td class="is-hidden-tablet is-flex">
                 <a href="{{ url_for('employee_bp.show_employee', employee_id=employee.id) }}"
                    class="button  is-flex-grow-1 ">
-        <span class=" is-bold ">
-            Ver en detalle
-            <i class="fa-regular fa-eye ml-2"></i>
-        </span>
+                  <span class=" is-bold ">
+                      Ver en detalle
+                      <i class="fa-regular fa-eye ml-2"></i>
+                  </span>
                 </a>
             </td>
         </tr>
     {% endfor %}
-{% endblock %}
-
-{% block table_footer %}
-
 {% endblock %}
 
 {% block bottom_pagination %}
@@ -131,10 +158,10 @@
 {% block delete_modal %}
   {{
     render_delete_modal(
-      endpoint="employee_bp.delete_employee",
-      title="Eliminar",
-      msg="¿Está seguro de que desea eliminar al empleado?",
-      msg_sub="Luego de confirmar, no se podrán revertir los cambios"
+      endpoint=url_for("employee_bp.archive_employee"),
+      title="Archivar",
+      msg="¿Está seguro de que desea archivar al empleado?",
+      delete_text="Archivar"
     )
   }}
 {% endblock %}

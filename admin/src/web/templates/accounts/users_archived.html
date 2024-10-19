@@ -20,14 +20,14 @@
 {% block tabs %}
 <div class="tabs is-medium is-toggle is-toggle-rounded is-centered">
   <ul>
-    <li class="is-active">
+    <li>
       <a href="{{ url_for("users_bp.get_users")}}">
         <span class="icon is-small"><i class="fa-solid fa-users"></i></span>
         <span>Activos</span>
       </a>
     </li>
-    <li>
-      <a href="{{ url_for("users_bp.get_deleted_users" )}}">
+    <li class="is-active">
+      <a href="{{ url_for("users_bp.get_deleted_users")}}">
         <span class="icon is-small"><i class="fa-solid fa-box-archive"></i></span>
         <span>Archivo</span>
       </a>
@@ -36,15 +36,8 @@
 </div>
 {% endblock %}
 
-{% block create_button %}
-  <a class="button is-primary level-item" href="{{ url_for('users_bp.create_user')}}">
-    Agregar usuario
-    <i class="fa-solid fa-user-plus ml-2 is-size-5"></i>
-  </a>
-{% endblock %}
-
-{% block form_action %}{{ url_for("users_bp.get_users") }}{% endblock %}
-{% block clear_url %}{{ url_for("users_bp.get_users") }}{% endblock %}
+{% block form_action %}{{ url_for("users_bp.get_deleted_users") }}{% endblock %}
+{% block clear_url %}{{ url_for("users_bp.get_deleted_users") }}{% endblock %}
 
 {% block aditional_filters %}
     <div class="field">
@@ -52,15 +45,6 @@
         <div class="control">
             <div class="select">
                 {{ search_form.filter_role_id() }}
-            </div>
-        </div>
-    </div>
-
-    <div class="field">
-        <label class="label">Habilitado</label>
-        <div class="control">
-            <div class="select">
-                {{ search_form.filter_enabled() }}
             </div>
         </div>
     </div>
@@ -73,14 +57,26 @@
   <th>Alias</th>
   <th>Habilitado</th>
   <th>Rol</th>
-  <th>Admin</th>
   <th>Ingreso</th>
-  <th>Actualizado</th>
+  <th>Archivado</th>
+  <th></th>
+{% endblock %}
+
+{% block table_footer %}
+  <th></th>
+  <th>ID</th>
+  <th>Email</th>
+  <th>Alias</th>
+  <th>Habilitado</th>
+  <th>Rol</th>
+  <th>Ingreso</th>
+  <th>Archivado</th>
   <th></th>
 {% endblock %}
 
 {% block top_pagination %}
   {{ render_pagination(users, 'users_bp.get_users') }}
+
 {% endblock %}
 
 {% block table_body %}
@@ -94,8 +90,6 @@
         to_left=true,
         endpoints={
           'show':'users_bp.show_user',
-          'edit': 'users_bp.edit_user',
-          'archive': 'users_bp.archive_user'
         },
         permission_to_show="users_show",
         permission_to_edit="users_update",
@@ -104,7 +98,6 @@
         is_admin=is_admin
         )
       }}
-{# There are no permissions related to users but since this page is only accessed by the sysadmin they'll always be able to see it #}
     </td>
     <td><span class="is-hidden-tablet has-text-weight-bold">ID: </span>{{ user.id }}</td>
     <td><span class="is-hidden-tablet has-text-weight-bold">Email: </span>{{ user.email }}</td>
@@ -118,12 +111,11 @@
       {% endif %}
     </td>
     <td><span class="is-hidden-tablet has-text-weight-bold">Rol: </span>{{ user.role_id | role }}</td>
-    <td><span class="is-hidden-tablet has-text-weight-bold">Administrador del Sistema: </span>{{ user.system_admin | natural_boolean }}</td>
     <td><span class="is-hidden-tablet has-text-weight-bold">Creado: </span>{{ user.inserted_at | format_date }}</td>
-    <td><span class="is-hidden-tablet has-text-weight-bold">Actualizado: </span>{{ user.updated_at | format_date }}</td>
+    <td><span class="is-hidden-tablet has-text-weight-bold">Eliminado: </span>{{ user.updated_at | format_date }}</td>
     
     <td class="is-hidden-tablet is-flex">
-      <a href="{{ url_for('users_bp.show_user', user_id=user.id)}}" class="button  is-flex-grow-1 ">
+      <a href="{{ url_for('users_bp.show_user', user_id=user.id)}}" class="button is-flex-grow-1 ">
         <span class=" is-bold ">
             Ver usuario
             <i class="fa-regular fa-eye ml-2"></i>
@@ -134,30 +126,17 @@
   {% endfor %}
 {% endblock %}
 
-{% block table_footer %}
-  <th></th>
-  <th>ID</th>
-  <th>Email</th>
-  <th>Alias</th>
-  <th>Habilitado</th>
-  <th>Rol</th>
-  <th>Admin</th>
-  <th>Ingreso</th>
-  <th>Actualizado</th>
-  <th></th>
-{% endblock %}
-
 {% block bottom_pagination %}
-  {{ render_pagination(users, 'users_bp.get_users') }}
+  {{ render_pagination(users, 'users_bp.get_deleted_users') }}
 {% endblock %}
 
 {% block delete_modal %}
   {{
     render_delete_modal(
-      endpoint=url_for("users_bp.archive_user"),
-      title="Archivar",
-      msg="¿Está seguro de que desea archivar al usuario?",
-      delete_text="Archivar"
+      endpoint=url_for("users_bp.delete_user"),
+      title="Eliminar",
+      msg="¿Está seguro de que desea eliminar al usuario?",
+      msg_sub="Luego de confirmar, no se podrán revertir los cambios"
     )
   }}
 {% endblock %}

@@ -1,0 +1,140 @@
+{% extends "base_list.html" %}
+
+{% block title %}Usuarios - CEDICA{% endblock %}
+
+{% block breadcrumb_items %}
+  <li>
+    <a href="">
+      <span class="icon is-small">
+        <i class="fas fa-users" aria-hidden="true"></i>
+      </span>
+      <span>Equipo</span>
+    </a>
+  </li>
+{% endblock %}
+
+{% block inner_title %}  
+  Equipo
+{% endblock %}
+
+{% block tabs %}
+<div class="tabs is-medium is-toggle is-toggle-rounded is-centered">
+  <ul>
+    <li>
+      <a href="{{ url_for("employee_bp.get_employees")}}">
+        <span class="icon is-small"><i class="fa-solid fa-users"></i></span>
+        <span>Todos</span>
+      </a>
+    </li>
+    <li class="is-active">
+      <a href="{{ url_for("employee_bp.get_deleted_employees")}}">
+        <span class="icon is-small"><i class="fa-solid fa-box-archive"></i></span>
+        <span>Archivo</span>
+      </a>
+    </li>
+  </ul>
+</div>
+{% endblock %}
+
+{% block form_action %}{{ url_for("employee_bp.get_deleted_employees") }}{% endblock %}
+{% block clear_url %}{{ url_for("employee_bp.get_deleted_employees") }}{% endblock %}
+
+{% block aditional_filters %}
+  <div class="field">
+    <label class="label">{{ search_form.filter_job_position.label}}</label>
+    <div class="control">
+      <div class="select">
+        {{ search_form.filter_job_position }}
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block table_header %}
+  <th></th>
+  <th>ID</th>
+  <th>Email</th>
+  <th>Nombre</th>
+  <th>Apellido</th>
+  <th>Puesto</th>
+  <th>Inicio</th>
+  <th>Eliminado</th>
+  <th></th>
+{% endblock %}
+
+{% block table_footer %}
+  <th></th>
+  <th>ID</th>
+  <th>Email</th>
+  <th>Nombre</th>
+  <th>Apellido</th>
+  <th>Puesto</th>
+  <th>Inicio</th>
+  <th>Eliminado</th>
+  <th></th>
+{% endblock %}
+
+{% block top_pagination %}
+  {{ render_pagination(employees, 'employee_bp.get_employees') }}
+{% endblock %}
+
+{% block table_body %}
+  {% for employee in employees %}
+  <tr class="">
+    <td class="is-hidden-mobile">
+      {{
+        render_actions_menu(
+        field="employee_id",
+        value=employee.id,
+        to_left=true,
+        endpoints={
+          'show':'employee_bp.show_employee',
+        },
+        permission_to_show="equipo_show",
+        permission_to_edit="equipo_update",
+        permission_to_delete="equipo_destroy",
+        user_permissions=permissions,
+        is_admin=is_admin
+        )
+      }}
+    </td>
+    <td><span class="is-hidden-tablet has-text-weight-bold">ID: </span>{{ employee.id }}</td>
+    <td><span class="is-hidden-tablet has-text-weight-bold">Email: </span>{{ employee.email }}</td>
+    <td><span class="is-hidden-tablet has-text-weight-bold">Nombre: </span>{{ employee.name }}</td>
+    <td><span class="is-hidden-tablet has-text-weight-bold">Apellido: </span>{{ employee.lastname }}</td>
+    <td><span class="is-hidden-tablet has-text-weight-bold">Profesion: </span>{{ employee.position.value }}
+    </td>
+    <td>
+      <span class="is-hidden-tablet has-text-weight-bold">
+        Inicio: 
+      </span>
+      {{ employee.start_date | format_date('%d/%m/%Y') }}
+    </td>
+    <td><span class="is-hidden-tablet has-text-weight-bold">Eliminado: </span>{{ employee.updated_at }}
+    <td class="is-hidden-tablet is-flex">
+        <a href="{{ url_for('employee_bp.show_employee', employee_id=employee.id) }}"
+           class="button  is-flex-grow-1 ">
+          <span class=" is-bold ">
+              Ver en detalle
+              <i class="fa-regular fa-eye ml-2"></i>
+          </span>
+        </a>
+    </td>
+  </tr>
+  {% endfor %}
+{% endblock %}
+
+{% block bottom_pagination %}
+  {{ render_pagination(employees, 'employee_bp.get_employees') }}
+{% endblock %}
+
+{% block delete_modal %}
+  {{
+    render_delete_modal(
+      endpoint=url_for("employee_bp.delete_employee"),
+      title="Eliminar",
+      msg="¿Está seguro de que desea eliminar al miembro del equipo?",
+      msg_sub="Luego de confirmar, no se podrán revertir los cambios"
+    )
+  }}
+{% endblock %}
