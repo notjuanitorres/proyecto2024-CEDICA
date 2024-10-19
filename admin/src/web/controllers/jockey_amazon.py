@@ -275,22 +275,10 @@ def edit_documents(
         jockey_id=jockey_id, page=page, per_page=per_page, order_by=order_by, search_query=search_query
     )
 
-    documents = []
-    for file in paginated_files:
-        file = file.to_dict()
-        if not file.get("is_link"):
-            documents.append({"file": file, "download_url": storage.presigned_download_url(file.get("path"))})
-        else:
-            documents.append({"file": file, "download_url": None})
-
-        if not documents[-1].get("file").get("is_link") and not documents[-1].get("download_url"):
-            flash(f"Algunos archivos no se pudieron obtener", "warning")
-            break
-
     return render_template(
         "./jockey_amazon/update_documents.html",
         jockey=jockey,
-        documents=documents,
+        files=paginated_files,
         add_form=add_document_form,
         search_form=search_document_form,
         paginated_files=paginated_files,

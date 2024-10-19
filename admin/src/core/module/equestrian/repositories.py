@@ -500,4 +500,10 @@ class EquestrianRepository(AbstractEquestrianRepository):
         return True
 
     def get_horses(self):
+        """
+        Get all horses.
+
+        Returns:
+            List: The list of horses.
+        """
         return Horse.query.all()
