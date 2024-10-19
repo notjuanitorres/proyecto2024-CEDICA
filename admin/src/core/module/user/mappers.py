@@ -1,6 +1,7 @@
 from typing import Dict
 from src.core.bcrypt import bcrypt
 from .models import User
+from src.core.module.common import StorageServices
 
 class UserMapper:
     @classmethod
@@ -20,6 +21,7 @@ class UserMapper:
         )
     @classmethod
     def from_entity(self, user: User) -> "Dict":
+        storage= StorageServices()
         return {
             "id": user.id,
             "email": user.email,
@@ -27,6 +29,7 @@ class UserMapper:
             "enabled": user.enabled,
             "system_admin": user.system_admin,
             "role_id": user.role_id,
+            "profile_image_url": storage.get_profile_image_url(filename=user.profile_image_url) if user.profile_image_url else None,
             "inserted_at": user.inserted_at,
             "updated_at": user.updated_at,
             "assigned_to": user.employee[0].id if user.employee else None

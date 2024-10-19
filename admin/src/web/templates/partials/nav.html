@@ -87,11 +87,15 @@
                         <div class="dropdown-trigger">
                             <button class="button is-ghost" aria-label="Opciones de usuario" aria-haspopup="true"
                                 aria-controls="dropdown-menu">
+                                {% if profile_image_url  %}
+                                <figure class="image">
+                                    <img src="{{ profile_image_url }}" alt="Profile Image" class=" is-rounded">
+                                </figure>
+                                {% else %}
                                 <svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-                                    <path
-                                        d="M35.75,28c2.28,0,4.14,1.79,4.25,4.04v.21v.75c0,3.76-1.94,6.57-4.92,8.38C32.15,43.16,28.21,44,24,44s-8.15-.84-11.08-2.62c-2.89-1.76-4.8-4.46-4.92-8.06v-.75v-.21c0-2.28,1.79-4.14,4.04-4.25h23.5zM24,4c5.52,0,10,4.48,10,10s-4.48,10-10,10-10-4.48-10-10S18.48,4,24,4z"
-                                        fill="currentColor" />
+                                    <path d="M35.75,28c2.28,0,4.14,1.79,4.25,4.04v.21v.75c0,3.76-1.94,6.57-4.92,8.38C32.15,43.16,28.21,44,24,44s-8.15-.84-11.08-2.62c-2.89-1.76-4.8-4.46-4.92-8.06v-.75v-.21c0-2.28,1.79-4.14,4.04-4.25h23.5zM24,4c5.52,0,10,4.48,10,10s-4.48,10-10,10-10-4.48-10-10S18.48,4,24,4z" fill="currentColor"></path>
                                 </svg>
+                                {% endif %}
                             </button>
                         </div>
                         <div class="dropdown-menu" id="dropdown-menu" role="menu">

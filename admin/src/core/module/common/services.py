@@ -99,6 +99,16 @@ class StorageServices(AbstractStorageServices):
             response.release_conn()
         return response.data
 
+    def get_profile_image_url(self, filename: str):
+        response: HTTPResponse
+        
+        response = self.storage.presigned_get_object(
+            self.bucket_name,
+            filename,
+        )
+        print(filename)
+        return response
+    
     def presigned_download_url(self, filename: str) -> str:
         try:
             return self.storage.presigned_get_object(

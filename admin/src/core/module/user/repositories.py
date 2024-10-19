@@ -2,6 +2,7 @@ from abc import abstractmethod
 from typing import List, Dict
 from src.core.database import db as database
 from src.core.module.common.repositories import apply_filters, apply_multiple_search_criteria
+from src.core.module.common.services import StorageServices
 from .models import User
 from .mappers import UserMapper
 from sqlalchemy import and_
@@ -106,7 +107,7 @@ class UserRepository(AbstractUserRepository):
     def get_user(self, user_id: int) -> Dict | None:
         user = self.get_by_id(user_id)
         if not user:
-            return None
+            return None     
         return UserMapper.from_entity(user)
 
     def get_by_email(self, email: str) -> User | None:

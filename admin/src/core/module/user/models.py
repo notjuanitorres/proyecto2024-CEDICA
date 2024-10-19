@@ -9,7 +9,7 @@ class User(db.Model):
     alias = db.Column(db.String(100), nullable=False)
     password = db.Column(db.String(255), nullable=False)
     enabled = db.Column(db.Boolean, default=True)
-    profile_image_url = db.Column(db.String, nullable=True) 
+    profile_image_url = db.Column(db.String, nullable=True, ) 
     system_admin = db.Column(db.Boolean, default=False)
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
     inserted_at = db.Column(db.DateTime, default=datetime.now)

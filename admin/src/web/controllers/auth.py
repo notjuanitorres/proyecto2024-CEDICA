@@ -41,6 +41,7 @@ def authenticate(login_form: UserLoginForm, auth_services: AAS = Provide[Contain
     session["user_name"] = user["alias"]
     session["is_authenticated"] = True
     session["is_admin"] = user["system_admin"]
+    session["profile_image_url"] = user["profile_image_url"]
     permissions = auth_services.get_permissions_of(user["id"])
     session["permissions"] = permissions
 

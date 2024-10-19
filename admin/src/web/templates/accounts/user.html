@@ -31,6 +31,9 @@ Usuario: {{ user.alias }}
 {% endblock %}
 
 {% block card_content %}
+<figure class="image is-128x128">
+    <img src="{{ user.profile_image_url }}" alt="Profile Image">
+</figure>
     <ul>
         <li><strong>ID: </strong> {{ user.id }}</li>
         <li><strong>Correo: </strong>{{ user.email }}</li>
