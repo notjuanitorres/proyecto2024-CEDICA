@@ -88,10 +88,6 @@ Miembro: {{ employee.name + " " + employee.lastname }}
             {% if employee.employment_information.is_active %}Deshabilitar{% else %}Habilitar{% endif %}
         </a>
     {% endif %}
-
-    <a href="{{ url_for('employee_bp.edit_documents', employee_id=employee.id) }}"
-               class="card-footer-item has-text-link">Ver documentos</a>
-
 {% endblock %}
 
 {% block additional_cards %}
@@ -143,14 +139,51 @@ Miembro: {{ employee.name + " " + employee.lastname }}
             </div>
         </div>
         <footer class="card-footer">
+            {% if employee.employment_information.is_active %}
             <a href="{{ url_for( "employee_bp.link_account", employee_id=employee.id ) }}" class="card-footer-item has-text-link">Asociar cuenta</a>
+            {% else %}
+            <button type="disabled" class="card-footer-item has-text-info">No se puede asociar una cuenta a un miembro inactivo</button>
+            {% endif %}
         </footer>
         {% endif %}
     </div>
-
-
-
-
+    <div id="documents" class="card">
+        <header class="card-header">
+            <p class="card-header-title is-size-4">Documentos anexos: {% if employee.files_number > 0%} {{ employee.files_number }} {% endif %}</p>
+        </header>
+        <div class="card-content">
+            <div class="content">
+                {% if employee.files %}
+                {% for file in employee.files %}
+                <div class="box">
+                    <article class="media">
+                        <div class="media-left">
+                            {{ render_file_icon(file.filetype, size=1) }}
+                        </div>
+                        <div class="media-content ml-2">
+                        <div class="content">
+                            <p>
+                            <strong>{{ render_category(file.tag) }}</strong>
+                            <small>{{ file.uploaded_at | format_date }}</small>
+                            <br />
+                            {{ file.title }}
+                            </p>
+                        </div>
+                        </div>
+                    </article>
+                </div>
+                <footer class="card-footer">
+                    <a href="{{ url_for("employee_bp.edit_documents", employee_id=employee.id )}}" class="card-footer-item has-text-warning">Ver todos</a>
+                </footer>
+                {% endfor %}
+                {% else %}
+                <p>No se se ha subido ningun documento</p>
+                <footer class="card-footer">
+                    <a href="{{ url_for("employee_bp.create_document", employee_id=employee.id )}}" class="card-footer-item">Agregar</a>
+                </footer> 
+                {% endif %}
+            </div>
+        </div>
     </div>
 {% endblock %}
 
