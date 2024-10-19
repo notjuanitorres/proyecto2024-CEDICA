@@ -69,6 +69,7 @@ class EmployeeMapper:
 
     @classmethod
     def from_entity(self, employee: Employee, documents: bool = True) -> "Dict":
+        number_of_files = 5
         serialized_employee = {
             "id": employee.id,
             "name": employee.name,
@@ -104,9 +105,11 @@ class EmployeeMapper:
             "user_id": employee.user_id,
             "inserted_at": employee.inserted_at,
             "updated_at": employee.updated_at,
+            "is_deleted": employee.is_deleted
         }
         if documents:
-            serialized_employee["files"] = [file.to_dict() for file in employee.files if file ]
+            serialized_employee["files"] = [file.to_dict() for file in employee.files[:number_of_files] if file ]
+            serialized_employee["files_number"] = len(employee.files)
 
         return serialized_employee
 

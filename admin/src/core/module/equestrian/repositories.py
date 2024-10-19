@@ -1,8 +1,6 @@
 from abc import abstractmethod
 from typing import List, Dict
 
-from sqlalchemy.orm import Mapper
-
 from src.core.module.common.repositories import apply_filters
 from src.core.module.equestrian.models import Horse, HorseTrainers, HorseFile
 from src.core.database import db as database
@@ -11,11 +9,26 @@ from src.core.module.equestrian.mappers import HorseMapper
 
 
 class AbstractEquestrianRepository:
+    """
+    Abstract repository for equestrian operations.
+
+    Attributes:
+        storage_path (str): The path for storing equestrian data.
+    """
     def __init__(self):
         self.storage_path = "equestrian/"
 
     @abstractmethod
     def add(self, horse: Horse) -> Dict:
+        """
+        Add a new horse to the repository.
+
+        Args:
+            horse (Horse): The horse to add.
+
+        Returns:
+            Dict: The added horse data.
+        """
         pass
 
     @abstractmethod
@@ -27,42 +40,138 @@ class AbstractEquestrianRepository:
             search_query: Dict = None,
             order_by: list = None,
     ):
+        """
+        Get a paginated list of horses.
+
+        Args:
+            page (int): The page number.
+            per_page (int): The number of items per page.
+            max_per_page (int): The maximum number of items per page.
+            search_query (Dict): The search query parameters.
+            order_by (list): The order by parameters.
+
+        Returns:
+            Pagination: The paginated list of horses.
+        """
         pass
 
     @abstractmethod
     def get_by_id(self, horse_id: int, documents: bool = True) -> Dict | None:
+        """
+        Get a horse by its ID.
+
+        Args:
+            horse_id (int): The ID of the horse.
+            documents (bool): Whether to include documents.
+
+        Returns:
+            Dict | None: The horse data or None if not found.
+        """
         pass
 
     @abstractmethod
     def update(self, horse_id: int, data: Dict) -> bool:
+        """
+        Update a horse's data.
+
+        Args:
+            horse_id (int): The ID of the horse.
+            data (Dict): The data to update.
+
+        Returns:
+            bool: True if the update was successful, False otherwise.
+        """
         pass
 
     @abstractmethod
     def delete(self, horse_id: int) -> bool:
+        """
+        Mark a horse as deleted.
+
+        Args:
+            horse_id (int): The ID of the horse.
+
+        Returns:
+            bool: True if the deletion was successful, False otherwise.
+        """
         pass
 
     @abstractmethod
     def get_trainers_of_horse(self, horse_id: int) -> List:
+        """
+        Get the trainers of a horse.
+
+        Args:
+            horse_id (int): The ID of the horse.
+
+        Returns:
+            List: The list of trainers.
+        """
         pass
 
     @abstractmethod
     def add_horse_trainers(self, horse_id: int, trainers_ids: List[int]):
+        """
+        Add trainers to a horse.
+
+        Args:
+            horse_id (int): The ID of the horse.
+            trainers_ids (List[int]): The list of trainer IDs.
+        """
         pass
 
     @abstractmethod
     def add_document(self, horse_id: int, document: HorseFile) -> None:
+        """
+        Add a document to a horse.
+
+        Args:
+            horse_id (int): The ID of the horse.
+            document (HorseFile): The document to add.
+        """
         raise NotImplementedError
 
     @abstractmethod
     def get_document(self, horse_id: int, document_id: int) -> HorseFile:
+        """
+        Get a document of a horse.
+
+        Args:
+            horse_id (int): The ID of the horse.
+            document_id (int): The ID of the document.
+
+        Returns:
+            HorseFile: The document.
+        """
         raise NotImplementedError
 
     @abstractmethod
-    def delete_document(self, horse_id: int, document_id: int) -> None:
+    def delete_document(self, horse_id: int, document_id: int) -> bool:
+        """
+        Delete a document of a horse.
+
+        Args:
+            horse_id (int): The ID of the horse.
+            document_id (int): The ID of the document.
+
+        Returns:
+            bool: True if the deletion was successful, False otherwise.
+        """
         raise NotImplementedError
 
     @abstractmethod
     def update_document(self, horse_id: int, document_id: int, data: Dict) -> bool:
+        """
+        Update a document of a horse.
+
+        Args:
+            horse_id (int): The ID of the horse.
+            document_id (int): The ID of the document.
+            data (Dict): The data to update.
+
+        Returns:
+            bool: True if the update was successful, False otherwise.
+        """
         raise NotImplementedError
 
     @abstractmethod
@@ -75,19 +184,55 @@ class AbstractEquestrianRepository:
             search_query: Dict = None,
             order_by: List = None,
     ):
+        """
+        Get a paginated list of files for a horse.
+
+        Args:
+            horse_id (int): The ID of the horse.
+            page (int): The page number.
+            per_page (int): The number of items per page.
+            max_per_page (int): The maximum number of items per page.
+            search_query (Dict): The search query parameters.
+            order_by (List): The order by parameters.
+
+        Returns:
+            Pagination: The paginated list of files.
+        """
         raise NotImplementedError
 
     @abstractmethod
     def remove_horse_trainer(self, horse_id: int, trainer_id: int) -> bool:
+        """
+        Remove a trainer from a horse.
+
+        Args:
+            horse_id (int): The ID of the horse.
+            trainer_id (int): The ID of the trainer.
+
+        Returns:
+            bool: True if the removal was successful, False otherwise.
+        """
         raise NotImplementedError
 
 
 class EquestrianRepository(AbstractEquestrianRepository):
+    """
+    Repository for equestrian operations.
+    """
     def __init__(self):
         super().__init__()
         self.db = database
 
     def add(self, horse: Horse):
+        """
+        Add a new horse to the repository.
+
+        Args:
+            horse (Horse): The horse to add.
+
+        Returns:
+            Dict: The added horse data.
+        """
         self.db.session.add(horse)
         self.db.session.flush()
         self.save()
@@ -101,6 +246,19 @@ class EquestrianRepository(AbstractEquestrianRepository):
             search_query: Dict = None,
             order_by: List = None,
     ):
+        """
+        Get a paginated list of horses.
+
+        Args:
+            page (int): The page number.
+            per_page (int): The number of items per page.
+            max_per_page (int): The maximum number of items per page.
+            search_query (Dict): The search query parameters.
+            order_by (List): The order by parameters.
+
+        Returns:
+            Pagination: The paginated list of horses.
+        """
         query = Horse.query
 
         query = apply_filters(Horse, query, search_query, order_by)
@@ -110,15 +268,44 @@ class EquestrianRepository(AbstractEquestrianRepository):
         )
 
     def get_by_id(self, horse_id: int, documents: bool = True) -> Dict | None:
+        """
+        Get a horse by its ID.
+
+        Args:
+            horse_id (int): The ID of the horse.
+            documents (bool): Whether to include documents.
+
+        Returns:
+            Dict | None: The horse data or None if not found.
+        """
         horse = self.__get_by_id(horse_id)
         if not horse:
             return None
         return HorseMapper.from_entity(horse, documents=documents)
 
     def __get_by_id(self, horse_id: int) -> Horse:
+        """
+        Get a horse by its ID.
+
+        Args:
+            horse_id (int): The ID of the horse.
+
+        Returns:
+            Horse: The horse.
+        """
         return self.db.session.query(Horse).filter(Horse.id == horse_id).first()
 
     def update(self, horse_id: int, data: Dict):
+        """
+        Update a horse's data.
+
+        Args:
+            horse_id (int): The ID of the horse.
+            data (Dict): The data to update.
+
+        Returns:
+            bool: True if the update was successful, False otherwise.
+        """
         horse = Horse.query.filter_by(id=horse_id)
         if not horse:
             return False
@@ -127,6 +314,15 @@ class EquestrianRepository(AbstractEquestrianRepository):
         return True
 
     def delete(self, horse_id: int):
+        """
+        Mark a horse as deleted.
+
+        Args:
+            horse_id (int): The ID of the horse.
+
+        Returns:
+            bool: True if the deletion was successful, False otherwise.
+        """
         horse = Horse.query.filter_by(id=horse_id)
         if not horse:
             return False
@@ -135,10 +331,21 @@ class EquestrianRepository(AbstractEquestrianRepository):
         return True
 
     def save(self):
+        """
+        Commit the current transaction.
+        """
         self.db.session.commit()
 
     def get_trainers_of_horse(self, horse_id: int) -> List:
+        """
+        Get the trainers of a horse.
 
+        Args:
+            horse_id (int): The ID of the horse.
+
+        Returns:
+            List: The list of trainers.
+        """
         horse_trainers = (self.db.session.query(HorseTrainers)
                           .filter(HorseTrainers.id_horse == horse_id).all())
 
@@ -146,31 +353,78 @@ class EquestrianRepository(AbstractEquestrianRepository):
                 .filter(Employee.id.in_([ht.id_employee for ht in horse_trainers])).all())
 
     def add_horse_trainers(self, horse_id: int, trainers_ids: List[int]):
+        """
+        Add trainers to a horse.
+
+        Args:
+            horse_id (int): The ID of the horse.
+            trainers_ids (List[int]): The list of trainer IDs.
+        """
         for trainer_id in trainers_ids:
             self.db.session.add(HorseTrainers(id_horse=horse_id, id_employee=trainer_id))
         self.save()
 
     def add_document(self, horse_id: int, document: HorseFile):
+        """
+        Add a document to a horse.
+
+        Args:
+            horse_id (int): The ID of the horse.
+            document (HorseFile): The document to add.
+        """
         horse: Horse = self.__get_by_id(horse_id)
         horse.files.append(document)
         self.save()
 
-    def __get_document(self, horse_id: int, document_id: int) -> HorseFile:
-        document = (
+    def __get_document_query(self, horse_id: int, document_id: int):
+        """
+        Get the query for a document of a horse.
+
+        Args:
+            horse_id (int): The ID of the horse.
+            document_id (int): The ID of the document.
+
+        Returns:
+            Query: The query for the document.
+        """
+        query = (
             self.db.session.query(HorseFile)
             .filter_by(horse_id=horse_id, id=document_id)
-            .first()
         )
-        return document
+        return query
 
     def get_document(self, horse_id: int, document_id: int) -> Dict:
-        return self.__get_document(horse_id, document_id).to_dict()
+        """
+        Get a document of a horse.
 
-    def delete_document(self, horse_id: int, document_id):
+        Args:
+            horse_id (int): The ID of the horse.
+            document_id (int): The ID of the document.
+
+        Returns:
+            Dict: The document data.
+        """
+        doc = self.__get_document_query(horse_id, document_id).first()
+        return doc.to_dict() if doc else {}
+
+    def delete_document(self, horse_id: int, document_id) -> bool:
+        """
+        Delete a document of a horse.
+
+        Args:
+            horse_id (int): The ID of the horse.
+            document_id (int): The ID of the document.
+
+        Returns:
+            bool: True if the deletion was successful, False otherwise.
+        """
         horse: Horse = self.__get_by_id(horse_id)
-        document = self.__get_document(horse.id, document_id)
-        horse.files.remove(document)
+        if not horse:
+            return False
+        doc_query = self.__get_document_query(horse.id, document_id)
+        doc_query.delete()
         self.save()
+        return True
 
     def get_file_page(
             self,
@@ -181,7 +435,20 @@ class EquestrianRepository(AbstractEquestrianRepository):
             search_query: Dict = None,
             order_by: List = None,
     ):
+        """
+        Get a paginated list of files for a horse.
 
+        Args:
+            horse_id (int): The ID of the horse.
+            page (int): The page number.
+            per_page (int): The number of items per page.
+            max_per_page (int): The maximum number of items per page.
+            search_query (Dict): The search query parameters.
+            order_by (List): The order by parameters.
+
+        Returns:
+            Pagination: The paginated list of files.
+        """
         query = HorseFile.query
 
         if search_query.get("filters"):
@@ -196,6 +463,17 @@ class EquestrianRepository(AbstractEquestrianRepository):
         )
 
     def update_document(self, horse_id: int, document_id: int, data: Dict) -> bool:
+        """
+        Update a document of a horse.
+
+        Args:
+            horse_id (int): The ID of the horse.
+            document_id (int): The ID of the document.
+            data (Dict): The data to update.
+
+        Returns:
+            bool: True if the update was successful, False otherwise.
+        """
         doc_query = self.db.session.query(HorseFile).filter_by(horse_id=horse_id, id=document_id)
         if not doc_query:
             return False
@@ -204,6 +482,16 @@ class EquestrianRepository(AbstractEquestrianRepository):
         return True
 
     def remove_horse_trainer(self, horse_id: int, trainer_id: int) -> bool:
+        """
+        Remove a trainer from a horse.
+
+        Args:
+            horse_id (int): The ID of the horse.
+            trainer_id (int): The ID of the trainer.
+
+        Returns:
+            bool: True if the removal was successful, False otherwise.
+        """
         trainer = self.db.session.query(HorseTrainers).filter_by(id_horse=horse_id, id_employee=trainer_id)
         if not trainer:
             return False

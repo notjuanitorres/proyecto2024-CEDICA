@@ -14,9 +14,10 @@ class UserMapper:
             email=user_data.get("email"),
             alias=user_data.get("alias"),
             password=hashed_password,
-            enabled=user_data.get("enabled", False),
+            enabled=user_data.get("enabled", True),
             system_admin=user_data.get("system_admin", False),
             role_id=user_data.get("role_id", None),
+            is_deleted=user_data.get("is_deleted", False)
         )
     @classmethod
     def from_entity(self, user: User) -> "Dict":
@@ -29,5 +30,6 @@ class UserMapper:
             "role_id": user.role_id,
             "inserted_at": user.inserted_at,
             "updated_at": user.updated_at,
-            "assigned_to": user.employee.id if user.employee else None
-        }
+            "assigned_to": user.employee.id if user.employee else None,
+            "is_deleted": user.is_deleted
+        }   

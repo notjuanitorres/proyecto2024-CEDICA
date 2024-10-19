@@ -3,6 +3,7 @@
 {% from "macros/delete_modal.html" import render_delete_modal %}
 {% from "macros/flash_message.html" import render_flash_messages %}
 
+
 {% block main_content %}
     <nav class="breadcrumb" aria-label="breadcrumbs">
         <ul>
@@ -20,10 +21,13 @@
 
     <div class="mb-2">{{ render_flash_messages(messages) }}</div>
 
-    <section class="container is-fullheight-with-navbar">
+
         <div class="card">
+            <section class="container is-fullheight-with-navbar">
+                {% block banner %}{% endblock %}
+        
             <header class="card-header has-text-centered">
-                <h2 class="card-header-title is-size-4">{% block card_title %}{% endblock %}</h2>
+                <h1 class="card-header-title is-size-4">{% block card_title %}{% endblock %}</h1>
             </header>
             <div class="card-content">
                 <div class="content">

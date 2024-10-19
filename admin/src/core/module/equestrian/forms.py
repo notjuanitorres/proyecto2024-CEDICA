@@ -1,97 +1,24 @@
 from flask_wtf import FlaskForm
-from flask_wtf.file import FileSize, FileAllowed
 from wtforms.fields import (
     StringField,
     BooleanField,
     SelectField,
     DateField,
-    MultipleFileField,
 )
 from wtforms.validators import DataRequired, Length
 
 from src.core.module.common.forms import BaseSearchForm, DocumentsSearchForm
-from src.core.module.common.forms import BaseManageDocumentsForm, allowed_filetypes, filetypes_message
-from src.core.module.common import (
-    FilesNumber,
-    max_file_size,
-)
-from src.core.module.equestrian.models import JAEnum, Horse, FileTagEnum
-
-
-class HorseDocumentsForm(FlaskForm):
-    ficha_general = MultipleFileField(
-        validators=[
-            # FileRequired(),
-            FileSize(
-                max_size=max_file_size(size_in_mb=5),
-                message="El archivo es demasiado grande",
-            ),
-            FileAllowed(
-                allowed_filetypes,
-                message=filetypes_message,
-            ),
-            FilesNumber(min=0, max=5, message="Puede subir hasta 5 archivos"),
-        ]
-    )
-    planificacion_entrenamiento = MultipleFileField(
-        validators=[
-            # FileRequired(),
-            FileSize(
-                max_size=max_file_size(size_in_mb=5),
-                message="El archivo es demasiado grande",
-            ),
-            FileAllowed(
-                allowed_filetypes,
-                message=filetypes_message,
-            ),
-            FilesNumber(min=0, max=5, message="Puede subir hasta 5 archivos"),
-        ]
-    )
-    informe_evolucion = MultipleFileField(
-        validators=[
-            # FileRequired(),
-            FileSize(
-                max_size=max_file_size(size_in_mb=5),
-                message="El archivo es demasiado grande",
-            ),
-            FileAllowed(
-                allowed_filetypes,
-                message=filetypes_message,
-            ),
-            FilesNumber(min=0, max=5, message="Puede subir hasta 5 archivos"),
-        ]
-    )
-    carga_imagenes = MultipleFileField(
-        validators=[
-            # FileRequired(),
-            FileSize(
-                max_size=max_file_size(size_in_mb=5),
-                message="El archivo es demasiado grande",
-            ),
-            FileAllowed(
-                allowed_filetypes,
-                message=filetypes_message,
-            ),
-            FilesNumber(min=0, max=10, message="Puede subir hasta 10 archivos"),
-        ]
-    )
-    registro_veterinario = MultipleFileField(
-        validators=[
-            # FileRequired(),
-            FileSize(
-                max_size=max_file_size(size_in_mb=5),
-                message="El archivo es demasiado grande",
-            ),
-            FileAllowed(
-                allowed_filetypes,
-                message=filetypes_message,
-            ),
-            FilesNumber(min=0, max=5, message="Puede subir hasta 5 archivos"),
-        ]
-    )
+from src.core.module.common.forms import BaseManageDocumentsForm
+from src.core.module.equestrian.models import JAEnum, FileTagEnum
 
 
 class HorseAddDocumentsForm(BaseManageDocumentsForm):
+    """
+    Form for adding documents related to a horse.
+
+    Attributes:
+        tag (SelectField): The tag representing the document.
+    """
     tag = SelectField(
         "Tag",
         choices=[(e.name, e.value) for e in FileTagEnum],
@@ -104,6 +31,20 @@ class HorseAddDocumentsForm(BaseManageDocumentsForm):
 
 
 class HorseManagementForm(FlaskForm):
+    """
+    Form for managing horse details.
+
+    Attributes:
+        name (StringField): The name of the horse.
+        breed (StringField): The breed of the horse.
+        birth_date (DateField): The birthdate of the horse.
+        sex (SelectField): The sex of the horse.
+        coat (StringField): The coat color of the horse.
+        is_donation (BooleanField): Indicates if the horse is a donation.
+        admission_date (DateField): The admission date of the horse.
+        assigned_facility (StringField): The facility assigned to the horse.
+        ja_type (SelectField): The type of J&A assigned to the horse.
+    """
     name = StringField(
         "Nombre",
         validators=[
@@ -170,16 +111,28 @@ class HorseManagementForm(FlaskForm):
 
 
 class HorseCreateForm(HorseManagementForm):
+    """Form for creating a new horse entry."""
     pass
 
 
 class HorseEditForm(HorseManagementForm):
+    """
+    Form for editing an existing horse entry.
+    """
     def __init__(self, *args, **kwargs):
+        """Initialize the form."""
         super(HorseEditForm, self).__init__(*args, **kwargs)
 
 
 class HorseSearchForm(BaseSearchForm):
+    """
+    Form for searching horses.
+
+    Attributes:
+        filter_ja_type (SelectField): The filter for J&A type.
+    """
     def __init__(self, *args, **kwargs):
+        """Initialize the form with search and order choices."""
         super().__init__(*args, **kwargs)
         self.search_by.choices = [
             ("name", "Nombre"),
@@ -198,9 +151,15 @@ class HorseSearchForm(BaseSearchForm):
 
 
 class HorseDocumentSearchForm(DocumentsSearchForm):
+    """
+    Form for searching horse documents.
+
+    Attributes:
+        filter_tag (SelectField): The filter for document tags.
+    """
     def __init__(self, *args, **kwargs):
+        """Initialize the form with filter tag choices."""
         super().__init__(*args, **kwargs)
         self.filter_tag.choices = [
             ("", "Ver Todos"),
         ] + [(e.name, e.value) for e in FileTagEnum]
-

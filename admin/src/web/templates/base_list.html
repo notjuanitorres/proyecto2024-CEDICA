@@ -28,12 +28,13 @@
   </nav>
 
   {{ render_flash_messages(messages) }}
-    {% block doc_header %}{% endblock %}
+  {% block doc_header %}{% endblock %}
   <section class="is-fullheight-with-navbar pt-4">
     <h2 class="title is-size-3 has-text-centered">
       {% block inner_title %}{% endblock %}
     </h2>
-    <div class="px-3">
+    {% block tabs %} {% endblock %}
+    <div id="filter" class="px-3">
       {% block create_button %}{% endblock %}
 
       {% block filter_form %}
@@ -110,8 +111,8 @@
             </div>
           </div>
       {% endblock %}
-
     </div>
+
     <div class="table-container p-2 mt-2">
       <table class="table is-striped is-scrollable is-fullwidth">
         <div class="container p-5">

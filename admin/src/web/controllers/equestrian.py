@@ -1,5 +1,3 @@
-from typing import Dict
-
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 
 from src.core.module.employee import AbstractEmployeeRepository
@@ -13,18 +11,32 @@ from src.core.module.equestrian.forms import (HorseCreateForm,
                                               HorseAddDocumentsForm,
                                               HorseDocumentSearchForm)
 from src.core.module.equestrian import AbstractEquestrianRepository
-from src.core.module.equestrian.models import FileTagEnum
 from src.core.module.equestrian.mappers import HorseMapper
 
 equestrian_bp = Blueprint(
     "equestrian_bp", __name__, template_folder="../templates/equestrian", url_prefix="/ecuestre"
 )
+"""
+Blueprint for equestrian-related routes.
+
+Attributes:
+    equestrian_bp (Blueprint): The equestrian blueprint.
+"""
 
 
 @equestrian_bp.route("/")
 @check_user_permissions(permissions_required=["ecuestre_index"])
 @inject
 def get_horses(equestrian_repository: AbstractEquestrianRepository = Provide[Container.equestrian_repository]):
+    """
+    Route to get a paginated list of horses.
+
+    Args:
+        equestrian_repository (AbstractEquestrianRepository): The equestrian repository.
+
+    Returns:
+        Response: The rendered template for the list of horses.
+    """
     page = request.args.get("page", type=int)
     per_page = request.args.get("per_page", type=int)
     search = HorseSearchForm(request.args)
@@ -57,6 +69,17 @@ def get_horses(equestrian_repository: AbstractEquestrianRepository = Provide[Con
 @inject
 def show_horse(horse_id: int,
                equestrian_repository: AbstractEquestrianRepository = Provide[Container.equestrian_repository]):
+    """
+    Route to show details of a specific horse.
+
+    Args:
+        horse_id (int): The ID of the horse.
+        equestrian_repository (AbstractEquestrianRepository): The equestrian repository.
+
+    Returns:
+        Response: The rendered template for the horse details if the horse exists,
+         otherwise redirect to the list of horses.
+    """
     horse = equestrian_repository.get_by_id(horse_id, documents=False)
 
     if not horse:
@@ -70,6 +93,12 @@ def show_horse(horse_id: int,
 @equestrian_bp.route("/crear", methods=["GET", "POST"])
 @check_user_permissions(permissions_required=["ecuestre_new"])
 def create_horse():
+    """
+    Route to create a new horse.
+
+    Returns:
+        Response: The rendered template for creating a horse.
+    """
     create_form = HorseCreateForm()
 
     if request.method == "POST":
@@ -80,8 +109,18 @@ def create_horse():
 
 @inject
 def add_horse(create_form: HorseCreateForm,
-              equestrian_repository: AbstractEquestrianRepository = Provide[Container.equestrian_repository],
-              ):
+              equestrian_repository: AbstractEquestrianRepository = Provide[Container.equestrian_repository]):
+    """
+    Helper function to add a new horse.
+
+    Args:
+        create_form (HorseCreateForm): The form for creating a horse.
+        equestrian_repository (AbstractEquestrianRepository): The equestrian repository.
+
+    Returns:
+        Response: The rendered template for creating a horse if the form wasn't valid
+         or redirect to document creation.
+    """
     if not create_form.validate_on_submit():
         return render_template("create_horse.html", form=create_form)
 
@@ -96,6 +135,17 @@ def add_horse(create_form: HorseCreateForm,
 @inject
 def create_document(horse_id: int,
                     equestrian_repository: AbstractEquestrianRepository = Provide[Container.equestrian_repository]):
+    """
+    Route to create a new document for a horse.
+
+    Args:
+        horse_id (int): The ID of the horse.
+        equestrian_repository (AbstractEquestrianRepository): The equestrian repository.
+
+    Returns:
+        Response: The rendered template for creating a document if horse exists,
+         otherwise redirect to the list of horses.
+    """
     horse = equestrian_repository.get_by_id(horse_id)
     if not horse:
         flash(f"El caballo con ID = {horse_id} no existe", "danger")
@@ -112,8 +162,19 @@ def create_document(horse_id: int,
 def add_document(horse,
                  create_form: HorseAddDocumentsForm,
                  equestrian_repository: AbstractEquestrianRepository = Provide[Container.equestrian_repository],
-                 storage: AbstractStorageServices = Provide[Container.storage_services],
-                 ):
+                 storage: AbstractStorageServices = Provide[Container.storage_services]):
+    """
+    Helper function to add a new document to a horse.
+
+    Args:
+        horse (dict): The horse data.
+        create_form (HorseAddDocumentsForm): The form for adding a document.
+        equestrian_repository (AbstractEquestrianRepository): The equestrian repository.
+        storage (AbstractStorageServices): The storage service.
+
+    Returns:
+        Response: The rendered template for creating a document if form wasn't valid or redirect to document creation.
+    """
     if not create_form.validate_on_submit():
         return render_template("create_document.html", form=create_form, horse=horse)
 
@@ -142,6 +203,17 @@ def add_document(horse,
 @inject
 def edit_horse(horse_id: int,
                equestrian_repository: AbstractEquestrianRepository = Provide[Container.equestrian_repository]):
+    """
+    Route to edit a horse's details.
+
+    Args:
+        horse_id (int): The ID of the horse.
+        equestrian_repository (AbstractEquestrianRepository): The equestrian repository.
+
+    Returns:
+        Response: The rendered template for editing a horse if the horse exists,
+        otherwise redirect to the list of horses.
+    """
     horse = equestrian_repository.get_by_id(horse_id)
 
     if not horse:
@@ -159,6 +231,17 @@ def edit_horse(horse_id: int,
 @inject
 def update_horse(horse_id: int, edit_form: HorseEditForm,
                  equestrian_repository: AbstractEquestrianRepository = Provide[Container.equestrian_repository]):
+    """
+    Helper function to update a horse's details.
+
+    Args:
+        horse_id (int): The ID of the horse.
+        edit_form (HorseEditForm): The form for editing a horse.
+        equestrian_repository (AbstractEquestrianRepository): The equestrian repository.
+
+    Returns:
+        Response: The rendered template for editing a horse if the form wasn't valid or redirect to horse details.
+    """
     if not edit_form.validate_on_submit():
         return render_template("edit_horse.html", form=edit_form)
 
@@ -166,8 +249,8 @@ def update_horse(horse_id: int, edit_form: HorseEditForm,
         horse_id=horse_id,
         data=HorseMapper.from_simple_form(edit_form.data),
     )
-    equestrian_repository.set_horse_trainers(horse_id, edit_form.trainers.data)
 
+    flash("Caballo actualizado con éxito", "success")
     return redirect(url_for("equestrian_bp.show_horse", horse_id=horse_id))
 
 
@@ -175,6 +258,15 @@ def update_horse(horse_id: int, edit_form: HorseEditForm,
 @check_user_permissions(permissions_required=["ecuestre_destroy"])
 @inject
 def delete_horse(equestrian_repository: AbstractEquestrianRepository = Provide[Container.equestrian_repository]):
+    """
+    Route to delete a horse.
+
+    Args:
+        equestrian_repository (AbstractEquestrianRepository): The equestrian repository.
+
+    Returns:
+        Response: Redirect to the list of horses.
+    """
     horse_id = request.form["item_id"]
     deleted = equestrian_repository.delete(int(horse_id))
     if not deleted:
@@ -191,8 +283,17 @@ def delete_horse(equestrian_repository: AbstractEquestrianRepository = Provide[C
 def edit_documents(
         horse_id: int,
         equestrian_repository: AbstractEquestrianRepository = Provide[Container.equestrian_repository],
-        storage: AbstractStorageServices = Provide[Container.storage_services],
 ):
+    """
+        Route to edit documents of a horse.
+
+        Args:
+            horse_id (int): The ID of the horse.
+            equestrian_repository (AbstractEquestrianRepository): The equestrian repository.
+
+        Returns:
+            Response: The rendered template for editing documents.
+        """
     page = request.args.get("page", type=int)
     per_page = request.args.get("per_page", type=int)
 
@@ -219,22 +320,10 @@ def edit_documents(
         horse_id=horse_id, page=page, per_page=per_page, order_by=order_by, search_query=search_query
     )
 
-    documents = []
-    for file in paginated_files:
-        file = file.to_dict()
-        if not file.get("is_link"):
-            documents.append({"file": file, "download_url": storage.presigned_download_url(file.get("path"))})
-        else:
-            documents.append({"file": file, "download_url": None})
-
-        if not documents[-1].get("file").get("is_link") and not documents[-1].get("download_url"):
-            flash(f"Algunos archivos no se pudieron obtener", "warning")
-            break
-
     return render_template(
         "./equestrian/update_documents.html",
         horse=horse,
-        documents=documents,
+        files=paginated_files,
         add_form=add_document_form,
         search_form=search_document_form,
         paginated_files=paginated_files,
@@ -242,14 +331,30 @@ def edit_documents(
 
 
 @equestrian_bp.route("/editar/<int:horse_id>/documentos/eliminar", methods=["POST"])
+@check_user_permissions(permissions_required=["ecuestre_update"])
 @inject
 def delete_document(
         horse_id: int,
         equestrian_repository: AbstractEquestrianRepository = Provide[Container.equestrian_repository],
         storage: AbstractStorageServices = Provide[Container.storage_services],
 ):
+    """
+        Route to delete a document of a horse.
+
+        Args:
+            horse_id (int): The ID of the horse.
+            equestrian_repository (AbstractEquestrianRepository): The equestrian repository.
+            storage (AbstractStorageServices): The storage service.
+
+        Returns:
+            Response: Redirect to the document editing page
+        """
     document_id = int(request.form["item_id"])
     document = equestrian_repository.get_document(horse_id, document_id)
+
+    if not document:
+        flash(f"El documento solicitado no existe", "danger")
+        return redirect(url_for("equestrian_bp.edit_documents", horse_id=horse_id))
 
     if not document.get("is_link"):
         deleted_in_bucket = storage.delete_file(document.get("path"))
@@ -257,8 +362,11 @@ def delete_document(
             flash("No se ha podido eliminar el documento, inténtelo nuevamente", "danger")
             return redirect(url_for("equestrian_bp.edit_documents", horse_id=horse_id))
 
-    equestrian_repository.delete_document(horse_id, document_id)
-    flash(f"El documento {document.get("title")} ha sido eliminado correctamente", "success")
+    deleted = equestrian_repository.delete_document(horse_id, document_id)
+    if not deleted:
+        flash("El documento no ha podido ser eliminado, inténtelo nuevamente", "danger")
+    else:
+        flash(f"El documento {document.get("title")} ha sido eliminado correctamente", "success")
 
     return redirect(url_for("equestrian_bp.edit_documents", horse_id=horse_id))
 
@@ -271,6 +379,18 @@ def edit_document(
         document_id: int,
         equestrian_repository: AbstractEquestrianRepository = Provide[Container.equestrian_repository],
 ):
+    """
+        Route to edit a document of a horse.
+
+        Args:
+            horse_id (int): The ID of the horse.
+            document_id (int): The ID of the document.
+            equestrian_repository (AbstractEquestrianRepository): The equestrian repository.
+
+        Returns:
+            Response: The rendered template for editing a document if horse exists and document exists,
+                otherwise redirect to the list of horses or the list of documents.
+        """
     horse = equestrian_repository.get_by_id(horse_id=horse_id, documents=False)
     if not horse:
         flash(f"El caballo con ID = {horse_id} no existe", "danger")
@@ -299,6 +419,21 @@ def update_document(horse: dict,
                     edit_form: HorseAddDocumentsForm,
                     equestrian_repository: AbstractEquestrianRepository = Provide[Container.equestrian_repository],
                     storage: AbstractStorageServices = Provide[Container.storage_services], ):
+    """
+        Helper function to update a document of a horse.
+
+        Args:
+            horse (dict): The horse data.
+            document (dict): The document data.
+            edit_form (HorseAddDocumentsForm): The form for editing a document.
+            equestrian_repository (AbstractEquestrianRepository): The equestrian repository.
+            storage (AbstractStorageServices): The storage service.
+
+        Returns:
+            Response: The rendered template for editing a document if the form wasn't valid
+             or redirect to document editing
+
+        """
     if not (edit_form.is_submitted()
             and
             edit_form.validate(is_file_already_uploaded=not document.get("is_link"))):
@@ -349,6 +484,18 @@ def link_trainer(
         horses: AbstractEquestrianRepository = Provide[Container.equestrian_repository],
         employees: AbstractEmployeeRepository = Provide[Container.employee_repository],
 ):
+    """
+        Route to link a trainer to a horse.
+
+        Args:
+            horse_id (int): The ID of the horse.
+            horses (AbstractEquestrianRepository): The equestrian repository.
+            employees (AbstractEmployeeRepository): The employee repository.
+
+        Returns:
+            Response: The rendered template for linking a trainer if the horse exists,
+            otherwise redirect to the list of horses.
+        """
     page = request.args.get("page", type=int, default=1)
 
     search_trainer = TrainerSearchForm(request.args)
@@ -391,6 +538,20 @@ def add_horse_trainer(
         paginated_trainers,
         horses: AbstractEquestrianRepository = Provide[Container.equestrian_repository],
 ):
+    """
+        Helper function to add a trainer to a horse.
+
+        Args:
+            horse (dict): The horse data.
+            search_form (TrainerSearchForm): The form for searching trainers.
+            select_form (TrainerSelectForm): The form for selecting a trainer.
+            paginated_trainers (Pagination): The paginated list of trainers.
+            horses (AbstractEquestrianRepository): The equestrian repository.
+
+        Returns:
+            Response: The rendered template for linking a trainer if the select form wasn't valid
+            or redirect to horse trainers.
+        """
     if not (select_form.submit_trainer.data and select_form.validate()):
         return render_template(
             "./equestrian/update_trainer.html",
@@ -420,6 +581,18 @@ def get_horse_trainers(
         horses: AbstractEquestrianRepository = Provide[Container.equestrian_repository],
         employees: AbstractEmployeeRepository = Provide[Container.employee_repository],
 ):
+    """
+        Route to get the trainers of a horse.
+
+        Args:
+            horse_id (int): The ID of the horse.
+            horses (AbstractEquestrianRepository): The equestrian repository.
+            employees (AbstractEmployeeRepository): The employee repository.
+
+        Returns:
+            Response: The rendered template for the list of trainers if the horse exists,
+             otherwise redirect to the list of horses.
+        """
     page = request.args.get("page", type=int, default=1)
     per_page = request.args.get("per_page", type=int)
 
@@ -451,7 +624,16 @@ def get_horse_trainers(
 @inject
 def unlink_horse_trainer(horse_id: int,
                          equestrian_repository: AbstractEquestrianRepository = Provide[Container.equestrian_repository]):
+    """
+    Route to unlink a trainer from a horse.
 
+    Args:
+        horse_id (int): The ID of the horse.
+        equestrian_repository (AbstractEquestrianRepository): The equestrian repository.
+
+    Returns:
+        Response: Redirect to the list of horse trainers.
+    """
     trainer_id = request.form["item_id"]
     deleted = equestrian_repository.remove_horse_trainer(int(horse_id), int(trainer_id))
     if not deleted:

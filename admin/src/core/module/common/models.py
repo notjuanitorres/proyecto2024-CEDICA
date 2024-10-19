@@ -1,5 +1,5 @@
 from datetime import datetime
-from sqlalchemy.orm import declarative_mixin, declared_attr
+from sqlalchemy.orm import declarative_mixin
 from src.core.database import db
 
 
