@@ -22,6 +22,7 @@ def require_login_and_sys_admin(user_repository=Provide[Container.user_repositor
     if not user_repository.is_sys_admin(session.get("user")):
         return redirect(url_for("auth_bp.login"))
 
+
 @inject
 def search_users(
     search: UserSearchForm,
@@ -72,6 +73,7 @@ def get_deleted_users():
         users=paginated_users,
         search_form=search_form,
     )
+
 
 @users_bp.route("/<int:user_id>")
 @inject
@@ -126,12 +128,12 @@ def edit_user(
 ):
     user = user_repository.get_user(user_id)
 
-    if user.get("system_admin"):
-        flash("No se puede editar a un administrador del sistema")
-        return redirect(url_for("users_bp.get_users"))
-
     if not user or user.get("is_deleted"):
         flash("El usuario no existe")
+        return redirect(url_for("users_bp.get_users"))
+
+    if user.get("system_admin"):
+        flash("No se puede editar a un administrador del sistema")
         return redirect(url_for("users_bp.get_users"))
 
     edit_form = UserEditForm(data=user, current_email=user["email"])
@@ -177,6 +179,7 @@ def archive_user(
 
     flash("El usuario ha sido archivado correctamente", "success")
     return redirect(url_for("users_bp.show_user", user_id=user_id))
+
 
 @users_bp.route("/recuperar/", methods=["POST"])
 @inject
