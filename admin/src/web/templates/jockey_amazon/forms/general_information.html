@@ -1,0 +1,169 @@
+<!-- General Information -->
+<div id="general-info" class="tab-pane is-active" style="display: block">
+  <div id="basic-info" class="pb-4">
+    <h2 class="label is-size-4">Información General</h2>
+    <div class="field-body">
+      <div class="field">
+        <label class="label">{{ form.first_name.label }}</label>
+        <div class="control">
+          {{ form.first_name(class="input", placeholder="Ingrese el nombre") }}
+        </div>
+        {% if form.first_name.errors %}
+        <p class="help is-danger">{{ form.first_name.errors[0] }}</p>
+        {% endif %}
+      </div>
+      <div class="field">
+        <label class="label">{{ form.last_name.label }}</label>
+        <div class="control">
+          {{ form.last_name(class="input", placeholder="Ingrese el apellido") }}
+        </div>
+        {% if form.last_name.errors %}
+        <p class="help is-danger">{{ form.last_name.errors[0] }}</p>
+        {% endif %}
+      </div>
+    </div>
+    <div class="field pt-2">
+      <label class="label">{{ form.birthplace.label }}</label>
+      <div class="control">
+        {{ form.birthplace(class="input", placeholder="Ingrese el lugar de
+        nacimiento", required=true) }}
+      </div>
+    </div>
+    <div class="field-body">
+      <div class="field">
+        <label class="label">{{ form.dni.label }}</label>
+        <div class="control">
+          {{ form.dni(class="input", placeholder="Ingrese el DNI") }}
+        </div>
+        {% if form.dni.errors %}
+        <p class="help is-danger">{{ form.dni.errors[0] }}</p>
+        {% endif %}
+      </div>
+      <div class="field">
+        <label class="label">{{ form.birth_date.label }}</label>
+        <div class="control">
+          {{ form.birth_date(class="input", type="date") }}
+        </div>
+        {% if form.birth_date.errors %}
+        <p class="help is-danger">{{ form.birth_date.errors[0] }}</p>
+        {% endif %}
+      </div>
+    </div>
+    <div class="field-body pt-2">
+      <div class="field">
+        <label class="label">{{ form.phone.country_code.label }}</label>
+        <div class="control">
+          {{ form.phone.country_code(class="input", placeholder="Código de país")
+          }}
+        </div>
+        {% if form.phone.country_code.errors %}
+        <p class="help is-danger">{{ form.phone.country_code.errors[0] }}</p>
+        {% endif %}
+      </div>
+      <div class="field">
+        <label class="label">{{ form.phone.area_code.label }}</label>
+        <div class="control">
+          {{ form.phone.area_code(class="input", placeholder="Código de área") }}
+        </div>
+        {% if form.phone.area_code.errors %}
+        <p class="help is-danger">{{ form.phone.area_code.errors[0] }}</p>
+        {% endif %}
+      </div>
+      <div class="field">
+        <label class="label">{{ form.phone.number.label }}</label>
+        <div class="control">
+          {{ form.phone.number(class="input", placeholder="Número") }}
+        </div>
+        {% if form.phone.number.errors %}
+        <p class="help is-danger">{{ form.phone.number.errors[0] }}</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Address Information -->
+  <div id="address-info" class="field py-4">
+    <h2 class="label is-size-4">Dirección</h2>
+    <div class="field">
+      <div class="field-body">
+        <div class="field">
+          <label class="label">{{ form.address.province.label }}</label>
+          <div class="control">
+            {{ form.address.province(class="input", placeholder="Ingrese la
+            provincia") }}
+          </div>
+          {% if form.address.province.errors %}
+          <p class="help is-danger">{{ form.address.province.errors[0] }}</p>
+          {% endif %}
+        </div>
+        <div class="field">
+          <label class="label">{{ form.address.locality.label }}</label>
+          <div class="control">
+            {{ form.address.locality(class="input", placeholder="Ingrese la
+            localidad") }}
+          </div>
+          {% if form.address.locality.errors %}
+          <p class="help is-danger">{{ form.address.locality.errors[0] }}</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    <div class="field-body">
+      <div class="field">
+        <label class="label">{{ form.address.department.label }}</label>
+        <div class="control">
+          {{ form.address.department(class="input", placeholder="Ingrese el
+          departamento") }}
+        </div>
+        {% if form.address.department.errors %}
+        <p class="help is-danger">{{ form.address.department.errors[0] }}</p>
+        {% endif %}
+      </div>
+      <div class="field">
+        <label class="label">{{ form.address.street.label }}</label>
+        <div class="control">
+          {{ form.address.street(class="input", placeholder="Ingrese la calle")
+          }}
+        </div>
+        {% if form.address.street.errors %}
+        <p class="help is-danger">{{ form.address.street.errors[0] }}</p>
+        {% endif %}
+      </div>
+      <div class="field">
+        <label class="label">{{ form.address.number.label }}</label>
+        <div class="control">
+          {{ form.address.number(class="input", placeholder="Ingrese el número")
+          }}
+        </div>
+        {% if form.address.number.errors %}
+        <p class="help is-danger">{{ form.address.number.errors[0] }}</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  <!-- Emergency Contact -->
+  <div id="emergency-contact">
+    <h2 class="label is-size-4">Contacto de Emergencia</h2>
+    <div class="field">
+      <label class="label"
+        >{{ form.emergency_contact.emergency_contact_name.label }}</label
+      >
+      <div class="control">
+        {{ form.emergency_contact.emergency_contact_name(class="input",
+        placeholder="Ingrese el nombre del contacto de emergencia", required=true)
+        }}
+      </div>
+    </div>
+    <div class="field">
+      <label class="label"
+        >{{ form.emergency_contact.emergency_contact_phone.label }}</label
+      >
+      <div class="control">
+        {{ form.emergency_contact.emergency_contact_phone(class="input",
+        placeholder="Ingrese el teléfono del contacto de emergencia",
+        required=true) }}
+      </div>
+    </div>
+  </div>
+</div>
+

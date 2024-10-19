@@ -52,6 +52,7 @@ class WorkAssignmentForm(FlaskForm):
     horse_id = IntegerField('ID del Caballo', validators=[DataRequired()])
 
 class JockeyAmazonManagementForm(FlaskForm):
+    # General information
     first_name = StringField('Nombre', validators=[DataRequired(), Length(max=100)])
     last_name = StringField('Apellido', validators=[DataRequired(), Length(max=100)])
     dni = StringField('DNI', validators=[DataRequired(), Length(min=8, max=8)])
@@ -60,28 +61,38 @@ class JockeyAmazonManagementForm(FlaskForm):
     address = FormField(AddressForm)
     phone = FormField(PhoneForm)
     emergency_contact = FormField(EmergencyContactForm)
-    has_scholarship = BooleanField('¿Está becado?')
-    scholarship_observations = TextAreaField('Observaciones sobre la Beca', validators=[Optional()])
-    scholarship_percentage = FloatField('Porcentaje de Beca', validators=[Optional()])
+    
+    # Family information
+    has_family_assignment = BooleanField('¿Percibe alguna Asignación Familiar?')
+    family_assignment_type = SelectField('Tipo de Asignación Familiar', choices=enum_choices(FamilyAssignmentEnum), validators=[Optional()])
+    pension_type = SelectField('Tipo de Pensión', choices=[(choice.name, choice.value) for choice in PensionEnum], validators=[Optional()])
+    pension_details = StringField('Detalles de la Pensión', validators=[Optional(), Length(max=100)])
+    has_curatorship = BooleanField('¿Posee curatela?')
+    curatorship_observations = TextAreaField('Observaciones sobre la Curatela', validators=[Optional()])
+    family_member1 = FormField(FamilyMemberForm)
+    family_member2 = FormField(FamilyMemberForm)
+    
+    # Health information
     has_disability = BooleanField('¿Posee Certificado de Discapacidad?')
     disability_diagnosis = SelectField('Diagnóstico', choices=enum_choices(DisabilityDiagnosisEnum), validators=[Optional()])
     disability_other = StringField('Otro diagnóstico', validators=[Optional(), Length(max=100)])
     disability_type = SelectField('Tipo de Discapacidad', choices=enum_choices(DisabilityTypeEnum), validators=[Optional()])
-    has_family_assignment = BooleanField('¿Percibe alguna Asignación Familiar?')
-    family_assignment_type = SelectField('Tipo de Asignación Familiar', choices=enum_choices(FamilyAssignmentEnum), validators=[Optional()])
     has_pension = BooleanField('¿Posee alguna Pensión?')  # Checkbox
-    pension_type = SelectField('Tipo de Pensión', choices=[(choice.name, choice.value) for choice in PensionEnum], validators=[Optional()])
-    pension_details = StringField('Detalles de la Pensión', validators=[Optional(), Length(max=100)])
     social_security = StringField('Obra Social del Alumno', validators=[Optional(), Length(max=100)])
     social_security_number = StringField('Número de Afiliado', validators=[Optional(), Length(max=50)])
-    has_curatorship = BooleanField('¿Posee curatela?')
-    curatorship_observations = TextAreaField('Observaciones sobre la Curatela', validators=[Optional()])
+
+    # Educational information
     school_institution = FormField(SchoolInstitutionForm)
     current_grade_year = StringField('Grado / Año Actual', validators=[Optional(), Length(max=50)])
     school_observations = TextAreaField('Observaciones sobre la Institución Escolar', validators=[Optional()])
+    
+    # Scholarship information
+    has_scholarship = BooleanField('¿Está becado?')
+    scholarship_observations = TextAreaField('Observaciones sobre la Beca', validators=[Optional()])
+    scholarship_percentage = FloatField('Porcentaje de Beca', validators=[Optional()])
+    
+    # Organization work
     professionals = TextAreaField('Profesionales que lo atienden', validators=[Optional()])
-    family_member1 = FormField(FamilyMemberForm)
-    family_member2 = FormField(FamilyMemberForm)
     work_assignments = FormField(WorkAssignmentForm)
 
     def validate(self, extra_validators=None):
