@@ -22,39 +22,56 @@ def require_login_and_sys_admin(user_repository=Provide[Container.user_repositor
     if not user_repository.is_sys_admin(session.get("user")):
         return redirect(url_for("auth_bp.login"))
 
-
-@users_bp.route("/")
 @inject
-def get_users(
-    user_repository: AbstractUserRepository = Provide[Container.user_repository],
+def search_employees(
+    search: UserSearchForm,
+    need_archive: bool,
+    users: AbstractUserRepository = Provide[Container.user_repository],
 ):
-    page = request.args.get("page", type=int)
-    need_archive = bool(request.args.get("archive", default=False))
-    search = UserSearchForm(request.args)
-    search_query = {}
+    page = request.args.get("page", type=int, default=1)
+    per_page = request.args.get("per_page", type=int, default=10)
     order_by = []
-    search_query["filters"] = {"is_deleted": need_archive}
+    search_query = {
+        "filters": {
+            "is_deleted": need_archive
+        }
+    }
     if search.submit_search.data and search.validate():
         order_by = [(search.order_by.data, search.order.data)]
-        search_query = {
-            "text": search.search_text.data,
-            "field": search.search_by.data,
-        }
+        search_query["text"] = search.search_text.data
+        search_query["field"] = search.search_by.data
+
         if search.filter_enabled.data:
             search_query["filters"] = {"enabled": search.filter_enabled.data}
         if search.filter_role_id.data:
             search_query["filters"]["role_id"] = int(search.filter_role_id.data)
 
-    paginated_users = user_repository.get_page(
-        page=page, order_by=order_by, search_query=search_query
+    paginated_users = users.get_page(
+        page=page, per_page=per_page, order_by=order_by, search_query=search_query
     )
+    return paginated_users
 
+
+@users_bp.route("/")
+def get_users():
+    search_form = UserSearchForm(request.args)
+    paginated_users = search_employees(search_form, need_archive=False)
     return render_template(
-        "users.html" if not need_archive else "users_archived.html",
+        "users.html",
         users=paginated_users,
-        search_form=search,
+        search_form=search_form,
     )
 
+
+@users_bp.route("/archivados/")
+def get_deleted_users():
+    search_form = UserSearchForm(request.args)
+    paginated_users = search_employees(search_form, need_archive=True)
+    return render_template(
+        "users_archived.html",
+        users=paginated_users,
+        search_form=search_form,
+    )
 
 @users_bp.route("/<int:user_id>")
 @inject

@@ -105,6 +105,7 @@ class UserSearchForm(BaseSearchForm):
             ("", "Todos"),
         ],
         validate_choice=True,
+        validators=[Optional()]
     )
 
     filter_role_id = SelectField(
