@@ -48,22 +48,6 @@ def apply_multiple_search_criteria(model, query, search_query):
     return query
 
 
-def apply_multiple_search_criteria(model, query, search_query):
-    if "text" in search_query and "fields" in search_query:
-        search_text = search_query["text"]
-        search_fields = search_query["fields"]
-        conditions = []
-        for field_name in search_fields:
-            if hasattr(model, field_name):
-                field = getattr(model, field_name)
-                conditions.append(field.ilike(f"%{search_text}%"))
-
-        if conditions:
-            query = query.filter(or_(*conditions))
-
-    return query
-
-
 def apply_filter_criteria(model, query, search_query):
     if "filters" in search_query and search_query["filters"]:
         for field, value in search_query["filters"].items():

@@ -189,7 +189,10 @@ def seed_horses():
          date(2019, 9, 15), "Equestrian Center C", JAEnum.ADAPTED_SPORTS),
 
         ("Shadow", date(2016, 10, 18), "M", "Appaloosa", "Leopard", True,
-         date(2023, 1, 7), "Equestrian Center A", JAEnum.RIDING)
+         date(2023, 1, 7), "Equestrian Center A", JAEnum.RIDING),
+
+        ("Rocinante", date(2018, 1, 15), "M", "Andalusian", "Grey", False,
+         date(2024, 3, 25), "Equestrian Center B", JAEnum.RECREATIONAL_ACTIVITIES),
     ]
 
     horses = [Horse(name=name, birth_date=birth_date, sex=sex, breed=breed, coat=coat, is_donation=is_donation,
@@ -211,6 +214,7 @@ def seed_horse_trainers():
 
 def seed_jockey_amazons():
     print("Seeding jockey_amazons")
+    
     school1 = SchoolInstitution(
         name="Escuela Primaria N°1",
         street="Calle Falsa",
@@ -222,7 +226,29 @@ def seed_jockey_amazons():
         phone_area_code="11",
         phone_number="12345678"
     )
-    db.session.add(school1)
+    school2 = SchoolInstitution(
+        name="Escuela Secundaria N°2",
+        street="Otra Calle",
+        number=456,
+        department="Departamento 2",
+        locality="Localidad 2",
+        province="Provincia 2",
+        phone_country_code="54",
+        phone_area_code="11",
+        phone_number="87654321"
+    )
+    school3 = SchoolInstitution(
+        name="Escuela Secundaria N°3",
+        street="Av. Siempreviva",
+        number=742,
+        department="Departamento Central",
+        locality="Springfield",
+        province="Provincia 3",
+        phone_country_code="54",
+        phone_area_code="351",
+        phone_number="1231234"
+    )
+    db.session.add_all([school1, school2, school3])
 
     family_member1 = FamilyMember(
         relationship="Padre",
@@ -241,10 +267,42 @@ def seed_jockey_amazons():
         education_level=EducationLevelEnum.SECONDARY,
         occupation="Empleado"
     )
+    family_member2 = FamilyMember(
+        relationship="Madre",
+        first_name="Laura",
+        last_name="Gómez",
+        dni="23456789",
+        street="Otra Calle",
+        number=456,
+        department="Departamento 2",
+        locality="Localidad 2",
+        province="Provincia 2",
+        phone_country_code="54",
+        phone_area_code="11",
+        phone_number="87654321",
+        email="laura.gomez@example.com",
+        education_level=EducationLevelEnum.TERTIARY,
+        occupation="Médico"
+    )
+    family_member3 = FamilyMember(
+        relationship="Madre",
+        first_name="Ana",
+        last_name="Romero",
+        dni="34567890",
+        street="Calle Los Álamos",
+        number=321,
+        department="Departamento Norte",
+        locality="Springfield",
+        province="Provincia 3",
+        phone_country_code="54",
+        phone_area_code="351",
+        phone_number="5675678",
+        email="ana.romero@example.com",
+        education_level=EducationLevelEnum.TERTIARY,
+        occupation="Docente"
+    )
+    db.session.add_all([family_member1, family_member2, family_member3])
 
-    db.session.add(family_member1)
-        
-        
     work_assignment1 = WorkAssignment(
         proposal=WorkProposalEnum.HIPOTHERAPY,
         condition=WorkConditionEnum.REGULAR,
@@ -253,9 +311,29 @@ def seed_jockey_amazons():
         professor_or_therapist_id=3,
         conductor_id=3,
         track_assistant_id=3,
-        horse_id=3  
+        horse_id=3
     )
-    db.session.add(work_assignment1)
+    work_assignment2 = WorkAssignment(
+        proposal=WorkProposalEnum.ADAPTED_EQUESTRIAN_SPORTS,
+        condition=WorkConditionEnum.REGULAR,
+        sede=SedeEnum.HLP,
+        days=[DayEnum.TUESDAY, DayEnum.THURSDAY],
+        professor_or_therapist_id=4,
+        conductor_id=4,
+        track_assistant_id=4,
+        horse_id=4
+    )
+    work_assignment3 = WorkAssignment(
+        proposal=WorkProposalEnum.RECREATIONAL_ACTIVITIES,
+        condition=WorkConditionEnum.REGULAR,
+        sede=SedeEnum.OTHER,
+        days=[DayEnum.TUESDAY, DayEnum.THURSDAY],
+        professor_or_therapist_id=5,
+        conductor_id=6,
+        track_assistant_id=7,
+        horse_id=6
+    )
+    db.session.add_all([work_assignment1, work_assignment2, work_assignment3])
 
     jockey1 = JockeyAmazon(
         first_name="María",
@@ -282,8 +360,70 @@ def seed_jockey_amazons():
         current_grade_year="5to Año",
         school_observations="Observaciones escolares",
         professionals="Profesionales involucrados",
-        family_members=[family_member1],    
+        family_members=[family_member1],
         work_assignment=work_assignment1
     )
-    db.session.add(jockey1)
-    db.session.commit() # jockey1 needs to be commited before adding work_assignments
+    
+    jockey2 = JockeyAmazon(
+        first_name="José",
+        last_name="López",
+        dni="98765432",
+        birth_date=date(1998, 8, 22),
+        birthplace="Ciudad 2",
+        has_scholarship=False,
+        scholarship_observations=None,
+        has_disability=True,
+        disability_diagnosis=DisabilityDiagnosisEnum.INTELLECTUAL_DISABILITY,
+        disability_other=None,
+        disability_type=DisabilityTypeEnum.MENTAL,
+        has_family_assignment=False,
+        family_assignment_type=None,
+        has_pension=False,
+        pension_type=None,
+        pension_details=None,
+        social_security="Obra Social 2",
+        social_security_number="987654321",
+        has_curatorship=True,
+        curatorship_observations="Curador: Juan Pérez",
+        school_institution=school2,
+        current_grade_year="2do Año",
+        school_observations="Observaciones escolares de José",
+        professionals="Profesional 1, Profesional 2",
+        family_members=[family_member2],
+        work_assignment=work_assignment2
+    )
+
+    jockey3 = JockeyAmazon(
+        first_name="Emilia",
+        last_name="Romero",
+        dni="45678901",
+        birth_date=date(2000, 12, 10),
+        birthplace="Springfield",
+        has_scholarship=True,
+        scholarship_observations="Beca completa por excelencia académica",
+        has_disability=False,
+        disability_diagnosis=None,
+        disability_other=None,
+        disability_type=None,
+        has_family_assignment=True,
+        family_assignment_type=FamilyAssignmentEnum.UNIVERSAL_WITH_CHILD,
+        has_pension=False,
+        pension_type=None,
+        pension_details=None,
+        social_security="Obra Social 3",
+        social_security_number="456789012",
+        has_curatorship=False,
+        curatorship_observations=None,
+        school_institution=school3,
+        current_grade_year="4to Año",
+        school_observations="Alumno destacada en actividades extracurriculares",
+        professionals="Psicopedagoga, Fonoaudióloga",
+        family_members=[family_member3],
+        work_assignment=work_assignment3
+    )
+
+    db.session.add_all([jockey1, jockey2, jockey3])
+    db.session.commit()
+
+    print("Seeded jockey_amazons")
+

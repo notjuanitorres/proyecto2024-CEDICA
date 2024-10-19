@@ -119,7 +119,7 @@ class JockeyAmazonSearchForm(FlaskForm):
     search_text = StringField(validators=[Length(max=50)])
     order_by = SelectField(
         choices=[
-            ('id', 'ID'),
+            ('inserted_at', 'Fecha de creación'),
             ('first_name', 'Nombre'),
             ('last_name', 'Apellido'),
         ],

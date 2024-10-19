@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 
-{% block title %}Jockeys - Agregar Jockey/Amazon{% endblock %}
+{% block title %} Jinetes y Amazonas - Agregar Jinete y Amazona {% endblock %}
 
 {% block main_content %}
     <nav class="breadcrumb" aria-label="breadcrumbs">
@@ -14,13 +14,13 @@
             <li>
                 <a href="{{ url_for('jockey_amazon_bp.get_jockeys') }}">
                     <span class="icon is-small"><i class="fas fa-hat-cowboy" aria-hidden="true"></i></span>
-                    <span>Jockeys</span>
+                    <span>Jinetes y Amazonas</span>
                 </a>
             </li>
             <li>
                 <a href="">
                     <span class="icon is-small"><i class="fas fa-add" aria-hidden="true"></i></span>
-                    <span>Agregar Jockey/Amazon</span>
+                    <span>Agregar Jinetes y Amazonas</span>
                 </a>
             </li>
         </ul>
@@ -28,7 +28,7 @@
 
     <section class="section pt-4">
         <div class="container">
-            <h1 class="title">Agregar Jockey/Amazon</h1>
+            <h1 class="title">Agregar Jinete/Amazona</h1>
             <form method="POST">
                 {{ form.hidden_tag() }}
 

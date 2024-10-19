@@ -1,4 +1,6 @@
 from typing import Dict, List
+from datetime import datetime
+
 from .models import (
     JockeyAmazon,
     SchoolInstitution,
@@ -244,7 +246,7 @@ class WorkAssignmentMapper:
                 "proposal": assignment.proposal.value,
                 "condition": assignment.condition.value,
                 "sede": assignment.sede.value,
-                "days": assignment.days.value,
+                "days": [day.value for day in assignment.days],
                 "professor_or_therapist_id": assignment.professor_or_therapist_id,
                 "conductor_id": assignment.conductor_id,
                 "track_assistant_id": assignment.track_assistant_id,
