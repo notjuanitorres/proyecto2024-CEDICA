@@ -1,4 +1,5 @@
 from flask_wtf import FlaskForm
+from wtforms.validators import DataRequired, Length, Optional
 from wtforms import (
     StringField,
     BooleanField,
@@ -9,8 +10,6 @@ from wtforms import (
     FloatField,
     SubmitField,
 )
-from wtforms.validators import DataRequired, Length, Optional
-from src.core.module.jockey_amazon.models import FileTagEnum
 from src.core.module.common.forms import (
     AddressForm,
     PhoneForm,
@@ -18,11 +17,12 @@ from src.core.module.common.forms import (
     DocumentsSearchForm,
     BaseManageDocumentsForm,
 )
-from src.core.module.jockey_amazon.models import (
+from src.core.module.jockey_amazon.data import (
     DisabilityDiagnosisEnum,
     DisabilityTypeEnum,
     FamilyAssignmentEnum,
     PensionEnum,
+    FileTagEnum,
 )
 from .extras.forms import (
     FamilyMemberForm,
