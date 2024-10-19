@@ -143,29 +143,29 @@
             {% block document_list %}
                 <div class="content mt-4">
                 {% if entity_has_documents %}
-                  {% for document in documents %}
+                  {% for file in files %}
                     <div class="card">
                       <article class="card-content level is-flex is-flex-wrap-wrap is-justify-content-space-between">
                         <div class="media m-0">
                           <div class="media-left">
-                            {{ render_file_icon(document.file.filetype, size=1) }}
+                            {{ render_file_icon(file.filetype, size=1) }}
                           </div>
                           <div class="media-content ml-2">
                             <p>
-                              <strong class="tag is-white">{{ render_document_category(document) }}{{ document.file.is_link | file_type }}</strong>
-                              <small class="ml-1">{{ document.file.uploaded_at | format_date }}</small>
+                              <strong class="tag is-white">{{ render_document_category(file) }}{{ file.is_link | file_type }}</strong>
+                              <small class="ml-1">{{ file.inserted_at | format_date }}</small>
                               <br />
-                              Título: {{ document.file.title }}
+                              Título: {{ file.title }}
                               <br />
-                              {% if document.file.is_link %}
-                              Enlace: <a href="{{ document.file.path }}">{{ document.file.path }}</a>
+                              {% if file.is_link %}
+                              Enlace: <a href="{{ file.path }}">{{ file.path }}</a>
                               {% endif %}
                             </p>
                           </div>
                         </div>
                         <div class="field has-addons">
                           <div class="control">
-                            <button class="button is-danger hover modal-trigger" data-id="{{ document.file.id }}" data-target="user-delete-modal">
+                            <button class="button is-danger hover modal-trigger" data-id="{{ file.id }}" data-target="user-delete-modal">
                               <span class="icon mr-1">
                                 <i class="fa-solid fa-trash"></i>
                               </span>
@@ -173,9 +173,9 @@
                             </button>
                           </div>
                           <div class="control">
-                              <a href="{{ url_for('index_bp.download_url', path=document.file.path) if not document.file.is_link else '#' }}"
-                                 class="button is-link {{ '' if not document.file.is_link else 'is-disabled' }}"
-                                 {% if not document.download_url %} aria-disabled="true" {% endif %}>
+                              <a href="{{ url_for('index_bp.download_url', path=file.path) if not file.is_link else '#' }}"
+                                 class="button is-link {{ '' if not file.is_link else 'is-disabled' }}"
+                                 {% if file.is_link %} aria-disabled="true" {% endif %}>
                                 <span class="icon mr-1">
                                   <i class="fa-solid fa-download"></i>
                                 </span>
@@ -183,7 +183,7 @@
                               </a>
                             </div>
                           <div class="control">
-                            <a href="{{ current_url }}/editar/{{ document.file.id }}"
+                            <a href="{{ current_url }}/editar/{{ file.id }}"
                                class="button is-primary">
                               <span class="icon mr-1">
                                 <i class="fa-solid fa-pen-nib"></i>

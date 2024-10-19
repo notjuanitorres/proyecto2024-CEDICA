@@ -3,7 +3,7 @@
 {% from "employee/macros/parse_categories.html" import render_category %}
 
 {# Variables used in base_document_list #}
-{% set entity_has_documents = documents %}
+{% set entity_has_documents = files %}
 {% set current_url = url_for('employee_bp.edit_documents', employee_id=employee.id) %}
 
 {% block title %} Equipo - Actualizar documentos {% endblock %}
@@ -74,8 +74,8 @@
   {{ render_pagination(paginated_files, 'employee_bp.edit_documents', {'employee_id': employee.id}) }}
 {% endblock %}
 
-{% macro render_document_category(document) %}
-    {{ render_category(document.file.tag) }}
+{% macro render_document_category(file) %}
+    {{ render_category(file.tag) }}
 {% endmacro %}
 
 {% block no_documents_text %} No se ha subido ningún documento para este empleado {% endblock %}
