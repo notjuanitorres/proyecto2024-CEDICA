@@ -66,16 +66,16 @@ def create_jockey(
         equestrian: EquestrianRepository = Provide[Container.equestrian_repository]):
     create_form = JockeyAmazonCreateForm()
 
-    create_form.work_assignments.professor_or_therapist_id.choices = [(t.id, f"{t.name} {t.lastname}") for t in
+    create_form.organization_information.work_assignments.professor_or_therapist_id.choices = [(t.id, f"{t.name} {t.lastname}") for t in
                                                                       employees.get_therapist()]
 
-    create_form.work_assignments.conductor_id.choices = [(r.id, f"{r.name} {r.lastname}") for r in
+    create_form.organization_information.work_assignments.conductor_id.choices = [(r.id, f"{r.name} {r.lastname}") for r in
                                                          employees.get_rider()]
 
-    create_form.work_assignments.track_assistant_id.choices = [(a.id, f"{a.name} {a.lastname}") for a in
+    create_form.organization_information.work_assignments.track_assistant_id.choices = [(a.id, f"{a.name} {a.lastname}") for a in
                                                                employees.get_track_auxiliary()]
 
-    create_form.work_assignments.horse_id.choices = [(h.id, h.name) for h in equestrian.get_horses()]
+    create_form.organization_information.work_assignments.horse_id.choices = [(h.id, h.name) for h in equestrian.get_horses()]
 
     if request.method == "POST":
         return add_jockey(create_form=create_form, jockeys=jockeys)
