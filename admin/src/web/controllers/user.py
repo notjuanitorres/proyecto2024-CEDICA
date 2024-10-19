@@ -147,7 +147,7 @@ def update_user(
     return redirect(url_for("users_bp.show_user", user_id=user_id))
 
 
-@users_bp.route("/archive/", methods=["POST"])
+@users_bp.route("/archivar/", methods=["POST"])
 @inject
 def archive_user(
     user_repository: AbstractUserRepository = Provide[Container.user_repository],
@@ -161,7 +161,7 @@ def archive_user(
     flash("El usuario ha sido archivado correctamente", "success")
     return redirect(url_for("users_bp.show_user", user_id=user_id))
 
-@users_bp.route("/recover/", methods=["POST"])
+@users_bp.route("/recuperar/", methods=["POST"])
 @inject
 def recover_user(
     user_repository: AbstractUserRepository = Provide[Container.user_repository],
@@ -176,7 +176,7 @@ def recover_user(
     return redirect(url_for("users_bp.show_user", user_id=user_id))
 
 
-@users_bp.route("/delete/", methods=["POST"])
+@users_bp.route("/eliminar/", methods=["POST"])
 @inject
 def delete_user(
     user_repository: AbstractUserRepository = Provide[Container.user_repository],
@@ -191,7 +191,7 @@ def delete_user(
     return redirect(url_for("users_bp.get_users", archive=True))
 
 
-@users_bp.route("/toggle-activation/<int:user_id>")
+@users_bp.route("/toggle-activacion/<int:user_id>")
 @inject
 def toggle_activation(
     user_id: int,

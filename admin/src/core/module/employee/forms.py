@@ -220,6 +220,7 @@ class EmployeeSearchForm(BaseSearchForm):
             ("false", "Inactivo"),
         ],
         validate_choice=True,
+        validators=[Optional()]
     )
     filter_job_position = SelectField(
         "Puesto laboral",

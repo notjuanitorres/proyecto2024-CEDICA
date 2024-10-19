@@ -105,6 +105,7 @@ class EmployeeMapper:
             "user_id": employee.user_id,
             "inserted_at": employee.inserted_at,
             "updated_at": employee.updated_at,
+            "is_deleted": employee.is_deleted
         }
         if documents:
             serialized_employee["files"] = [file.to_dict() for file in employee.files[:number_of_files] if file ]
