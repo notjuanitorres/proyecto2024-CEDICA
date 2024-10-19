@@ -23,7 +23,7 @@ def require_login_and_sys_admin(user_repository=Provide[Container.user_repositor
         return redirect(url_for("auth_bp.login"))
 
 @inject
-def search_employees(
+def search_users(
     search: UserSearchForm,
     need_archive: bool,
     users: AbstractUserRepository = Provide[Container.user_repository],
@@ -55,7 +55,7 @@ def search_employees(
 @users_bp.route("/")
 def get_users():
     search_form = UserSearchForm(request.args)
-    paginated_users = search_employees(search_form, need_archive=False)
+    paginated_users = search_users(search_form, need_archive=False)
     return render_template(
         "users.html",
         users=paginated_users,
@@ -66,7 +66,7 @@ def get_users():
 @users_bp.route("/archivados/")
 def get_deleted_users():
     search_form = UserSearchForm(request.args)
-    paginated_users = search_employees(search_form, need_archive=True)
+    paginated_users = search_users(search_form, need_archive=True)
     return render_template(
         "users_archived.html",
         users=paginated_users,

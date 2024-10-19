@@ -209,7 +209,11 @@ Miembro: {{ employee.name + " " + employee.lastname }}
                     <p>No se se ha subido ningun documento</p>
                     {% if "equipo_update" in permissions or is_admin %}
                     <footer class="card-footer">
-                        <a href="{{ url_for("employee_bp.create_document", employee_id=employee.id )}}" class="card-footer-item">Agregar</a>
+                        {% if not employee.is_deleted %}
+                            <a href="{{ url_for("employee_bp.create_document", employee_id=employee.id )}}" class="card-footer-item">Agregar</a>
+                        {% else %}
+                            <a href="{{ url_for("employee_bp.edit_documents", employee_id=employee.id )}}" class="card-footer-item">Ver</a>
+                        {% endif %}
                     </footer>
                     {% endif%}
                 {% endif %}
