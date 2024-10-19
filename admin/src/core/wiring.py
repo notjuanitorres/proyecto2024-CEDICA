@@ -8,6 +8,24 @@ container = Container()
 
 
 def init_wiring():
+    """
+    Initialize the dependency injection wiring for the application.
+
+    This function wires the specified modules and initializes the resources
+    in the dependency injection container.
+
+    Modules to wire:
+        - index
+        - user
+        - auth
+        - employee
+        - equestrian
+        - validators
+        - auth_helper
+
+    Returns:
+        None
+    """
     container.wire(modules=[
         # Add controllers or modules that are using Provide or @inject
         index,

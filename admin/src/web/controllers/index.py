@@ -33,14 +33,12 @@ def download_url(storage_services=Provide[Container.storage_services]):
     Returns:
         Response: Redirects to the presigned URL or the referrer with a flash message on error.
     """
+    return_url = request.referrer or "/"
     path = request.args.get("path")
-    if not path:
-        flash("No se proporcionó una ruta de archivo", "error")
-        return redirect(request.referrer)
 
     url = storage_services.presigned_download_url(path)
-    if url is None:
-        flash("No se pudo descargar el archivo", "error")
-        return redirect(request.referrer)
+    if not path or not url:
+        flash("No se pudo descargar el archivo", "danger")
+        return redirect(return_url)
 
     return redirect(url)

@@ -1,6 +1,6 @@
 from src.core.database import db
 from src.core.module.user.models import User
-from src.core.module.auth.models import  Role, Permission, RolePermission
+from src.core.module.auth.models import Role, Permission, RolePermission
 from src.core.module.auth.data import PermissionEnum, RoleEnum
 from src.core.module.employee.models import Employee
 from src.core.module.employee.data import (
@@ -14,6 +14,15 @@ from datetime import date
 
 
 def seed_all(app):
+    """
+    Seeds all the necessary data into the database.
+
+    This function runs the seeding process for accounts, employees, and the equestrian module,
+    committing changes to the database at appropriate points.
+
+    Args:
+        app (Flask): The Flask application instance used to get the application context.
+    """
     with app.app_context():
         seed_accounts()
         seed_employees()
@@ -25,6 +34,11 @@ def seed_all(app):
 
 
 def seed_equestrian_module():
+    """
+    Seeds data related to the equestrian module.
+
+    This includes horses and horse trainers.
+    """
     print("Seeding horses")
     seed_horses()
     print("Seeding HorseTrainers")
@@ -32,6 +46,11 @@ def seed_equestrian_module():
 
 
 def seed_accounts():
+    """
+    Seeds account-related data.
+
+    This includes roles, permissions, role-permission mappings, and users.
+    """
     print("Seeding roles")
     seed_roles()
     print("Seeding permissions")
@@ -43,6 +62,11 @@ def seed_accounts():
 
 
 def seed_roles():
+    """
+    Seeds the roles in the database.
+
+    Roles are added based on the `RoleEnum` enumeration.
+    """
     roles = [
         Role(name=role.value) for role in RoleEnum
     ]
@@ -51,6 +75,11 @@ def seed_roles():
 
 
 def seed_permissions():
+    """
+    Seeds the permissions in the database.
+
+    Permissions are added based on the `PermissionEnum` enumeration.
+    """
     permissions = [
         Permission(name=permission.value) for permission in PermissionEnum
     ]
@@ -59,6 +88,11 @@ def seed_permissions():
 
 
 def seed_role_permissions():
+    """
+    Seeds the role-permission relationships in the database.
+
+    This defines which permissions are granted to specific roles.
+    """
     role_permissions = [
         # Administración - Equipo
         *[RolePermission(role_id=4, permission_id=i) for i in range(1, 6)],
@@ -90,7 +124,22 @@ def seed_role_permissions():
 
 
 def seed_users():
+    """
+    Seeds the users in the database.
+
+    This function creates several default users with different roles and system access.
+    """
+
     def encrypt(password):
+        """
+        Encrypts a password using bcrypt.
+
+        Args:
+            password (str): The plaintext password to encrypt.
+
+        Returns:
+            str: The hashed password.
+        """
         return bcrypt.generate_password_hash(password).decode("utf-8")
 
     users = [
@@ -108,6 +157,11 @@ def seed_users():
 
 
 def seed_employees():
+    """
+    Seeds employees in the database.
+
+    This function creates several employees with different professions, positions, and conditions.
+    """
     print("Seeding employees")
     employees = [
         Employee(
@@ -171,6 +225,11 @@ def seed_employees():
 
 
 def seed_horses():
+    """
+    Seeds horse data in the database.
+
+    This function creates several horses with various attributes and assigned facilities.
+    """
     horse_data = [
         ("Caballito blanco", date(2015, 5, 14), "M", "Thoroughbred", "Bay", False,
          date(2020, 8, 20), "Equestrian Center A", JAEnum.RECREATIONAL_ACTIVITIES),
@@ -196,6 +255,11 @@ def seed_horses():
 
 
 def seed_horse_trainers():
+    """
+    Seeds horse trainer data in the database.
+
+    This function assigns horse trainers to horses.
+    """
     horse_trainers = [
         HorseTrainers(id_horse=1, id_employee=11),
         HorseTrainers(id_horse=2, id_employee=12),
@@ -203,4 +267,5 @@ def seed_horse_trainers():
         HorseTrainers(id_horse=4, id_employee=11),
         HorseTrainers(id_horse=4, id_employee=12),
     ]
+
     db.session.add_all(horse_trainers)

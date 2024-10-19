@@ -4,15 +4,33 @@ from flask import render_template
 
 @dataclass
 class Error:
+    """
+        Data class representing an error.
+
+        Attributes:
+            code (int): The HTTP status code of the error.
+            name (str): The name of the error.
+            description (str): The description of the error.
+        """
     code: int
     name: str
     description: str
 
 
 def handle_error(e):
+    """
+        Handle HTTP errors and render an error template.
+
+        Args:
+            e (HTTPException): The HTTP exception.
+
+        Returns:
+            Response: The rendered error template and the HTTP status code.
+        """
     error_map = {
         400: (
-        "Solicitud incorrecta", "La solicitud no se pudo entender por el servidor debido a una sintaxis mal formada."),
+            "Solicitud incorrecta",
+            "La solicitud no se pudo entender por el servidor debido a una sintaxis mal formada."),
         401: ("No autorizado", "No tiene autorización para acceder a este recurso."),
         403: ("Prohibido", "No tiene permiso para acceder a este recurso."),
         404: ("No encontrado", "La URL solicitada no se encuentra en el servidor."),
