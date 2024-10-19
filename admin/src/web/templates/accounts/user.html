@@ -30,6 +30,14 @@ Usuario: {{ user.alias }}
 {% endif %}
 {% endblock %}
 
+{% block banner %}
+    {% if user.is_deleted %}
+        <div class="is-flex is-fullwidth is-justify-content-center has-background-danger p-4">
+            <h2 class="title">Usuario eliminado</h2>
+        </div>
+    {% endif %}
+{% endblock %}
+
 {% block card_content %}
     <ul>
         <li><strong>ID: </strong> {{ user.id }}</li>
@@ -42,13 +50,26 @@ Usuario: {{ user.alias }}
 {% endblock %}
 
 {% block card_actions %}
-    <button href="" class="card-footer-item has-text-danger modal-trigger" data-id="{{ user.id }}" data-target="user-delete-modal">
-        Eliminar
-    </button>
-    <a href="{{ url_for('users_bp.toggle_activation', user_id=user.id)}}" class="card-footer-item">
-        {% if user.enabled %}Deshabilitar{% else %}Habilitar{% endif %}
-    </a>
-    <a href="{{ url_for('users_bp.edit_user', user_id=user.id)}}" class="card-footer-item has-text-warning">Editar</a>
+    {% if not user.system_admin %}
+        {% if user.is_deleted %}
+            <button class="card-footer-item has-text-danger modal-trigger" data-id="{{ user.id }}" data-target="user-delete-modal">
+                Eliminar para siempre
+            </button>
+            <form class="card-footer-item" action="{{ url_for('users_bp.recover_user') }}" method="POST">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="user_id" value="{{ user.id }}">
+                <button type="submit" class="has-text-primary">Recuperar</button>
+            </form>
+        {% else %}
+            <button class="card-footer-item has-text-danger modal-trigger" data-id="{{ user.id }}" data-target="user-delete-modal">
+                Archivar
+            </button>
+            <a href="{{ url_for('users_bp.toggle_activation', user_id=user.id)}}" class="card-footer-item">
+                {% if user.enabled %}Deshabilitar{% else %}Habilitar{% endif %}
+            </a>
+            <a href="{{ url_for('users_bp.edit_user', user_id=user.id)}}" class="card-footer-item has-text-warning">Editar</a>
+        {% endif %}
+    {% endif %}
 {% endblock %}
 
 {% block additional_cards %}
@@ -102,11 +123,22 @@ Usuario: {{ user.alias }}
 {% endblock %}
 
 {% block modal %}
-    {{ render_delete_modal(
-        url_for("users_bp.delete_user"),
-        title="Eliminar",
-        msg="¿Está seguro de que desea eliminar al usuario?",
-        msg_sub="Luego de confirmar, no se podrán revertir los cambios"
-    ) }}
+    {% if user.is_deleted %}
+        {{ render_delete_modal(
+            url_for("users_bp.delete_user", user_id=user.id),
+            title="Eliminar",
+            msg="¿Está seguro de que desea eliminar al usuario?",
+            msg_sub="Luego de aceptar, los cambios no se pueden revertir"
+
+        )}}   
+    {% else %}
+        {{ render_delete_modal(
+            url_for("users_bp.archive_user", user_id=user.id),
+            title="Archivar",
+            msg="¿Está seguro de que desea archivar al usuario?",
+            delete_text="Archivar"
+        )}}  
+    {% endif %}
+
 {% endblock %}
 

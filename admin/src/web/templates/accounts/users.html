@@ -17,6 +17,24 @@
   Usuarios
 {% endblock %}
 
+{% block tabs %}
+<div class="tabs is-medium is-toggle is-toggle-rounded is-centered">
+  <ul>
+    <li class="is-active">
+      <a href="{{ url_for("users_bp.get_users")}}">
+        <span class="icon is-small"><i class="fa-solid fa-users"></i></span>
+        <span>Activos</span>
+      </a>
+    </li>
+    <li>
+      <a href="{{ url_for("users_bp.get_deleted_users" )}}">
+        <span class="icon is-small"><i class="fa-solid fa-box-archive"></i></span>
+        <span>Archivo</span>
+      </a>
+    </li>
+  </ul>
+</div>
+{% endblock %}
 
 {% block create_button %}
   <a class="button is-primary level-item" href="{{ url_for('users_bp.create_user')}}">
@@ -77,7 +95,7 @@
         endpoints={
           'show':'users_bp.show_user',
           'edit': 'users_bp.edit_user',
-          'delete':''
+          'archive': 'users_bp.archive_user'
         },
         permission_to_show="users_show",
         permission_to_edit="users_update",
@@ -136,10 +154,10 @@
 {% block delete_modal %}
   {{
     render_delete_modal(
-      endpoint="users_bp.delete_user",
-      title="Eliminar",
-      msg="¿Está seguro de que desea eliminar al usuario?",
-      msg_sub="Luego de confirmar, no se podrán revertir los cambios"
+      endpoint=url_for("users_bp.archive_user"),
+      title="Archivar",
+      msg="¿Está seguro de que desea archivar al usuario?",
+      delete_text="Archivar"
     )
   }}
 {% endblock %}

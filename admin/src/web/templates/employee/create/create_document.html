@@ -1,0 +1,55 @@
+{% extends "base_document_management.html" %}
+
+{% block title %}Crear documento{% endblock %}
+
+{% block breadcrumb_items %}
+    <li>
+      <a href="{{ url_for('employee_bp.get_employees') }}">
+        <span class="icon is-small">
+          <i class="fas fa-users" aria-hidden="true"></i>
+        </span>
+        <span>Equipo</span>
+      </a>
+    </li>
+    <li>
+      <a href="{{ url_for('employee_bp.show_employee', employee_id=employee.id) }}">
+        <span class="icon is-small">
+          <i class="fas fa-user" aria-hidden="true"></i>
+        </span>
+        <span>{{ employee.name }} {{ employee.lastname }}</span>
+      </a>
+    </li>
+    <li>
+      <a href="{{ url_for('employee_bp.edit_documents', employee_id=employee.id) }}">
+        <span class="icon is-small">
+          <i class="fa-solid fa-pen-nib"></i>
+        </span>
+        <span>Actualizar documentos</span>
+      </a>
+    </li>
+    <li>
+      <a href="">
+        <span class="icon is-small">
+          <i class="fa-solid fa-pen-nib"></i>
+        </span>
+        <span>Crear documento</span>
+      </a>
+    </li>
+{% endblock %}
+
+{% block card_title %}
+	Crear documento
+{% endblock %}
+
+{% block submit_label %}
+	Guardar
+{% endblock %}
+
+{% block exit_button %}
+	<a href="{{ url_for('employee_bp.edit_documents', employee_id=employee.id) }}" class="button is-half is-danger">
+        Cerrar
+        <span class="icon ml-1">
+            <i class="fa-solid fa-exit"></i>
+        </span>
+    </a>
+{% endblock %}

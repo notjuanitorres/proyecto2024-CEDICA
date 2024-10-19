@@ -1,31 +1,50 @@
 from flask_wtf import FlaskForm
-from wtforms import (
+from wtforms.fields import (
     StringField,
     BooleanField,
     SelectField,
     DateField,
-    SelectMultipleField,
-    widgets,
-    SubmitField,
 )
 from wtforms.validators import DataRequired, Length
-from src.core.module.equestrian.models import JAEnum, Horse
+
+from src.core.module.common.forms import BaseSearchForm, DocumentsSearchForm
+from src.core.module.common.forms import BaseManageDocumentsForm
+from src.core.module.equestrian.models import JAEnum, FileTagEnum
 
 
-class MultiCheckboxField(SelectMultipleField):
+class HorseAddDocumentsForm(BaseManageDocumentsForm):
     """
-    https://wtforms.readthedocs.io/en/3.0.x/specific_problems/?highlight=listwidget#specialty-field-tricks
-    A multiple-select, except displays a list of checkboxes.
+    Form for adding documents related to a horse.
 
-    Iterating the field will produce subfields, allowing custom rendering of
-    the enclosed checkbox fields.
+    Attributes:
+        tag (SelectField): The tag representing the document.
     """
-
-    widget = widgets.ListWidget(prefix_label=False)
-    option_widget = widgets.CheckboxInput()
+    tag = SelectField(
+        "Tag",
+        choices=[(e.name, e.value) for e in FileTagEnum],
+        validators=[
+            DataRequired(
+                message="Debe seleccionar lo que representa este archivo",
+            )
+        ],
+    )
 
 
 class HorseManagementForm(FlaskForm):
+    """
+    Form for managing horse details.
+
+    Attributes:
+        name (StringField): The name of the horse.
+        breed (StringField): The breed of the horse.
+        birth_date (DateField): The birthdate of the horse.
+        sex (SelectField): The sex of the horse.
+        coat (StringField): The coat color of the horse.
+        is_donation (BooleanField): Indicates if the horse is a donation.
+        admission_date (DateField): The admission date of the horse.
+        assigned_facility (StringField): The facility assigned to the horse.
+        ja_type (SelectField): The type of J&A assigned to the horse.
+    """
     name = StringField(
         "Nombre",
         validators=[
@@ -92,61 +111,55 @@ class HorseManagementForm(FlaskForm):
 
 
 class HorseCreateForm(HorseManagementForm):
+    """Form for creating a new horse entry."""
     pass
 
 
 class HorseEditForm(HorseManagementForm):
+    """
+    Form for editing an existing horse entry.
+    """
     def __init__(self, *args, **kwargs):
+        """Initialize the form."""
         super(HorseEditForm, self).__init__(*args, **kwargs)
-        self.trainers.choices = self.get_trainers_choices()
-
-    def import_services(self):
-        # Needed to import the container dynamically at run time
-        # It is in order to work along with WTForms instantiation at definition
-        # pylint: disable="C0415"
-        from src.core.container import Container
-
-        container = Container()
-        return container.employee_services()
-
-    def get_trainers_choices(self):
-        return [
-            (trainer.id, f"{trainer.fullname} ({trainer.position.value})")
-            for trainer in self.import_services().employee_repository().get_trainers()
-        ]
-
-    trainers = MultiCheckboxField(
-        "Entrenadores y conductores",
-        choices=[],
-    )
 
 
-class HorseSearchForm(FlaskForm):
-    class Meta:
-        csrf = False
+class HorseSearchForm(BaseSearchForm):
+    """
+    Form for searching horses.
 
-    search_by = SelectField(
-        choices=[
+    Attributes:
+        filter_ja_type (SelectField): The filter for J&A type.
+    """
+    def __init__(self, *args, **kwargs):
+        """Initialize the form with search and order choices."""
+        super().__init__(*args, **kwargs)
+        self.search_by.choices = [
             ("name", "Nombre"),
-        ],
-        validate_choice=True,
-    )
-    search_text = StringField(validators=[Length(max=50)])
+        ]
+        self.order_by.choices = [
+            ("id", "ID"),
+            ("name", "Nombre"),
+            ("birth_date", "Fecha de nacimiento"),
+            ("admission_date", "Fecha de ingreso"),
+        ]
 
     filter_ja_type = SelectField(
         choices=[("", "Ver Todos")] + [(jtype.name, jtype.value) for jtype in JAEnum],
         validate_choice=True,
     )
-    order_by = SelectField(
-        choices=[
-            ("id", "ID"),
-            ("name", "Nombre"),
-            ("birth_date", "Fecha de nacimiento"),
-            ("admission_date", "Fecha de ingreso"),
-        ],
-        validate_choice=True,
-    )
-    order = SelectField(
-        choices=[("asc", "Ascendente"), ("desc", "Descendente")], validate_choice=True
-    )
-    submit_search = SubmitField("Buscar")
+
+
+class HorseDocumentSearchForm(DocumentsSearchForm):
+    """
+    Form for searching horse documents.
+
+    Attributes:
+        filter_tag (SelectField): The filter for document tags.
+    """
+    def __init__(self, *args, **kwargs):
+        """Initialize the form with filter tag choices."""
+        super().__init__(*args, **kwargs)
+        self.filter_tag.choices = [
+            ("", "Ver Todos"),
+        ] + [(e.name, e.value) for e in FileTagEnum]

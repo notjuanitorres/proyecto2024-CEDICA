@@ -6,7 +6,7 @@
     <section class="section">
         <div class="container">
             <h1 class="title">Crear caballo</h1>
-            <form method="POST">
+            <form method="POST" enctype="multipart/form-data">
                 {{ form.hidden_tag() }}
 
                 <div class="field">
@@ -97,10 +97,16 @@
 
                 <div class="field">
                     <div class="control">
-                        <button class="button is-primary" type="submit">Guardar cambios</button>
+                        <button class="button is-primary" type="submit">Continuar</button>
                     </div>
                 </div>
             </form>
         </div>
     </section>
 {% endblock %}
+
+{% block extra_scripts %}
+	{{ super() }}
+    <script src="{{ url_for('static', filename='js/toggle-search-bar.js') }}"></script>
+{% endblock %}
+

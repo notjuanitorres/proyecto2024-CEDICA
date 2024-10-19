@@ -1,0 +1,105 @@
+{% extends "base_document_list.html" %}
+
+{% from "equestrian/macros/parse_categories.html" import render_category %}
+
+{# Variables used in base_document_list #}
+{% set entity_has_documents = files %}
+{% set current_url = url_for('equestrian_bp.edit_documents', horse_id=horse.id) %}
+
+{% block title %} Caballos - Actualizar documentos {% endblock %}
+
+{% block breadcrumb_items %}
+    <li>
+      <a href="{{ url_for('equestrian_bp.get_horses') }}">
+        <span class="icon is-small">
+          <i class="fas fa-horse" aria-hidden="true"></i>
+        </span>
+        <span>Caballos</span>
+      </a>
+    </li>
+    <li>
+      <a href="{{ url_for('equestrian_bp.show_horse', horse_id=horse.id) }}">
+        <span class="icon is-small">
+          <i class="fas fa-horse-head" aria-hidden="true"></i>
+        </span>
+        <span>{{ horse.name }}</span>
+      </a>
+    </li>
+    <li>
+      <a href="">
+        <span class="icon is-small">
+          <i class="fa-solid fa-pen-nib"></i>
+        </span>
+        <span>Actualizar documentos</span>
+      </a>
+    </li>
+{% endblock %}
+
+{% block doc_header %}
+    <div class="container">
+        <h4 class="title is-fullwidth has-text-centered">Actualizando a {{ horse.name }}</h4>
+        <div class="tabs is-toggle is-fullwidth is-toggle-rounded is-centered is-medium">
+            <ul>
+                <li >
+                    <a href="{{ url_for('equestrian_bp.edit_horse', horse_id=horse.id) }}">
+                          <span class="icon is-small">
+                              <i class="fa fa-info-circle" aria-hidden="true"></i>
+                          </span>
+                        <span>Informacion General</span>
+                    </a>
+                </li>
+                <li class="is-active">
+                    <a href="{{ url_for("equestrian_bp.edit_documents",  horse_id=horse.id ) }}">
+                          <span class="icon is-small">
+                              <i class="far fa-file-alt" aria-hidden="true"></i>
+                          </span>
+                        <span>Documentacion Anexa</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for("equestrian_bp.get_horse_trainers",  horse_id=horse.id ) }}">
+                          <span class="icon is-small">
+                              <i class="far fa-user" aria-hidden="true"></i>
+                          </span>
+                        <span>Entrenadores asociados</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+{% endblock %}
+
+{% block form_action %}{{ url_for("equestrian_bp.edit_documents", horse_id=horse.id ) }}{% endblock %}
+{% block clear_url %}{{ url_for("equestrian_bp.edit_documents", horse_id=horse.id ) }}{% endblock %}
+
+{% block doc_header_title %} Actualizando documentos de {{ horse.name }} {% endblock %}
+{% block doc_header_endpoint %}{{ url_for("equestrian_bp.edit_documents", horse_id=horse.id ) }}{% endblock %}
+
+{% block create_endpoint %}
+    {{ url_for('equestrian_bp.create_document',horse_id=horse.id) }}
+{% endblock %}
+
+{% block top_pagination %}
+  {{ render_pagination(paginated_files, 'equestrian_bp.edit_documents', {'horse_id': horse.id}) }}
+{% endblock %}
+
+{% macro render_document_category(file) %}
+    {{ render_category(file.tag) }}
+{% endmacro %}
+
+{% block no_documents_text %} No se ha subido ningún documento para este caballo {% endblock %}
+
+{% block bottom_pagination %}
+  {{ render_pagination(paginated_files, 'equestrian_bp.edit_documents', {'horse_id': horse.id}) }}
+{% endblock %}
+
+
+{% block modal %}
+    {{ render_delete_modal(
+        url_for("equestrian_bp.delete_document", horse_id=horse.id),
+        title="Eliminar documento",
+        msg="¿Está seguro de que desea eliminar el documento?",
+        msg_sub="Luego de confirmar, no se podrán revertir los cambios"
+    ) }}
+{% endblock %}
+

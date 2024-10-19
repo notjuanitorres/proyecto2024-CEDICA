@@ -26,6 +26,7 @@
 
 {% block form_action %}{{ url_for("equestrian_bp.get_horses") }}{% endblock %}
 {% block clear_url %}{{ url_for("equestrian_bp.get_horses") }}{% endblock %}
+
 {% block aditional_filters %}
     <div class="field">
         <label class="label">Tipo de Actividad</label>
@@ -123,8 +124,7 @@
 {% block delete_modal %}
   {{
     render_delete_modal(
-      field="horse",
-      endpoint="equestrian_bp.delete_horse",
+      endpoint=url_for("equestrian_bp.delete_horse"),
       title="Eliminar",
       msg="¿Está seguro de que desea eliminar al caballo?",
       msg_sub="Luego de confirmar, no se podrán revertir los cambios"

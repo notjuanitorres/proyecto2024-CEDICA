@@ -15,6 +15,7 @@ class User(db.Model):
     updated_at = db.Column(
         db.DateTime, default=datetime.now, onupdate=datetime.now)
     role = db.relationship("Role", backref="users")
+    is_deleted = db.Column(db.Boolean, nullable=False, default=False)
 
     def __repr__(self):
         return f"<User(id={self.id}, username={self.alias}, email={self.email})>"
@@ -26,7 +27,8 @@ class User(db.Model):
             "alias": self.alias,
             "enabled": self.enabled,
             "system_admin": self.system_admin,
-            'role_id': self.role_id
+            "role_id": self.role_id,
+            "is_deleted": self.is_deleted
         }
         return user_dict
 
