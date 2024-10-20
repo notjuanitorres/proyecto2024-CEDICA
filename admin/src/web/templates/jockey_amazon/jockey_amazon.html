@@ -23,8 +23,17 @@
 
 {% block card_title %}Jockey Amazon: {{ jockey_amazon.first_name + " " + jockey_amazon.last_name }}{% endblock %}
 
-{% block card_content %}
+{% block banner %}
+    {% if jockey_amazon.is_deleted %}
+        <div class="is-flex is full-width is-justify-content-center has-background-danger p-4">
+            <h2 class="title">Jinete/Amazona eliminado</h2>
+        </div>
+    {% endif %}
+{% endblock %}
 
+
+{% block card_content %}
+{% if jockey_amazon %}
 <div class="grid is-col-min-16">
     <div id="basic-info" class="cell">
         <h3>Información general</h3>
@@ -172,27 +181,60 @@
     </ul>
 </div>
 
-
+{% else %}
+    <p>No se encontró el Jinete/Amazona</p>
+{% endif %}
 {% endblock %}
 
 {% block card_actions %}
-    <button href="" class="card-footer-item has-text-danger modal-trigger" data-id="{{ jockey_amazon.id }}" data-target="jockey-delete-modal">
-        Eliminar
-    </button>
-    <a href="{{ url_for('jockey_amazon_bp.get_jockeys') }}" class="card-footer-item has-text-warning">Editar</a>
+    {% if jockey_amazon.is_deleted %}
+    {% if "jockey_amazon_destroy" in permissions or is_admin %}
+        <button class="card-footer-item has-text-danger modal-trigger" data-id="{{ jockey_amazon.id }}" data-target="jockey-delete-modal">
+            Eliminar definitivamente
+        </button>
+        <form class="card-footer-item" action="{{ url_for('jockey_amazon_bp.recover_jockey') }}" method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="jockey_amazon_id" value="{{ jockey_amazon.id }}">
+            <button type="submit" class="has-text-primary">Recuperar</button>
+        </form>
+    {% endif %}
+    {% else %}
+        {% if "jockey_amazon_destroy" in permissions or is_admin %}
+            <button class="card-footer-item has-text-danger modal-trigger" data-id="{{ jockey_amazon.id }}" data-target="jockey-delete-modal">
+                Archivar
+            </button>
+        {% endif %}
+
+        {% if "jockey_amazon_update" in permissions or is_admin %}
+            <a href="{{ url_for( 'jockey_amazon_bp.edit_jockey', jockey_id=jockey_amazon.id )}}" class="card-footer-item has-text-warning">Actualizar</a>
+        {% endif %}
+    {% endif %}
     <a href="{{ url_for('jockey_amazon_bp.edit_documents', jockey_id=jockey_amazon.id) }}" class="card-footer-item has-text-link">Ver documentos</a>
 {% endblock %}
 
 {% block modal %}
-    {{
-        render_delete_modal(
-            field="jockey",
-            endpoint="jockey_amazon_bp.delete_jockey",
-            title="Eliminar",
-            msg="¿Está seguro de que desea eliminar este Jockey Amazon?",
-            msg_sub="Luego de confirmar, no se podrán revertir los cambios"
-        )
-    }}
+    {% if jockey_amazon.is_deleted %}
+        {{
+            render_delete_modal(
+                field="jockey",
+                endpoint=url_for("jockey_amazon_bp.delete_jockey", jockey_amazon_id=jockey_amazon.id),
+                title="Eliminar",
+                msg="¿Está seguro de que desea eliminar este Jinete/Amazona?",
+                msg_sub="Luego de confirmar, no se podrán revertir los cambios"
+            )
+        }}
+    {% else %}
+        {{
+            render_delete_modal(
+                field="jockey",
+                endpoint=url_for("jockey_amazon_bp.archive_jockey", jockey_amazon_id=jockey_amazon.id),
+                title="Archivar",
+                msg="¿Está seguro de que desea archivar este Jinete/Amazona?",
+                msg_sub="Luego de confirmar, no se podrán revertir los cambios",
+                delete_text="Archivar"
+            )
+        }}
+    {% endif %}
 
     <script>
         function calculateAge(birthDate) {

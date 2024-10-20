@@ -25,28 +25,38 @@ jockey_amazon_bp = Blueprint(
     url_prefix="/jockey_amazon/",
 )
 
+@inject
+def search_jockeys(
+    search: JockeyAmazonSearchForm,
+    need_archive: bool,
+    jockeys: AbstractJockeyAmazonRepository = Provide[Container.jockey_amazon_repository],
+):
+    page = request.args.get("page", type=int, default=1)
+    per_page = request.args.get("per_page", type=int, default=10)
+    order_by = []
+    search_query = {
+        "filters": {
+            "is_deleted": need_archive
+        }
+    }
+    if search.submit_search.data and search.validate():
+        order_by = [(search.order_by.data, search.order.data)]
+        search_query["text"] = search.search_text.data
+        search_query["field"] = search.search_by.data
+
+    paginated_jockeys = jockeys.get_page(
+        page=page, per_page=per_page, order_by=order_by, search_query=search_query
+    )
+    return paginated_jockeys
+
 
 @jockey_amazon_bp.route("/", methods=["GET"])
 @check_user_permissions(permissions_required=["jockey_amazon_index"])
 @inject
-def get_jockeys(
-        jockeys: AbstractJockeyAmazonRepository = Provide[Container.jockey_amazon_repository],
-):
-    page = request.args.get("page", type=int)
-    per_page = request.args.get("per_page", type=int)
+def get_jockeys():
     search = JockeyAmazonSearchForm(request.args)
-    search_query = {}
-    order_by = []
-
-    if search.submit_search.data and search.validate():
-        order_by = [(search.order_by.data, search.order.data)]
-        search_query = {
-            "text": search.search_text.data,
-            "field": search.search_by.data,
-        }
-
-    paginated_jockeys_and_amazons = jockeys.get_page(
-        page=page, per_page=per_page, order_by=order_by, search_query=search_query
+    paginated_jockeys_and_amazons = search_jockeys(
+        search=search, need_archive=False
     )
 
     return render_template(
@@ -56,6 +66,23 @@ def get_jockeys(
         search_form=search,
     )
 
+@jockey_amazon_bp.route("/archivados", methods=["GET"])
+@check_user_permissions(permissions_required=["jockey_amazon_index"])
+def get_deleted_jockeys():
+
+    search = JockeyAmazonSearchForm(request.args)
+
+
+    paginated_jockeys_and_amazons = search_jockeys(
+        search=search, need_archive=True
+    )
+
+    return render_template(
+        "./jockey_amazon/jockeys_amazons_archived.html",
+        jockeys=paginated_jockeys_and_amazons,
+        jockey_amazon_information=jockey_amazon_information,
+        search_form=search,
+    )
 
 @jockey_amazon_bp.route("/crear", methods=["GET", "POST"])
 @check_user_permissions(permissions_required=["jockey_amazon_new"])
@@ -177,6 +204,35 @@ def update_jockey(
     flash("El Jockey/Amazon ha sido actualizado exitosamente ")
     return redirect(url_for("jockey_amazon_bp.show_jockey", jockey_id=jockey_id))
 
+@jockey_amazon_bp.route("/archivar/", methods=["POST"])
+@check_user_permissions(permissions_required=["jockey_amazon_destroy"])
+@inject
+def archive_jockey(
+    jockeys: AbstractJockeyAmazonRepository = Provide[Container.jockey_amazon_repository]
+):
+    jockey_amazon_id = request.form["item_id"]
+    archived = jockeys.archive(jockey_amazon_id)
+
+    if not archived:
+        flash("El Jinete/Amazona no existe o no ha podido ser archivado, intentelo nuevamente", "warning")
+    else:
+        flash("El Jinete/Amazona ha sido archivado correctamente", "success")
+    return redirect(url_for("jockey_amazon_bp.show_jockey", jockey_id=jockey_amazon_id))
+
+@jockey_amazon_bp.route("/recuperar/", methods=["POST"])
+@check_user_permissions(permissions_required=["jockey_amazon_destroy"])
+@inject
+def recover_jockey(
+    jockeys: AbstractJockeyAmazonRepository = Provide[Container.jockey_amazon_repository]
+):
+    jockey_amazon_id = request.form["jockey_amazon_id"]
+    recovered = jockeys.recover(jockey_amazon_id)
+
+    if not recovered:
+        flash("El Jinete/Amazona no existe o no ha podido ser recuperado, intentelo nuevamente", "warning")
+    else:
+        flash("El Jinete/Amazona ha sido recuperado correctamente", "success")
+    return redirect(url_for("jockey_amazon_bp.show_jockey", jockey_id=jockey_amazon_id))
 
 @jockey_amazon_bp.route("/delete/", methods=["POST"])
 @inject

@@ -87,7 +87,8 @@ class JockeyAmazonMapper:
                 "family_members": [
                     FamilyMemberMapper.from_entity(member) for member in jockey.family_members
                 ],
-                "work_assignment": WorkAssignmentMapper.from_entity(jockey.work_assignment)
+                "work_assignment": WorkAssignmentMapper.from_entity(jockey.work_assignment),
+                "is_deleted": jockey.is_deleted
             }
             return jockey_dict
 

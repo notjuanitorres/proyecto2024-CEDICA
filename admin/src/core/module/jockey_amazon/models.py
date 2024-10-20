@@ -140,9 +140,6 @@ class FamilyMember(db.Model):
     education_level = db.Column(SQLAEnum(EducationLevelEnum), nullable=False)
     occupation = db.Column(db.String(100), nullable=False)
 
-    jockey_amazon = db.relationship('JockeyAmazon', secondary='family_member_jockey_amazon',
-                                    back_populates='family_members')
-
 
 class WorkAssignment(db.Model):
     __tablename__ = 'work_assignments'
@@ -203,29 +200,30 @@ class JockeyAmazon(db.Model, AddressMixin, PhoneMixin, EmergencyContactMixin):
     curatorship_observations = db.Column(db.Text, nullable=True)
 
     school_institution_id = db.Column(db.Integer, db.ForeignKey('school_institutions.id'), nullable=True)
-    school_institution = db.relationship('SchoolInstitution')
+    school_institution = db.relationship('SchoolInstitution', cascade="all, delete-orphan", single_parent=True)
 
     current_grade_year = db.Column(db.String(50), nullable=True)
     school_observations = db.Column(db.Text, nullable=True)
 
+
     professionals = db.Column(db.Text, nullable=True)
 
     family_members = db.relationship('FamilyMember', secondary='family_member_jockey_amazon',
-                                     back_populates='jockey_amazon')
+                                      cascade="all, delete-orphan", single_parent=True)
     work_assignment_id = db.Column(db.Integer, db.ForeignKey('work_assignments.id'), nullable=True)
-    work_assignment = db.relationship('WorkAssignment')
+    work_assignment = db.relationship('WorkAssignment', cascade="all, delete-orphan",  single_parent=True)
 
     inserted_at = db.Column(db.DateTime, default=datetime.now)
     updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
 
     family_member_jockey_amazon = db.Table('family_member_jockey_amazon',
-                                           db.Column('family_member_id', db.Integer, db.ForeignKey('family_members.id'),
-                                                     primary_key=True),
-                                           db.Column('jockey_amazon_id', db.Integer,
-                                                     db.ForeignKey('jockeys_amazons.id'), primary_key=True)
-                                           )
+                                    db.Column('family_member_id', db.Integer, db.ForeignKey('family_members.id', ondelete='CASCADE'), primary_key=True),
+                                    db.Column('jockey_amazon_id', db.Integer, db.ForeignKey('jockeys_amazons.id', ondelete='CASCADE'), primary_key=True)
+                                    )
+    
     files = db.relationship("JockeyAmazonFile", back_populates="owner")
 
+    is_deleted = db.Column(db.Boolean, nullable=False, default=False)
 
 class JockeyAmazonFile(File):
     __mapper_args__ = {

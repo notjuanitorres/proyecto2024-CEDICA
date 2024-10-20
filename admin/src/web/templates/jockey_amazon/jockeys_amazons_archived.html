@@ -20,13 +20,13 @@
 {% block tabs %}
 <div class="tabs is-medium is-toggle is-toggle-rounded is-centered">
   <ul>
-    <li class="is-active">
+    <li>
       <a href="{{ url_for('jockey_amazon_bp.get_jockeys')}}">
         <span class="icon is-small"><i class="fa-solid fa-users"></i></span>
         <span>Todos</span>
       </a>
     </li>
-    <li>
+    <li class="is-active">
       <a href="{{ url_for('jockey_amazon_bp.get_deleted_jockeys')}}">
         <span class="icon is-small"><i class="fa-solid fa-box-archive"></i></span>
         <span>J&A Archivados</span>
@@ -36,6 +36,7 @@
 </div>
 {% endblock %}
 
+
 {% block create_button %}
   <a class="button is-primary level-item" href="{{ url_for('jockey_amazon_bp.create_jockey')}}">
     Agregar Jinete/Amazona
@@ -43,8 +44,8 @@
   </a>
 {% endblock %}
 
-{% block form_action %}{{ url_for("jockey_amazon_bp.get_jockeys") }}{% endblock %}
-{% block clear_url %}{{ url_for("jockey_amazon_bp.get_jockeys") }}{% endblock %}
+{% block form_action %}{{ url_for("jockey_amazon_bp.get_deleted_jockeys") }}{% endblock %}
+{% block clear_url %}{{ url_for("jockey_amazon_bp.get_deleted_jockeys") }}{% endblock %}
 
 {% block table_header %}
   <th></th>
@@ -58,7 +59,7 @@
 {% endblock %}
 
 {% block top_pagination %}
-  {{ render_pagination(jockeys, 'jockey_amazon_bp.get_jockeys') }}
+  {{ render_pagination(jockeys, 'jockey_amazon_bp.get_deleted_jockeys') }}
 {% endblock %}
 
 {% block table_body %}
@@ -72,8 +73,8 @@
         to_left=true,
         endpoints={
           'show':'jockey_amazon_bp.show_jockey',
-          'edit': 'jockey_amazon_bp.edit_jockey',
-          'archive':'jockey_amazon_bp.archive_jockey',
+          'edit':'jockey_amazon_bp.edit_jockey',
+          'delete':'jockey_amazon_bp.delete_jockey'
         },
         permission_to_show="jockey_amazon_show",
         permission_to_edit="jockey_amazon_update",
@@ -87,7 +88,7 @@
     <td><span class="is-hidden-tablet has-text-weight-bold">Apellido: </span>{{ jockey.last_name }}</td>
     <td><span class="is-hidden-tablet has-text-weight-bold">DNI: </span>{{ jockey.dni }}</td>
     <td><span class="is-hidden-tablet has-text-weight-bold">Fecha de Nacimiento: </span>{{ jockey.birth_date.strftime('%d-%m-%Y') }}</td>
-    <td><span class="is-hidden-tablet has-text-weight-bold">Teléfono: </span>{{ jockey.country_code }} {{ jockey.area_code }} {{ jockey.phone }}</td>
+    <td><span class="is-hidden-tablet has-text-weight-bold">Teléfono: </span>{{ jockey.phone }}</td>
     <td><span class="is-hidden-tablet has-text-weight-bold">Fecha de creación: </span>{{ jockey.inserted_at.strftime('%d-%m-%Y') }}</td>
     <td><span class="is-hidden-tablet has-text-weight-bold">Propuesta de Trabajo: </span>{{ jockey.work_assignment.proposal.value }}</td>
     <td class="is-hidden-tablet is-flex">
@@ -107,17 +108,17 @@
 {% endblock %}
 
 {% block bottom_pagination %}
-  {{ render_pagination(jockeys, 'jockey_amazon_bp.get_jockeys') }}
+  {{ render_pagination(jockeys, 'jockey_amazon_bp.get_deleted_jockeys') }}
 {% endblock %}
 
 {% block delete_modal %}
-  {{ 
+  {{
     render_delete_modal(
-      endpoint=url_for("jockey_amazon_bp.archive_jockey"),
-      title="Archivar",
-      msg="¿Está seguro de que desea archivar al Jinete/Amazona?",
+      endpoint=url_for("jockey_amazon_bp.delete_jockey"),
+      title="Eliminar",
+      msg="¿Está seguro de que desea eliminar al jockey?",
       msg_sub="Luego de confirmar, no se podrán revertir los cambios",
-      delete_text="Archivar"
-  )
+      delete_text="Eliminar"
+    )
   }}
 {% endblock %}

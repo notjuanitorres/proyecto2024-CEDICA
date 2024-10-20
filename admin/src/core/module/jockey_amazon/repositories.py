@@ -33,6 +33,14 @@ class AbstractJockeyAmazonRepository(ABC):
         pass
 
     @abstractmethod
+    def archive(self, jockey_id: int) -> bool:
+        pass
+
+    @abstractmethod
+    def recover(self, jockey_id: int) -> bool:
+        pass
+
+    @abstractmethod
     def delete(self, jockey_id: int) -> bool:
         pass
 
@@ -101,6 +109,22 @@ class JockeyAmazonRepository(AbstractJockeyAmazonRepository):
         if not jockey:
             return False
         jockey.update(data)
+        self.save()
+        return True
+    
+    def archive(self, jockey_id: int) -> bool:
+        jockey = self.get_by_id(jockey_id)
+        if not jockey or jockey.is_deleted:
+            return False
+        jockey.is_deleted = True
+        self.save()
+        return True
+    
+    def recover(self, jockey_id: int) -> bool:
+        jockey = self.get_by_id(jockey_id)
+        if not jockey or not jockey.is_deleted:
+            return False
+        jockey.is_deleted = False
         self.save()
         return True
 
