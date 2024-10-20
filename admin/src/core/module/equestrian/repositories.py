@@ -343,8 +343,8 @@ class EquestrianRepository(AbstractEquestrianRepository):
         """
         Delete a horse and its related data.
 
-        Before deleting the horse we cascade delete every related data like HorseFiles, HorseTrainers
-        and WorkAssignments
+        Before deleting the horse we cascade delete every related data like HorseFiles and HorseTrainers.
+        In workassignments we set the horse_id to null.
 
         Args:
             horse_id (int): The ID of the horse.

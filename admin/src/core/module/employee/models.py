@@ -39,6 +39,6 @@ class Employee(db.Model, AddressMixin, PhoneMixin, EmergencyContactMixin):
     is_deleted = db.Column(db.Boolean, nullable=False, default=False)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True)
     user = db.relationship("User", backref=db.backref("employee", uselist=False))
-    files = db.relationship("EmployeeFile", back_populates="owner", cascade="all, delete-orphan"
-)
+    files = db.relationship("EmployeeFile", back_populates="owner", cascade="all, delete-orphan")
+    horse_trainings = db.relationship("HorseTrainers", back_populates="employee", cascade="all, delete-orphan")
 
