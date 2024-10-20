@@ -15,6 +15,7 @@ class Payment(db.Model):
     # Optional relationship to Employee
     beneficiary_id = db.Column(db.Integer, db.ForeignKey("employees.id"), nullable=True)
     beneficiary = db.relationship("Employee", backref=db.backref("payments", lazy=True))
-
+    
+    is_archived = db.Column(db.Boolean, default=False, nullable=False) 
     inserted_at = db.Column(db.DateTime, default=datetime.now)
     updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)

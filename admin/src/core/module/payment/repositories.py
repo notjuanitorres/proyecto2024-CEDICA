@@ -89,9 +89,23 @@ class PaymentRepository(AbstractPaymentRepository):
         if not payment:
             return False
         payment.update(data)
-
         self.save()
         return True
+
+    def archive_payment(self, payment_id):
+        payment = Payment.query.filter_by(id=payment_id).first()
+        if payment:
+            payment.is_archived = True
+            self.save()
+        return payment
+
+    def unarchive_payment(self, payment_id):
+        payment = Payment.query.filter_by(id=payment_id).first()
+        if payment:
+            payment.is_archived = False
+            self.payment_repository.update(payment)
+            self.save()
+        return payment
 
     def delete(self, payment_id: int) -> bool:
         payment = Payment.query.filter_by(id=payment_id).first()

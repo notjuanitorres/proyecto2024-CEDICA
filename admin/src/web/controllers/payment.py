@@ -2,8 +2,9 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash,
 from dependency_injector.wiring import inject, Provide
 from src.core.module.payment.forms import PaymentForm, PaymentSearchForm, PaymentEditForm
 from src.core.container import Container
-from src.core.module.payment.services import PaymentServices
 from src.web.helpers.auth import check_user_permissions
+from src.core.module.payment.repositories import PaymentRepository
+from src.core.module.payment.mappers import PaymentMapper
 
 
 payment_bp = Blueprint(
@@ -15,7 +16,7 @@ payment_bp = Blueprint(
 @check_user_permissions(permissions_required=['pagos_index'])
 @inject
 def get_payments(
-    payment_service: PaymentServices = Provide[Container.payment_services],
+    payment_repository: PaymentRepository = Provide[Container.payment_repository],
 ):
     form = PaymentSearchForm(request.form)
     search_query = {}
@@ -32,7 +33,7 @@ def get_payments(
     page = request.args.get("page", 1, type=int)
     per_page = request.args.get("per_page", 10, type=int)
 
-    payments = payment_service.get_page(page, per_page, search_query, order_by)
+    payments = payment_repository.get_page(page, per_page, 100, search_query, order_by)
 
     return render_template("payments.html", form=form, payments=payments, search_form=form)
 
@@ -40,7 +41,7 @@ def get_payments(
 @check_user_permissions(permissions_required=['pagos_create'])
 @inject
 def create_payment(
-    payment_service: PaymentServices = Provide[Container.payment_services],
+    payment_repository: PaymentRepository = Provide[Container.payment_repository],
 ):
     form = PaymentForm()
     if form.validate_on_submit() and form.amount.data:
@@ -51,7 +52,7 @@ def create_payment(
             "description": form.description.data,
             "beneficiary_id": form.beneficiary_id.data if form.beneficiary_id.data else None,
         }
-        payment_service.create_payment(payment_data)
+        payment_repository.add(PaymentMapper.to_entity(payment_data))
         flash('Pago creado exitosamente', 'success')
         return redirect(url_for('payment_bp.create_payment'))
     else:
@@ -65,9 +66,9 @@ def create_payment(
 @inject
 def show_payment(
     payment_id: int,
-    payment_service: PaymentServices = Provide[Container.payment_services],
+    payment_repository: PaymentRepository = Provide[Container.payment_repository],
 ):
-    payment = payment_service.get_payment(payment_id)
+    payment =PaymentMapper.from_entity(payment_repository.get_by_id(payment_id))
     return render_template("payment/payment.html", payment=payment)
 
 @payment_bp.route("/editar/<int:payment_id>", methods=["GET", "POST"])
@@ -75,20 +76,22 @@ def show_payment(
 @check_user_permissions(permissions_required=['pagos_update'])
 def edit_payment(
     payment_id: int,
-    payment_service: PaymentServices = Provide[Container.payment_services],
+    payment_repository: PaymentRepository = Provide[Container.payment_repository],
 ):
-    payment = payment_service.get_payment(payment_id)
+    payment =PaymentMapper.from_entity(payment_repository.get_by_id(payment_id))
     payment["amount"] = float(payment["amount"]) # Convierte el string de ammount a float 
     form = PaymentEditForm(data=payment)
     if form.validate_on_submit():
         payment_data = {
+            "id": payment_id,
             "amount": form.amount.data,
             "payment_date": form.date.data,
             "payment_type": form.payment_type.data,
             "description": form.description.data,
             "beneficiary_id": form.beneficiary_id.data if form.beneficiary_id.data else None,
         }
-        payment_service.update_payment(payment_id, payment_data)
+
+        payment_repository.update(payment_id, payment_data)
         flash('Pago actualizado exitosamente', 'success')
         return redirect(url_for('payment_bp.show_payment', payment_id=payment_id))
 
@@ -98,9 +101,9 @@ def edit_payment(
 @inject
 @check_user_permissions(permissions_required=['pagos_destroy'])
 def delete_payment(
-    payment_service: PaymentServices = Provide[Container.payment_services],
+    payment_repository: PaymentRepository = Provide[Container.payment_repository],
 ):
     payment_id = request.form["item_id"]
-    payment_service.delete_payment(payment_id)
+    payment_repository.delete(payment_id)
     flash('Pago eliminado exitosamente', 'success')
     return redirect(url_for('payment_bp.get_payments'))
