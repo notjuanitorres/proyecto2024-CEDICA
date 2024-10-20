@@ -1,52 +1,52 @@
 <!-- Family and Pension Information -->
-<div id="family-pension-info" class="tab-pane" style="display: none">
+<div id="family-pension-info">
   <div id="pension">
     <h2 class="label is-size-5">Información de Asignación Familiar</h2>
     <div class="field">
       <div class="control">
         <label class="checkbox">
-          {{ form.family_information.has_family_assignment.label(class="has-text-weight-bold is-size-5") }} 
-          {{ form.family_information.has_family_assignment(class="ml-2", type="checkbox", style="transform: scale(1.5)") }}
+          {{ form.has_family_assignment.label(class="has-text-weight-bold is-size-5") }} 
+          {{ form.has_family_assignment(class="ml-2", type="checkbox", style="transform: scale(1.5)") }}
         </label>
       </div>
-      {% if form.family_information.has_family_assignment.errors %}
-      <p class="help is-danger">{{ form.family_information.has_family_assignment.errors[0] }}</p>
+      {% if form.has_family_assignment.errors %}
+      <p class="help is-danger">{{ form.has_family_assignment.errors[0] }}</p>
       {% endif %}
     </div>
     <div class="field" id="family-assignment-details" style="display: none">
       <label class="label">Tipo de Asignación Familiar</label>
       <div class="control">
-        {{ form.family_information.family_assignment_type(class="textarea", placeholder="Ingrese el tipo de asignación familiar") }}
+        {{ form.family_assignment_type(class="textarea", placeholder="Ingrese el tipo de asignación familiar") }}
       </div>
-      {% if form.family_information.family_assignment_type.errors %}
-      <p class="help is-danger">{{ form.family_information.family_assignment_type.errors[0] }}</p>
+      {% if form.family_assignment_type.errors %}
+      <p class="help is-danger">{{ form.family_assignment_type.errors[0] }}</p>
       {% endif %}
     </div>
     <div class="field">
       <div class="control">
         <label class="checkbox">
-          {{ form.family_information.has_pension.label(class="has-text-weight-bold is-size-5") }} 
-          {{ form.family_information.has_pension(class="ml-2", type="checkbox", style="transform: scale(1.5)") }}
+          {{ form.has_pension.label(class="has-text-weight-bold is-size-5") }} 
+          {{ form.has_pension(class="ml-2", type="checkbox", style="transform: scale(1.5)") }}
         </label>
       </div>
-      {% if form.family_information.has_pension.errors %}
-      <p class="help is-danger">{{ form.family_information.has_pension.errors[0] }}</p>
+      {% if form.has_pension.errors %}
+      <p class="help is-danger">{{ form.has_pension.errors[0] }}</p>
       {% endif %}
     </div>
     <div class="field" id="pension-details" style="display: none">
       <label class="label">Tipo de Pensión</label>
       <div class="control">
-        {{ form.family_information.pension_type(class="input", placeholder="Ingrese el tipo de pensión") }}
+        {{ form.pension_type(class="input", placeholder="Ingrese el tipo de pensión") }}
       </div>
-      {% if form.family_information.pension_type.errors %}
-      <p class="help is-danger">{{ form.family_information.pension_type.errors[0] }}</p>
+      {% if form.pension_type.errors %}
+      <p class="help is-danger">{{ form.pension_type.errors[0] }}</p>
       {% endif %}
       <label class="label">Detalles de Pensión</label>
       <div class="control">
-        {{ form.family_information.pension_details(class="textarea", placeholder="Ingrese detalles de la pensión") }}
+        {{ form.pension_details(class="textarea", placeholder="Ingrese detalles de la pensión") }}
       </div>
-      {% if form.family_information.pension_details.errors %}
-      <p class="help is-danger">{{ form.family_information.pension_details.errors[0] }}</p>
+      {% if form.pension_details.errors %}
+      <p class="help is-danger">{{ form.pension_details.errors[0] }}</p>
       {% endif %}
     </div>
   </div>
@@ -269,7 +269,7 @@
               name="family_member2-relationship"
               class="input"
               placeholder="Ingrese la relación"
-              required
+              
             />
           </div>
         </div>
@@ -281,7 +281,7 @@
               name="family_member2-first_name"
               class="input"
               placeholder="Ingrese el nombre"
-              required
+              
             />
           </div>
         </div>
@@ -293,7 +293,7 @@
               name="family_member2-last_name"
               class="input"
               placeholder="Ingrese el apellido"
-              required
+              
             />
           </div>
         </div>
@@ -305,7 +305,7 @@
               name="family_member2-dni"
               class="input"
               placeholder="Ingrese el DNI"
-              required
+              
               maxlength="8"
             />
           </div>
@@ -320,7 +320,7 @@
               name="family_member2-street"
               class="input"
               placeholder="Ingrese la calle"
-              required
+              
             />
           </div>
         </div>
@@ -332,7 +332,7 @@
               name="family_member2-number"
               class="input"
               placeholder="Ingrese el número"
-              required
+              
             />
           </div>
         </div>
@@ -344,7 +344,7 @@
               name="family_member2-department"
               class="input"
               placeholder="Ingrese el departamento"
-              required
+              
             />
           </div>
         </div>
@@ -358,7 +358,7 @@
               name="family_member2-locality"
               class="input"
               placeholder="Ingrese la localidad"
-              required
+              
             />
           </div>
         </div>
@@ -370,7 +370,7 @@
               name="family_member2-province"
               class="input"
               placeholder="Ingrese la provincia"
-              required
+              
             />
           </div>
         </div>
@@ -384,7 +384,7 @@
               name="family_member2-phone_country_code"
               class="input"
               placeholder="Código de País"
-              required
+              
             />
           </div>
         </div>
@@ -396,7 +396,7 @@
               name="family_member2-phone_area_code"
               class="input"
               placeholder="Código de Área"
-              required
+              
             />
           </div>
         </div>
@@ -408,7 +408,7 @@
               name="family_member2-phone_number"
               class="input"
               placeholder="Ingrese el número de teléfono"
-              required
+              
               maxlength="15"
             />
           </div>
@@ -422,7 +422,7 @@
             name="family_member2-email"
             class="input"
             placeholder="Ingrese el correo electrónico"
-            required
+            
           />
         </div>
       </div>
@@ -430,7 +430,7 @@
         <label class="label">Nivel Educativo</label>
         <div class="control">
           <div class="select">
-            <select name="family_member2-education_level" required>
+            <select name="family_member2-education_level" >
               <option value="">Seleccione el nivel educativo</option>
               {% for key, value in EducationLevelEnum.__members__.items() %}
               <option value="{{ key }}">{{ value.value }}</option>
@@ -447,7 +447,7 @@
             name="family_member2-occupation"
             class="input"
             placeholder="Ingrese la ocupación"
-            required
+            
           />
         </div>
       </div>

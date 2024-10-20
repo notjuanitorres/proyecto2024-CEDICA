@@ -65,11 +65,17 @@ class AbstractJockeyAmazonRepository(ABC):
     def update_document(self, jockey_id: int, document_id: int, data: Dict) -> bool:
         pass
 
+    @abstractmethod
+    def is_dni_used(self, dni: str) -> bool:
+        raise NotImplementedError
 
 class JockeyAmazonRepository(AbstractJockeyAmazonRepository):
     def __init__(self):
         super().__init__()
         self.db = db
+    
+    def __get_by_dni(self, dni: str) -> JockeyAmazon | None:
+        return self.db.session.query(JockeyAmazon).filter(JockeyAmazon.dni == dni).first()
 
     def add(self, jockey: JockeyAmazon) -> JockeyAmazon:
         self.db.session.add(jockey)
@@ -170,3 +176,6 @@ class JockeyAmazonRepository(AbstractJockeyAmazonRepository):
         doc_query.update(data)
         self.save()
         return True
+
+    def is_dni_used(self, dni: str) -> bool:
+        return self.__get_by_dni(dni) is not None

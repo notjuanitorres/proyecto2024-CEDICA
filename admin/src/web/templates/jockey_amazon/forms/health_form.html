@@ -1,0 +1,90 @@
+<div id="health-info">
+  <!-- Disability Information -->
+  <div id="disability-info">
+    <label class="label is-size-4">Información de Discapacidad</label>
+    <div class="field">
+      <div class="control">
+        <label class="checkbox is-small">
+          {{ form.has_disability.label(class="has-text-weight-bold is-size-5 mr-2") }} 
+          {{ form.has_disability(class="ml-2", type="checkbox", style="transform: scale(1.5)") }}
+        </label>
+      </div>
+      {% if form.has_disability.errors %}
+      <p class="help is-danger">{{ form.has_disability.errors[0] }}</p>
+      {% endif %}
+    </div>
+
+    <div class="field" id="disability-details" style="display: none">
+      <label class="label">Diagnóstico de Discapacidad</label>
+      <div class="control">
+        {{ form.disability_diagnosis(class="textarea is-small", placeholder="Ingrese el diagnóstico de discapacidad") }}
+      </div>
+      {% if form.disability_diagnosis.errors %}
+      <p class="help is-danger">{{ form.disability_diagnosis.errors[0] }}</p>
+      {% endif %}
+
+      <label class="label is-size-6">Otra Discapacidad</label>
+      <div class="control">
+        {{ form.disability_other(class="textarea is-small", placeholder="Ingrese otra discapacidad") }}
+      </div>
+      {% if form.disability_other.errors %}
+      <p class="help is-danger">{{ form.disability_other.errors[0] }}</p>
+      {% endif %}
+
+      <label class="label is-size-6">Tipo de Discapacidad</label>
+      <div class="control">
+        {{ form.disability_type(class="textarea is-small", placeholder="Ingrese el tipo de discapacidad") }}
+      </div>
+      {% if form.disability_type.errors %}
+      <p class="help is-danger">{{ form.disability_type.errors[0] }}</p>
+      {% endif %}
+    </div>
+  </div>
+  <!-- Health Information -->
+  <div id="health-info" class="py-4">
+    <label class="label is-size-4">Cobertura médica</label>
+    <div class="field">
+      <label class="label">{{ form.social_security.label }}</label>
+      <div class="control">
+        {{ form.social_security(class="input", placeholder="Ingrese la cobertura médica") }}
+      </div>
+      {% if form.social_security.errors %}
+      <p class="help is-danger">{{ form.social_security.errors[0] }}</p>
+      {% endif %}
+    </div>
+    <div class="field">
+      <label class="label">{{ form.social_security_number.label }}</label>
+      <div class="control">
+        {{ form.social_security_number(class="input", placeholder="Ingrese el número de afiliado") }}
+      </div>
+      {% if form.social_security_number.errors %}
+      <p class="help is-danger">{{ form.social_security_number.errors[0] }}</p>
+      {% endif %}
+    </div>
+  </div>
+  <!-- Curatorship Information -->
+  <div id="curatorship-info" class="py-4"> 
+    <h2 class="label is-size-4">Información de Curatela</h2>
+    <div class="field">
+      <div class="control">
+        <label class="checkbox">
+          {{ form.has_curatorship.label(class="has-text-weight-bold is-size-5") }} 
+          {{ form.has_curatorship(class="ml-2", type="checkbox", style="transform: scale(1.5)") }}
+        </label>
+      </div>
+      {% if form.has_curatorship.errors %}
+      <p class="help is-danger">{{ form.has_curatorship.errors[0] }}</p>
+      {% endif %}
+    </div>
+  </div>
+  <div class="field" id="curatorship-details" style="display: none;">
+    <h3 class="label">Observaciones de Curatela</h3>
+    <div class="control">
+        {{ form.curatorship_observations(class="textarea", placeholder="Ingrese observaciones de la curatela") }}
+    </div>
+    {% if form.curatorship_observations.errors %}
+        <p class="help is-danger">{{ form.curatorship_observations.errors[0] }}</p>
+    {% endif %}
+    </div>
+</div>
+

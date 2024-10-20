@@ -1,0 +1,114 @@
+<!-- School Information -->
+<div id="school-info">
+  <label class="label is-size-4">Información Escolar</label>
+  <div class="field">
+      <label class="label">{{ form.school_institution.school_name.label }}</label>
+      <div class="control">
+          {{ form.school_institution.school_name(class="input", placeholder="Ingrese el nombre de la institución escolar") }}
+      </div>
+      {% if form.school_institution.school_name.errors %}
+          <p class="help is-danger">{{ form.school_institution.school_name.errors[0] }}</p>
+      {% endif %}
+  </div>
+
+  <div class="field-body mt-4">
+      <div class="field">
+          <label class="label">{{ form.school_institution.street.label }}</label>
+          <div class="control">
+              {{ form.school_institution.street(class="input", placeholder="Ingrese la calle de la institución escolar") }}
+          </div>
+          {% if form.school_institution.street.errors %}
+              <p class="help is-danger">{{ form.school_institution.street.errors[0] }}</p>
+          {% endif %}
+      </div>
+      <div class="field">
+          <label class="label">{{ form.school_institution.number.label }}</label>
+          <div class="control">
+              {{ form.school_institution.number(class="input", placeholder="Ingrese el número de la institución escolar") }}
+          </div>
+          {% if form.school_institution.number.errors %}
+              <p class="help is-danger">{{ form.school_institution.number.errors[0] }}</p>
+          {% endif %}
+      </div>
+  </div>
+
+  <div class="field-body mt-4">
+      <div class="field">
+          <label class="label">{{ form.school_institution.department.label }}</label>
+          <div class="control">
+              {{ form.school_institution.department(class="input", placeholder="Ingrese el departamento de la institución escolar") }}
+          </div>
+          {% if form.school_institution.department.errors %}
+              <p class="help is-danger">{{ form.school_institution.department.errors[0] }}</p>
+          {% endif %}
+      </div>
+      <div class="field">
+          <label class="label">{{ form.school_institution.locality.label }}</label>
+          <div class="control">
+              {{ form.school_institution.locality(class="input", placeholder="Ingrese la localidad de la institución escolar") }}
+          </div>
+          {% if form.school_institution.locality.errors %}
+              <p class="help is-danger">{{ form.school_institution.locality.errors[0] }}</p>
+          {% endif %}
+      </div>
+      <div class="field">
+          <label class="label">{{ form.school_institution.province.label }}</label>
+          <div class="control">
+              {{ form.school_institution.province(class="input", placeholder="Ingrese la provincia de la institución escolar") }}
+          </div>
+          {% if form.school_institution.province.errors %}
+              <p class="help is-danger">{{ form.school_institution.province.errors[0] }}</p>
+          {% endif %}
+      </div>
+  </div>
+
+  <div class="field-body mt-4">
+      <div class="field">
+          <label class="label">{{ form.school_institution.phone_country_code.label }}</label>
+          <div class="control">
+              {{ form.school_institution.phone_country_code(class="input", placeholder="Ingrese el código de país de la institución escolar") }}
+          </div>
+          {% if form.school_institution.phone_country_code.errors %}
+              <p class="help is-danger">{{ form.school_institution.phone_country_code.errors[0] }}</p>
+          {% endif %}
+      </div>
+      <div class="field">
+          <label class="label">{{ form.school_institution.phone_area_code.label }}</label>
+          <div class="control">
+              {{ form.school_institution.phone_area_code(class="input", placeholder="Ingrese el código de área de la institución escolar") }}
+          </div>
+          {% if form.school_institution.phone_area_code.errors %}
+              <p class="help is-danger">{{ form.school_institution.phone_area_code.errors[0] }}</p>
+          {% endif %}
+      </div>
+      <div class="field">
+          <label class="label">{{ form.school_institution.phone_number.label }}</label>
+          <div class="control">
+              {{ form.school_institution.phone_number(class="input", placeholder="Ingrese el número de teléfono de la institución escolar") }}
+          </div>
+          {% if form.school_institution.phone_number.errors %}
+              <p class="help is-danger">{{ form.school_institution.phone_number.errors[0] }}</p>
+          {% endif %}
+      </div>
+  </div>
+
+  <div class="field mt-4">
+      <label class="label">{{ form.current_grade_year.label }}</label>
+      <div class="control">
+          {{ form.current_grade_year(class="input", placeholder="Ingrese el grado/año actual") }}
+      </div>
+      {% if form.current_grade_year.errors %}
+          <p class="help is-danger">{{ form.current_grade_year.errors[0] }}</p>
+      {% endif %}
+  </div>
+
+  <div class="field">
+      <label class="label">{{ form.school_observations.label }}</label>
+      <div class="control">
+          {{ form.school_observations(class="textarea", placeholder="Ingrese observaciones sobre la institución escolar") }}
+      </div>
+      {% if form.school_observations.errors %}
+          <p class="help is-danger">{{ form.school_observations.errors[0] }}</p>
+      {% endif %}
+  </div>
+</div>

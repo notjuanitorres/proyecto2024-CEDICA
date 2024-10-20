@@ -1,0 +1,27 @@
+{% extends "create_jockey_amazon.html" %}
+
+{% block title %} Informacion de Asignaciones de Trabajo - Creando JyA {% endblock %}
+
+{% block step_name %}
+  Asignacion de Trabajo
+{% endblock %}
+
+{% block step_number %}4{% endblock %}>
+
+{% block step_form %}
+  {% include 'jockey_amazon/forms/work_assignments_form.html' %} 
+{% endblock %}
+
+{% block prev_button %}
+  <a class="button is-primary is-medium is-outlined is-fullwidth">
+    <span class="icon mr-1"><i class="fa-solid fa-arrow-left"></i></span>
+    Volver
+  </a>
+{% endblock %}
+
+{% block next_button %}
+  <button class="button is-primary is-medium is-fullwidth" type="submit">
+    Siguiente
+    <span class="icon ml-1"><i class="fa-solid fa-arrow-right"></i></span>
+  </button>
+{% endblock %}

@@ -37,7 +37,7 @@ class JockeyAmazonMapper:
         }
         if jockey:
             jockey_dict["general_information"] = {
-                "id": jockey.general_information.id,
+                "id": jockey.id,
                 "first_name": jockey.first_name,
                 "last_name": jockey.last_name,
                 "dni": jockey.dni,
@@ -111,23 +111,24 @@ class JockeyAmazonMapper:
         general = data.get("general_information", {})
         family = data.get("family_information", {})
         health = data.get("health_information", {})
-        school = data.get("school_information", {})
-        assignments = data.get("work_assignments", {})
+        school = family.get("school_institution", {})  # Moving under family_information
+        assignments = data.get("work_assignment_information", {})
         family_members = []
 
+        # Handling family member 1
         if "family_member1" in data:
             family_member1_data = data["family_member1"]
             family_member1 = FamilyMemberMapper.to_entity(family_member1_data)
             family_members.append(family_member1)
 
+        # Handling family member 2
         if "family_member2" in data:
             family_member2_data = data["family_member2"]
-            if any(
-                family_member2_data.values()
-            ):  # Check if family_member2 data is not empty
+            if any(family_member2_data.values()):  # Check if family_member2 data is not empty
                 family_member2 = FamilyMemberMapper.to_entity(family_member2_data)
                 family_members.append(family_member2)
 
+        # Return the entity with corrected mappings
         return JockeyAmazon(
             id=data.get("id"),
 
@@ -137,54 +138,45 @@ class JockeyAmazonMapper:
             dni=general.get("dni"),
             birth_date=general.get("birth_date"),
             birthplace=general.get("birthplace"),
-            country_code=general.phone.get("country_code"),
-            area_code=general.phone.get("area_code"),
-            phone=general.phone.get("number"),
-            street=general.address.get("street"),
-            number=general.address.get("number"),
-            department=general.address.get("department"),
-            locality=general.address.get("locality"),
-            province=general.address.get("province"),
-            emergency_contact_name=general.emergency_contact.get("emergency_contact_name"),
-            emergency_contact_phone=general.emergency_contact.get("emergency_contact_phone"),
+            country_code=general.get("phone", {}).get("country_code"),
+            area_code=general.get("phone", {}).get("area_code"),
+            phone=general.get("phone", {}).get("number"),
+            street=general.get("address", {}).get("street"),
+            number=general.get("address", {}).get("number"),
+            department=general.get("address", {}).get("department"),
+            locality=general.get("address", {}).get("locality"),
+            province=general.get("address", {}).get("province"),
+            emergency_contact_name=general.get("emergency_contact", {}).get("emergency_contact_name"),
+            emergency_contact_phone=general.get("emergency_contact", {}).get("emergency_contact_phone"),
 
             # Health Information
             has_disability=health.get("has_disability"),
             disability_diagnosis=health.get("disability_diagnosis"),
             disability_other=health.get("disability_other"),
             disability_type=health.get("disability_type"),
-            has_pension=health.get("has_pension"),
-            pension_type=health.get("pension_type"),
-            pension_details=health.get("pension_details"),
             social_security=health.get("social_security"),
             social_security_number=health.get("social_security_number"),
             has_curatorship=health.get("has_curatorship"),
             curatorship_observations=health.get("curatorship_observations"),
- 
-            # School Information
-            school_institution=SchoolInstitutionMapper.to_entity(
-                school.get("school_institution")
-            ),
+
+            # School Information (under family_information now)
+            school_institution=SchoolInstitutionMapper.to_entity(family.get("school_institution")),
             school_institution_id=school.get("school_institution_id"),
             current_grade_year=school.get("current_grade_year"),
             school_observations=school.get("school_observations"),
 
             # Family Information
-            # TODO: Curathorship should go in health
             has_family_assignment=family.get("has_family_assignment"),
             family_assignment_type=family.get("family_assignment_type"),
             family_members=family_members,
 
             # Work Assignments Information
-            professionals=data.get("professionals"),
-            work_assignment=WorkAssignmentMapper.to_entity(
-                data.get("work_assignments")
-            ),
-            # TODO: scholarship should go in general info
+            professionals=assignments.get("professionals"),
+            work_assignment=WorkAssignmentMapper.to_entity(assignments.get("work_assignments")),
             has_scholarship=assignments.get("has_scholarship"),
             scholarship_observations=assignments.get("scholarship_observations"),
             scholarship_percentage=assignments.get("scholarship_percentage"),
-            
+
             # Timestamps
             inserted_at=data.get("inserted_at"),
             updated_at=data.get("updated_at"),

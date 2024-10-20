@@ -18,7 +18,7 @@ from .jockey_and_amazon import create_jockey_amazon_bp
 jockey_amazon_bp = Blueprint(
     "jockey_amazon_bp",
     __name__,
-    template_folder="./templates/jockey_amazon/",
+    template_folder="../templates/jockey_amazon/",
     url_prefix="/jockey_amazon",
 )
 

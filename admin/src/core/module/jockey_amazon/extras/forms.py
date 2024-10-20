@@ -26,6 +26,8 @@ def enum_choices(enum):
 
 
 class SchoolInstitutionForm(FlaskForm):
+    class Meta:
+        csrf = False  
     school_name = StringField("Nombre", validators=[DataRequired(), Length(max=200)])
     street = StringField("Calle", validators=[DataRequired(), Length(max=50)])
     number = IntegerField("Número", validators=[DataRequired()])
@@ -44,6 +46,8 @@ class SchoolInstitutionForm(FlaskForm):
 
 
 class FamilyMemberForm(FlaskForm):
+    class Meta:
+        csrf = False  
     relationship = StringField("Relación", validators=[DataRequired(), Length(max=50)])
     first_name = StringField("Nombre", validators=[DataRequired(), Length(max=100)])
     last_name = StringField("Apellido", validators=[DataRequired(), Length(max=100)])
@@ -74,6 +78,8 @@ class FamilyMemberForm(FlaskForm):
 
 
 class WorkAssignmentsForm(FlaskForm):
+    class Meta:
+        csrf = False  
     proposal = SelectField(
         "Propuesta de Trabajo",
         choices=enum_choices(WorkProposalEnum),
@@ -90,11 +96,11 @@ class WorkAssignmentsForm(FlaskForm):
     days = SelectField(
         "Días", choices=enum_choices(DayEnum), validators=[DataRequired()]
     )
-    professor_or_therapist_id = IntegerField(
-        "ID del Profesor o Terapeuta", validators=[DataRequired()]
-    )
-    conductor_id = IntegerField("ID del Conductor", validators=[DataRequired()])
-    track_assistant_id = IntegerField(
-        "ID del Asistente de Pista", validators=[DataRequired()]
-    )
-    horse_id = IntegerField("ID del Caballo", validators=[DataRequired()])
+    # professor_or_therapist_id = IntegerField(
+    #     "ID del Profesor o Terapeuta", validators=[DataRequired()]
+    # )
+    # conductor_id = IntegerField("ID del Conductor", validators=[DataRequired()])
+    # track_assistant_id = IntegerField(
+    #     "ID del Asistente de Pista", validators=[DataRequired()]
+    # )
+    # horse_id = IntegerField("ID del Caballo", validators=[DataRequired()])
