@@ -5,6 +5,7 @@ from .extras.mappers import (
     WorkAssignmentMapper,
     SchoolInstitutionMapper,
 )
+from .forms import GeneralInformationForm, HealthInformationForm, FamilyInformationForm, SchoolInformationForm, WorkAssignmentsForm
 
 
 class JockeyAmazonMapper:
@@ -43,18 +44,22 @@ class JockeyAmazonMapper:
                 "dni": jockey.dni,
                 "birth_date": jockey.birth_date,
                 "birthplace": jockey.birthplace,
-                "phone_country_code": jockey.country_code,
-                "phone_area_code": jockey.area_code,
-                "phone_number": jockey.phone,
-                "street": jockey.street,
-                "number": jockey.number,
-                "department": jockey.department,
-                "locality": jockey.locality,
-                "province": jockey.province,
+                "address": {
+                    "street": jockey.street,
+                    "number": jockey.number,
+                    "department": jockey.department,
+                    "locality": jockey.locality,
+                    "province": jockey.province,
+                },
                 "emergency_contact": {
                     "emergency_contact_name": jockey.emergency_contact_name,
                     "emergency_contact_phone": jockey.emergency_contact_phone,
                 },
+                "phone": {
+                    "country_code": jockey.country_code,
+                    "area_code": jockey.area_code,
+                    "number": jockey.phone,   
+                }
             }
             jockey_dict["health_information"] = {
                 "has_disability": jockey.has_disability,
@@ -99,6 +104,7 @@ class JockeyAmazonMapper:
                 ),
             }
             jockey_dict["school_information"] = {
+                "school_institution": SchoolInstitutionMapper.from_entity(jockey.school_institution),
                 "school_institution_id": jockey.school_institution_id,
                 "current_grade_year": jockey.current_grade_year,
                 "school_observations": jockey.school_observations,
@@ -111,7 +117,7 @@ class JockeyAmazonMapper:
         general = data.get("general_information", {})
         family = data.get("family_information", {})
         health = data.get("health_information", {})
-        school = family.get("school_institution", {})  # Moving under family_information
+        school = data.get("school_information", {})
         assignments = data.get("work_assignment_information", {})
         family_members = []
 
@@ -149,7 +155,7 @@ class JockeyAmazonMapper:
             emergency_contact_name=general.get("emergency_contact", {}).get("emergency_contact_name"),
             emergency_contact_phone=general.get("emergency_contact", {}).get("emergency_contact_phone"),
 
-            # Health Information
+            # Health Information 
             has_disability=health.get("has_disability"),
             disability_diagnosis=health.get("disability_diagnosis"),
             disability_other=health.get("disability_other"),
@@ -159,8 +165,8 @@ class JockeyAmazonMapper:
             has_curatorship=health.get("has_curatorship"),
             curatorship_observations=health.get("curatorship_observations"),
 
-            # School Information (under family_information now)
-            school_institution=SchoolInstitutionMapper.to_entity(family.get("school_institution")),
+            # School Information
+            school_institution=SchoolInstitutionMapper.to_entity(school.get("school_institution", {})),
             school_institution_id=school.get("school_institution_id"),
             current_grade_year=school.get("current_grade_year"),
             school_observations=school.get("school_observations"),

@@ -101,7 +101,7 @@ def create_school_information():
     school_information = SchoolInformationForm()
 
     if school_information.validate_on_submit():
-        session["create_ja"]["family_information"] = school_information.data
+        session["create_ja"]["school_information"] = school_information.data
         return redirect(url_for("jockey_amazon_bp.create.create_work_assignment"))
 
     return render_template("create/school_information.html", education_form=school_information)
@@ -118,4 +118,4 @@ def create_work_assignment():
         print(session["create_ja"])
         return add_jockey(create_form=session["create_ja"])
 
-    return render_template('create/work_assignments_information.html', assignment_form=assignment_information)
+    return render_template('create/work_assignments_information.html', assignments_form=assignment_information)

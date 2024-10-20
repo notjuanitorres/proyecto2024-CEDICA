@@ -47,44 +47,6 @@ class FamilyMemberMapper:
             occupation=data.get("occupation"),
         )
 
-    @classmethod
-    def from_form(cls, form) -> Dict:
-        return {
-            "relationship": form.relationship.data,
-            "first_name": form.first_name.data,
-            "last_name": form.last_name.data,
-            "dni": form.dni.data,
-            "street": form.street.data,
-            "number": form.number.data,
-            "department": form.department.data,
-            "locality": form.locality.data,
-            "province": form.province.data,
-            "phone_country_code": form.phone_country_code.data,
-            "phone_area_code": form.phone_area_code.data,
-            "phone_number": form.phone_number.data,
-            "email": form.email.data,
-            "education_level": form.education_level.data,
-            "occupation": form.occupation.data,
-        }
-
-    @classmethod
-    def to_form(cls, data: Dict, form):
-        form.relationship.data = data.get("relationship")
-        form.first_name.data = data.get("first_name")
-        form.last_name.data = data.get("last_name")
-        form.dni.data = data.get("dni")
-        form.street.data = data.get("street")
-        form.number.data = data.get("number")
-        form.department.data = data.get("department")
-        form.locality.data = data.get("locality")
-        form.province.data = data.get("province")
-        form.phone_country_code.data = data.get("phone_country_code")
-        form.phone_area_code.data = data.get("phone_area_code")
-        form.phone_number.data = data.get("phone_number")
-        form.email.data = data.get("email")
-        form.education_level.data = data.get("education_level")
-        form.occupation.data = data.get("occupation")
-
 
 class WorkAssignmentMapper:
     @classmethod
@@ -118,37 +80,12 @@ class WorkAssignmentMapper:
             horse_id=data.get("horse_id"),
         )
 
-    @classmethod
-    def from_form(cls, form) -> Dict:
-        return {
-            "proposal": form.proposal.data,
-            "condition": form.condition.data,
-            "sede": form.sede.data,
-            "days": form.days.data,
-            "professor_or_therapist_id": form.professor_or_therapist_id.data,
-            "conductor_id": form.conductor_id.data,
-            "track_assistant_id": form.track_assistant_id.data,
-            "horse_id": form.horse_id.data,
-        }
-
-    @classmethod
-    def to_form(cls, data: Dict, form):
-        form.proposal.data = data.get("proposal")
-        form.condition.data = data.get("condition")
-        form.sede.data = data.get("sede")
-        form.days.data = data.get("days")
-        form.professor_or_therapist_id.data = data.get("professor_or_therapist_id")
-        form.conductor_id.data = data.get("conductor_id")
-        form.track_assistant_id.data = data.get("track_assistant_id")
-        form.horse_id.data = data.get("horse_id")
-
-
 class SchoolInstitutionMapper:
     @classmethod
     def from_entity(cls, institution: SchoolInstitution) -> Dict:
         return {
             "id": institution.id,
-            "name": institution.name,
+            "school_name": institution.name,
             "street": institution.street,
             "number": institution.number,
             "department": institution.department,
