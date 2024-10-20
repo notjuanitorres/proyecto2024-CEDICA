@@ -25,4 +25,4 @@ class EmailExistence(object):
         from src.core.container import Container
 
         container = Container()
-        return container.accounts_services()
+        return container.auth_services()

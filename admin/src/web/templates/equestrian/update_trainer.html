@@ -1,0 +1,175 @@
+{% extends "layout.html" %}
+
+{% from "macros/pagination.html" import render_pagination %}
+
+{% block title %} Caballo {{ horse.name }} - CEDICA {% endblock %}
+
+{% block card_title %}Asociando un entrenador a: {{ horse.name }}{% endblock %}
+
+{% block main_content %}
+<nav class="breadcrumb" aria-label="breadcrumbs">
+  <ul>
+    <li>
+      <a href="{{ url_for('index_bp.home')}}">
+        <span class="icon is-small">
+          <i class="fas fa-home" aria-hidden="true"></i>
+        </span>
+        <span>Inicio</span>
+      </a>
+    </li>
+    <li>
+      <a href="{{ url_for('equestrian_bp.get_horses') }}">
+        <span class="icon is-small">
+          <i class="fas fa-horse" aria-hidden="true"></i>
+        </span>
+        <span>Caballos</span>
+      </a>
+    </li>
+    <li>
+      <a
+        href="{{ url_for('equestrian_bp.show_horse', horse_id=horse.id) }}"
+      >
+        <span class="icon is-small">
+          <i class="fas fa-horse-head" aria-hidden="true"></i>
+        </span>
+        <span>{{ horse.name }}</span>
+      </a>
+    </li>
+    <li>
+      <a href="{{ url_for('equestrian_bp.link_trainer', horse_id=horse.id) }}">
+        <span class="icon is-small">
+          <i class="fas fa-user-tie" aria-hidden="true"></i>
+        </span>
+        <span>Asociar entrenador</span>
+      </a>
+    </li>
+  </ul>
+</nav>
+
+<section id="link-trainer" class="panel">
+  <div class="container p-4">
+    <h1 class="title is-size-4">
+      Asociando un entrenador a {{ horse.name }}
+    </h1>
+  </div>
+  <form id="search-trainer" method="GET" class="panel-block is-gap-2">
+  {{ search_form.hidden_tag() }}
+    {{ search_form.csrf_token }}
+    <div class="field is-flex-grow-1">
+      <label for="filtrar" class="label">Buscar entrenador</label>
+      <p class="control has-icons-left">
+        {{ search_form.search_text(class="input", placeholder="Buscar por nombre o email") }}
+        <span class="icon is-left">
+          <i class="fas fa-search" aria-hidden="true"></i>
+        </span>
+      </p>
+      {% if search_form.search_text.errors %}
+      <p class="help is-danger">{{ search_form.search_text.errors[0] }}</p>
+      {% endif %}
+    </div>
+    <div class="field">
+      <label for="submit-search" class="is-invisible"> {{ search_form.submit_search.label }}</label>
+      <div class="control">
+          {{ search_form.submit_search(class="button is-flex-grow-1 is-link")}}
+      </div>
+    </div>
+  </form>
+  <div class="container p-5">
+    {{ render_pagination(trainers, 'equestrian_bp.link_trainer', {"horse_id":horse.id}) }}
+  </div>
+  <form method="POST" id="select-form" class="">
+    {{ select_form.hidden_tag() }}
+    {{ select_form.csrf_token }}
+      {% if trainers.total %}
+        {% for trainer in trainers %}
+          <a class="panel-block field mb-0" data-id="trainer-{{ trainer.id }}">
+            <div class="media">
+              <div class="media-left">
+                <i class="fas fa-user-tie is-size-3" aria-hidden="true"></i>
+              </div>
+              <div class="media-content">
+                <div class="content">
+                  <p>
+                    <strong>{{ trainer.name }}</strong> <small>{{ trainer.inserted_at | format_date }}</small>
+                    <br />
+                    {{ trainer.email }}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </a>
+        {% endfor %}
+        {% else %}
+            <div class="media-content is-flex is-justify-content-center is-align-items-center">
+              <p class="has-text-centered">
+                No hay entrenadores
+              </p>
+            </div>
+        {% endif %}
+    <div class="panel-block">
+      <div class="columns is-mobile is-gapless" style="width: 100%;">
+        <div class="column">
+          {{ select_form.submit_trainer(class="button is-primary is-fullwidth", id="submit-trainer", type="submit") }}
+        </div>
+        <div class="column is-1"></div>  <!-- This creates a gap between buttons -->
+        <div class="column">
+          <a href="{{ url_for('equestrian_bp.get_horse_trainers', horse_id=horse.id) }}" class="button is-danger is-fullwidth">Cancelar</a>
+        </div>
+      </div>
+    </div>
+  </form>
+</section>
+{% endblock %}
+{% block extra_scripts %}
+    {{ super() }}
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+    const pagination = document.getElementById("pagination");
+    const selectForm = document.getElementById("select-form");
+    const trainerLinks = document.querySelectorAll('[data-id^="trainer-"]');
+    const selectedTrainer = document.getElementById('selected_trainer');
+    const submitButton = document.getElementById('submit-trainer');
+    const isActive = "has-background-warning";
+
+    function selectTrainer(trainerId, clickedElement) {
+        selectedTrainer.value = trainerId;
+
+        if (pagination) {
+            pagination.classList.add("is-invisible");
+        }
+        trainerLinks.forEach(link => {
+            link.classList.remove(isActive);
+        });
+        clickedElement.classList.add(isActive);
+        submitButton.disabled = false;
+    }
+
+    function deselectTrainer() {
+        if (pagination) {
+            pagination.classList.remove("is-invisible");
+        }
+        selectedTrainer.value = '';
+        trainerLinks.forEach(link => {
+            link.classList.remove(isActive);
+        });
+        submitButton.disabled = true;
+    }
+
+    trainerLinks.forEach(link => {
+        link.addEventListener('click', function(event) {
+            event.preventDefault();
+            const trainerId = this.getAttribute('data-id').split('-')[1];
+
+            if (this.classList.contains(isActive)) {
+                deselectTrainer();
+            } else {
+                selectTrainer(trainerId, this);
+            }
+        });
+    });
+
+    submitButton.disabled = true;
+});
+
+    </script>
+{% endblock %}

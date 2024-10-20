@@ -1,5 +1,8 @@
 {% extends "base_show.html" %}
 {% from "macros/edit_menu.html" import render_actions_menu %}
+{% from "macros/file_icon.html" import render_file_icon %}
+{% from "equestrian/macros/parse_categories.html" import render_category %}
+
 
 {% block title %}Caballo {{ horse.name }} - CEDICA{% endblock %}
 
@@ -24,8 +27,16 @@
 
 {% block card_title %}Caballo: {{ horse.name }}{% endblock %}
 
+{% block banner %}
+    {% if horse.is_archived %}
+        <div class="is-flex is-fullwidth is-justify-content-center has-background-danger p-4">
+            <h2 class="title">Caballo archivado</h2>
+        </div>
+    {% endif %}
+{% endblock %}
+
 {% block card_content %}
-    <ul class="grid is-col-min-16">
+    <ul class="grid desktop-is-col-min-16">
         <div class="cell">
             <h4>Información general</h4>
             <li><strong>ID: </strong> {{ horse.id }}</li>
@@ -53,128 +64,48 @@
 {% endblock %}
 
 {% block card_actions %}
-    {% if "ecuestre_destroy" in permissions or is_admin %}
-        <button class="card-footer-item has-text-danger modal-trigger" data-id="{{ horse.id }}"
-                data-target="horse-delete-modal">
-            Eliminar
-        </button>
+    {% if horse.is_archived %}
+        {% if "ecuestre_destroy" in permissions or is_admin %}
+            <button class="card-footer-item has-text-danger modal-trigger" data-id="{{ horse.id }}" data-target="horse-delete-modal">
+                Eliminar para siempre
+            </button>
+            <form class="card-footer-item" action="{{ url_for('equestrian_bp.recover_horse') }}" method="POST">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="horse_id" value="{{ horse.id }}">
+                <button type="submit" class="has-text-primary">Recuperar</button>
+            </form>
+        {% endif %}
+    {% else %}
+        {% if "ecuestre_destroy" in permissions or is_admin %}
+            <button class="card-footer-item has-text-danger modal-trigger" data-id="{{ horse.id }}" data-target="horse-delete-modal">
+                Archivar
+            </button>
+        {% endif %}
+        {% if "ecuestre_update" in permissions or is_admin %}
+            <a href="{{ url_for( "equestrian_bp.edit_horse", horse_id=horse.id )}}" class="card-footer-item has-text-warning">Actualizar</a>
+        {% endif %}
     {% endif %}
 
-    {% if "ecuestre_update" in permissions or is_admin %}
-        <a href="{{ url_for('equestrian_bp.edit_horse', horse_id=horse.id) }}"
-           class="card-footer-item has-text-warning">Editar</a>
-    {% endif %}
-{% endblock %}
-
-{% block additional_cards %}
-
-    <div class="card">
-        <header class="card-header">
-            <p class="card-header-title is-size-4">Entrenadores y conductores asociados</p>
-        </header>
-        <div class="card-content">
-            <div class="content">
-                <table class="table is-striped is-scrollable is-fullwidth">
-                    <thead>
-                    <tr>
-                        <th></th>
-                        <th>ID</th>
-                        <th>Nombre</th>
-                        <th>Apellido</th>
-                        <th>Posición</th>
-                        <th></th>
-                    </tr>
-                    </thead>
-
-                    <tbody>
-                    {% for trainer in horse_trainers %}
-                        <tr class="">
-                            <td class="is-hidden-mobile">
-                                {{ render_actions_menu(
-                                        field="employee_id",
-                                        value=trainer.id,
-                                        to_left=true,
-                                        endpoints={
-                                            'show':'employee_bp.show_employee',
-                                            'edit': 'employee_bp.edit_employee',
-                                          'delete':''
-                                        },
-                                        permission_to_show="equipo_show",
-                                        permission_to_edit="equipo_update",
-                                        permission_to_delete="equipo_destroy",
-                                        user_permissions=permissions,
-                                        is_admin=is_admin
-                                        ) }}
-                            </td>
-                            <td><span class="is-hidden-tablet has-text-weight-bold">ID: </span>{{ trainer.id }}</td>
-                            <td><span class="is-hidden-tablet has-text-weight-bold">Nombre: </span>{{ trainer.name }}
-                            </td>
-                            <td><span
-                                    class="is-hidden-tablet has-text-weight-bold">Apellido: </span>{{ trainer.lastname }}
-                            </td>
-                            <td><span
-                                    class="is-hidden-tablet has-text-weight-bold">Posición: </span>{{ trainer.position.value }}
-                            </td>
-
-                            <td class="is-hidden-tablet is-flex">
-                                <a href="{{ url_for('employee_bp.show_employee', employee_id = trainer.id) }}"
-                                   class="button is-flex-grow-1 ">
-                                        <span class="is-bold">
-                                            Ver en detalle
-                                            <i class="fa-regular fa-eye ml-2"></i>
-                                        </span>
-                                </a>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                    </tbody>
-
-                    <tfoot>
-                    <tr>
-                        <th></th>
-                        <th>ID</th>
-                        <th>Nombre</th>
-                        <th>Apellido</th>
-                        <th>Posición</th>
-                    </tr>
-                    </tfoot>
-                </table>
-                {% if "ecuestre_update" in permissions or is_admin %}
-                    {% block create_button %}
-                        <a class="button is-primary level-item" href="{{ url_for('equestrian_bp.edit_horse', horse_id=horse.id) }}#trainers-content">
-                            Cambiar entrenadores
-                            <i class="fa-solid fa-user ml-2 is-size-5"></i>
-                        </a>
-                    {% endblock %}
-                {% endif %}
-
-            </div>
-        </div>
-
-    </div>
-
-    <div class="card">
-        <header class="card-header">
-            <p class="card-header-title is-size-4">Documentos anexos</p>
-        </header>
-        <div class="card-content">
-            <div class="content">
-
-            </div>
-        </div>
-        <footer class="card-footer">
-            <a href="" class="card-footer-item has-text-warning">Editar documentos</a>
-        </footer>
-    </div>
 {% endblock %}
 
 {% block modal %}
-    {{ render_delete_modal(
-      field="horse",
-      endpoint="equestrian_bp.delete_horse",
-      title="Eliminar",
-      msg="¿Está seguro de que desea eliminar al caballo?",
-      msg_sub="Luego de confirmar, no se podrán revertir los cambios"
-    ) }}
+    {% if horse.is_archived %}
+        {{ render_delete_modal(
+          field="horse",
+          endpoint=url_for("equestrian_bp.delete_horse", horse_id=horse.id),
+          title="Eliminar",
+          msg="¿Está seguro de que desea eliminar al caballo?",
+          msg_sub="Luego de confirmar, no se podrán revertir los cambios"
+        ) }}
+    {% else %}
+        {{ render_delete_modal(
+          field="horse",
+          endpoint=url_for("equestrian_bp.archive_horse", horse_id=horse.id),
+          title="Archivar",
+          msg="¿Está seguro de que desea archivar al caballo?",
+          msg_sub="",
+          delete_text="Archivar"
+        ) }}
+    {% endif %}
 {% endblock %}
 

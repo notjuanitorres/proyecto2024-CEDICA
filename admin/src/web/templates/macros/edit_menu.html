@@ -1,5 +1,5 @@
 {% macro render_actions_menu(to_left, endpoints, field, value,
- permission_to_show, permission_to_edit, permission_to_delete, user_permissions, is_admin) %}
+ permission_to_show, permission_to_edit, permission_to_delete, user_permissions, is_admin, delete_text="Eliminar") %}
     {% if to_left == true %}
     <div class="dropdown is-left is-hoverable">        
     {% else %}
@@ -16,22 +16,30 @@
         {% if permission_to_show in user_permissions or is_admin%}
             </a>
         {% endif %}
-
         </div>
-
-
         <div class="dropdown-menu" id="dropdown-menu" role="menu"> 
-        <div class="dropdown-content">
-            {% if permission_to_show in user_permissions or is_admin%}
-                <a href="{{ url_for(endpoints.show, **{field: value}) }}" class="dropdown-item">Ver</a>
-            {% endif %}
-            {% if permission_to_edit in user_permissions or is_admin%}
-                <a href="{{ url_for(endpoints.edit, **{field: value}) }}" class="dropdown-item has-text-warning">Editar</a>
-            {% endif %}
-            {% if permission_to_delete in user_permissions or is_admin%}
-                <button class="dropdown-item has-text-danger modal-trigger" data-id="{{ value }}" data-target="user-delete-modal">Eliminar</button>
-            {% endif %}
-        </div>
+            <div class="dropdown-content">
+                {% if endpoints.show %}
+                    {% if permission_to_show in user_permissions or is_admin%}
+                    <a href="{{ url_for(endpoints.show, **{field: value}) }}" class="dropdown-item">Ver</a>
+                    {% endif %}
+                {% endif %}
+                {% if endpoints.edit %}
+                    {% if permission_to_edit in user_permissions or is_admin%}
+                    <a href="{{ url_for(endpoints.edit, **{field: value}) }}" class="dropdown-item has-text-warning">Editar</a>
+                    {% endif %}
+                {% endif %}
+                {% if endpoints.delete %}
+                    {% if permission_to_delete in user_permissions or is_admin%}
+                    <button class="dropdown-item has-text-danger modal-trigger" data-id="{{ value }}" data-target="user-delete-modal">{{ delete_text }}</button>
+                    {% endif %}
+                {% endif %}
+                {% if endpoints.archive %}
+                    {% if permission_to_delete in user_permissions or is_admin %}
+                    <button class="dropdown-item has-text-danger modal-trigger" data-id="{{ value }}" data-target="user-delete-modal">Archivar</button>
+                    {% endif %} 
+                {% endif %}
+            </div>
         </div>
     </div>
 {% endmacro %}
