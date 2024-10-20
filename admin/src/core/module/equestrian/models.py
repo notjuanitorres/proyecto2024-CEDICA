@@ -23,6 +23,26 @@ class JAEnum(pyEnum):
 
 
 class Horse(db.Model):
+    """
+        Model representing a horse.
+
+        Attributes:
+            id (int): The unique identifier of the horse.
+            name (str): The name of the horse.
+            birth_date (datetime.date): The birthdate of the horse.
+            sex (str): The sex of the horse.
+            breed (str): The breed of the horse.
+            coat (str): The coat color of the horse.
+            is_donation (bool): Indicates if the horse is a donation.
+            admission_date (datetime.date): The admission date of the horse.
+            assigned_facility (str): The facility assigned to the horse.
+            ja_type (JAEnum): The type of J&A assigned to the horse.
+            files (List[HorseFile]): The list of files related to the horse.
+            is_archived (bool): Indicates if the horse is deleted.
+            inserted_at (datetime.datetime): The timestamp when the horse was inserted.
+            updated_at (datetime.datetime): The timestamp when the horse was last updated.
+        """
+
     __tablename__ = 'horses'
 
     id = db.Column(db.Integer, primary_key=True)

@@ -28,6 +28,17 @@ Attributes:
 def search_horses(search: HorseSearchForm,
                   need_archived: bool = False,
                   equestrian_repository: AbstractEquestrianRepository = Provide[Container.equestrian_repository]):
+    """
+    Helper function to search horses.
+
+    Args:
+        search (HorseSearchForm): The form for searching horses.
+        need_archived (bool): Indicates if the search should include archived horses.
+        equestrian_repository (AbstractEquestrianRepository): The equestrian repository.
+
+    Returns:
+        Pagination: The paginated list of horses.
+    """
 
     page = request.args.get("page", type=int)
     per_page = request.args.get("per_page", type=int)
@@ -72,6 +83,12 @@ def get_horses():
 @equestrian_bp.route("/archivados", methods=["GET"])
 @check_user_permissions(permissions_required=["ecuestre_index"])
 def get_archived_horses():
+    """
+    Route to get a paginated list of archived horses.
+
+    Returns:
+        Response: The rendered template for the list of archived horses.
+    """
     search_form = HorseSearchForm(request.args)
     paginated_horses = search_horses(search=search_form, need_archived=True)
     return render_template(
@@ -87,6 +104,15 @@ def get_archived_horses():
 def archive_horse(
     horses_repository: AbstractEquestrianRepository = Provide[Container.equestrian_repository],
 ):
+    """
+    Route to archive a horse.
+
+    Args:
+        horses_repository (AbstractEquestrianRepository): The equestrian repository.
+
+    Returns:
+        Response: Redirect to the horse details.
+    """
     horse_id = request.form["item_id"]
     archived = horses_repository.archive_horse(int(horse_id))
     if not archived:
@@ -102,6 +128,15 @@ def archive_horse(
 def recover_horse(
     horses: AbstractEquestrianRepository = Provide[Container.equestrian_repository],
 ):
+    """
+    Route to recover a horse.
+
+    Args:
+        horses (AbstractEquestrianRepository): The equestrian repository.
+
+    Returns:
+        Response: Redirect to the horse details.
+    """
     horse_id = request.form["horse_id"]
     recovered = horses.recover_horse(int(horse_id))
     if not recovered:
