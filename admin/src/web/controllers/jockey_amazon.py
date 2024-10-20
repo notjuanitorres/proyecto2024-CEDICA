@@ -169,14 +169,13 @@ def create_document(
         flash(f"El jockey con ID = {jockey_id} no existe", "danger")
         return redirect(url_for("jockey_amazon_bp.get_jockeys"))
 
-    jockey = Mapper.from_entity(jockey)
     create_form = JockeyAmazonAddDocumentsForm()
 
     if request.method == "POST":
-        return add_document(jockey=jockey, create_form=create_form)
+        return add_document(jockey=Mapper.from_entity(jockey), create_form=create_form)
 
     return render_template(
-        "./jockey_amazon/create_document.html", form=create_form, jockey=jockey
+        "./jockey_amazon/documents/create_document.html", form=create_form, jockey=jockey
     )
 
 
@@ -192,7 +191,7 @@ def add_document(
 
     if not create_form.validate_on_submit():
         return render_template(
-            "./jockey_amazon/create_document.html", form=create_form, jockey=jockey
+            "./jockey_amazon/documents/create_document.html", form=create_form, jockey=jockey
         )
 
     if create_form.upload_type.data == "file":
@@ -267,7 +266,7 @@ def edit_documents(
     )
 
     return render_template(
-        "./jockey_amazon/update_documents.html",
+        "./jockey_amazon/documents/update_documents.html",
         jockey=jockey,
         files=paginated_files,
         add_form=add_document_form,
@@ -343,7 +342,7 @@ def edit_document(
         return update_document(jockey, document, edit_form)
 
     return render_template(
-        "./jockey_amazon/edit_document.html",
+        "./jockey_amazon/documents/edit_document.html",
         jockey=jockey,
         document=document,
         form=edit_form,
@@ -366,7 +365,7 @@ def update_document(
     ):
 
         return render_template(
-            "./jockey_amazon/edit_document.html",
+            "./jockey_amazon/documents/edit_document.html",
             jockey=jockey,
             document=document,
             form=edit_form,

@@ -33,12 +33,12 @@ class JockeyAmazonMapper:
     @classmethod
     def from_entity(cls, jockey: JockeyAmazon) -> Dict | None:
         jockey_dict = {
+            "id": jockey.id,
             "inserted_at": jockey.inserted_at,
             "updated_at": jockey.updated_at,
         }
         if jockey:
             jockey_dict["general_information"] = {
-                "id": jockey.id,
                 "first_name": jockey.first_name,
                 "last_name": jockey.last_name,
                 "dni": jockey.dni,
