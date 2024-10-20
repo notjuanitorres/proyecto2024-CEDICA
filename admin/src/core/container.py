@@ -5,8 +5,8 @@ from .module.user import UserRepository
 from .module.employee import EmployeeRepository
 from .module.equestrian import EquestrianRepository
 from .module.common import StorageServices
+from .module.jockey_amazon import JockeyAmazonRepository
 from .module.charges import ChargeRepository
-
 
 
 class Container(containers.DeclarativeContainer):
@@ -23,6 +23,7 @@ class Container(containers.DeclarativeContainer):
     auth_repository = providers.Factory(AuthRepository)
     employee_repository = providers.Factory(EmployeeRepository)
     equestrian_repository = providers.Factory(EquestrianRepository)
+    jockey_amazon_repository = providers.Factory(JockeyAmazonRepository)
     charges_repository = providers.Factory(ChargeRepository)
 
     # Services

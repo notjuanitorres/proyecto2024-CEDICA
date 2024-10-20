@@ -37,7 +37,7 @@
                         <a href="{{ url_for('employee_bp.get_employees') }}" class="navbar-item" aria-label="Equipo"> Equipo </a>
                     {% endif %}
                     {% if "jya_index" in permissions or is_admin %}
-                        <a class="navbar-item" aria-label="Jinetes y Amazonas">
+                        <a href="{{ url_for('jockey_amazon_bp.get_jockeys') }}" class="navbar-item" aria-label="Jinetes y Amazonas">
                             Jinetes y Amazonas
                         </a>
                     {% endif %}

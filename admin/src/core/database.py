@@ -69,6 +69,7 @@ def reset(app):
     from .module.user.models import User
     from .module.auth.models import Role, Permission, RolePermission
     from .module.employee.models import Employee
+    from .module.jockey_amazon.models import JockeyAmazon
 
     with app.app_context():
         print("Dropping the database... ")
