@@ -26,40 +26,29 @@
         </ul>
     </nav>
 
-    <section class="section pt-4">
-        <article class="container">
-            <h1 class="title">Agregar Jinete/Amazona</h1>
+    <h1 class="title">Agregar Jinete/Amazona</h1>
+    
+    <h3 class="subtitle is-size-4 my-2 mt-4 has-text-centered">
+        Agregando {% block step_name %}{% endblock %}
+    </h3>
+    <progress class="progress is-success is-medium" value="{% block step_number %}{% endblock %}" max="5">
+    </progress>
+    
+    <section class="section pt-0">
+
+        <article id="{% block section_id %}{% endblock %}" class="container">
             <form method="POST">
-                {{ form.hidden_tag() }}
-
-                <!-- Pestañas -->
-                <div class="tabs is-boxed">
-                    <ul>
-                        <li class="is-active" data-tab="general-info"><a>Información General</a></li>
-                        <li data-tab="health-info"><a>Información de Salud</a></li>
-                        <li data-tab="family-pension-info"><a>Familia y Pensión</a></li>
-                        <li data-tab="school-info"><a>Información Escolar</a></li>
-                        <li data-tab="work-assignments-info"><a>Asignaciones de Trabajo</a></li>
-                    </ul>
-                </div>
-                <!-- Contenido de las pestañas -->
-                <div class="tab-content">
-                    {% include 'jockey_amazon/forms/general_information.html' %} 
-
-                    {% include 'jockey_amazon/forms/health_information.html' %} 
-
-                    {% include 'jockey_amazon/forms/family_information.html' %}
-
-                    {% include 'jockey_amazon/forms/educational_information.html' %}
-
-                    {% include 'jockey_amazon/forms/work_assignments_information.html' %}
-                </div>
-                <div class="field mt-5">
-                    <div class="control">
-                        <button class="button is-primary is-medium is-fullwidth" type="submit">
-                            Agregar Jockey/Amazon
-                            <span class="icon ml-1"><i class="fa-solid fa-pen-nib"></i></span>
-                        </button>
+                {% block step_form %}{% endblock %}
+                <div class="field-body mt-5">
+                    <div class="field">
+                        <div class="control">
+                            {% block prev_button %}{% endblock %}
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="control">
+                            {% block next_button %}{% endblock %}
+                        </div>
                     </div>
                 </div>
             </form>

@@ -206,7 +206,7 @@
         {% endif %}
 
         {% if "jockey_amazon_update" in permissions or is_admin %}
-            <a href="{{ url_for( 'jockey_amazon_bp.edit_jockey', jockey_id=jockey_amazon.id )}}" class="card-footer-item has-text-warning">Actualizar</a>
+            <a href="{{ url_for( 'jockey_amazon_bp.update.edit_jockey', jockey_id=jockey_amazon.id) }}" class="card-footer-item has-text-warning">Actualizar</a>
         {% endif %}
     {% endif %}
     <a href="{{ url_for('jockey_amazon_bp.edit_documents', jockey_id=jockey_amazon.id) }}" class="card-footer-item has-text-link">Ver documentos</a>

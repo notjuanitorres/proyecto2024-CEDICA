@@ -37,7 +37,7 @@
 {% endblock %}
 
 {% block create_button %}
-  <a class="button is-primary level-item" href="{{ url_for('jockey_amazon_bp.create_jockey')}}">
+  <a class="button is-primary level-item" href="{{ url_for('jockey_amazon_bp.create.init')}}">
     Agregar Jinete/Amazona
     <i class="fa-solid fa-hat-cowboy ml-2 is-size-5"></i>
   </a>
@@ -72,7 +72,7 @@
         to_left=true,
         endpoints={
           'show':'jockey_amazon_bp.show_jockey',
-          'edit': 'jockey_amazon_bp.edit_jockey',
+          'edit': 'jockey_amazon_bp.update.edit_jockey',
           'archive':'jockey_amazon_bp.archive_jockey',
         },
         permission_to_show="jockey_amazon_show",

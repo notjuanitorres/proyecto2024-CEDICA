@@ -1,109 +1,19 @@
 from datetime import datetime
-from enum import Enum
 from sqlalchemy import Enum as SQLAEnum
-
 from src.core.module.common import File
-from src.core.database import db
 from src.core.module.common import AddressMixin, EmergencyContactMixin, PhoneMixin
-
-
-class DisabilityDiagnosisEnum(Enum):
-    ECNE = "ECNE"
-    POST_TRAUMATIC_INJURY = "Lesión post-traumática"
-    MIOLOMENINGOCELE = "Mielomeningocele"
-    MULTIPLE_SCLEROSIS = "Esclerosis Múltiple"
-    MILD_SCOLIOSIS = "Escoliosis Leve"
-    SEQUELAE_OF_CVA = "Secuelas de ACV"
-    INTELLECTUAL_DISABILITY = "Discapacidad Intelectual"
-    AUTISM_SPECTRUM_DISORDER = "Trastorno del Espectro Autista"
-    LEARNING_DISORDER = "Trastorno del Aprendizaje"
-    ADHD = "Trastorno por Déficit de Atención/Hiperactividad"
-    COMMUNICATION_DISORDER = "Trastorno de la Comunicación"
-    ANXIETY_DISORDER = "Trastorno de Ansiedad"
-    DOWN_SYNDROME = "Síndrome de Down"
-    DEVELOPMENTAL_DELAY = "Retraso Madurativo"
-    PSYCHOSIS = "Psicosis"
-    BEHAVIOR_DISORDER = "Trastorno de Conducta"
-    MOOD_DISORDER = "Trastornos del ánimo y afectivos"
-    EATING_DISORDER = "Trastorno Alimentario"
-    OTHER = "OTRO"
-
-
-class DisabilityTypeEnum(Enum):
-    MENTAL = "Mental"
-    MOTOR = "Motora"
-    SENSORY = "Sensorial"
-    VISCERAL = "Visceral"
-
-
-class FamilyAssignmentEnum(Enum):
-    UNIVERSAL_WITH_CHILD = "Asignación Universal por hijo"
-    UNIVERSAL_WITH_DISABLED_CHILD = "Asignación Universal por hijo con Discapacidad"
-    ANNUAL_SCHOOL_HELP = "Asignación por ayuda escolar anual"
-
-
-class PensionEnum(Enum):
-    PROVINCIAL = "Provincial"
-    NATIONAL = "Nacional"
-
-
-class WorkProposalEnum(Enum):
-    HIPOTHERAPY = "Hipoterapia"
-    THERAPEUTIC_RIDING = "Monta Terapéutica"
-    ADAPTED_EQUESTRIAN_SPORTS = "Deporte Ecuestre Adaptado"
-    RECREATIONAL_ACTIVITIES = "Actividades Recreativas"
-    RIDING = "Equitación"
-
-
-class WorkConditionEnum(Enum):
-    REGULAR = "Regular"
-    DISMISSED = "De baja"
-
-
-class SedeEnum(Enum):
-    CASJ = "CASJ"
-    HLP = "HLP"
-    OTHER = "OTRO"
-
-
-class DayEnum(Enum):
-    MONDAY = "Lunes"
-    TUESDAY = "Martes"
-    WEDNESDAY = "Miércoles"
-    THURSDAY = "Jueves"
-    FRIDAY = "Viernes"
-    SATURDAY = "Sábado"
-    SUNDAY = "Domingo"
-
-
-class EducationLevelEnum(Enum):
-    PRIMARY = "Primario"
-    SECONDARY = "Secundario"
-    TERTIARY = "Terciario"
-    UNIVERSITY = "Universitario"
-
-
-jockey_amazon_enums = {
-    "disability_diagnosis": DisabilityDiagnosisEnum,
-    "disability_type": DisabilityTypeEnum,
-    "family_assignment": FamilyAssignmentEnum,
-    "pension": PensionEnum,
-    "work_proposal": WorkProposalEnum,
-    "work_condition": WorkConditionEnum,
-    "sede": SedeEnum,
-    "day": DayEnum,
-    "education_level": EducationLevelEnum,
-}
-
-
-class FileTagEnum(Enum):
-    ENTREVISTA = "entrevista"
-    EVALUACION = "evaluación"
-    PLANIFICACIONES = "planificaciones"
-    EVOLUCION = "evolución"
-    CRONICAS = "crónicas"
-    DOCUMENTAL = "documental"
-
+from src.core.database import db
+from .data import (
+    DisabilityDiagnosisEnum,
+    DisabilityTypeEnum,
+    FamilyAssignmentEnum,
+    PensionEnum,
+    WorkProposalEnum,
+    WorkConditionEnum,
+    SedeEnum,
+    DayEnum,
+    EducationLevelEnum,
+)
 
 class SchoolInstitution(db.Model):
     __tablename__ = 'school_institutions'
@@ -156,11 +66,10 @@ class WorkAssignment(db.Model):
     sede = db.Column(SQLAEnum(SedeEnum), nullable=False)
     days = db.Column(db.ARRAY(SQLAEnum(DayEnum)), nullable=False)
 
-    professor_or_therapist_id = db.Column(db.Integer, db.ForeignKey('employees.id'), nullable=False)
-    conductor_id = db.Column(db.Integer, db.ForeignKey('employees.id'), nullable=False)
-    track_assistant_id = db.Column(db.Integer, db.ForeignKey('employees.id'), nullable=False)
-
-    horse_id = db.Column(db.Integer, db.ForeignKey('horses.id'), nullable=False)
+    professor_or_therapist_id = db.Column(db.Integer, db.ForeignKey('employees.id'), nullable=True)
+    conductor_id = db.Column(db.Integer, db.ForeignKey('employees.id'), nullable=True)
+    track_assistant_id = db.Column(db.Integer, db.ForeignKey('employees.id'), nullable=True)
+    horse_id = db.Column(db.Integer, db.ForeignKey('horses.id'), nullable=True)
 
     inserted_at = db.Column(db.DateTime, default=datetime.now)
     updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
@@ -195,13 +104,13 @@ class JockeyAmazon(db.Model, AddressMixin, PhoneMixin, EmergencyContactMixin):
     has_disability = db.Column(db.Boolean, default=False)
     disability_diagnosis = db.Column(SQLAEnum(DisabilityDiagnosisEnum), nullable=True)
     disability_other = db.Column(db.String(100), nullable=True)
-    disability_type = db.Column(SQLAEnum(DisabilityTypeEnum), nullable=True)
+    disability_type = db.Column(db.Enum(DisabilityTypeEnum), nullable=True)
 
     has_family_assignment = db.Column(db.Boolean, default=False)
-    family_assignment_type = db.Column(SQLAEnum(FamilyAssignmentEnum), nullable=True)
+    family_assignment_type = db.Column(db.Enum(FamilyAssignmentEnum), nullable=True)
 
     has_pension = db.Column(db.Boolean, default=False)
-    pension_type = db.Column(SQLAEnum(PensionEnum), nullable=True)
+    pension_type = db.Column(db.Enum(PensionEnum), nullable=True)
     pension_details = db.Column(db.String(100), nullable=True)
 
     social_security = db.Column(db.String(100), nullable=True)

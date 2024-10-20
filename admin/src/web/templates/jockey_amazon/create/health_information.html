@@ -1,0 +1,63 @@
+{% extends "create_jockey_amazon.html" %}
+
+{% block title %} Informacion de Salud - Creando JyA {% endblock %}
+
+{% block step_name %}
+  Informacion de Salud
+{% endblock %}
+
+{% block step_number %}1{% endblock %}>
+
+{% block step_form %}
+  {% include 'jockey_amazon/forms/health_form.html' %} 
+{% endblock %}
+
+{% block prev_button %}
+  <a class="button is-primary is-medium is-outlined">
+    <span class="icon mr-1"><i class="fa-solid fa-arrow-left"></i></span>
+    Volver
+  </a>
+{% endblock %}
+
+{% block next_button %}
+  <button class="button is-primary is-medium" type="submit">
+    Siguiente
+    <span class="icon ml-1"><i class="fa-solid fa-arrow-right"></i></span>
+  </button>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // Funcionalidad para mostrar/ocultar detalles de la discapacidad
+    const hasDisabilityCheckbox = document.querySelector('input[name="has_disability"]');
+    const disabilityDetails = document.getElementById('disability-details');
+  
+    function toggleDisabilityDetails() {
+        if (hasDisabilityCheckbox.checked) {
+            disabilityDetails.style.display = 'block';
+        } else {
+            disabilityDetails.style.display = 'none';
+        }
+    }
+  
+    hasDisabilityCheckbox.addEventListener('change', toggleDisabilityDetails);
+    toggleDisabilityDetails();  // Initial check
+  });  
+  // Funcionalidad para mostrar/ocultar detalles de la curatela
+  const hasCuratorshipCheckbox = document.querySelector('input[name="has_curatorship"]');
+  const curatorshipDetails = document.getElementById('curatorship-details');
+
+  function toggleCuratorshipDetails() {
+      if (hasCuratorshipCheckbox.checked) {
+          curatorshipDetails.style.display = 'block';
+      } else {
+          curatorshipDetails.style.display = 'none';
+      }
+  }
+
+  hasCuratorshipCheckbox.addEventListener('change', toggleCuratorshipDetails);
+  toggleCuratorshipDetails();  // Initial check
+
+</script>
+{% endblock %}

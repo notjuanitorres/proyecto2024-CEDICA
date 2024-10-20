@@ -1,5 +1,5 @@
 from datetime import datetime
-from sqlalchemy.orm import column_property 
+from sqlalchemy.orm import column_property
 from src.core.database import db
 from src.core.module.common import AddressMixin, EmergencyContactMixin, PhoneMixin, File
 from src.core.module.employee.data import (
@@ -39,6 +39,4 @@ class Employee(db.Model, AddressMixin, PhoneMixin, EmergencyContactMixin):
     is_deleted = db.Column(db.Boolean, nullable=False, default=False)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True)
     user = db.relationship("User", backref=db.backref("employee", uselist=False))
-    files = db.relationship("EmployeeFile", back_populates="owner", cascade="all, delete-orphan"
-)
-
+    files = db.relationship("EmployeeFile", back_populates="owner")
