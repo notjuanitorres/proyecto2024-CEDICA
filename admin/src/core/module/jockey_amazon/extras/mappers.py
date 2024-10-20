@@ -55,9 +55,9 @@ class WorkAssignmentMapper:
         if assignment:
             dict = {
                 "id": assignment.id,
-                "proposal": assignment.proposal.value,
-                "condition": assignment.condition.value,
-                "sede": assignment.sede.value,
+                "proposal": assignment.proposal.name,
+                "condition": assignment.condition.name,
+                "sede": assignment.sede.name,
                 "days": [day.value for day in assignment.days],
                 "professor_or_therapist_id": assignment.professor_or_therapist_id,
                 "conductor_id": assignment.conductor_id,

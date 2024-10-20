@@ -12,7 +12,7 @@ from src.core.module.jockey_amazon import (
     JockeyAmazonMapper as Mapper,
     AbstractJockeyAmazonRepository,
 )
-from .jockey_and_amazon import create_jockey_amazon_bp
+from .jockey_and_amazon import create_jockey_amazon_bp, update_jockey_amazon_bp
 
 
 jockey_amazon_bp = Blueprint(
@@ -23,6 +23,7 @@ jockey_amazon_bp = Blueprint(
 )
 
 jockey_amazon_bp.register_blueprint(create_jockey_amazon_bp)
+jockey_amazon_bp.register_blueprint(update_jockey_amazon_bp)
 
 
 @jockey_amazon_bp.route("/", methods=["GET"])
@@ -74,55 +75,6 @@ def show_jockey(
 
     return render_template("./jockey_amazon/jockey_amazon.html", jockey_amazon=jockey)
 
-
-@jockey_amazon_bp.route("/editar/<int:jockey_id>", methods=["GET", "POST"])
-@check_user_permissions(permissions_required=["jockey_amazon_update"])
-@inject
-def edit_jockey(
-    jockey_id: int,
-    jockeys: AbstractJockeyAmazonRepository = Provide[
-        Container.jockey_amazon_repository
-    ],
-):
-    jockey = jockeys.get_by_id(jockey_id)
-    if not jockey:
-        return redirect(url_for("jockey_amazon_bp.get_jockeys"))
-
-    update_form = JockeyAmazonEditForm(
-        data=jockey,
-        id=jockey_id,
-        current_email=jockey["email"],
-        current_dni=jockey["dni"],
-    )
-
-    if request.method == "POST":
-        return update_jockey(update_form=update_form, jockey_id=jockey_id)
-
-    return render_template(
-        "./jockey_amazon/update_jockey_amazon.html", form=update_form, jockey=jockey
-    )
-
-
-@inject
-def update_jockey(
-    jockey_id: int,
-    update_form,
-    jockeys: AbstractJockeyAmazonRepository = Provide[
-        Container.jockey_amazon_repository
-    ],
-):
-    jockey = jockeys.get_by_id(jockey_id)
-    if not update_form.validate_on_submit():
-        return render_template(
-            "./jockey_amazon/update_jockey_amazon.html", form=update_form, jockey=jockey
-        )
-
-    # if not jockeys.update(jockey_id, Mapper.flat_form(update_form.data)):
-    #     flash("No se ha podido actualizar al Jockey/Amazon", "warning")
-    #     return render_template("./jockey_amazon/update_jockey_amazon.html")
-
-    flash("El Jockey/Amazon ha sido actualizado exitosamente ")
-    return redirect(url_for("jockey_amazon_bp.show_jockey", jockey_id=jockey_id))
 
 
 @jockey_amazon_bp.route("/delete/", methods=["POST"])
@@ -184,8 +136,6 @@ def add_document(
 ):
 
     if not create_form.validate_on_submit():
-        print(create_form.errors)
-        print(create_form.data)
         return render_template(
             "./jockey_amazon/create_document.html", form=create_form, jockey=jockey
         )

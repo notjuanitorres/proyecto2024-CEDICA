@@ -69,6 +69,15 @@ class DayEnum(Enum):
     SUNDAY = "Domingo"
 
 
+DAYS_MAPPING = {
+    'M': DayEnum.MONDAY,
+    'O': DayEnum.TUESDAY,
+    'N': DayEnum.WEDNESDAY,
+    'D': DayEnum.THURSDAY,
+    'A': DayEnum.FRIDAY,
+    'Y': DayEnum.SATURDAY
+}
+
 class EducationLevelEnum(Enum):
     PRIMARY = "Primario"
     SECONDARY = "Secundario"

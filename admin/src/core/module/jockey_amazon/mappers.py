@@ -64,17 +64,17 @@ class JockeyAmazonMapper:
             jockey_dict["health_information"] = {
                 "has_disability": jockey.has_disability,
                 "disability_diagnosis": (
-                    jockey.disability_diagnosis.value
+                    jockey.disability_diagnosis.name
                     if jockey.disability_diagnosis
                     else None
                 ),
                 "disability_other": jockey.disability_other,
                 "disability_type": (
-                    jockey.disability_type.value if jockey.disability_type else None
+                    jockey.disability_type.name if jockey.disability_type else None
                 ),
-                            "has_pension": jockey.has_pension,
+                "has_pension": jockey.has_pension,
                 "pension_type": (
-                    jockey.pension_type.value if jockey.pension_type else None
+                    jockey.pension_type.name if jockey.pension_type else None
                 ),
                 "pension_details": jockey.pension_details,
                 "social_security": jockey.social_security,
@@ -99,7 +99,7 @@ class JockeyAmazonMapper:
                 "has_scholarship": jockey.has_scholarship,
                 "scholarship_observations": jockey.scholarship_observations,
                 "scholarship_percentage": jockey.scholarship_percentage,
-                "work_assignment": WorkAssignmentMapper.from_entity(
+                "work_assignments": WorkAssignmentMapper.from_entity(
                     jockey.work_assignment
                 ),
             }

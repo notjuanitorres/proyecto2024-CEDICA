@@ -97,13 +97,13 @@ class JockeyAmazon(db.Model, AddressMixin, PhoneMixin, EmergencyContactMixin):
     has_disability = db.Column(db.Boolean, default=False)
     disability_diagnosis = db.Column(SQLAEnum(DisabilityDiagnosisEnum), nullable=True)
     disability_other = db.Column(db.String(100), nullable=True)
-    disability_type = db.Column(SQLAEnum(DisabilityTypeEnum), nullable=True)
+    disability_type = db.Column(db.Enum(DisabilityTypeEnum), nullable=True)
 
     has_family_assignment = db.Column(db.Boolean, default=False)
-    family_assignment_type = db.Column(SQLAEnum(FamilyAssignmentEnum), nullable=True)
+    family_assignment_type = db.Column(db.Enum(FamilyAssignmentEnum), nullable=True)
 
     has_pension = db.Column(db.Boolean, default=False)
-    pension_type = db.Column(SQLAEnum(PensionEnum), nullable=True)
+    pension_type = db.Column(db.Enum(PensionEnum), nullable=True)
     pension_details = db.Column(db.String(100), nullable=True)
 
     social_security = db.Column(db.String(100), nullable=True)

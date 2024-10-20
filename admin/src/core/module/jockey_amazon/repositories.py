@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Dict, List, Optional
+from src.core.module.jockey_amazon.data import DAYS_MAPPING
 from src.core.module.jockey_amazon.models import JockeyAmazon, JockeyAmazonFile
 from src.core.database import db
 from src.core.module.common.repositories import apply_filters
@@ -176,6 +177,49 @@ class JockeyAmazonRepository(AbstractJockeyAmazonRepository):
         doc_query.update(data)
         self.save()
         return True
+    
+    def update_school_information(self, jockey_id: int, data: Dict) -> bool:
+        jockey = JockeyAmazon.query.get(jockey_id)
+        if not jockey:
+            return False
+        
+        school = jockey.school_institution_id
+        if school:
+            school_data = data.get("school_institution", {})
+            for key, value in school_data.items():
+                if hasattr(jockey.school_institution, key):
+                    setattr(jockey.school_institution, key, value)
+ 
+        jockey.current_grade_year = data.get('current_grade_year', jockey.current_grade_year)
+        jockey.school_observations = data.get('school_observations', jockey.school_observations)
+
+        self.save()
+
+
+        return True
+
+    def update_assignments(self, jockey_id: int, data: Dict) -> bool:
+        jockey = JockeyAmazon.query.get(jockey_id)
+        if not jockey:
+            return False
+        assignment = jockey.work_assignment
+
+        if assignment and data:
+            assignment_data = data.get("work_assignments", {})
+            for key, value in assignment_data.items():
+                setattr(assignment, key, value)
+
+        jockey.has_scholarship = data.get("has_scholarship")
+        jockey.scholarship_observations = data.get("scholarship_observations")
+        jockey.scholarship_percentage = data.get("scholarship_percentage")
+        self.db.session.add(assignment)
+        self.db.session.add(jockey)
+        days_abbreviations = assignment_data.get("days", [])
+        assignment.days = [DAYS_MAPPING[abbr] for abbr in days_abbreviations if abbr in DAYS_MAPPING]
+        self.save()
+        return True
+
 
     def is_dni_used(self, dni: str) -> bool:
         return self.__get_by_dni(dni) is not None
+
