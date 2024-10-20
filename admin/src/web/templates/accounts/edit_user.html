@@ -29,11 +29,12 @@
                         <label class="label">Vista previa</label>
                         <div class="control ">
                             <div class="control">
-                            {% if user.profile_image_url %}
+                           
                             <figure class="image is-128x128 ">
-                                <img id="profile-image" src="{{ user.profile_image_url or '#' }}" alt="Imagen de perfil" class="is-rounded">
+                                <img id="profile-image" src="{{ user.profile_image_url or '#' }}" alt="Imagen de perfil" class="is-rounded"
+                                style="display: {{ 'block' if user.profile_image_url else 'none' }};"
+                                >
                             </figure>
-                            {% endif %}
                             </div>
                         </div>
                     </div>

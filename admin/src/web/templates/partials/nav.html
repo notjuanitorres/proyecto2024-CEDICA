@@ -54,8 +54,8 @@
                         {% endif %}
                     {% endif %}
                     <hr class="is-hidden-desktop" /> 
-                    <a href="#" class="navbar-item is-hidden-desktop"> Perfil </a>
-                    <a class="navbar-item is-hidden-desktop"> Configuración </a>
+                    <a href="/usuarios/{{user_id}}" class="navbar-item is-hidden-desktop"> Perfil </a>
+                    <a class="navbar-item is-hidden-desktop"  href="/usuarios/editar/{{user_id}}"> Configuración </a>
                     <form action="{{ url_for('auth_bp.logout') }}" method="POST" class="is-hidden-desktop navbar-item">
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                         <button type="submit" class="button is-danger is-small is-outlined">
@@ -100,8 +100,8 @@
                         </div>
                         <div class="dropdown-menu" id="dropdown-menu" role="menu">
                             <div class="dropdown-content">
-                                <a href="#" class="dropdown-item"> Perfil </a>
-                                <a class="dropdown-item"> Configuración </a>
+                                <a href="/usuarios/{{user_id}}" class="dropdown-item"> Perfil </a>
+                                <a class="dropdown-item" href="/usuarios/editar/{{user_id}}"> Configuración </a>
                                 <hr class="dropdown-divider"/>
                                 <form action="{{ url_for('auth_bp.logout') }}" method="POST" style="display: flex; justify-content: center;">
                                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">

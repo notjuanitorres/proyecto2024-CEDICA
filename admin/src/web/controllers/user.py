@@ -10,6 +10,7 @@ from src.core.module.user import (
 from src.core.module.employee import AbstractEmployeeRepository
 from src.core.module.common import AbstractStorageServices
 from src.core.container import Container
+from src.web.helpers.auth import can_edit
 
 
 users_bp = Blueprint(
@@ -17,10 +18,14 @@ users_bp = Blueprint(
 )
 
 
+
 @users_bp.before_request
 @inject
-def require_login_and_sys_admin(user_repository=Provide[Container.user_repository]):
-    if not user_repository.is_sys_admin(session.get("user")):
+def require_login_and_sys_admin(user_repository=Provide[Container.user_repository],user_id:int = None):
+    user_id = session.get("user")
+    target_user_id = request.view_args.get('user_id')
+    if (not session.get("is_admin")) and (user_id != target_user_id):
+        flash("No tienes permisos para acceder a esta página", "danger")
         return redirect(url_for("auth_bp.login"))
 
 
@@ -155,9 +160,11 @@ def update_user(
         return render_template("edit_user.html", form=edit_form)
 
     profile_image_url=None
-    if edit_form.profile_image:
+    if edit_form.profile_image.data:
         file = edit_form.profile_image.data
-        storage_service.delete_file(user_repository.get_profile_image_url(user_id))
+        old= user_repository.get_profile_image_url(user_id)
+        if old:
+            storage_service.delete_file(old)
         profile_image_url = storage_service.upload_file(file, path=user_repository.storage_path)
         
     user_repository.update(
@@ -167,12 +174,12 @@ def update_user(
             "alias": edit_form.alias.data,
             "system_admin": edit_form.system_admin.data,
             "role_id": edit_form.role_id.data,
-            "profile_image_url": profile_image_url["filename"] if profile_image_url else None
+            "profile_image_url": profile_image_url["path"] if profile_image_url else None
         },
     )
 
     if user_id == session.get("user"):
-        session["profile_image_url"] = storage_service.get_profile_image_url(filename=profile_image_url["filename"])
+        session["profile_image_url"] = storage_service.get_profile_image_url(filename=profile_image_url["path"])
 
     return redirect(url_for("users_bp.show_user", user_id=user_id))
 
