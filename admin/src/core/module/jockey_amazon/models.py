@@ -1,6 +1,7 @@
 from datetime import datetime
 from enum import Enum
 from sqlalchemy import Enum as SQLAEnum
+from sqlalchemy.orm import backref
 
 from src.core.module.common import File
 from src.core.database import db
@@ -157,7 +158,8 @@ class WorkAssignment(db.Model):
     conductor_id = db.Column(db.Integer, db.ForeignKey('employees.id'), nullable=False)
     track_assistant_id = db.Column(db.Integer, db.ForeignKey('employees.id'), nullable=False)
 
-    horse_id = db.Column(db.Integer, db.ForeignKey('horses.id'), nullable=False)
+    horse_id = db.Column(db.Integer, db.ForeignKey('horses.id'), nullable=True)
+    horse = db.relationship('Horse')
 
     inserted_at = db.Column(db.DateTime, default=datetime.now)
     updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
@@ -167,7 +169,6 @@ class WorkAssignment(db.Model):
     conductor = db.relationship('Employee', foreign_keys=[conductor_id], backref='work_assignments_as_conductor')
     track_assistant = db.relationship('Employee', foreign_keys=[track_assistant_id],
                                       backref='work_assignments_as_track_assistant')
-    horse = db.relationship('Horse')
 
 
 class JockeyAmazon(db.Model, AddressMixin, PhoneMixin, EmergencyContactMixin):
