@@ -94,7 +94,7 @@ class UserCreateForm(UserManagementForm):
 
 
 class UserEditForm(UserManagementForm):
-    profile_image = FileField('Profile Image', 
+    profile_image = FileField('Cargar foto de perfil', 
             validators=[FileSize(
                 max_size=max_file_size(size_in_mb=5),
                 message="El archivo es demasiado grande",

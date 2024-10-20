@@ -8,7 +8,36 @@
             <h1 class="title">Editar usuario</h1>
             <form method="POST" enctype="multipart/form-data">
                 {{ form.hidden_tag() }}
-                
+                <div class="is-flex-direction-row is-flex is-justify-content-space-around ">
+
+                    <div class="field is-touchable">
+                        <label class="label file-label is-small">{{ form.profile_image.label }}
+                        <div class="control file is-boxed"">
+                            {{ form.profile_image(class="file-input", type="file",  onchange="previewImage(event)") }}
+                            <span class="file-cta">
+                                <span class="file-icon">
+                                  <i class="fas fa-upload"></i>
+                                </span>
+                                <span class="file-label"> Subir...</span>
+                        </div>
+                        </label>
+                        {% if form.profile_image.errors %}
+                            <p class="help is-danger">{{ form.profile_image.errors[0] }}</p>
+                        {% endif %}
+                    </div>
+                    <div class="field">
+                        <label class="label">Vista previa</label>
+                        <div class="control ">
+                            <div class="control">
+                            {% if user.profile_image_url %}
+                            <figure class="image is-128x128 ">
+                                <img id="profile-image" src="{{ user.profile_image_url or '#' }}" alt="Imagen de perfil" class="is-rounded">
+                            </figure>
+                            {% endif %}
+                            </div>
+                        </div>
+                    </div>
+            </div>
                 <div class="field">
                     <label class="label">{{ form.email.label }}</label>
                     <div class="control">
@@ -53,15 +82,7 @@
                         </label>
                     </div>
                 </div>
-                <div class="field">
-                    <label class="label">{{ form.profile_image.label }}</label>
-                    <div class="control">
-                        {{ form.profile_image(class="input", type="file") }}
-                    </div>
-                    {% if form.profile_image.errors %}
-                        <p class="help is-danger">{{ form.profile_image.errors[0] }}</p>
-                    {% endif %}
-                </div>
+
                 <div class="field">
                     <div class="control">
                         <button class="button is-primary" type="submit">Guardar cambios</button>
@@ -72,3 +93,7 @@
     </section>
 {% endblock %}
 
+{% block extra_scripts %}
+   {{ super() }}
+    <script src="{{ url_for('static', filename='js/preview-image.js') }}"></script>
+{% endblock %}

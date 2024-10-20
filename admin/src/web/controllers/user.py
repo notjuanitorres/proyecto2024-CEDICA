@@ -112,10 +112,9 @@ def edit_user(
     edit_form = UserEditForm(data=user, current_email=user["email"])
 
     if request.method in ["POST", "PUT"]:
-        print(dir(request.files["profile_image"]))
         edit_form.profile_image.data = request.files["profile_image"]
         return update_user(user_id=user_id, edit_form=edit_form)
-    return render_template("edit_user.html", form=edit_form)
+    return render_template("edit_user.html", form=edit_form, user=user)
 
 
 @inject

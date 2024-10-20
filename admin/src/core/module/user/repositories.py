@@ -117,6 +117,8 @@ class UserRepository(AbstractUserRepository):
         user = User.query.filter_by(id=user_id)
         if not user:
             return False
+        if data["profile_image_url"]== None:
+            data["profile_image_url"] = user.first().profile_image_url
         user.update(data)
         self.save()
         return True
