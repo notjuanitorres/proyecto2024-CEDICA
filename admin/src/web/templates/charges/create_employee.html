@@ -54,7 +54,7 @@
               <div class="media-content">
                 <div class="content">
                   <p>
-                    <strong>{{ employee.name }}</strong> <small>{{ employee.inserted_at | format_date }}</small>
+                    <strong>{{ employee.name }} {{ employee.lastname }}</strong> <small>{{ employee.inserted_at | format_date }}</small>
                     <br />
                     {{ employee.email }}
                   </p>
@@ -75,10 +75,7 @@
         <div class="column">
           {{ select_form.submit_employee(class="button is-primary is-fullwidth", id="submit-employee", type="submit") }}
         </div>
-        <div class="column is-1"></div>  <!-- This creates a gap between buttons -->
-{#        <div class="column">#}
-{#          <a href="{{ url_for('charges_bp.create_jya') }}" class="button is-danger is-fullwidth">Cancelar</a>#}
-{#        </div>#}
+        <div class="column is-1"></div>
       </div>
     </div>
   </form>

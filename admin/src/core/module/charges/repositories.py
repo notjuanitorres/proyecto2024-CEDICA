@@ -83,7 +83,6 @@ class ChargeRepository(AbstractChargeRepository):
 
     def get_by_id(self, charge_id: int) -> Dict | None:
         charge = self.db.session.query(Charge).filter(Charge.id == charge_id).first()
-        print(type(charge))
         return Mapper.from_entity(charge) if charge else None
 
     def update_charge(self, charge_id: int, data: Dict) -> bool:

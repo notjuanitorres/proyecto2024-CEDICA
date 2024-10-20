@@ -30,13 +30,14 @@ def seed_all(app):
         seed_employees()
         print("Commiting employees and accounts")
         db.session.commit()  # employees need to be commited before adding horse_trainers
-        print("Seeding charges")
-        seed_charges()
         seed_equestrian_module()
-        print("Commiting charges and equestrian module")
+        print("Commiting equestrian module")
         db.session.commit()
         seed_jockey_amazons()
         print("Commiting jockey_amazons module")
+        print("Seeding charges")
+        seed_charges()
+        print("Commiting charges")
         db.session.commit()
 
 
@@ -491,9 +492,6 @@ def seed_jockey_amazons():
     )
 
     db.session.add_all([jockey1, jockey2, jockey3])
-    db.session.commit()
-
-    print("Seeded jockey_amazons")
 
 
 def seed_charges():
@@ -504,6 +502,7 @@ def seed_charges():
             amount=100.0,
             payment_method=PaymentMethodEnum.CREDIT_CARD,
             employee_id=1,
+            jya_id=1,
             observations="First charge",
             inserted_at=date(2023, 1, 1),
             updated_at=date(2023, 1, 1)
@@ -514,6 +513,7 @@ def seed_charges():
             amount=200.0,
             payment_method=PaymentMethodEnum.CASH,
             employee_id=2,
+            jya_id=1,
             observations="Second charge",
             inserted_at=date(2023, 2, 1),
             updated_at=date(2023, 2, 1)
@@ -524,6 +524,7 @@ def seed_charges():
             amount=150.0,
             payment_method=PaymentMethodEnum.DEBIT_CARD,
             employee_id=3,
+            jya_id=2,
             observations="Third charge",
             inserted_at=date(2023, 3, 1),
             updated_at=date(2023, 3, 1)

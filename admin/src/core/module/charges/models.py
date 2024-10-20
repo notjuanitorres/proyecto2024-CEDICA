@@ -3,6 +3,10 @@ from datetime import datetime
 
 from enum import Enum as pyEnum
 
+from src.core.module.jockey_amazon.models import JockeyAmazon
+# TODO: uncomment when JYA model is imported somewhere else
+# https://docs.pylonsproject.org/projects/pyramid_cookbook/en/latest/database/sqlalchemy.html#importing-all-sqlalchemy-models
+
 
 class PaymentMethodEnum(pyEnum):
     CASH = "Efectivo"
@@ -29,5 +33,5 @@ class Charge(db.Model):
     employee = db.relationship("Employee", back_populates="charges", lazy="select")
 
     # TODO: uncomment when JYA model is created
-    # jya_id = db.Column(db.Integer, db.ForeignKey("jyas.id"), nullable=True)
-    # jya = db.relationship("JYA", back_populates="charges", uselist=False)
+    jya_id = db.Column(db.Integer, db.ForeignKey("jockeys_amazons.id"), nullable=False)
+    jya = db.relationship("JockeyAmazon", back_populates="charges", uselist=False)

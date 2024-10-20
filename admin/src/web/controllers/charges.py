@@ -1,5 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 
+from src.core.module.jockey_amazon.forms import JockeyAmazonMiniSearchForm, JockeyAmazonSelectForm
+from src.core.module.jockey_amazon.repositories import AbstractJockeyAmazonRepository
 from src.core.module.employee.forms import EmployeeMiniSearchForm, EmployeeSelectForm
 from src.core.module.employee import EmployeeSearchForm
 from src.web.helpers.auth import check_user_permissions
@@ -17,10 +19,9 @@ charges_bp = Blueprint(
 )
 
 
-@charges_bp.route("/")
-@check_user_permissions(permissions_required=["cobros_index"])
 @inject
-def get_charges(charges_repository: ACR = Provide[Container.charges_repository]):
+def search_charges(search: ChargeSearchForm,
+                   charges_repository: ACR = Provide[Container.charges_repository]):
     page = request.args.get("page", type=int)
     per_page = request.args.get("per_page", type=int)
     search = ChargeSearchForm(request.args)
@@ -42,11 +43,20 @@ def get_charges(charges_repository: ACR = Provide[Container.charges_repository])
             search_query["filters"]["start_date"] = search.start_date.data
             search_query["filters"]["finish_date"] = search.finish_date.data
 
-    paginated_charges = charges_repository.get_page(
+    return charges_repository.get_page(
         page=page, per_page=per_page, order_by=order_by, search_query=search_query
     )
 
-    return render_template("charges.html", charges=paginated_charges, search_form=search)
+
+@charges_bp.route("/")
+@check_user_permissions(permissions_required=["cobros_index"])
+def get_charges():
+
+    search = ChargeSearchForm(request.args)
+
+    paginated_charges = search_charges(search=search)
+
+    return render_template("./charges/charges.html", charges=paginated_charges, search_form=search)
 
 
 @charges_bp.route("/<int:charge_id>")
@@ -54,7 +64,8 @@ def get_charges(charges_repository: ACR = Provide[Container.charges_repository])
 @inject
 def show_charge(charge_id: int,
                 charges_repository: ACR = Provide[Container.charges_repository],
-                employees_repository: AbstractEmployeeRepository = Provide[Container.employee_repository]):
+                employees_repository: AbstractEmployeeRepository = Provide[Container.employee_repository],
+                jya_repository: AbstractJockeyAmazonRepository = Provide[Container.jockey_amazon_repository],):
 
     charge = charges_repository.get_by_id(charge_id)
 
@@ -65,11 +76,13 @@ def show_charge(charge_id: int,
     employee = employees_repository.get_employee(charge["employee_id"])
     if not employee:
         flash(f"El empleado asociado al cobro no existe", "danger")
-        return
+        return get_charges()
 
-    jya = None
-    # jya = jya_repository.get_jya(charge["jya_id"])
-    return render_template('charge.html', charge=charge, employee=employee, jya=jya)
+    jya = jya_repository.get_by_id(charge["jya_id"])
+    if not jya:
+        flash(f"El Jockey/Amazon asociado al cobro no existe", "danger")
+        return get_charges()
+    return render_template('./charges/charge.html', charge=charge, employee=employee, jya=jya)
 
 
 @charges_bp.route("/crear", methods=["GET", "POST"])
@@ -80,13 +93,13 @@ def create_charge():
     if request.method == "POST":
         return add_charge(create_form=create_form)
 
-    return render_template("create_charge.html", form=create_form)
+    return render_template("./charges/create_charge.html", form=create_form)
 
 
 @inject
 def add_charge(create_form: ChargeCreateForm):
     if not create_form.validate_on_submit():
-        return render_template("create_charge.html", form=create_form)
+        return render_template("./charges/create_charge.html", form=create_form)
 
     session["charge"] = Mapper.to_session(Mapper.from_form(create_form.data))
 
@@ -115,14 +128,14 @@ def edit_charge(charge_id: int,
     if request.method in ["POST", "PUT"]:
         return update_charge(charge_id=charge_id, edit_form=edit_form)
 
-    return render_template("edit_charge.html", form=edit_form, charge=charge)
+    return render_template("./charges/edit_charge.html", form=edit_form, charge=charge)
 
 
 @inject
 def update_charge(charge_id: int, edit_form: ChargeEditForm,
                   charges_repository: ACR = Provide[Container.charges_repository]):
     if not edit_form.validate_on_submit():
-        return render_template("edit_charge.html", form=edit_form)
+        return render_template("./charges/edit_charge.html", form=edit_form)
 
     charges_repository.update_charge(charge_id, Mapper.from_form(edit_form.data))
 
@@ -250,7 +263,7 @@ def link_charge_employee(
 @check_user_permissions(permissions_required=["cobros_update"])
 @inject
 def link_jya(
-        employees: AbstractEmployeeRepository = Provide[Container.employee_repository],
+        jya_repository: AbstractJockeyAmazonRepository = Provide[Container.jockey_amazon_repository],
 ):
     if not session.get("charge"):
         flash(f"Esta pagina solo puede ser accedida al crear un cobro", "danger")
@@ -261,14 +274,14 @@ def link_jya(
     per_page = request.args.get("per_page", type=int, default=10)
     search_query = {}
 
-    search_jya = EmployeeMiniSearchForm(request.args)
-    select_jya = EmployeeSelectForm()
+    search_jya = JockeyAmazonMiniSearchForm(request.args)
+    select_jya = JockeyAmazonSelectForm()
 
     if request.method == "GET" and search_jya.validate():
         search_fields = ["name", "email"]
         search_query = {"text": search_jya.search_text.data, "fields": search_fields}
 
-    jyas = employees.get_page(
+    jyas = jya_repository.get_page(
         page=page, search_query=search_query, per_page=per_page
     )
 
@@ -292,7 +305,7 @@ def link_charge_jya(
         paginated_jyas,
         charges_repository: ACR = Provide[Container.charges_repository],
 ):
-    if not (select_form.submit_employee.data and select_form.validate()):
+    if not (select_form.submit_jya.data and select_form.validate()):
         return render_template(
             "./charges/create_jya.html",
             charge=charge,
@@ -301,7 +314,7 @@ def link_charge_jya(
             select_form=select_form,
         )
 
-    jya_id = select_form.selected_employee.data
+    jya_id = select_form.selected_jya.data
 
     session["charge"]["jya_id"] = jya_id
 
@@ -349,6 +362,71 @@ def add_charge_employee(
 @charges_bp.route("/cambiar-jya/<int:charge_id>", methods=["GET", "POST"])
 @check_user_permissions(permissions_required=["cobros_update"])
 @inject
-def change_jya(charge_id: int,
-               ):
-    return ""
+def change_jya(
+        charge_id: int,
+        charges_repository: ACR = Provide[Container.charges_repository],
+        jyas: AbstractJockeyAmazonRepository = Provide[Container.jockey_amazon_repository],
+):
+    page = request.args.get("page", type=int, default=1)
+    per_page = request.args.get("per_page", type=int, default=10)
+    search_query = {}
+
+    search_jya = JockeyAmazonMiniSearchForm(request.args)
+    select_jya = JockeyAmazonSelectForm()
+
+    charge = charges_repository.get_by_id(charge_id)
+    if not charge:
+        flash(f"El cobro con ID = {charge_id} no existe", "danger")
+        return redirect(url_for("charges_bp.get_charges"))
+
+    if request.method == "GET" and search_jya.validate():
+        search_fields = ["name", "email"]  # Adjust these fields as necessary for JockeyAmazon
+        search_query = {"text": search_jya.search_text.data, "fields": search_fields}
+
+    jyas_list = jyas.get_page(
+        page=page, search_query=search_query, per_page=per_page
+    )
+
+    if request.method == "POST":
+        return add_charge_jya(charge, search_jya, select_jya, jyas_list)
+
+    return render_template(
+        "./charges/update_jya.html",
+        charge=charge,
+        jyas=jyas_list,
+        search_form=search_jya,
+        select_form=select_jya,
+    )
+
+
+@inject
+def add_charge_jya(
+    charge,
+    search_form,
+    select_form,
+    paginated_jyas,
+    charges_repository: ACR = Provide[Container.charges_repository],
+):
+    if not (select_form.submit_jya.data and select_form.validate()):
+        return render_template(
+            "./charges/update_jya.html",
+            charge=charge,
+            jyas=paginated_jyas,
+            search_form=search_form,
+            select_form=select_form,
+        )
+
+    charge_id = charge.get("id")
+    jya_id = select_form.selected_jya.data
+
+    if charges_repository.update_charge(charge_id, {"jya_id": jya_id}):
+        flash(
+            "Se ha cambiado correctamente el Jockey/Amazon",
+            "success",
+        )
+    else:
+        flash(
+            "No se ha podido cambiar el Jockey/Amazon",
+            "danger",
+        )
+    return redirect(url_for("charges_bp.show_charge", charge_id=charge_id))

@@ -28,7 +28,6 @@
         <div id="basic-info" class="cell">
             <h3>Información del cobro</h3>
             <ul>
-                <li><strong>ID: </strong> {{ charge.id }}</li>
                 <li><strong>Fecha de cobro: </strong>{{ charge.date_of_charge | format_date }}</li>
                 <li><strong>Monto: </strong> {{ charge.amount }}</li>
                 <li><strong>Método de pago: </strong>{{ charge.payment_method}}</li>
@@ -40,7 +39,6 @@
         <div id="related-info1" class="cell">
             <h3>Información del empleado</h3>
             <ul>
-                <li><strong>Empleado ID: </strong> {{ charge.employee_id }}</li>
                 <li><strong>Nombre: </strong> {{ employee.name }}</li>
                 <li><strong>Apellido: </strong> {{ employee.lastname }}</li>
                 <li><strong>Dni: </strong> {{ employee.dni }}</li>
@@ -50,9 +48,8 @@
             <h3>Información del jya</h3>
             <ul>
                 {% if charge.jya_id %}
-                    <li><strong>JYA ID: </strong>{{ charge.jya_id }}</li>
-                    <li><strong>Nombre: </strong> {{ jya.name }}</li>
-                    <li><strong>Apellido: </strong> {{ jya.lastname }}</li>
+                    <li><strong>Nombre: </strong> {{ jya.first_name }}</li>
+                    <li><strong>Apellido: </strong> {{ jya.last_name }}</li>
                     <li><strong>Dni: </strong> {{ jya.dni }}</li>
                 {% endif %}
             </ul>
@@ -78,6 +75,8 @@
                 {#    NOTE: employee should always be true    #}
                 {% if not employee %}
                 <span class="tag is-info is-medium ml-2">Sin informacion</span>
+                {% elif employee.is_archived %}
+                <span class="tag is-danger is-medium ml-2">Empleado archivado</span>
                 {% endif %}
             </h2>
         </header>
@@ -93,7 +92,7 @@
                     <div class="media-content">
                         <div class="content">
                             <p>
-                                <strong class="is-size-5">{{ employee.name }}</strong>
+                                <strong class="is-size-5">{{ employee.name }} {{ employee.lastname }}</strong>
                                 <small>{{ employee.inserted_at | format_date }}</small>
                                 <br />
                                 {{ employee.email }}
@@ -105,8 +104,8 @@
             </div>
         </div>
         <footer class="card-footer">
-            <a href="{{ url_for('employee_bp.show_employee', employee_id=employee.id) }}" class="card-footer-item has-text-warning">Ver</a>
-            <a href="{{ url_for( "charges_bp.change_employee", charge_id=charge.id ) }}" class="card-footer-item has-text-link">Cambiar</a>
+            <a href="{{ url_for('employee_bp.show_employee', employee_id=employee.id) }}" class="card-footer-item has-text-link">Ver</a>
+            <a href="{{ url_for( "charges_bp.change_employee", charge_id=charge.id ) }}" class="card-footer-item has-text-warning">Cambiar</a>
         </footer>
         {% else %}
         <div class="card-content">
@@ -125,7 +124,7 @@
             <h2 class="card-header-title is-size-4">
                 Jinete asociado al cobro
 
-                {#    NOTE: employee should always be true    #}
+                    {#    NOTE: jya should always be true    #}
                 {% if not jya %}
                 <span class="tag is-info is-medium ml-2">Sin informacion</span>
                 {% endif %}
@@ -143,10 +142,10 @@
                     <div class="media-content">
                         <div class="content">
                             <p>
-                                <strong class="is-size-5">{{ jya.name }}</strong>
-                                <small>{{ employee.inserted_at | format_date }}</small>
+                                <strong class="is-size-5">{{ jya.first_name }} {{ jya.last_name }}</strong>
+                                <small>{{ jya.inserted_at | format_date }}</small>
                                 <br />
-                                {{ jya.email }}
+                                Dni: {{ jya.dni }}
                                 <br />
                             </p>
                         </div>
@@ -156,7 +155,8 @@
         </div>
 
         <footer class="card-footer">
-          <a href="{{ url_for('charges_bp.change_jya', charge_id=charge.id) }}" class="card-footer-item has-text-link">Cambiar</a>
+          <a href="{{ url_for('jockey_amazon_bp.show_jockey', jockey_id=jya.id) }}" class="card-footer-item has-text-link">Ver</a>
+          <a href="{{ url_for('charges_bp.change_jya', charge_id=charge.id) }}" class="card-footer-item has-text-warning">Cambiar</a>
         </footer>
         {% else %}
         <div class="card-content">

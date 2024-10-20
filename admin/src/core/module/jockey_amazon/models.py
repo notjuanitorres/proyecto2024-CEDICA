@@ -184,7 +184,6 @@ class JockeyAmazon(db.Model, AddressMixin, PhoneMixin, EmergencyContactMixin):
     scholarship_observations = db.Column(db.Text, nullable=True)
     scholarship_percentage = db.Column(db.Float, nullable=True)
 
-
     has_disability = db.Column(db.Boolean, default=False)
     disability_diagnosis = db.Column(SQLAEnum(DisabilityDiagnosisEnum), nullable=True)
     disability_other = db.Column(db.String(100), nullable=True)
@@ -225,6 +224,7 @@ class JockeyAmazon(db.Model, AddressMixin, PhoneMixin, EmergencyContactMixin):
                                                      db.ForeignKey('jockeys_amazons.id'), primary_key=True)
                                            )
     files = db.relationship("JockeyAmazonFile", back_populates="owner")
+    charges = db.relationship("Charge", back_populates="jya", lazy="select")
 
 
 class JockeyAmazonFile(File):

@@ -5,7 +5,7 @@
 
 {% block title %} Cobro {{ charge.id }} - CEDICA {% endblock %}
 
-{% block card_title %}Asociando un empleado {% endblock %}
+{% block card_title %}Asociando un JYA {% endblock %}
 
 {% block main_content %}
     {{ render_flash_messages(messages) }}
@@ -38,11 +38,11 @@
       </a>
     </li>
     <li>
-      <a href="{{ url_for('charges_bp.change_employee', charge_id=charge.id) }}">
+      <a href="{{ url_for('charges_bp.change_jya', charge_id=charge.id) }}">
         <span class="icon is-small">
-          <i class="fas fa-user" aria-hidden="true"></i>
+          <i class="fas fa-horse" aria-hidden="true"></i>
         </span>
-        <span>Asociar empleado</span>
+        <span>Asociar JYA</span>
       </a>
     </li>
   </ul>
@@ -60,7 +60,7 @@
                         <span>Informacion General</span>
                     </a>
                 </li>
-                <li class="is-active">
+                <li>
                     <a href="{{ url_for("charges_bp.change_employee",  charge_id=charge.id ) }}">
                           <span class="icon is-small">
                               <i class="far fa-user" aria-hidden="true"></i>
@@ -68,29 +68,30 @@
                         <span>Empleado asociado</span>
                     </a>
                 </li>
-                <li>
+                <li class="is-active">
                     <a href="{{ url_for("charges_bp.change_jya",  charge_id=charge.id ) }}">
                           <span class="icon is-small">
-                              <i class="far fa-user" aria-hidden="true"></i>
+                              <i class="fas fa-horse" aria-hidden="true"></i>
                           </span>
-                        <span>Jinete asociado</span>
+                        <span>JYA asociado</span>
                     </a>
                 </li>
             </ul>
         </div>
+    </div>
 
 
-<section id="change-employee" class="panel">
+<section id="change-jya" class="panel">
   <div class="container p-4">
     <h1 class="title is-size-4">
-      Asociando un empleado
+      Asociando un JYA
     </h1>
   </div>
-  <form id="search-employee" method="GET" class="panel-block is-gap-2">
+  <form id="search-jya" method="GET" class="panel-block is-gap-2">
   {{ search_form.hidden_tag() }}
     {{ search_form.csrf_token }}
     <div class="field is-flex-grow-1">
-      <label for="filtrar" class="label">Buscar empleado</label>
+      <label for="filtrar" class="label">Buscar JYA</label>
       <p class="control has-icons-left">
         {{ search_form.search_text(class="input", placeholder="Buscar por nombre o email") }}
         <span class="icon is-left">
@@ -109,14 +110,14 @@
     </div>
   </form>
   <div class="container p-5">
-    {{ render_pagination(employees, 'charges_bp.change_employee', {"charge_id":charge.id}) }}
+    {{ render_pagination(jyas, 'charges_bp.change_jya', {"charge_id":charge.id}) }}
   </div>
   <form method="POST" id="select-form" class="">
     {{ select_form.hidden_tag() }}
     {{ select_form.csrf_token }}
-      {% if employees.total %}
-        {% for employee in employees %}
-          <a class="panel-block field mb-0" data-id="employee-{{ employee.id }}">
+      {% if jyas.total %}
+        {% for jya in jyas %}
+          <a class="panel-block field mb-0" data-id="jya-{{ jya.id }}">
             <div class="media">
               <div class="media-left">
                 <i class="fas fa-user is-size-3" aria-hidden="true"></i>
@@ -124,9 +125,9 @@
               <div class="media-content">
                 <div class="content">
                   <p>
-                    <strong>{{ employee.name }} {{ employee.lastname }}</strong> <small>{{ employee.inserted_at | format_date }}</small>
+                    <strong>{{ jya.first_name }} {{ jya.last_name }}</strong> <small>{{ jya.inserted_at | format_date }}</small>
                     <br />
-                    {{ employee.email }}
+                    Dni: {{ jya.dni }}
                   </p>
                 </div>
               </div>
@@ -136,14 +137,14 @@
         {% else %}
             <div class="media-content is-flex is-justify-content-center is-align-items-center">
               <p class="has-text-centered">
-                No hay empleados
+                No hay jinetes y amazonas
               </p>
             </div>
         {% endif %}
     <div class="panel-block">
       <div class="columns is-mobile is-gapless" style="width: 100%;">
         <div class="column">
-          {{ select_form.submit_employee(class="button is-primary is-fullwidth", id="submit-employee", type="submit") }}
+          {{ select_form.submit_jya(class="button is-primary is-fullwidth", id="submit-jya", type="submit") }}
         </div>
         <div class="column is-1"></div>  <!-- This creates a gap between buttons -->
         <div class="column">
@@ -160,44 +161,44 @@
       document.addEventListener('DOMContentLoaded', function() {
     const pagination = document.getElementById("pagination");
     const selectForm = document.getElementById("select-form");
-    const employeeLinks = document.querySelectorAll('[data-id^="employee-"]');
-    const selectedEmployee = document.getElementById('selected_employee');
-    const submitButton = document.getElementById('submit-employee');
+    const jyaLinks = document.querySelectorAll('[data-id^="jya-"]');
+    const selectedJya = document.getElementById('selected_jya');
+    const submitButton = document.getElementById('submit-jya');
     const isActive = "has-background-warning";
 
-    function selectEmployee(employeeId, clickedElement) {
-        selectedEmployee.value = employeeId;
+    function selectJya(jyaId, clickedElement) {
+        selectedJya.value = jyaId;
 
         if (pagination) {
             pagination.classList.add("is-invisible");
         }
-        employeeLinks.forEach(link => {
+        jyaLinks.forEach(link => {
             link.classList.remove(isActive);
         });
         clickedElement.classList.add(isActive);
         submitButton.disabled = false;
     }
 
-    function deselectEmployee() {
+    function deselectJya() {
         if (pagination) {
             pagination.classList.remove("is-invisible");
         }
-        selectedEmployee.value = '';
-        employeeLinks.forEach(link => {
+        selectedJya.value = '';
+        jyaLinks.forEach(link => {
             link.classList.remove(isActive);
         });
         submitButton.disabled = true;
     }
 
-    employeeLinks.forEach(link => {
+    jyaLinks.forEach(link => {
         link.addEventListener('click', function(event) {
             event.preventDefault();
-            const employeeId = this.getAttribute('data-id').split('-')[1];
+            const jyaId = this.getAttribute('data-id').split('-')[1];
 
             if (this.classList.contains(isActive)) {
-                deselectEmployee();
+                deselectJya();
             } else {
-                selectEmployee(employeeId, this);
+                selectJya(jyaId, this);
             }
         });
     });

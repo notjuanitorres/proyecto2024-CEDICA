@@ -101,9 +101,7 @@
     <td><span class="is-hidden-tablet has-text-weight-bold">Monto: </span>{{ charge.amount }}</td>
     <td><span class="is-hidden-tablet has-text-weight-bold">Método de Pago: </span>{{ charge.payment_method.value }}</td>
     <td><span class="is-hidden-tablet has-text-weight-bold">Empleado: </span>{{ charge.employee.name + " " + charge.employee.lastname }}</td>
-    {#      TODO: uncomment when jya model is done#}
-    {#      <td><span class="is-hidden-tablet has-text-weight-bold">Jinete o Amazona: </span>{{ charge.jya.name + " " + charge.jya.lastname }}</td>#}
-    <td><span class="is-hidden-tablet has-text-weight-bold">Jinete o Amazona: </span>Nombre y apellido</td>
+    <td><span class="is-hidden-tablet has-text-weight-bold">Jinete o Amazona: </span>{{ charge.jya.first_name + " " + charge.jya.last_name }}</td>
     <td class="is-hidden-tablet is-flex">
       <a href="{{ url_for('charges_bp.show_charge', charge_id=charge.id)}}" class="button  is-flex-grow-1 ">
         <span class=" is-bold ">

@@ -1,7 +1,9 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, BooleanField, SelectField, TextAreaField, IntegerField, DateField, FormField, FloatField, SubmitField
+from wtforms import StringField, BooleanField, SelectField, TextAreaField, IntegerField, DateField, FormField, \
+    FloatField, SubmitField, HiddenField
 from wtforms.validators import DataRequired, Length, Optional
 
+from src.core.module.common import IsNumber
 from src.core.module.jockey_amazon.models import FileTagEnum
 from src.core.module.common.forms import AddressForm, PhoneForm, EmergencyContactForm, DocumentsSearchForm, \
     BaseManageDocumentsForm
@@ -164,3 +166,19 @@ class JockeyAmazonDocumentSearchForm(DocumentsSearchForm):
         self.filter_tag.choices = [
             ("", "Ver Todos"),
         ] + [(e.name, e.value) for e in FileTagEnum]
+
+
+class JockeyAmazonSelectForm(FlaskForm):
+    selected_jya = HiddenField(
+        "Empleado seleccionado",
+        validators=[DataRequired("Se debe seleccionar un empleado"), IsNumber()],
+    )
+    submit_jya = SubmitField("Asociar")
+
+    def set_selected_jya(self, account_id):
+        self.selected_jya.data = account_id
+
+
+class JockeyAmazonMiniSearchForm(FlaskForm):
+    search_text = StringField(validators=[Length(message="Debe ingresar un texto", min=1, max=50)])
+    submit_search = SubmitField("Buscar")

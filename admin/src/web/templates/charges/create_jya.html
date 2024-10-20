@@ -10,13 +10,14 @@
 {% block main_content %}
 {{ render_flash_messages(messages) }}
 
-<section id="change-employee" class="panel">
+<section id="change-jya
+" class="panel">
   <div class="container p-4">
     <h1 class="title is-size-4">
       Asociando un jinete
     </h1>
   </div>
-  <form id="search-employee" method="GET" class="panel-block is-gap-2">
+  <form id="search-jya" method="GET" class="panel-block is-gap-2">
   {{ search_form.hidden_tag() }}
     {{ search_form.csrf_token }}
     <div class="field is-flex-grow-1">
@@ -46,7 +47,7 @@
     {{ select_form.csrf_token }}
       {% if jyas.total %}
         {% for jya in jyas %}
-          <a class="panel-block field mb-0" data-id="employee-{{ jya.id }}">
+          <a class="panel-block field mb-0" data-id="jya-{{ jya.id }}">
             <div class="media">
               <div class="media-left">
                 <i class="fas fa-user is-size-3" aria-hidden="true"></i>
@@ -54,9 +55,9 @@
               <div class="media-content">
                 <div class="content">
                   <p>
-                    <strong>{{ jya.name }}</strong> <small>{{ jya.inserted_at | format_date }}</small>
+                    <strong>{{ jya.first_name }} {{ jya.last_name }} </strong> <small>{{ jya.inserted_at | format_date }}</small>
                     <br />
-                    {{ jya.email }}
+                    Dni: {{ jya.dni }}
                   </p>
                 </div>
               </div>
@@ -73,12 +74,9 @@
     <div class="panel-block">
       <div class="columns is-mobile is-gapless" style="width: 100%;">
         <div class="column">
-          {{ select_form.submit_employee(class="button is-primary is-fullwidth", id="submit-employee", type="submit") }}
+          {{ select_form.submit_jya(class="button is-primary is-fullwidth", id="submit-jya", type="submit") }}
         </div>
-        <div class="column is-1"></div>  <!-- This creates a gap between buttons -->
-{#        <div class="column">#}
-{#          <a href="{{ url_for('charges_bp.create_jya') }}" class="button is-danger is-fullwidth">Cancelar</a>#}
-{#        </div>#}
+        <div class="column is-1"></div>
       </div>
     </div>
   </form>
@@ -90,44 +88,44 @@
       document.addEventListener('DOMContentLoaded', function() {
     const pagination = document.getElementById("pagination");
     const selectForm = document.getElementById("select-form");
-    const employeeLinks = document.querySelectorAll('[data-id^="employee-"]');
-    const selectedEmployee = document.getElementById('selected_employee');
-    const submitButton = document.getElementById('submit-employee');
+    const jyaLinks = document.querySelectorAll('[data-id^="jya-"]');
+    const selectedJya = document.getElementById('selected_jya');
+    const submitButton = document.getElementById('submit-jya');
     const isActive = "has-background-warning";
 
-    function selectEmployee(employeeId, clickedElement) {
-        selectedEmployee.value = employeeId;
+    function selectJya(jyaId, clickedElement) {
+        selectedJya.value = jyaId;
 
         if (pagination) {
             pagination.classList.add("is-invisible");
         }
-        employeeLinks.forEach(link => {
+        jyaLinks.forEach(link => {
             link.classList.remove(isActive);
         });
         clickedElement.classList.add(isActive);
         submitButton.disabled = false;
     }
 
-    function deselectEmployee() {
+    function deselectJya() {
         if (pagination) {
             pagination.classList.remove("is-invisible");
         }
-        selectedEmployee.value = '';
-        employeeLinks.forEach(link => {
+        selectedJya.value = '';
+        jyaLinks.forEach(link => {
             link.classList.remove(isActive);
         });
         submitButton.disabled = true;
     }
 
-    employeeLinks.forEach(link => {
+    jyaLinks.forEach(link => {
         link.addEventListener('click', function(event) {
             event.preventDefault();
-            const employeeId = this.getAttribute('data-id').split('-')[1];
+            const jyaId = this.getAttribute('data-id').split('-')[1];
 
             if (this.classList.contains(isActive)) {
-                deselectEmployee();
+                deselectJya();
             } else {
-                selectEmployee(employeeId, this);
+                selectJya(jyaId, this);
             }
         });
     });

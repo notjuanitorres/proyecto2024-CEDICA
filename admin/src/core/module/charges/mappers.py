@@ -12,7 +12,7 @@ class ChargeMapper:
             "payment_method": charge.payment_method.value,
             "date_of_charge": charge.date_of_charge,
             "employee_id": charge.employee_id,
-            # "jya_id": charge.jya_id,
+            "jya_id": charge.jya_id,
             "inserted_at": charge.inserted_at,
             "updated_at": charge.updated_at,
         }
@@ -25,7 +25,7 @@ class ChargeMapper:
             payment_method=data.get("payment_method"),
             date_of_charge=data.get("date_of_charge"),
             employee_id=data.get("employee_id"),
-            # jya_id=data.get("jya_id"),
+            jya_id=data.get("jya_id"),
         )
 
     @classmethod
@@ -58,7 +58,7 @@ class ChargeMapper:
             "payment_method": data.get("payment_method"),
             "date_of_charge": data.get("date_of_charge"),
             "employee_id": data.get("employee_id"),
-            # "jya_id": data.get("jya_id"),
+            "jya_id": data.get("jya_id"),
         }
 
     @classmethod
@@ -69,5 +69,5 @@ class ChargeMapper:
             "payment_method": data.get("payment_method"),
             "date_of_charge": data.get("date_of_charge"),
             "employee_id": data.get("employee_id"),
-            # "jya_id": data.get("jya_id"),
+            "jya_id": data.get("jya_id"),
         }
