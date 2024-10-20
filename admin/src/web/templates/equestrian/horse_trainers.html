@@ -92,7 +92,6 @@
 
 {% block table_header %}
     <th></th>
-    <th>ID</th>
     <th>Email</th>
     <th>Nombre</th>
     <th>Apellido</th>
@@ -130,7 +129,6 @@
                         )
                 }}
             </td>
-            <td><span class="is-hidden-tablet has-text-weight-bold">ID: </span>{{ employee.id }}</td>
             <td><span class="is-hidden-tablet has-text-weight-bold">Email: </span>{{ employee.email }}</td>
             <td><span class="is-hidden-tablet has-text-weight-bold">Nombre: </span>{{ employee.name }}</td>
             <td><span class="is-hidden-tablet has-text-weight-bold">Apellido: </span>{{ employee.lastname }}</td>
@@ -157,7 +155,15 @@
 {% endblock %}
 
 {% block table_footer %}
-
+    <th></th>
+    <th>Email</th>
+    <th>Nombre</th>
+    <th>Apellido</th>
+    <th>Profesión</th>
+    <th>Posición</th>
+    <th>Condición</th>
+    <th>Activo</th>
+    <th></th>
 {% endblock %}
 
 {% block bottom_pagination %}

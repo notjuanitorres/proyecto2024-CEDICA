@@ -37,7 +37,8 @@
 
 {% block doc_header %}
     <div class="container">
-        <h4 class="title is-fullwidth has-text-centered">Editando el perfil de {{ jockey.first_name }} {{ jockey.last_name }}</h4>
+        <div class="py-2">{{ render_flash_messages(messages) }}</div> 
+        <h1 class="title is-fullwidth has-text-centered mt-0">Editando el perfil de {{ jockey.first_name }} {{ jockey.last_name }}</h1>
         <div class="tabs is-toggle is-fullwidth is-toggle-rounded is-centered is-medium">
             <ul>
                 <li >

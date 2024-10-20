@@ -25,6 +25,14 @@
                 </a>
             </li>
             <li>
+                <a href="{{ url_for('jockey_amazon_bp.show_jockey', jockey_id=jockey.id) }}">
+                  <span class="icon is-small">
+                    <i class="fas fa-user" aria-hidden="true"></i>
+                  </span>
+                  <span>{{ jockey.general_information.first_name }} {{ jockey.general_information.last_name }}</span>
+                </a>
+            </li>
+            <li>
                 <a href="">
                     <span class="icon is-small">
                         <i class="fa-solid fa-pen-nib"></i>
@@ -37,7 +45,8 @@
     
     <div class="container">
         <div class="py-2">{{ render_flash_messages(messages) }}</div>
-        <h1 class="title is-fullwidth has-text-centered mt-0">Actualizando a {{ jockey.first_name }} {{ jockey.last_name }}</h1>
+        <h1 class="title is-fullwidth has-text-centered mt-0">Editando el perfil de 
+            {{ jockey.general_information.first_name }} {{ jockey.general_information.last_name }}</h1>
         <div class="tabs is-toggle is-fullwidth is-toggle-rounded is-centered is-medium">
             <ul>
                 <li class="is-active">

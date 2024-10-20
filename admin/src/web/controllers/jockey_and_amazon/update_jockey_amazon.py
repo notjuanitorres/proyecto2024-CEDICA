@@ -17,7 +17,7 @@ from src.core.module.jockey_amazon import (
 update_jockey_amazon_bp = Blueprint(
     "update",
     __name__,
-    url_prefix="/actualizar",
+    url_prefix="/editar",
 )
 
 
