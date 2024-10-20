@@ -117,6 +117,18 @@ class AbstractStorageServices(object):
         """
         raise NotImplementedError
 
+    @abstractmethod
+    def get_profile_image_url(self, filename: str) -> str:
+        """Retrieves a profile image from storage.
+
+        Args:
+            filename (str): The name of the file.
+
+        Returns:
+            The file data.
+        """
+        raise NotImplementedError
+
 
 class StorageServices(AbstractStorageServices):
     """
@@ -222,13 +234,17 @@ class StorageServices(AbstractStorageServices):
         return response.data
 
     def get_profile_image_url(self, filename: str):
-        response: HTTPResponse
-        
-        response = self.storage.presigned_get_object(
-            self.bucket_name,
-            filename,
-        )
-        print(filename)
+        response: str
+
+        try:
+            response = self.storage.presigned_get_object(
+                self.bucket_name,
+                filename,
+            )
+        except MaxRetryError as e:
+            print("No se pudo establecer conexion con minio. Error: ", e)
+            return ""
+
         return response
     
     def presigned_download_url(self, filename: str) -> str:
