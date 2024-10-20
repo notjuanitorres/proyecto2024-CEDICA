@@ -21,19 +21,21 @@
 
     <div class="mb-2">{{ render_flash_messages(messages) }}</div>
 
+    {% block page_title %} {% endblock %}
 
+    <section class="container is-fullheight-with-navbar">
         <div class="card">
-            <section class="container is-fullheight-with-navbar">
-                {% block banner %}{% endblock %}
+            {% block banner %}{% endblock %}
         
             <header class="card-header has-text-centered">
                 <h1 class="card-header-title is-size-4">{% block card_title %}{% endblock %}</h1>
+                {% block close_button %} {% endblock %}
             </header>
-            <div class="card-content">
+            <article class="card-content">
                 <div class="content">
                     {% block card_content %}{% endblock %}
                 </div>
-            </div>
+            </article>
             <footer class="card-footer">
                 <!-- TODO: Show only if the user has permissions -->
                 {% block card_actions %}{% endblock %}
