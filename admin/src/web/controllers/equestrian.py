@@ -24,24 +24,19 @@ Attributes:
 """
 
 
-@equestrian_bp.route("/")
-@check_user_permissions(permissions_required=["ecuestre_index"])
 @inject
-def get_horses(equestrian_repository: AbstractEquestrianRepository = Provide[Container.equestrian_repository]):
-    """
-    Route to get a paginated list of horses.
+def search_horses(search: HorseSearchForm,
+                  need_archived: bool = False,
+                  equestrian_repository: AbstractEquestrianRepository = Provide[Container.equestrian_repository]):
 
-    Args:
-        equestrian_repository (AbstractEquestrianRepository): The equestrian repository.
-
-    Returns:
-        Response: The rendered template for the list of horses.
-    """
     page = request.args.get("page", type=int)
     per_page = request.args.get("per_page", type=int)
-    search = HorseSearchForm(request.args)
-    search_query = {}
     order_by = []
+    search_query = {
+        "filters": {
+            "is_archived": need_archived
+        }
+    }
 
     if search.submit_search.data and search.validate():
         order_by = [(search.order_by.data, search.order.data)]
@@ -52,16 +47,68 @@ def get_horses(equestrian_repository: AbstractEquestrianRepository = Provide[Con
         if search.filter_ja_type.data:
             search_query["filters"] = {"ja_type": search.filter_ja_type.data}
 
-    if search_query.get("filters"):
-        search_query["filters"]["is_deleted"] = False
-    else:
-        search_query["filters"] = {"is_deleted": False}
-
-    paginated_horses = equestrian_repository.get_page(
+    return equestrian_repository.get_page(
         page=page, per_page=per_page, order_by=order_by, search_query=search_query
     )
 
+
+@equestrian_bp.route("/")
+@check_user_permissions(permissions_required=["ecuestre_index"])
+@inject
+def get_horses():
+    """
+    Route to get a paginated list of horses.
+
+    Returns:
+        Response: The rendered template for the list of horses.
+    """
+    search = HorseSearchForm(request.args)
+
+    paginated_horses = search_horses(search=search, need_archived=False)
+
     return render_template("horses.html", horses=paginated_horses, search_form=search)
+
+
+@equestrian_bp.route("/archivados", methods=["GET"])
+@check_user_permissions(permissions_required=["ecuestre_index"])
+def get_archived_horses():
+    search_form = HorseSearchForm(request.args)
+    paginated_horses = search_horses(search=search_form, need_archived=True)
+    return render_template(
+        "./equestrian/horses_archived.html",
+        horses=paginated_horses,
+        search_form=search_form,
+    )
+
+
+@equestrian_bp.route("/archivar/", methods=["POST"])
+@check_user_permissions(permissions_required=["ecuestre_destroy"])
+@inject
+def archive_horse(
+    horses_repository: AbstractEquestrianRepository = Provide[Container.equestrian_repository],
+):
+    horse_id = request.form["item_id"]
+    archived = horses_repository.archive_horse(int(horse_id))
+    if not archived:
+        flash("El caballo no existe o ya ha sido archivado", "warning")
+    else:
+        flash("El caballo ha sido archivado correctamente", "success")
+    return redirect(url_for("equestrian_bp.show_horse", horse_id=horse_id))
+
+
+@equestrian_bp.route("/recuperar/", methods=["POST"])
+@check_user_permissions(permissions_required=["ecuestre_destroy"])
+@inject
+def recover_horse(
+    horses: AbstractEquestrianRepository = Provide[Container.equestrian_repository],
+):
+    horse_id = request.form["horse_id"]
+    recovered = horses.recover_horse(int(horse_id))
+    if not recovered:
+        flash("El caballo no existe o no puede ser recuperado", "warning")
+    else:
+        flash("El caballo ha sido recuperado correctamente", "success")
+    return redirect(url_for("equestrian_bp.show_horse", horse_id=horse_id))
 
 
 @equestrian_bp.route("/<int:horse_id>")

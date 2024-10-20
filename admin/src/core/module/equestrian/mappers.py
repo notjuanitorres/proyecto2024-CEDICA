@@ -104,7 +104,7 @@ class HorseMapper:
             "ja_type": horse.ja_type.value,
             "inserted_at": horse.inserted_at,
             "updated_at": horse.updated_at,
-            "is_deleted": horse.is_deleted
+            "is_archived": horse.is_archived
         }
 
         if documents:
@@ -133,5 +133,5 @@ class HorseMapper:
             "admission_date": data.get("admission_date"),
             "assigned_facility": data.get("assigned_facility"),
             "ja_type": data.get("ja_type"),
-            "is_deleted": data.get("is_deleted", False),
+            "is_archived": data.get("is_archived", False),
         }

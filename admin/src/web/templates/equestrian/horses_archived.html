@@ -16,13 +16,13 @@
 {% block tabs %}
 <div class="tabs is-medium is-toggle is-toggle-rounded is-centered">
   <ul>
-    <li class="is-active">
+    <li>
       <a href="{{ url_for("equestrian_bp.get_horses")}}">
         <span class="icon is-small"><i class="fa-solid fa-horse"></i></span>
         <span>Todos</span>
       </a>
     </li>
-    <li>
+    <li class="is-active">
       <a href="{{ url_for("equestrian_bp.get_archived_horses")}}">
         <span class="icon is-small"><i class="fa-solid fa-box-archive"></i></span>
         <span>Archivo</span>
@@ -36,15 +36,8 @@
   Caballos
 {% endblock %}
 
-{% block create_button %}
-  <a class="button is-primary level-item" href="{{ url_for('equestrian_bp.create_horse')}}">
-    Agregar caballo
-    <i class="fa-solid fa-horse-head ml-2 is-size-5"></i>
-  </a>
-{% endblock %}
-
-{% block form_action %}{{ url_for("equestrian_bp.get_horses") }}{% endblock %}
-{% block clear_url %}{{ url_for("equestrian_bp.get_horses") }}{% endblock %}
+{% block form_action %}{{ url_for("equestrian_bp.get_archived_horses") }}{% endblock %}
+{% block clear_url %}{{ url_for("equestrian_bp.get_archived_horses") }}{% endblock %}
 
 {% block aditional_filters %}
     <div class="field">
@@ -74,7 +67,7 @@
 {% endblock %}
 
 {% block top_pagination %}
-  {{ render_pagination(horses, 'equestrian_bp.get_horses') }}
+  {{ render_pagination(horses, 'equestrian_bp.get_archived_horses') }}
 {% endblock %}
 
 {% block table_body %}
@@ -137,17 +130,17 @@
 {% endblock %}
 
 {% block bottom_pagination %}
-  {{ render_pagination(horses, 'equestrian_bp.get_horses') }}
+  {{ render_pagination(horses, 'equestrian_bp.get_archived_horses') }}
 {% endblock %}
 
 {% block delete_modal %}
   {{
     render_delete_modal(
-      endpoint=url_for("equestrian_bp.archive_horse"),
-      title="Archivar",
-      msg="¿Está seguro de que desea archivar al caballo?",
-      msg_sub="",
-      delete_text="Archivar"
+      endpoint=url_for("equestrian_bp.delete_horse"),
+      title="Eliminar",
+      msg="¿Está seguro de que desea eliminar al caballo?",
+      msg_sub="Luego de confirmar, no se podrán revertir los cambios.
+       Todas las relaciones con este caballo serán eliminadas."
     )
   }}
 {% endblock %}
