@@ -6,7 +6,7 @@
     <li>
         <a href="{{ url_for('charges_bp.get_charges' ) }}">
             <span class="icon is-small">
-                <i class="fas fa-money-bill-wave" aria-hidden="true"></i>
+                <i class="fa-solid fa-file-invoice-dollar" aria-hidden="true"></i>
             </span>
             <span>Cobros</span>
         </a>
@@ -14,7 +14,7 @@
     <li>
         <a href="">
             <span class="icon is-small">
-                <i class="fa-solid fa-file-invoice-dollar" aria-hidden="true"></i>
+                <i class="fas fa-receipt" aria-hidden="true"></i>
             </span>
             <span>Cobro #{{ charge.id }}</span>
         </a>
@@ -69,7 +69,7 @@
 {% block card_actions %}
     {% if charge.is_archived %}
         {% if "cobro_destroy" in permissions or is_admin %}
-            <button class="card-footer-item has-text-danger modal-trigger" data-id="{{ charge.id }}" data-target="user-delete-modal">
+            <button class="card-footer-item has-text-danger modal-trigger" data-id="{{ charge.id }}" data-target="charge-delete-modal">
                 Eliminar para siempre
             </button>
             <form class="card-footer-item" action="{{ url_for('charges_bp.recover_charge') }}" method="POST">
@@ -80,7 +80,7 @@
         {% endif %}
     {% else %}
         {% if "cobros_destroy" in permissions or is_admin %}
-            <button class="card-footer-item has-text-danger modal-trigger" data-id="{{ charge.id }}" data-target="user-delete-modal">
+            <button class="card-footer-item has-text-danger modal-trigger" data-id="{{ charge.id }}" data-target="charge-delete-modal">
                 Archivar
             </button>
         {% if "cobros_update" in permissions or is_admin %}
@@ -199,13 +199,26 @@
 {% endblock %}
 
 {% block modal %}
-  {{
+    {% if charge.is_archived %}
+        {{
     render_delete_modal(
       field="charge",
-      endpoint="charges_bp.delete_charge",
+      endpoint=url_for("charges_bp.delete_charge"),
       title="Eliminar",
       msg="¿Está seguro de que desea eliminar este cobro?",
       msg_sub="Luego de confirmar, no se podrán revertir los cambios"
     )
-  }}
+        }}
+    {% else %}
+        {{
+        render_delete_modal(
+          field="charge",
+          endpoint=url_for("charges_bp.archive_charge"),
+          title="Archivar",
+          msg="¿Está seguro de que desea archivar este cobro?",
+          msg_sub="",
+          delete_text="Archivar"
+        )
+        }}
+    {% endif %}
 {% endblock %}

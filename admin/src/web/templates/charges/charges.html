@@ -6,7 +6,7 @@
   <li>
     <a href="">
       <span class="icon is-small">
-        <i class="fas fa-credit-card" aria-hidden="true"></i>
+        <i class="fa-solid fa-file-invoice-dollar" aria-hidden="true"></i>
       </span>
       <span>Cobros</span>
     </a>
@@ -22,7 +22,7 @@
   <ul>
     <li class="is-active">
       <a href="{{ url_for("charges_bp.get_charges")}}">
-        <span class="icon is-small"><i class="fa-solid fa-money-bill-wave"></i></span>
+        <span class="icon is-small"><i class="fa-solid fa-file-invoice-dollar"></i></span>
         <span>Todos</span>
       </a>
     </li>
@@ -50,7 +50,7 @@
   <div class="column {% if 'cobros_update' not in permissions and not is_admin %}is-full{% else %}is-half{% endif %}">
     <a class="button is-primary is-fullwidth" href="{{ url_for('charges_bp.create_charge')}}">
       Agregar cobro
-      <i class="fas fa-credit-card ml-2 is-size-5"></i>
+      <i class="fas fa-receipt ml-2 is-size-5"></i>
     </a>
   </div>
 </div>

@@ -75,10 +75,11 @@
                 </li>
             </ul>
         </div>
-
-    <section class="section">
-        <div class="container">
-            <h1 class="title">Editar cobro</h1>
+    </div>
+    <br>
+    <section class="panel">
+        <div class="container p-4">
+            <h1 class="title is-size-4">Editar cobro</h1>
             <form method="POST">
                 {{ form.hidden_tag() }}
 
@@ -125,10 +126,24 @@
                 </div>
 
 
-                <div class="field">
-                    <div class="control">
-                        <button class="button is-primary" type="submit">Guardar cobro</button>
+{#                <div class="field">#}
+{#                    <div class="control">#}
+{#                        <button class="button is-primary" type="submit">Guardar cobro</button>#}
+{#                    </div>#}
+{#                </div>#}
+
+
+
+                <div class="panel-block">
+                  <div class="columns is-mobile is-gapless" style="width: 100%;">
+                    <div class="column">
+                      <button class="button is-primary is-fullwidth" type="submit">Guardar cobro</button>
                     </div>
+                    <div class="column is-1"></div>  <!-- This creates a gap between buttons -->
+                    <div class="column">
+                      <a href="{{ url_for('charges_bp.show_charge', charge_id=charge.id) }}" class="button is-danger is-fullwidth">Cancelar</a>
+                    </div>
+                  </div>
                 </div>
             </form>
         </div>
