@@ -132,6 +132,7 @@ def update_user(
         file = edit_form.profile_image.data
         storage_service.delete_file(user_repository.get_profile_image_url(user_id))
         profile_image_url = storage_service.upload_file(file, path=user_repository.storage_path)
+        
     user_repository.update(
         user_id=user_id,
         data={
@@ -143,6 +144,9 @@ def update_user(
             "profile_image_url": profile_image_url["filename"] if profile_image_url else None
         },
     )
+
+    if user_id == session.get("user"):
+        session["profile_image_url"] = storage_service.get_profile_image_url(filename=profile_image_url["filename"])
 
     return redirect(url_for("users_bp.show_user", user_id=user_id))
 
