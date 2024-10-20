@@ -61,7 +61,7 @@ def create_general_information():
         session["create_ja"]["general_information"] = general_information.data
         return redirect(url_for("jockey_amazon_bp.create.create_health_information"))
 
-    return render_template("create/general_information.html", form=general_information)
+    return render_template("create/general_information.html", general_form=general_information)
 
 
 # Step two
@@ -73,7 +73,7 @@ def create_health_information():
         session["create_ja"]["health_information"] = health_information.data
         return redirect(url_for("jockey_amazon_bp.create.create_family_information"))
 
-    return render_template("create/health_information.html", form=health_information)
+    return render_template("create/health_information.html", health_form=health_information)
 
 
 # Step three
@@ -88,7 +88,7 @@ def create_family_information():
     if request.method == "GET":
         return render_template(
             "create/family_information.html",
-            form=family_information,
+            family_form=family_information,
             EducationLevelEnum=EducationLevelEnum,
         )
 
@@ -104,7 +104,7 @@ def create_school_information():
         session["create_ja"]["family_information"] = school_information.data
         return redirect(url_for("jockey_amazon_bp.create.create_work_assignment"))
 
-    return render_template("create/school_information.html", form=school_information)
+    return render_template("create/school_information.html", education_form=school_information)
 
 
 # Step five
@@ -118,4 +118,4 @@ def create_work_assignment():
         print(session["create_ja"])
         return add_jockey(create_form=session["create_ja"])
 
-    return render_template('create/work_assignments_information.html', form=assignment_information)
+    return render_template('create/work_assignments_information.html', assignment_form=assignment_information)

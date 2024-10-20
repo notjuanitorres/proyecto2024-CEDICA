@@ -1,52 +1,54 @@
 <!-- Family and Pension Information -->
+{{ family.hidden_tag() }}
 <div id="family-pension-info">
+
   <div id="pension">
     <h2 class="label is-size-5">Información de Asignación Familiar</h2>
     <div class="field">
       <div class="control">
         <label class="checkbox">
-          {{ form.has_family_assignment.label(class="has-text-weight-bold is-size-5") }} 
-          {{ form.has_family_assignment(class="ml-2", type="checkbox", style="transform: scale(1.5)") }}
+          {{ family_form.has_family_assignment.label(class="has-text-weight-bold is-size-5") }} 
+          {{ family_form.has_family_assignment(class="ml-2", type="checkbox", style="transform: scale(1.5)") }}
         </label>
       </div>
-      {% if form.has_family_assignment.errors %}
-      <p class="help is-danger">{{ form.has_family_assignment.errors[0] }}</p>
+      {% if family_form.has_family_assignment.errors %}
+      <p class="help is-danger">{{ family_form.has_family_assignment.errors[0] }}</p>
       {% endif %}
     </div>
     <div class="field" id="family-assignment-details" style="display: none">
       <label class="label">Tipo de Asignación Familiar</label>
       <div class="control">
-        {{ form.family_assignment_type(class="textarea", placeholder="Ingrese el tipo de asignación familiar") }}
+        {{ family_form.family_assignment_type(class="textarea", placeholder="Ingrese el tipo de asignación familiar") }}
       </div>
-      {% if form.family_assignment_type.errors %}
-      <p class="help is-danger">{{ form.family_assignment_type.errors[0] }}</p>
+      {% if family_form.family_assignment_type.errors %}
+      <p class="help is-danger">{{ family_form.family_assignment_type.errors[0] }}</p>
       {% endif %}
     </div>
     <div class="field">
       <div class="control">
         <label class="checkbox">
-          {{ form.has_pension.label(class="has-text-weight-bold is-size-5") }} 
-          {{ form.has_pension(class="ml-2", type="checkbox", style="transform: scale(1.5)") }}
+          {{ family_form.has_pension.label(class="has-text-weight-bold is-size-5") }} 
+          {{ family_form.has_pension(class="ml-2", type="checkbox", style="transform: scale(1.5)") }}
         </label>
       </div>
-      {% if form.has_pension.errors %}
-      <p class="help is-danger">{{ form.has_pension.errors[0] }}</p>
+      {% if family_form.has_pension.errors %}
+      <p class="help is-danger">{{ family_form.has_pension.errors[0] }}</p>
       {% endif %}
     </div>
     <div class="field" id="pension-details" style="display: none">
       <label class="label">Tipo de Pensión</label>
       <div class="control">
-        {{ form.pension_type(class="input", placeholder="Ingrese el tipo de pensión") }}
+        {{ family_form.pension_type(class="input", placeholder="Ingrese el tipo de pensión") }}
       </div>
-      {% if form.pension_type.errors %}
-      <p class="help is-danger">{{ form.pension_type.errors[0] }}</p>
+      {% if family_form.pension_type.errors %}
+      <p class="help is-danger">{{ family_form.pension_type.errors[0] }}</p>
       {% endif %}
       <label class="label">Detalles de Pensión</label>
       <div class="control">
-        {{ form.pension_details(class="textarea", placeholder="Ingrese detalles de la pensión") }}
+        {{ family_form.pension_details(class="textarea", placeholder="Ingrese detalles de la pensión") }}
       </div>
-      {% if form.pension_details.errors %}
-      <p class="help is-danger">{{ form.pension_details.errors[0] }}</p>
+      {% if family_form.pension_details.errors %}
+      <p class="help is-danger">{{ family_form.pension_details.errors[0] }}</p>
       {% endif %}
     </div>
   </div>

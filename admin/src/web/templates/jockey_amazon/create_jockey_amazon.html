@@ -38,7 +38,6 @@
 
         <article id="{% block section_id %}{% endblock %}" class="container">
             <form method="POST">
-                {{ form.hidden_tag() }}
                 {% block step_form %}{% endblock %}
                 <div class="field-body mt-5">
                     <div class="field">
