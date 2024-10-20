@@ -225,6 +225,7 @@ class JockeyAmazon(db.Model, AddressMixin, PhoneMixin, EmergencyContactMixin):
                                                      db.ForeignKey('jockeys_amazons.id'), primary_key=True)
                                            )
     files = db.relationship("JockeyAmazonFile", back_populates="owner")
+    charges = db.relationship("Charge", back_populates="jya", lazy="select")
 
 
 class JockeyAmazonFile(File):

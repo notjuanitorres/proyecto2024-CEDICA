@@ -42,3 +42,4 @@ class Employee(db.Model, AddressMixin, PhoneMixin, EmergencyContactMixin):
     files = db.relationship("EmployeeFile", back_populates="owner", cascade="all, delete-orphan")
     horse_trainings = db.relationship("HorseTrainers", back_populates="employee", cascade="all, delete-orphan")
 
+    charges = db.relationship("Charge", back_populates="employee", lazy="select")

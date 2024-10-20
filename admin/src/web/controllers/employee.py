@@ -27,6 +27,7 @@ employee_bp = Blueprint(
     url_prefix="/equipo/",
 )
 
+
 @inject
 def search_employees(
     search: EmployeeSearchForm,

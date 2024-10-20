@@ -329,3 +329,19 @@ class EmployeeRepository(AbstractEmployeeRepository):
             return False
         employee = self.__get_by_id(employee_id)
         return employee.is_active
+
+    def get_therapist(self):
+        return (self.db.session.query(Employee)
+                .filter(or_(Employee.position == PositionEnum.PROFESOR_EQUITACION,
+                            Employee.position == PositionEnum.TERAPEUTA))
+                .all())
+
+    def get_rider(self):
+        return (self.db.session.query(Employee)
+                .filter(or_(Employee.position == PositionEnum.CONDUCTOR))
+                .all())
+
+    def get_track_auxiliary(self):
+        return (self.db.session.query(Employee)
+                .filter(or_(Employee.position == PositionEnum.AUXILIAR_PISTA))
+                .all())

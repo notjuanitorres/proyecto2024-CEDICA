@@ -8,6 +8,8 @@ from .module.payment import PaymentServices, PaymentRepository
 from .module.employee import EmployeeRepository
 from .module.equestrian import EquestrianRepository
 from .module.common import StorageServices
+from .module.jockey_amazon import JockeyAmazonRepository
+from .module.charges import ChargeRepository
 
 
 class Container(containers.DeclarativeContainer):
@@ -25,6 +27,8 @@ class Container(containers.DeclarativeContainer):
     employee_repository = providers.Factory(EmployeeRepository)
     payment_repository = providers.Factory(PaymentRepository)
     equestrian_repository = providers.Factory(EquestrianRepository)
+    jockey_amazon_repository = providers.Factory(JockeyAmazonRepository)
+    charges_repository = providers.Factory(ChargeRepository)
 
     # Services
     storage_services = providers.Factory(StorageServices)

@@ -1,0 +1,41 @@
+{% macro modal_search_field(form_field, form_id_field, button_id, modal_id, search_id, list_id, modal_title, placeholder) %}
+    <div class="field">
+        <label class="label">{{ form_field.label }}</label>
+        <div class="control">
+            {{ form_field(class="input", type="text", readonly=True, placeholder=placeholder) }}
+            {{ form_id_field() }}
+            <br />
+            <br />
+            <button type="button" class="button is-info" id="{{ button_id }}">Seleccionar</button>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="{{ modal_id }}" class="modal">
+        <div class="modal-background"></div>
+        <div class="modal-card">
+            <header class="modal-card-head">
+                <p class="modal-card-title">{{ modal_title }}</p>
+                <button class="delete" aria-label="close"></button>
+            </header>
+            <section class="modal-card-body">
+                <input class="input" type="text" id="{{ search_id }}" placeholder="Buscar por correo">
+                <table class="table is-fullwidth">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Correo</th>
+                            <th>Seleccionar</th>
+                        </tr>
+                    </thead>
+                    <tbody id="{{ list_id }}">
+                        <!-- Aquí se llenará la lista -->
+                    </tbody>
+                </table>
+            </section>
+            <footer class="modal-card-foot">
+                <button class="button">Cancelar</button>
+            </footer>
+        </div>
+    </div>
+{% endmacro %}

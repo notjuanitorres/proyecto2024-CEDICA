@@ -1,0 +1,140 @@
+{% extends "layout.html" %}
+{% from "macros/modal_search.html" import modal_search_field %}
+{% from "macros/flash_message.html" import render_flash_messages %}
+
+{% block title %}Cobros - Editar cobro{% endblock %}
+
+{% block main_content %}
+{{ render_flash_messages(messages) }}
+    <nav class="breadcrumb" aria-label="breadcrumbs">
+  <ul>
+    <li>
+      <a href="{{ url_for('index_bp.home')}}">
+        <span class="icon is-small">
+          <i class="fas fa-home" aria-hidden="true"></i>
+        </span>
+        <span>Inicio</span>
+      </a>
+    </li>
+    <li>
+      <a href="{{ url_for('charges_bp.get_charges') }}">
+        <span class="icon is-small">
+          <i class="fas fa-file-invoice-dollar" aria-hidden="true"></i>
+        </span>
+        <span>Cobros</span>
+      </a>
+    </li>
+    <li>
+      <a
+        href="{{ url_for('charges_bp.show_charge', charge_id=charge.id) }}"
+      >
+        <span class="icon is-small">
+          <i class="fas fa-receipt" aria-hidden="true"></i>
+        </span>
+        <span>Cobro #{{ charge.id }}</span>
+      </a>
+    </li>
+    <li>
+      <a href="{{ url_for('charges_bp.change_employee', charge_id=charge.id) }}">
+        <span class="icon is-small">
+          <i class="fas fa-user" aria-hidden="true"></i>
+        </span>
+        <span>Editar cobro</span>
+      </a>
+    </li>
+  </ul>
+</nav>
+
+    <div class="container">
+        <h4 class="title is-fullwidth has-text-centered">Actualizando cobro #{{ charge.id }}</h4>
+        <div class="tabs is-toggle is-fullwidth is-toggle-rounded is-centered is-medium">
+            <ul>
+                <li class="is-active">
+                    <a>
+                          <span class="icon is-small">
+                              <i class="fa fa-info-circle" aria-hidden="true"></i>
+                          </span>
+                        <span>Informacion General</span>
+                    </a>
+                </li>
+                <li >
+                    <a href="{{ url_for("charges_bp.change_employee",  charge_id=charge.id ) }}">
+                          <span class="icon is-small">
+                              <i class="far fa-user" aria-hidden="true"></i>
+                          </span>
+                        <span>Empleado asociado</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for("charges_bp.change_jya",  charge_id=charge.id ) }}">
+                          <span class="icon is-small">
+                              <i class="far fa-user" aria-hidden="true"></i>
+                          </span>
+                        <span>Jinete asociado</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+    <section class="section">
+        <div class="container">
+            <h1 class="title">Editar cobro</h1>
+            <form method="POST">
+                {{ form.hidden_tag() }}
+
+                <div class="field">
+                    <label class="label">{{ form.amount.label }}</label>
+                    <div class="control">
+                        {{ form.amount(class="input", placeholder="Ingrese el monto del cobro") }}
+                    </div>
+                    {% if form.amount.errors %}
+                        <p class="help is-danger">{{ form.amount.errors[0] }}</p>
+                    {% endif %}
+                </div>
+
+                <div class="field">
+                    <label class="label">{{ form.date_of_charge.label }}</label>
+                    <div class="control">
+                        {{ form.date_of_charge(class="input", type="date") }}
+                    </div>
+                    {% if form.date_of_charge.errors %}
+                        <p class="help is-danger">{{ form.date_of_charge.errors[0] }}</p>
+                    {% endif %}
+                </div>
+
+                <div class="field">
+                    <label class="label">{{ form.payment_method.label }}</label>
+                    <div class="control">
+                        <div class="select">
+                            {{ form.payment_method() }}
+                        </div>
+                    </div>
+                    {% if form.payment_method.errors %}
+                        <p class="help is-danger">{{ form.payment_method.errors[0] }}</p>
+                    {% endif %}
+                </div>
+
+                <div class="field">
+                    <label class="label">{{ form.observations.label }}</label>
+                    <div class="control">
+                        {{ form.observations(class="textarea", placeholder="Ingrese observaciones sobre el cobro") }}
+                    </div>
+                    {% if form.observations.errors %}
+                        <p class="help is-danger">{{ form.observations.errors[0] }}</p>
+                    {% endif %}
+                </div>
+
+
+                <div class="field">
+                    <div class="control">
+                        <button class="button is-primary" type="submit">Guardar cobro</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </section>
+{% endblock %}
+
+{% block extra_scripts %}
+    {{ super() }}
+{% endblock %}

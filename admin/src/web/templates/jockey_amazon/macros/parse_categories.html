@@ -1,0 +1,17 @@
+{% macro render_category(tag) %}
+  {% if tag == "ENTREVISTA" %}
+    Entrevista
+  {% elif tag == "EVALUACION" %}
+    Evaluación
+  {% elif tag == "EVOLUCION" %}
+    Evolución
+  {% elif tag == "CRONICAS" %}
+    Crónica
+  {% elif tag == "DOCUMENTAL" %}
+    documental
+  {% elif tag == "PLANIFICACIONES" %}
+    Planificaciones
+  {% else %}
+    Otro
+  {% endif %}
+{% endmacro %}
