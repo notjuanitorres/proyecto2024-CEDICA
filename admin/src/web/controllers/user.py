@@ -130,6 +130,7 @@ def update_user(
     profile_image_url=None
     if edit_form.profile_image:
         file = edit_form.profile_image.data
+        storage_service.delete_file(user_repository.get_profile_image_url(user_id))
         profile_image_url = storage_service.upload_file(file, path=user_repository.storage_path)
     user_repository.update(
         user_id=user_id,

@@ -30,7 +30,9 @@ class AbstractUserRepository:
     @abstractmethod
     def get_active_users(self, page: int):
         pass
-
+    @abstractmethod
+    def get_profile_image_url(self, user_id: int) -> str | None:
+        pass
     @abstractmethod
     def get_user(self, user_id: int) -> Dict | None:
         pass
@@ -109,7 +111,12 @@ class UserRepository(AbstractUserRepository):
         if not user:
             return None     
         return UserMapper.from_entity(user)
-
+    def get_profile_image_url(self, user_id: int) -> str | None:
+        user = self.get_by_id(user_id)
+        if not user:
+            return None
+        return user.profile_image_url
+    
     def get_by_email(self, email: str) -> User | None:
         return self.db.session.query(User).filter(User.email == email).first()
 
