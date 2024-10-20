@@ -118,8 +118,11 @@ class SchoolInstitution(db.Model):
     phone_country_code = db.Column(db.String(5), nullable=False)
     phone_area_code = db.Column(db.String(5), nullable=False)
     phone_number = db.Column(db.String(15), nullable=False)
-
-
+    jockey_amazon_id = db.Column(db.Integer, db.ForeignKey('jockeys_amazons.id', ondelete='CASCADE'), nullable=False)
+    jockey_amazon = db.relationship('JockeyAmazon', 
+                                 back_populates='school_institution', 
+                                 uselist=False)
+    
 class FamilyMember(db.Model):
     __tablename__ = 'family_members'
 
@@ -139,6 +142,9 @@ class FamilyMember(db.Model):
     email = db.Column(db.String(100), nullable=False)
     education_level = db.Column(SQLAEnum(EducationLevelEnum), nullable=False)
     occupation = db.Column(db.String(100), nullable=False)
+    jockey_amazon_id = db.Column(db.Integer, db.ForeignKey('jockeys_amazons.id', ondelete='CASCADE'), nullable=False)
+    jockey_amazon = db.relationship('JockeyAmazon', 
+                                   back_populates='family_members')
 
 
 class WorkAssignment(db.Model):
@@ -165,6 +171,10 @@ class WorkAssignment(db.Model):
     track_assistant = db.relationship('Employee', foreign_keys=[track_assistant_id],
                                       backref='work_assignments_as_track_assistant')
     horse = db.relationship('Horse')
+    jockey_amazon_id = db.Column(db.Integer, db.ForeignKey('jockeys_amazons.id', ondelete='CASCADE'), nullable=False)
+    jockey_amazon = db.relationship('JockeyAmazon', 
+                                 back_populates='work_assignment', 
+                                 uselist=False)
 
 
 class JockeyAmazon(db.Model, AddressMixin, PhoneMixin, EmergencyContactMixin):
@@ -199,8 +209,11 @@ class JockeyAmazon(db.Model, AddressMixin, PhoneMixin, EmergencyContactMixin):
     has_curatorship = db.Column(db.Boolean, default=False)
     curatorship_observations = db.Column(db.Text, nullable=True)
 
-    school_institution_id = db.Column(db.Integer, db.ForeignKey('school_institutions.id'), nullable=True)
-    school_institution = db.relationship('SchoolInstitution', cascade="all, delete-orphan", single_parent=True)
+    school_institution = db.relationship('SchoolInstitution', 
+                                      cascade="all, delete-orphan", 
+                                      single_parent=True, 
+                                      passive_deletes=True,
+                                      uselist=False)
 
     current_grade_year = db.Column(db.String(50), nullable=True)
     school_observations = db.Column(db.Text, nullable=True)
@@ -208,20 +221,23 @@ class JockeyAmazon(db.Model, AddressMixin, PhoneMixin, EmergencyContactMixin):
 
     professionals = db.Column(db.Text, nullable=True)
 
-    family_members = db.relationship('FamilyMember', secondary='family_member_jockey_amazon',
-                                      cascade="all, delete-orphan", single_parent=True)
-    work_assignment_id = db.Column(db.Integer, db.ForeignKey('work_assignments.id'), nullable=True)
-    work_assignment = db.relationship('WorkAssignment', cascade="all, delete-orphan",  single_parent=True)
+    family_members = db.relationship('FamilyMember', 
+                                  cascade="all, delete-orphan", 
+                                  single_parent=True,
+                                  passive_deletes=True)
+    
+    work_assignment = db.relationship('WorkAssignment', 
+                                   cascade="all, delete-orphan", 
+                                   single_parent=True,
+                                   passive_deletes=True,
+                                   uselist=False)
 
     inserted_at = db.Column(db.DateTime, default=datetime.now)
     updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
-
-    family_member_jockey_amazon = db.Table('family_member_jockey_amazon',
-                                    db.Column('family_member_id', db.Integer, db.ForeignKey('family_members.id', ondelete='CASCADE'), primary_key=True),
-                                    db.Column('jockey_amazon_id', db.Integer, db.ForeignKey('jockeys_amazons.id', ondelete='CASCADE'), primary_key=True)
-                                    )
     
-    files = db.relationship("JockeyAmazonFile", back_populates="owner")
+    files = db.relationship("JockeyAmazonFile", 
+                         back_populates="owner", 
+                         cascade="all, delete-orphan")
 
     is_deleted = db.Column(db.Boolean, nullable=False, default=False)
 
