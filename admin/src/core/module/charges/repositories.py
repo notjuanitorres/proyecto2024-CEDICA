@@ -35,6 +35,14 @@ class AbstractChargeRepository:
     def delete_charge(self, charge_id: int) -> bool:
         pass
 
+    @abstractmethod
+    def archive_charge(self, charge_id) -> bool:
+        raise NotImplementedError
+
+    @abstractmethod
+    def recover_charge(self, charge_id) -> bool:
+        raise NotImplementedError
+
 
 class ChargeRepository(AbstractChargeRepository):
     def __init__(self):
@@ -81,6 +89,9 @@ class ChargeRepository(AbstractChargeRepository):
             page=page, per_page=per_page, error_out=False, max_per_page=max_per_page
         )
 
+    def __get_by_id(self, charge_id: int):
+        return Charge.query.get(charge_id)
+
     def get_by_id(self, charge_id: int) -> Dict | None:
         charge = self.db.session.query(Charge).filter(Charge.id == charge_id).first()
         return Mapper.from_entity(charge) if charge else None
@@ -94,10 +105,26 @@ class ChargeRepository(AbstractChargeRepository):
         return True
 
     def delete_charge(self, charge_id: int) -> bool:
-        charge = self.get_by_id(charge_id)
+        charge = self.__get_by_id(charge_id)
         if not charge:
             return False
         self.db.session.delete(charge)
+        self.save()
+        return True
+
+    def archive_charge(self, charge_id) -> bool:
+        charge = Charge.query.get(charge_id)
+        if not charge or charge.is_archived:
+            return False
+        charge.is_archived = True
+        self.save()
+        return True
+
+    def recover_charge(self, charge_id):
+        charge = Charge.query.get(charge_id)
+        if not charge or not charge.is_archived:
+            return False
+        charge.is_archived = False
         self.save()
         return True
 

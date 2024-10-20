@@ -6,27 +6,27 @@
   <li>
     <a href="">
       <span class="icon is-small">
-        <i class="fas fa-credit-card" aria-hidden="true"></i>
+        <i class="fas fa-file-invoice-dollar" aria-hidden="true"></i>
       </span>
       <span>Cobros</span>
     </a>
   </li>
 {% endblock %}
 
-{% block inner_title %}
+{% block inner_title %}  
   Cobros
 {% endblock %}
 
 {% block tabs %}
 <div class="tabs is-medium is-toggle is-toggle-rounded is-centered">
   <ul>
-    <li class="is-active">
+    <li>
       <a href="{{ url_for("charges_bp.get_charges")}}">
-        <span class="icon is-small"><i class="fa-solid fa-money-bill-wave"></i></span>
+        <span class="icon is-small"><i class="fa-solid fa-file-invoice-dollar"></i></span>
         <span>Todos</span>
       </a>
     </li>
-    <li>
+    <li class="is-active">
       <a href="{{ url_for("charges_bp.get_archived_charges")}}">
         <span class="icon is-small"><i class="fa-solid fa-box-archive"></i></span>
         <span>Archivo</span>
@@ -36,16 +36,8 @@
 </div>
 {% endblock %}
 
-
-{% block create_button %}
-  <a class="button is-primary level-item" href="{{ url_for('charges_bp.create_charge')}}">
-    Agregar cobro
-    <i class="fas fa-credit-card ml-2 is-size-5"></i>
-  </a>
-{% endblock %}
-
-{% block form_action %}{{ url_for("charges_bp.get_charges") }}{% endblock %}
-{% block clear_url %}{{ url_for("charges_bp.get_charges") }}{% endblock %}
+{% block form_action %}{{ url_for("charges_bp.get_archived_charges") }}{% endblock %}
+{% block clear_url %}{{ url_for("charges_bp.get_archived_charges") }}{% endblock %}
 
 {% block aditional_filters %}
     <div class="field">
@@ -78,6 +70,7 @@
     </div>
 {% endblock %}
 
+
 {% block table_header %}
   <th></th>
   <th>ID</th>
@@ -105,7 +98,7 @@
         endpoints={
           'show':'charges_bp.show_charge',
           'edit': 'charges_bp.edit_charge',
-          'archive':'charge_bp.archive_charge'
+          'delete':'charges_bp.delete_charge'
         },
         permission_to_show="cobros_show",
         permission_to_edit="cobros_update",
@@ -151,11 +144,10 @@
 {% block delete_modal %}
   {{
     render_delete_modal(
-      endpoint=url_for("charges_bp.archive_charge"),
-      title="Archivar",
-      msg="¿Está seguro de que desea archivar este cobro?",
-      msg_sub="",
-      delete_text="Archivar"
+      endpoint=url_for("charges_bp.delete_charge"),
+      title="Eliminar",
+      msg="¿Está seguro de que desea eliminar este cobro?",
+      msg_sub="Luego de confirmar, no se podrán revertir los cambios"
     )
   }}
 {% endblock %}

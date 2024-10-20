@@ -3,7 +3,6 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash,
 from src.core.module.jockey_amazon.forms import JockeyAmazonMiniSearchForm, JockeyAmazonSelectForm
 from src.core.module.jockey_amazon.repositories import AbstractJockeyAmazonRepository
 from src.core.module.employee.forms import EmployeeMiniSearchForm, EmployeeSelectForm
-from src.core.module.employee import EmployeeSearchForm
 from src.web.helpers.auth import check_user_permissions
 from src.core.container import Container
 from dependency_injector.wiring import inject, Provide
@@ -21,12 +20,17 @@ charges_bp = Blueprint(
 
 @inject
 def search_charges(search: ChargeSearchForm,
+                   need_archived: bool = False,
                    charges_repository: ACR = Provide[Container.charges_repository]):
     page = request.args.get("page", type=int)
     per_page = request.args.get("per_page", type=int)
     search = ChargeSearchForm(request.args)
-    search_query = {}
     order_by = []
+    search_query = {
+        "filters": {
+            "is_archived": need_archived
+        }
+    }
 
     if search.submit_search.data and search.validate():
         order_by = [(search.order_by.data, search.order.data)]
@@ -54,9 +58,21 @@ def get_charges():
 
     search = ChargeSearchForm(request.args)
 
-    paginated_charges = search_charges(search=search)
+    paginated_charges = search_charges(search=search, need_archived=False)
 
     return render_template("./charges/charges.html", charges=paginated_charges, search_form=search)
+
+
+@charges_bp.route("/archivados", methods=["GET"])
+@check_user_permissions(permissions_required=["cobros_index"])
+def get_archived_charges():
+    search_form = ChargeSearchForm(request.args)
+    paginated_charges = search_charges(search=search_form, need_archived=True)
+    return render_template(
+        "./charges/charges_archived.html",
+        charges=paginated_charges,
+        search_form=search_form,
+    )
 
 
 @charges_bp.route("/<int:charge_id>")
@@ -153,6 +169,38 @@ def delete_charge(charges_repository: ACR = Provide[Container.charges_repository
 
     flash("El cobro ha sido eliminado correctamente", "success")
     return redirect(url_for("charges_bp.get_charges"))
+
+
+@charges_bp.route("/archivar/", methods=["POST"])
+@check_user_permissions(permissions_required=["cobros_destroy"])
+@inject
+def archive_charge(
+    charges_repository: ACR = Provide[Container.charges_repository],
+):
+    charge_id = request.form["item_id"]
+    archived = charges_repository.archive_charge(charge_id)
+
+    if not archived:
+        flash("El cobro no existe o ya ha sido archivado", "warning")
+    else:
+        flash("El cobro ha sido archivado correctamente", "success")
+    return redirect(url_for("charges_bp.show_charge", charge_id=charge_id))
+
+
+@charges_bp.route("/recuperar/", methods=["POST"])
+@check_user_permissions(permissions_required=["cobros_destroy"])
+@inject
+def recover_charge(
+    charges: ACR = Provide[Container.charges_repository],
+):
+    charge_id = request.form["charge_id"]
+    recovered = charges.recover_charge(charge_id)
+
+    if not recovered:
+        flash("El cobro no existe o no puede ser recuperado", "warning")
+    else:
+        flash("El cobro ha sido recuperado correctamente", "success")
+    return redirect(url_for("charges_bp.show_charge", charge_id=charge_id))
 
 
 @charges_bp.route("/cambiar-empleado/<int:charge_id>", methods=["GET", "POST"])

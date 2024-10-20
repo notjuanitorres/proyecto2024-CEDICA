@@ -26,6 +26,7 @@ class Charge(db.Model):
     payment_method = db.Column(db.Enum(PaymentMethodEnum), nullable=False)
     observations = db.Column(db.String(255), nullable=True)
 
+    is_archived = db.Column(db.Boolean, default=False, nullable=False)
     inserted_at = db.Column(db.DateTime, default=datetime.now)
     updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
 

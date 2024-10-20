@@ -15,6 +15,7 @@ class ChargeMapper:
             "jya_id": charge.jya_id,
             "inserted_at": charge.inserted_at,
             "updated_at": charge.updated_at,
+            "is_archived": charge.is_archived,
         }
 
     @classmethod
@@ -26,6 +27,7 @@ class ChargeMapper:
             date_of_charge=data.get("date_of_charge"),
             employee_id=data.get("employee_id"),
             jya_id=data.get("jya_id"),
+            is_archived=data.get("is_archived"),
         )
 
     @classmethod
