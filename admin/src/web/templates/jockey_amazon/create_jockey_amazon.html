@@ -1,0 +1,196 @@
+{% extends "layout.html" %}
+
+{% block title %} Jinetes y Amazonas - Agregar Jinete y Amazona {% endblock %}
+
+{% block main_content %}
+    <nav class="breadcrumb" aria-label="breadcrumbs">
+        <ul>
+            <li>
+                <a href="{{ url_for('index_bp.home') }}">
+                    <span class="icon is-small"><i class="fas fa-home" aria-hidden="true"></i></span>
+                    <span>Inicio</span>
+                </a>
+            </li>
+            <li>
+                <a href="{{ url_for('jockey_amazon_bp.get_jockeys') }}">
+                    <span class="icon is-small"><i class="fas fa-hat-cowboy" aria-hidden="true"></i></span>
+                    <span>Jinetes y Amazonas</span>
+                </a>
+            </li>
+            <li>
+                <a href="">
+                    <span class="icon is-small"><i class="fas fa-add" aria-hidden="true"></i></span>
+                    <span>Agregar Jinetes y Amazonas</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <section class="section pt-4">
+        <article class="container">
+            <h1 class="title">Agregar Jinete/Amazona</h1>
+            <form method="POST">
+                {{ form.hidden_tag() }}
+
+                <!-- Pestañas -->
+                <div class="tabs is-boxed">
+                    <ul>
+                        <li class="is-active" data-tab="general-info"><a>Información General</a></li>
+                        <li data-tab="health-info"><a>Información de Salud</a></li>
+                        <li data-tab="family-pension-info"><a>Familia y Pensión</a></li>
+                        <li data-tab="school-info"><a>Información Escolar</a></li>
+                        <li data-tab="work-assignments-info"><a>Asignaciones de Trabajo</a></li>
+                    </ul>
+                </div>
+                <!-- Contenido de las pestañas -->
+                <div class="tab-content">
+                    {% include 'jockey_amazon/forms/general_information.html' %} 
+
+                    {% include 'jockey_amazon/forms/health_information.html' %} 
+
+                    {% include 'jockey_amazon/forms/family_information.html' %}
+
+                    {% include 'jockey_amazon/forms/educational_information.html' %}
+
+                    {% include 'jockey_amazon/forms/work_assignments_information.html' %}
+                </div>
+                <div class="field mt-5">
+                    <div class="control">
+                        <button class="button is-primary is-medium is-fullwidth" type="submit">
+                            Agregar Jockey/Amazon
+                            <span class="icon ml-1"><i class="fa-solid fa-pen-nib"></i></span>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </article>
+    </section>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Código existente para manejar las pestañas
+            const tabs = document.querySelectorAll('.tabs li');
+            const tabContent = document.querySelectorAll('.tab-pane');
+    
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    tabs.forEach(item => item.classList.remove('is-active'));
+                    tab.classList.add('is-active');
+    
+                    const target = tab.dataset.tab;
+                    tabContent.forEach(content => {
+                        if (content.id === target) {
+                            content.style.display = 'block';
+                        } else {
+                            content.style.display = 'none';
+                        }
+                    });
+                });
+            });
+    
+            // Funcionalidad para agregar miembros de la familia
+            const addFamilyMemberButton = document.getElementById('add-family-member');
+            const familyMemberContainer = document.getElementById('family-members');
+            const secondFamilyMember = document.querySelector('.family-member[data-id="2"]');
+    
+            addFamilyMemberButton.addEventListener('click', function () {
+                secondFamilyMember.style.display = 'block';
+                addFamilyMemberButton.style.display = 'none'; // Ocultar el botón después de agregar el segundo miembro
+            });
+    
+            // Maneja el evento de eliminar un miembro de la familia
+            familyMemberContainer.addEventListener('click', function (event) {
+                if (event.target.classList.contains('remove-family-member')) {
+                    const familyMember = event.target.closest('.family-member');
+                    if (familyMember) {
+                        familyMember.style.display = 'none'; // Ocultar en lugar de eliminar
+                        
+                        // Limpiar los campos
+                        familyMember.querySelectorAll('input, select').forEach(input => {
+                            input.value = '';
+                            input.required = false
+                        });
+    
+                        addFamilyMemberButton.style.display = 'block'; // Mostrar el botón de agregar nuevamente
+                    }
+                }
+            });
+    
+            // Funcionalidad para mostrar/ocultar detalles de la beca
+            const hasScholarshipCheckbox = document.querySelector('input[name="has_scholarship"]');
+            const scholarshipDetails = document.getElementById('scholarship-details');
+    
+            function toggleScholarshipDetails() {
+                if (hasScholarshipCheckbox.checked) {
+                    scholarshipDetails.style.display = 'block';
+                } else {
+                    scholarshipDetails.style.display = 'none';
+                }
+            }
+    
+            hasScholarshipCheckbox.addEventListener('change', toggleScholarshipDetails);
+            toggleScholarshipDetails();  // Initial check
+    
+            // Funcionalidad para mostrar/ocultar detalles de la discapacidad
+            const hasDisabilityCheckbox = document.querySelector('input[name="has_disability"]');
+            const disabilityDetails = document.getElementById('disability-details');
+    
+            function toggleDisabilityDetails() {
+                if (hasDisabilityCheckbox.checked) {
+                    disabilityDetails.style.display = 'block';
+                } else {
+                    disabilityDetails.style.display = 'none';
+                }
+            }
+    
+            hasDisabilityCheckbox.addEventListener('change', toggleDisabilityDetails);
+            toggleDisabilityDetails();  // Initial check
+    
+            // Funcionalidad para mostrar/ocultar detalles de la asignación familiar
+            const hasFamilyAssignmentCheckbox = document.querySelector('input[name="has_family_assignment"]');
+            const familyAssignmentDetails = document.getElementById('family-assignment-details');
+    
+            function toggleFamilyAssignmentDetails() {
+                if (hasFamilyAssignmentCheckbox.checked) {
+                    familyAssignmentDetails.style.display = 'block';
+                } else {
+                    familyAssignmentDetails.style.display = 'none';
+                }
+            }
+    
+            hasFamilyAssignmentCheckbox.addEventListener('change', toggleFamilyAssignmentDetails);
+            toggleFamilyAssignmentDetails();  // Initial check
+    
+            // Funcionalidad para mostrar/ocultar detalles de la curatela
+            const hasCuratorshipCheckbox = document.querySelector('input[name="has_curatorship"]');
+            const curatorshipDetails = document.getElementById('curatorship-details');
+    
+            function toggleCuratorshipDetails() {
+                if (hasCuratorshipCheckbox.checked) {
+                    curatorshipDetails.style.display = 'block';
+                } else {
+                    curatorshipDetails.style.display = 'none';
+                }
+            }
+    
+            hasCuratorshipCheckbox.addEventListener('change', toggleCuratorshipDetails);
+            toggleCuratorshipDetails();  // Initial check
+    
+            // Funcionalidad para mostrar/ocultar detalles de la pensión
+            const hasPensionCheckbox = document.querySelector('input[name="has_pension"]');
+            const pensionDetails = document.getElementById('pension-details');
+    
+            function togglePensionDetails() {
+                if (hasPensionCheckbox.checked) {
+                    pensionDetails.style.display = 'block';
+                } else {
+                    pensionDetails.style.display = 'none';
+                }
+            }
+    
+            hasPensionCheckbox.addEventListener('change', togglePensionDetails);
+            togglePensionDetails();  // Initial check
+        });
+    </script>
+    
+{% endblock %}

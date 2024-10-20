@@ -172,9 +172,9 @@ Miembro: {{ employee.name + " " + employee.lastname }}
     <div id="documents" class="card">
         <header class="card-header">
             <p class="card-header-title is-size-4">
-                Documentos anexos: 
-                {% if employee.files_number > 0%} 
-                    <span class="tag is-medium is-success ml-2">{{ employee.files_number }}</span> 
+                Documentos anexos:
+                {% if employee.files_number > 0%}
+                    <span class="tag is-medium is-success ml-2">{{ employee.files_number }}</span>
                 {% else %}
                     <span class="tag is-medium is-info ml-2">No hay</span>
                 {% endif %}
@@ -224,7 +224,7 @@ Miembro: {{ employee.name + " " + employee.lastname }}
 
 {% block modal %}
     {% if employee.is_deleted %}
-        {{  
+        {{
             render_delete_modal(
             url_for("employee_bp.delete_employee", employee_id=employee.id),
             field="employee",
@@ -233,14 +233,14 @@ Miembro: {{ employee.name + " " + employee.lastname }}
             msg_sub="Luego de confirmar, no se podrán revertir los cambios"
         )}}
     {% else %}
-        {{  
+        {{
             render_delete_modal(
             url_for("employee_bp.archive_employee", employee_id=employee.id),
             field="employee",
             title="Archivar",
             msg="¿Está seguro de que desea archivar al empleado?",
             delete_text="Archivar"
-        )}}  
+        )}}
     {% endif %}
 
 {% endblock %}
