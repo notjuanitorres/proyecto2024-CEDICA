@@ -59,6 +59,7 @@
                     <li><strong>Nombre: </strong> {{ jya.first_name }}</li>
                     <li><strong>Apellido: </strong> {{ jya.last_name }}</li>
                     <li><strong>Dni: </strong> {{ jya.dni }}</li>
+                    <li><strong>Deudor: </strong> {{ jya.has_debts | natural_boolean }} </li>
                 {% endif %}
             </ul>
         </div>
@@ -149,7 +150,9 @@
 
                     {#    NOTE: jya should always be true    #}
                 {% if not jya %}
-                <span class="tag is-info is-medium ml-2">Sin informacion</span>
+                    <span class="tag is-info is-medium ml-2">Sin informacion</span>
+                {% elif jya.has_debts %}
+                    <span class="tag is-danger is-medium ml-2">Deudor</span>
                 {% endif %}
             </h2>
         </header>

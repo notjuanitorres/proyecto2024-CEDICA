@@ -38,10 +38,22 @@
 
 
 {% block create_button %}
-  <a class="button is-primary level-item" href="{{ url_for('charges_bp.create_charge')}}">
-    Agregar cobro
-    <i class="fas fa-credit-card ml-2 is-size-5"></i>
-  </a>
+  <div class="columns is-mobile is-marginless">
+  {% if "cobros_update" in permissions or is_admin %}
+    <div class="column is-half">
+      <a class="button is-link is-fullwidth" href="{{ url_for('charges_bp.choose_debtor')}}">
+        Cambiar estado de deuda
+        <i class="fas fa-user ml-2 is-size-5"></i>
+      </a>
+    </div>
+  {% endif %}
+  <div class="column {% if 'cobros_update' not in permissions and not is_admin %}is-full{% else %}is-half{% endif %}">
+    <a class="button is-primary is-fullwidth" href="{{ url_for('charges_bp.create_charge')}}">
+      Agregar cobro
+      <i class="fas fa-credit-card ml-2 is-size-5"></i>
+    </a>
+  </div>
+</div>
 {% endblock %}
 
 {% block form_action %}{{ url_for("charges_bp.get_charges") }}{% endblock %}

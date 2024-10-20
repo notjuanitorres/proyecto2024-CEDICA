@@ -65,6 +65,10 @@ class AbstractJockeyAmazonRepository(ABC):
     def update_document(self, jockey_id: int, document_id: int, data: Dict) -> bool:
         pass
 
+    @abstractmethod
+    def toggle_debtor_status(self, jockey_id: int) -> bool:
+        pass
+
 
 class JockeyAmazonRepository(AbstractJockeyAmazonRepository):
     def __init__(self):
@@ -168,5 +172,13 @@ class JockeyAmazonRepository(AbstractJockeyAmazonRepository):
         if not doc_query:
             return False
         doc_query.update(data)
+        self.save()
+        return True
+
+    def toggle_debtor_status(self, jockey_id: int) -> bool:
+        jockey: JockeyAmazon = self.get_by_id(jockey_id)
+        if not jockey:
+            return False
+        jockey.has_debts = not jockey.has_debts
         self.save()
         return True

@@ -24,8 +24,7 @@ def search_charges(search: ChargeSearchForm,
                    charges_repository: ACR = Provide[Container.charges_repository]):
     page = request.args.get("page", type=int)
     per_page = request.args.get("per_page", type=int)
-    search = ChargeSearchForm(request.args)
-    order_by = []
+    order_by = [("date_of_charge", "desc")]
     search_query = {
         "filters": {
             "is_archived": need_archived
@@ -49,6 +48,22 @@ def search_charges(search: ChargeSearchForm,
 
     return charges_repository.get_page(
         page=page, per_page=per_page, order_by=order_by, search_query=search_query
+    )
+
+
+@inject
+def search_jyas(search: JockeyAmazonMiniSearchForm,
+                jya_repository: AbstractJockeyAmazonRepository = Provide[Container.jockey_amazon_repository]):
+    page = request.args.get("page", type=int)
+    per_page = request.args.get("per_page", type=int)
+    search_query = {}
+
+    if request.method == "GET" and search.validate():
+        search_fields = ["name", "email"]
+        search_query = {"text": search.search_text.data, "fields": search_fields}
+
+    return jya_repository.get_page(
+        page=page, search_query=search_query, per_page=per_page
     )
 
 
@@ -153,8 +168,12 @@ def update_charge(charge_id: int, edit_form: ChargeEditForm,
     if not edit_form.validate_on_submit():
         return render_template("./charges/edit_charge.html", form=edit_form)
 
-    charges_repository.update_charge(charge_id, Mapper.from_form(edit_form.data))
+    success = charges_repository.update_charge(charge_id, Mapper.from_form(edit_form.data))
 
+    if success:
+        flash("El cobro se modificó correctamente!", "success")
+    else:
+        flash("El cobro no pudo ser modificado, inténtelo nuevamente", "danger")
     return redirect(url_for("charges_bp.show_charge", charge_id=charge_id))
 
 
@@ -318,20 +337,11 @@ def link_jya(
         return redirect(url_for("charges_bp.get_charges"))
 
     charge = Mapper.from_session(session.get("charge"))
-    page = request.args.get("page", type=int, default=1)
-    per_page = request.args.get("per_page", type=int, default=10)
-    search_query = {}
 
     search_jya = JockeyAmazonMiniSearchForm(request.args)
     select_jya = JockeyAmazonSelectForm()
 
-    if request.method == "GET" and search_jya.validate():
-        search_fields = ["name", "email"]
-        search_query = {"text": search_jya.search_text.data, "fields": search_fields}
-
-    jyas = jya_repository.get_page(
-        page=page, search_query=search_query, per_page=per_page
-    )
+    jyas = search_jyas(search_jya)
 
     if request.method == "POST":
         return link_charge_jya(charge, search_jya, select_jya, jyas)
@@ -415,25 +425,15 @@ def change_jya(
         charges_repository: ACR = Provide[Container.charges_repository],
         jyas: AbstractJockeyAmazonRepository = Provide[Container.jockey_amazon_repository],
 ):
-    page = request.args.get("page", type=int, default=1)
-    per_page = request.args.get("per_page", type=int, default=10)
-    search_query = {}
-
-    search_jya = JockeyAmazonMiniSearchForm(request.args)
-    select_jya = JockeyAmazonSelectForm()
-
     charge = charges_repository.get_by_id(charge_id)
     if not charge:
         flash(f"El cobro con ID = {charge_id} no existe", "danger")
         return redirect(url_for("charges_bp.get_charges"))
 
-    if request.method == "GET" and search_jya.validate():
-        search_fields = ["name", "email"]  # Adjust these fields as necessary for JockeyAmazon
-        search_query = {"text": search_jya.search_text.data, "fields": search_fields}
+    search_jya = JockeyAmazonMiniSearchForm(request.args)
+    select_jya = JockeyAmazonSelectForm()
 
-    jyas_list = jyas.get_page(
-        page=page, search_query=search_query, per_page=per_page
-    )
+    jyas_list = search_jyas(search_jya)
 
     if request.method == "POST":
         return add_charge_jya(charge, search_jya, select_jya, jyas_list)
@@ -478,3 +478,51 @@ def add_charge_jya(
             "danger",
         )
     return redirect(url_for("charges_bp.show_charge", charge_id=charge_id))
+
+
+@charges_bp.route("/elegir-deudor/", methods=["GET", "POST"])
+@check_user_permissions(permissions_required=["cobros_update"])
+@inject
+def choose_debtor(
+):
+    search_jya = JockeyAmazonMiniSearchForm(request.args)
+    select_jya = JockeyAmazonSelectForm()
+
+    jyas = search_jyas(search_jya)
+
+    if request.method == "POST":
+        return toggle_debtor_status(search_jya, select_jya, jyas)
+
+    return render_template(
+        "./charges/choose_debtor.html",
+        jyas=jyas,
+        search_form=search_jya,
+        select_form=select_jya,
+    )
+
+
+@charges_bp.route("/cambiar-estado-deudor/", methods=["POST"])
+@check_user_permissions(permissions_required=["cobros_update"])
+@inject
+def toggle_debtor_status(
+        search_form: JockeyAmazonMiniSearchForm,
+        select_form: JockeyAmazonSelectForm,
+        jyas,
+        jya_repository: AbstractJockeyAmazonRepository = Provide[Container.jockey_amazon_repository],
+):
+    if not (select_form.submit_jya.data and select_form.validate()):
+        return render_template(
+            "./charges/choose_debtor.html",
+            jyas=jyas,
+            search_form=search_form,
+            select_form=select_form,
+        )
+
+    jya_id = select_form.selected_jya.data
+    updated = jya_repository.toggle_debtor_status(jya_id)
+
+    if not updated:
+        flash("El estado de deudor no pudo ser cambiado", "danger")
+    else:
+        flash("El estado de deudor ha sido cambiado correctamente", "success")
+    return redirect(url_for("charges_bp.get_charges"))
