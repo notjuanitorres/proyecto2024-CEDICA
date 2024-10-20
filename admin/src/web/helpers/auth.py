@@ -7,10 +7,28 @@ from src.core.module.auth import AbstractAuthServices
 
 
 def is_authenticated(user_session):
+    """
+    Check if the user is authenticated.
+
+    Args:
+        user_session (SessionMixin): The user session dictionary.
+
+    Returns:
+        bool: True if the user is authenticated, False otherwise.
+    """
     return user_session.get("user") is not None
 
 
 def login_required(f):
+    """
+    Decorator to ensure the user is logged in.
+
+    Args:
+        f (function): The function to decorate.
+
+    Returns:
+        function: The decorated function.
+    """
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if not is_authenticated(session):
@@ -21,6 +39,15 @@ def login_required(f):
 
 
 def check_user_permissions(permissions_required: List[str]):
+    """
+        Decorator to check if the user has the required permissions.
+
+        Args:
+            permissions_required (List[str]): The list of required permissions.
+
+        Returns:
+            function: The decorated function.
+        """
     def decorator(f):  # need extra decorator because im passing an argument
         @wraps(f)
         @inject
@@ -42,6 +69,12 @@ def check_user_permissions(permissions_required: List[str]):
 
 
 def inject_session_data():
+    """
+    Inject session data into the context.
+
+    Returns:
+        dict: A dictionary containing session data.
+    """
     return dict(
         user_id=session.get("user"),
         user_name=session.get("user_name"),

@@ -72,7 +72,8 @@
       </div>
     </div>
   </form>
-  <div class="container p-5">
+  <div class="container p-4">
+    <h3 class="subtitle">Mostrando cuentas activas y sin empleados asociados</h3>
     {{ render_pagination(accounts, 'employee_bp.link_account', {"employee_id":employee.id}) }}
   </div>
   <form method="POST" id="select-form" class="">

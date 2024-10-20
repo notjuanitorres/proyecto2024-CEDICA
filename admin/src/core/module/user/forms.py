@@ -13,6 +13,7 @@ from wtforms.validators import DataRequired, Email, Length, EqualTo, Optional
 from src.core.module.common.validators import IsNumber
 from src.core.module.auth.data import RoleEnum
 from .validators import EmailExistence
+from src.core.module.common.forms import BaseSearchForm
 
 
 def email_existence(form, field):
@@ -64,8 +65,6 @@ class UserManagementForm(FlaskForm):
     )
     alias = StringField("Alias", validators=[DataRequired(), Length(min=3, max=15)])
 
-    enabled = BooleanField("Habilitado", default=True)
-
     system_admin = BooleanField("System Admin", default=False)
 
 
@@ -108,17 +107,16 @@ class UserEditForm(UserManagementForm):
         super(UserEditForm, self).__init__(*args, **kwargs)
 
 
-class UserSearchForm(FlaskForm):
-    class Meta:
-        csrf = False
-
-    search_by = SelectField(
-        choices=[
+class UserSearchForm(BaseSearchForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.search_by.choices = [
             ("email", "Email"),
-        ],
-        validate_choice=True,
-    )
-    search_text = StringField(validators=[Length(max=50)])
+        ]
+        self.order_by.choices = [
+            ("id", "ID"),
+            ("email", "Email"),
+        ]
 
     filter_enabled = SelectField(
         choices=[
@@ -127,24 +125,13 @@ class UserSearchForm(FlaskForm):
             ("", "Todos"),
         ],
         validate_choice=True,
+        validators=[Optional()]
     )
 
     filter_role_id = SelectField(
         choices=[("", "Todos")]
         + [(str(index + 1), role.value) for index, role in enumerate(RoleEnum)],
     )
-
-    order_by = SelectField(
-        choices=[
-            ("id", "ID"),
-            ("email", "Email"),
-        ],
-        validate_choice=True,
-    )
-    order = SelectField(
-        choices=[("asc", "Ascendente"), ("desc", "Descendente")], validate_choice=True
-    )
-    submit_search = SubmitField("Buscar")
 
 
 class AccountSearchForm(FlaskForm):
