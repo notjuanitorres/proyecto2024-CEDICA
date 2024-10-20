@@ -105,7 +105,6 @@ class JockeyAmazonMapper:
             }
             jockey_dict["school_information"] = {
                 "school_institution": SchoolInstitutionMapper.from_entity(jockey.school_institution),
-                "school_institution_id": jockey.school_institution_id,
                 "current_grade_year": jockey.current_grade_year,
                 "school_observations": jockey.school_observations,
                 "professionals": jockey.professionals,
@@ -118,7 +117,6 @@ class JockeyAmazonMapper:
                 "family_members": [
                     FamilyMemberMapper.from_entity(member) for member in jockey.family_members
                 ],
-                "work_assignment": WorkAssignmentMapper.from_entity(jockey.work_assignment),
                 "work_assignment": WorkAssignmentMapper.from_entity(jockey.work_assignment),
                 "is_deleted": jockey.is_deleted
             }
@@ -179,7 +177,6 @@ class JockeyAmazonMapper:
 
             # School Information
             school_institution=SchoolInstitutionMapper.to_entity(school.get("school_institution", {})),
-            school_institution_id=school.get("school_institution_id"),
             current_grade_year=school.get("current_grade_year"),
             school_observations=school.get("school_observations"),
 

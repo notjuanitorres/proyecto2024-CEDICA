@@ -207,12 +207,10 @@ class JockeyAmazonRepository(AbstractJockeyAmazonRepository):
         if not jockey:
             return False
         
-        school = jockey.school_institution_id
-        if school:
-            school_data = data.get("school_institution", {})
-            for key, value in school_data.items():
-                if hasattr(jockey.school_institution, key):
-                    setattr(jockey.school_institution, key, value)
+        school_data = data.get("school_institution", {})
+        for key, value in school_data.items():
+            if hasattr(jockey.school_institution, key):
+                setattr(jockey.school_institution, key, value)
  
         jockey.current_grade_year = data.get('current_grade_year', jockey.current_grade_year)
         jockey.school_observations = data.get('school_observations', jockey.school_observations)
