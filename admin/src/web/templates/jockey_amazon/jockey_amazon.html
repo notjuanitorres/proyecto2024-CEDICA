@@ -39,7 +39,10 @@
 
 
 {% block card_title %}
-<span class="py-4">{{ jockey_amazon.first_name + " " + jockey_amazon.last_name }}</span>
+<span class="py-4">
+    <p class="icon mr-2"><i class="fa-regular fa-clipboard is-size-3"></i></p>
+    Ficha General
+</span>
 {% endblock %}
 
 {% block close_button %} 
@@ -105,18 +108,6 @@
                 {% if jockey_amazon.has_pension %}
                 <li><strong>Tipo de pensión: </strong>{{ jockey_amazon.pension_type.value }}</li>
                 <li><strong>Detalles: </strong>{{ jockey_amazon.pension_details }}</li>
-                {% endif %}
-            </ul>
-        </div>
-        <div id="scholarship-info" class="cell mt-4">
-            <h3>
-                Información de beca
-            </h3>
-            <ul>
-                <li><strong>Tiene beca: </strong>{{ render_boolean_tag(jockey_amazon.has_scholarship) }}</li>
-                {% if jockey_amazon.has_scholarship %}
-                <li><strong>Porcentaje de beca: </strong>{{ jockey_amazon.scholarship_percentage }}</li>
-                <li><strong>Detalles de la beca: </strong>{{ jockey_amazon.scholarship_observations }}</li>
                 {% endif %}
             </ul>
         </div>
@@ -291,6 +282,54 @@
             )
         }}
     {% endif %}
+{% endblock %}
+
+
+{% block additional_cards %}
+
+<div id="organization-work" class="card">
+    <header class="card-header py-4">
+        <h2 class="card-header-title is-size-4">
+            <p class="icon mr-3"><i class="fa-solid fa-users is-size-4"></i></p>
+            Miembros Asignados
+        </h2>
+        <button class="card-header-icon" aria-label="more options" id="toggle-search-button">
+            <span class="icon">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+            </span>
+        </button>
+    </header>
+    <div class="card-content">
+        <div class="content grid">
+        </div>
+        <div>
+            <div>
+                <li><strong>Profesor o Terapeuta: </strong> {{ jockey_amazon.work_assignment.professor_or_therapist_id }}</li>
+                <li><strong>Conductor: </strong> {{ jockey_amazon.work_assignment.conductor_id }}</li>
+                <li><strong>Asistente de pista: </strong> {{ jockey_amazon.work_assignment.track_assistant_id }}</li>
+                <li><strong>Caballo: </strong> {{ jockey_amazon.work_assignment.horse_id }}</li>
+            </div>
+            <!-- <article class="media">
+                <div class="media-left">
+                    <figure class="image is-64x64">
+                        <img src="https://bulma.io/assets/images/placeholders/128x128.png" alt="Image" />
+                    </figure>
+                </div>
+                <div class="media-content">
+                    <div class="content">
+                        <p>
+                            <strong class="is-size-5"></strong>
+                            <small></small>
+                            <br />
+                            <br />
+                        </p>
+                    </div>
+                </div>
+            </article> -->
+        </div>
+    </div>
+
+</div>
 {% endblock %}
 
 {% block extra_scripts %}
