@@ -32,6 +32,7 @@ def get_payments(
         order_by = [(form.order_by.data, form.order.data)]
     page = request.args.get("page", 1, type=int)
     per_page = request.args.get("per_page", 10, type=int)
+    search_query["is_archived"] = False
 
     payments = payment_repository.get_page(page, per_page, 100, search_query, order_by)
 

@@ -44,7 +44,7 @@
             <li class="{% block all_tab_active %}is-active{% endblock %}">
                 <a href="{{ url_for("payment_bp.get_payments")}}">
                     <span class="icon is-small"><i class="fa-solid fa-money-bill-wave"></i></span>
-                    <span>Todos</span>
+                    <span>Pagos Validos</span>
                 </a>
             </li>
             <li class="{% block archive_tab_active %}{% endblock %}">
@@ -154,6 +154,8 @@
                 {% for payment in payments.items %}
                 <tr >
                     <td>
+                        {% set action = 'delete' if payment.is_archived else 'archive' %}
+                        {% set endpoint= 'payment_bp.delete_payment' if payment.is_archived else 'payment_bp.archive_payment' %}
                         {{
                         render_actions_menu(
                         field="payment_id",
@@ -162,7 +164,7 @@
                         endpoints={
                         'show':'payment_bp.show_payment',
                         'edit': 'payment_bp.edit_payment',
-                        'delete': '{% block delete_endpoint %}{% endblock %}'
+                        action: endpoint
                         },
                         permission_to_show="payments_show",
                         permission_to_edit="payments_update",
@@ -215,15 +217,14 @@
                 </div>
               </div>
 </section>
-
-<div id="delete-modal" class="modal">
+{% block delete_modal %}
     {{ render_delete_modal(
     endpoint="{% block delete_modal_endpoint %}{% endblock %}",
     title="{% block delete_modal_title %}{% endblock %}",
     msg="{% block delete_modal_msg %}{% endblock %}",
     msg_sub="{% block delete_modal_msg_sub %}{% endblock %}"
     ) }}
-</div>
+{% endblock %}
 </body>
 
 </html>

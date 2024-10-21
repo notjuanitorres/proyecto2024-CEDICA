@@ -7,8 +7,11 @@
 {% block all_tab_active %}{% endblock %}
 {% block archive_tab_active %}is-active{% endblock %}
 
-{% block delete_endpoint %}payment_bp.unarchive_payment{% endblock %}
-{% block delete_modal_endpoint %}payment_bp.unarchive_payment{% endblock %}
-{% block delete_modal_title %}Desarchivar{% endblock %}
-{% block delete_modal_msg %}¿Está seguro de que desea desarchivar el pago?{% endblock %}
-{% block delete_modal_msg_sub %}Luego de confirmar, el pago volverá a estar activo{% endblock %}
+{% block delete_modal %}
+    {{ render_delete_modal(
+    endpoint="payment_bp.delete_payment",
+    title="}Eliminar",
+    msg="¿Está seguro de que desea eliminar el pago?",
+    msg_sub="Luego de confirmar, no se podrán revertir los cambios"
+    ) }}
+{% endblock %}
