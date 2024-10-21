@@ -1,0 +1,236 @@
+{% extends "layout.html" %}
+{% from "macros/pagination.html" import render_pagination %}
+{% from "macros/edit_menu.html" import render_actions_menu %}
+{% from "macros/delete_modal.html" import render_delete_modal %}
+
+{% block title %}Pagos - CEDICA{% endblock %}
+
+{% block main_content %}
+<nav class="breadcrumb mb-2" aria-label="breadcrumbs">
+    <ul>
+        <li>
+            <a href="{{ url_for('index_bp.home')}}">
+                <span class="icon is-small">
+                    <i class="fas fa-home" aria-hidden="true"></i>
+                </span>
+                <span>Inicio</span>
+            </a>
+        </li>
+        <li>
+            <a href="{{ url_for('payment_bp.get_payments')}}">
+                <span class="icon is-small">
+                    <i class="fas fa-money-bill-wave" aria-hidden="true"></i>
+                </span>
+                <span>Pagos</span>
+            </a>
+        </li>
+        <li class="is-active">
+            <a href="#">
+                <span class="icon is-small">
+                    <i class="fa-solid fa-box-archive" aria-hidden="true"></i>
+                </span>
+                <span>{% block archive_title %}Archivo{% endblock %}</span>
+            </a>
+        </li>
+    </ul>
+</nav>
+
+<section class="is-fullheight-with-navbar pt-4">
+    <h2 class="title is-size-3 has-text-centered">
+        {% block page_title %}Pagos{% endblock %}
+    </h2>
+    <div class="tabs is-medium is-toggle is-toggle-rounded is-centered">
+        <ul>
+            <li class="{% block all_tab_active %}is-active{% endblock %}">
+                <a href="{{ url_for("payment_bp.get_payments")}}">
+                    <span class="icon is-small"><i class="fa-solid fa-money-bill-wave"></i></span>
+                    <span>Todos</span>
+                </a>
+            </li>
+            <li class="{% block archive_tab_active %}{% endblock %}">
+                <a href="{{ url_for("payment_bp.get_archived_payments")}}">
+                    <span class="icon is-small"><i class="fa-solid fa-box-archive"></i></span>
+                    <span>Archivo</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+    <div class="px-3">
+        {% block add_payment_button %}
+        {% endblock %}
+        <div class="card">
+            <header class="card-header">
+                <p class="card-header-title is-size-4">
+                    <span class="icon mr-3">
+                        <i class="fa-solid fa-filter"></i>
+                    </span>
+                    Filtrar
+                </p>
+                <button class="card-header-icon" aria-label="more options" id="toggle-search-button">
+                    <span class="icon">
+                        <i class="fas fa-angle-down" aria-hidden="true"></i>
+                    </span>
+                </button>
+            </header>
+            <div class="card-content" id="toggle-search">
+                <div class="content">
+                    <form action="{{ url_for(request.endpoint) }}" method="post">
+                        <div class="is-flex is-flex-direction-row is-flex-wrap-wrap is-gap-1">
+                            {{ form.hidden_tag() }}
+                            <div class="field is-flex-grow-1">
+                                <label class="label">Fecha de inicio</label>
+                                <div class="control">
+                                    {{ form.start_date(class="input") }}
+                                </div>
+                            </div>
+                            <div class="field is-flex-grow-1">
+                                <label class="label">Fecha de fin</label>
+                                <div class="control">
+                                    {{ form.end_date(class="input") }}
+                                </div>
+                            </div>
+                        
+                        <div class="field">
+                            <label class="label">Tipo de pago</label>
+                            <div class="control">
+                                <div class="select">
+                                    {{ form.payment_type() }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="grid is-flex-tablet is-row-gap-0 is-column-gap-1 pt-3" >
+                        <div class="field">
+                          <label class="label">Ordenar por</label>
+                          <div class="control">
+                              <div class="select">
+                                  {{ search_form.order_by() }}
+                              </div>
+                          </div>
+                        </div>
+                        <div class="field">
+                          <label class="label">En orden</label>
+                          <div class="control">
+                              <div class="select">
+                                  {{ search_form.order() }}
+                              </div>
+                          </div>
+                        </div>
+                      </div>
+                    <div class="field card-footer">
+                        <div class="control card-footer-item">
+                          <a href="{{ url_for(request.endpoint) }}">
+                            Limpiar
+                          </a>
+                        </div>
+                        <div class="control card-footer-item">
+                          {{ search_form.submit_search(class="button is-flex-grow-1 is-link")}}
+                        </div>
+                      </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<section>
+    <div class="table-container table-container p-2 mt-2">
+      <div class="container p-5">
+        {{ render_pagination(payments, request.endpoint) }}
+        </div>
+        <table class="table is-fullwidth is-striped is-hoverable is-hidden-touch">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>ID</th>
+                    <th>Monto</th>
+                    <th>Fecha de pago</th>
+                    <th>Tipo de pago</th>
+                    <th>Beneficiario</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for payment in payments.items %}
+                <tr >
+                    <td>
+                        {{
+                        render_actions_menu(
+                        field="payment_id",
+                        value=payment.id,
+                        to_left=true,
+                        endpoints={
+                        'show':'payment_bp.show_payment',
+                        'edit': 'payment_bp.edit_payment',
+                        'delete': '{% block delete_endpoint %}{% endblock %}'
+                        },
+                        permission_to_show="payments_show",
+                        permission_to_edit="payments_update",
+                        permission_to_delete="payments_destroy",
+                        user_permissions=permissions,
+                        is_admin=is_admin
+                        )
+                        }}
+                    </td>
+                    <td>{{ payment.id }}</td>
+                    <td>{{ payment.amount }}</td>
+                    <td>{{ payment.payment_date.strftime('%d-%m-%Y') }}</td>
+                    <td>{{ payment.payment_type.name | capitalize }}</td>
+                    <td>{{ payment.beneficiary.name if payment.beneficiary else '-' }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th></th>
+                    <th>ID</th>
+                    <th>Monto</th>
+                    <th>Fecha de pago</th>
+                    <th>Tipo de pago</th>
+                    <th>Beneficiario</th>
+                    <th></th>
+                </tr>
+            </tfoot>
+        </table>
+        {% for payment in payments.items %}
+        <div class="box is-hidden-desktop">
+          <p><strong>ID:</strong> {{ payment.id }}</p>
+          <p><strong>Monto:</strong> {{ payment.amount }}</p>
+          <p><strong>Fecha de pago:</strong> {{ payment.payment_date.strftime('%d-%m-%Y') }}</p>
+          <p><strong>Tipo de pago:</strong> {{ payment.payment_type.name | capitalize }}</p>
+          <p><strong>Beneficiario:</strong> {{ payment.beneficiary.name if payment.beneficiary else '-' }}</p>
+          <div class="is-hidden-tablet is-flex">
+            <a href="{{ url_for('payment_bp.show_payment', payment_id=payment.id)}}" class="button  is-flex-grow-1 ">
+              <span class=" is-bold ">
+                Ver pago
+                <i class="fa-regular fa-eye ml-2"></i>
+              </span>
+            </a>
+          </div>
+                </div>
+                {% endfor %}
+                
+                <div class="container p-5">
+                  {{ render_pagination(payments, request.endpoint) }}
+                </div>
+              </div>
+</section>
+
+<div id="delete-modal" class="modal">
+    {{ render_delete_modal(
+    endpoint="{% block delete_modal_endpoint %}{% endblock %}",
+    title="{% block delete_modal_title %}{% endblock %}",
+    msg="{% block delete_modal_msg %}{% endblock %}",
+    msg_sub="{% block delete_modal_msg_sub %}{% endblock %}"
+    ) }}
+</div>
+</body>
+
+</html>
+{% endblock %}
+
+{% block extra_scripts %}
+  {{ super() }}
+  <script src="{{ url_for('static', filename='js/table-row-toggle.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/toggle-search-bar.js') }}"></script>
+{% endblock %}
