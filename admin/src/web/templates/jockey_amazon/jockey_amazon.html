@@ -1,5 +1,8 @@
 {% extends "base_show.html" %}
 
+{% from "macros/file_icon.html" import render_file_icon %}
+{% from "jockey_amazon/macros/parse_categories.html" import render_category %}
+
 {% block title %}Jockey Amazon {{ jockey_amazon.first_name + " " + jockey_amazon.last_name }} - CEDICA{% endblock %}
 
 {% macro render_boolean_tag(boolean = "None") %}
@@ -34,8 +37,50 @@
 {% block page_title %} 
 
 <h2 class="title has-text-centered">Jockey Amazon: {{ jockey_amazon.first_name + " " + jockey_amazon.last_name }} </h2>
+<div class="buttons is-centered has-addons is-medium">
+    {% if jockey_amazon.is_deleted %}
+        {% if "jockey_amazon_destroy" in permissions or is_admin %}
+            <button class="button is-danger modal-trigger is-medium" data-id="{{ jockey_amazon.id }}" data-target="jockey-delete-modal">
+                <span class="icon is-small">
+                    <i class="fa fa-trash"></i>
+                </span>
+                <span>Eliminar</span>
+            </button>
+            <form action="{{ url_for('jockey_amazon_bp.recover_jockey') }}" method="POST" class="button is-primary is-medium">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="jockey_amazon_id" value="{{ jockey_amazon.id }}">
+                <button type="submit" class="">
+                    <span class="icon is-small">
+                        <i class="fa fa-undo"></i>
+                    </span>
+                    <span>Recuperar</span>
+                </button>
+            </form>
+        {% endif %}
+    {% else %}
+        {% if "jockey_amazon_destroy" in permissions or is_admin %}
+            <button class="button is-danger modal-trigger is-medium" data-id="{{ jockey_amazon.id }}" data-target="jockey-delete-modal">
+                <span class="icon is-small">
+                    <i class="fa fa-archive"></i>
+                </span>
+                <span>Archivar</span>
+            </button>
+        {% endif %}
+        {% if "jockey_amazon_update" in permissions or is_admin %}
+            <button class="button is-link is-medium">
+                <a class="has-text-black" href="{{ url_for('jockey_amazon_bp.update.edit_jockey', jockey_id=jockey_amazon.id) }}">
+                    <span class="icon is-small">
+                        <i class="fa fa-edit"></i>
+                    </span>
+                    <span>Actualizar</span>
+                </a>
+            </button>
+        {% endif %}
+    {% endif %}
+</div>
 
 {% endblock %}
+
 
 
 {% block card_title %}
@@ -56,7 +101,7 @@
 {% block banner %}
     {% if jockey_amazon.is_deleted %}
         <div class="is-flex is full-width is-justify-content-center has-background-danger p-4">
-            <h2 class="title">Jinete/Amazona eliminado</h2>
+            <h2 class="title">Jinete/Amazona Archivado</h2>
         </div>
     {% endif %}
 {% endblock %}
@@ -233,32 +278,89 @@
 {% endif %}
 {% endblock %}
 
-{% block card_actions %}
-    {% if jockey_amazon.is_deleted %}
-    {% if "jockey_amazon_destroy" in permissions or is_admin %}
-        <button class="card-footer-item has-text-danger modal-trigger" data-id="{{ jockey_amazon.id }}" data-target="jockey-delete-modal">
-            Eliminar definitivamente
+
+{% block additional_cards %}
+<div id="organization-work" class="card">
+    <header class="card-header py-4">
+        <h2 class="card-header-title is-size-4">
+            <p class="icon mr-3"><i class="fa-solid fa-users is-size-4"></i></p>
+            Miembros Asignados
+        </h2>
+        <button class="card-header-icon" aria-label="more options" id="toggle-search-button">
+            <span class="icon">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+            </span>
         </button>
-        <form class="card-footer-item" action="{{ url_for('jockey_amazon_bp.recover_jockey') }}" method="POST">
-            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-            <input type="hidden" name="jockey_amazon_id" value="{{ jockey_amazon.id }}">
-            <button type="submit" class="has-text-primary">Recuperar</button>
-        </form>
-    {% endif %}
-    {% else %}
-        {% if "jockey_amazon_destroy" in permissions or is_admin %}
-            <button class="card-footer-item has-text-danger modal-trigger" data-id="{{ jockey_amazon.id }}" data-target="jockey-delete-modal">
-                Archivar
-            </button>
-        {% endif %}
-
-        {% if "jockey_amazon_update" in permissions or is_admin %}
-            <a href="{{ url_for( 'jockey_amazon_bp.update.edit_jockey', jockey_id=jockey_amazon.id) }}" class="card-footer-item has-text-warning">Actualizar</a>
-        {% endif %}
-    {% endif %}
-    <a href="{{ url_for('jockey_amazon_bp.edit_documents', jockey_id=jockey_amazon.id) }}" class="card-footer-item has-text-link">Ver documentos</a>
+    </header>
+    <div class="card-content pt-0">
+        <div>
+            <div>
+                <li><strong>Profesor o Terapeuta: </strong> {{ jockey_amazon.work_assignment.professor_or_therapist_id }}</li>
+                <li><strong>Conductor: </strong> {{ jockey_amazon.work_assignment.conductor_id }}</li>
+                <li><strong>Asistente de pista: </strong> {{ jockey_amazon.work_assignment.track_assistant_id }}</li>
+                <li><strong>Caballo: </strong> {{ jockey_amazon.work_assignment.horse_id }}</li>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="documents" class="card">
+    <header class="card-header py-4">
+        <h2 class="card-header-title is-size-4">
+            <span class="icon mr-3 is-size-4"><i class="fa-solid fa-link"></i></span>
+            Documentos anexos: 
+            {% if jockey_amazon.files | length  > 0 %} 
+                <span class="tag is-medium is-success ml-2">Total: {{ jockey_amazon.files | length }}</span> 
+            {% else %}
+                <span class="tag is-medium is-info ml-2">No hay</span>
+            {% endif %}
+        </h2>
+        <button class="card-header-icon" aria-label="more options" id="toggle-search-button">
+            <span class="icon">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+            </span>
+        </button>
+    </header>
+    <div class="card-content pt-0">
+        <div class="content">
+            {% if jockey_amazon.files %}
+                {% for file in jockey_amazon.files[:5] %}
+                <div class="box">
+                    <article class="media">
+                        <div class="media-left">
+                            {{ render_file_icon(file.filetype, size=1) }}
+                        </div>
+                        <div class="media-content ml-2">
+                        <div class="content">
+                            <p>
+                            <strong>{{ render_category(file.tag) }}</strong>
+                            <small>{{ file.inserted_at | format_date }}</small>
+                            <br />
+                            {{ file.title }}
+                            </p>
+                        </div>
+                        </div>
+                    </article>
+                </div>
+                <footer class="card-footer">
+                    <a href="{{ url_for("jockey_amazon_bp.edit_documents", jockey_id=jockey_amazon.id )}}" class="card-footer-item has-text-link">Ver todos</a>
+                </footer>
+                {% endfor %}
+            {% else %}
+                <p>No se se ha subido ningun documento</p>
+                {% if "equipo_update" in permissions or is_admin %}
+                <footer class="card-footer">
+                    {% if not jockey_amazon.is_deleted %}
+                        <a href="{{ url_for("jockey_amazon_bp.create_document", jockey_id=jockey_amazon.id )}}" class="card-footer-item">Agregar</a>
+                    {% else %}
+                        <a href="{{ url_for("jockey_amazon_bp.edit_documents", jockey_id=jockey_amazon.id )}}" class="card-footer-item">Ver</a>
+                    {% endif %}
+                </footer>
+                {% endif%}
+            {% endif %}
+        </div>
+    </div>
+</div>
 {% endblock %}
-
 {% block modal %}
     {% if jockey_amazon.is_deleted %}
         {{
@@ -284,53 +386,6 @@
     {% endif %}
 {% endblock %}
 
-
-{% block additional_cards %}
-
-<div id="organization-work" class="card">
-    <header class="card-header py-4">
-        <h2 class="card-header-title is-size-4">
-            <p class="icon mr-3"><i class="fa-solid fa-users is-size-4"></i></p>
-            Miembros Asignados
-        </h2>
-        <button class="card-header-icon" aria-label="more options" id="toggle-search-button">
-            <span class="icon">
-            <i class="fas fa-angle-down" aria-hidden="true"></i>
-            </span>
-        </button>
-    </header>
-    <div class="card-content">
-        <div class="content grid">
-        </div>
-        <div>
-            <div>
-                <li><strong>Profesor o Terapeuta: </strong> {{ jockey_amazon.work_assignment.professor_or_therapist_id }}</li>
-                <li><strong>Conductor: </strong> {{ jockey_amazon.work_assignment.conductor_id }}</li>
-                <li><strong>Asistente de pista: </strong> {{ jockey_amazon.work_assignment.track_assistant_id }}</li>
-                <li><strong>Caballo: </strong> {{ jockey_amazon.work_assignment.horse_id }}</li>
-            </div>
-            <!-- <article class="media">
-                <div class="media-left">
-                    <figure class="image is-64x64">
-                        <img src="https://bulma.io/assets/images/placeholders/128x128.png" alt="Image" />
-                    </figure>
-                </div>
-                <div class="media-content">
-                    <div class="content">
-                        <p>
-                            <strong class="is-size-5"></strong>
-                            <small></small>
-                            <br />
-                            <br />
-                        </p>
-                    </div>
-                </div>
-            </article> -->
-        </div>
-    </div>
-
-</div>
-{% endblock %}
 
 {% block extra_scripts %}
 {{super()}}
