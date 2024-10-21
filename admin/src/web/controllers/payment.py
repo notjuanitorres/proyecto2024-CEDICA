@@ -107,3 +107,50 @@ def delete_payment(
     payment_repository.delete(payment_id)
     flash('Pago eliminado exitosamente', 'success')
     return redirect(url_for('payment_bp.get_payments'))
+
+@payment_bp.route("/archivados", methods=["GET", "POST"])
+@check_user_permissions(permissions_required=['pagos_index'])
+@inject
+def get_archived_payments(
+    payment_repository: PaymentRepository = Provide[Container.payment_repository],
+):
+    form = PaymentSearchForm(request.form)
+    search_query={}
+    order_by = []
+
+    if form.validate():
+        if form.start_date.data:
+            search_query["payment_date__gte"] = form.start_date.data
+        if form.end_date.data:
+            search_query["payment_date__lte"] = form.end_date.data
+        if form.payment_type.data:
+            search_query["payment_type"] = form.payment_type.data
+        order_by = [(form.order_by.data, form.order.data)]
+    page = request.args.get("page", 1, type=int)
+    per_page = request.args.get("per_page", 10, type=int)
+    search_query["is_archived"] = True
+    print (search_query)
+    payments = payment_repository.get_page(page, per_page,100, search_query, order_by)
+    return render_template("payments_archived.html", form=form, payments=payments, search_form=form)
+
+@payment_bp.route("/archivar/<int:payment_id>", methods=["POST"])
+@check_user_permissions(permissions_required=['pagos_destroy'])
+@inject
+def archive_payment(
+    payment_id: int,
+    payment_repository: PaymentRepository = Provide[Container.payment_repository],
+):
+    payment_repository.archive_payment(payment_id)
+    flash('Pago archivado exitosamente', 'success')
+    return redirect(url_for('payment_bp.get_payments'))
+
+@payment_bp.route("/desarchivar/<int:payment_id>", methods=["POST"])
+@check_user_permissions(permissions_required=['pagos_destroy'])
+@inject
+def unarchive_payment(
+    payment_id: int,
+    payment_repository: PaymentRepository = Provide[Container.payment_repository],
+):
+    payment_repository.unarchive_payment(payment_id)
+    flash('Pago desarchivado exitosamente', 'success')
+    return redirect(url_for('payment_bp.get_payments'))

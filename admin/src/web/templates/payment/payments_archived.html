@@ -2,7 +2,8 @@
 {% from "macros/pagination.html" import render_pagination %}
 {% from "macros/edit_menu.html" import render_actions_menu %}
 {% from "macros/delete_modal.html" import render_delete_modal %}
-{% block title %}Pagos - CEDICA{% endblock %}
+
+{% block title %}Pagos Archivados - CEDICA{% endblock %}
 
 {% block main_content %}
 <nav class="breadcrumb mb-2" aria-label="breadcrumbs">
@@ -16,30 +17,37 @@
             </a>
         </li>
         <li>
-            <a href="">
+            <a href="{{ url_for('payment_bp.get_payments')}}">
                 <span class="icon is-small">
                     <i class="fas fa-money-bill-wave" aria-hidden="true"></i>
                 </span>
                 <span>Pagos</span>
             </a>
         </li>
+        <li class="is-active">
+            <a href="#">
+                <span class="icon is-small">
+                    <i class="fa-solid fa-box-archive" aria-hidden="true"></i>
+                </span>
+                <span>Archivo</span>
+            </a>
+        </li>
     </ul>
 </nav>
 
-
 <section class="is-fullheight-with-navbar pt-4">
     <h2 class="title is-size-3 has-text-centered">
-        Pagos
+        Pagos Archivados
     </h2>
     <div class="tabs is-medium is-toggle is-toggle-rounded is-centered">
         <ul>
-            <li class="is-active">
+            <li>
                 <a href="{{ url_for("payment_bp.get_payments")}}">
                     <span class="icon is-small"><i class="fa-solid fa-money-bill-wave"></i></span>
                     <span>Todos</span>
                 </a>
             </li>
-            <li>
+            <li class="is-active">
                 <a href="{{ url_for("payment_bp.get_archived_payments")}}">
                     <span class="icon is-small"><i class="fa-solid fa-box-archive"></i></span>
                     <span>Archivo</span>
@@ -48,10 +56,6 @@
         </ul>
     </div>
     <div class="px-3">
-        <a class="button is-primary level-item"" href="{{ url_for('payment_bp.create_payment')}}">
-            Agregar pago
-            <i class="fa-solid fa-money-bill-wave ml-2 is-size-5"></i>
-        </a>
         <div class="card">
             <header class="card-header">
                 <p class="card-header-title is-size-4">
@@ -68,7 +72,7 @@
             </header>
             <div class="card-content" id="toggle-search">
                 <div class="content">
-                    <form action="{{ url_for('payment_bp.get_payments') }}" method="post">
+                    <form action="{{ url_for('payment_bp.get_archived_payments') }}" method="post">
                         <div class="is-flex is-flex-direction-row is-flex-wrap-wrap is-gap-1">
                             {{ form.hidden_tag() }}
                             <div class="field is-flex-grow-1">
@@ -113,7 +117,7 @@
                       </div>
                     <div class="field card-footer">
                         <div class="control card-footer-item">
-                          <a href="{% block clear_url %}{{ url_for(request.endpoint) }}{% endblock %}">
+                          <a href="{{ url_for('payment_bp.get_archived_payments') }}">
                             Limpiar
                           </a>
                         </div>
@@ -153,7 +157,7 @@
                         endpoints={
                         'show':'payment_bp.show_payment',
                         'edit': 'payment_bp.edit_payment',
-                        'delete':'payment_bp.archive_payment'
+                        'delete':'payment_bp.unarchive_payment'
                         },
                         permission_to_show="payments_show",
                         permission_to_edit="payments_update",
@@ -204,15 +208,15 @@
     
 </section>
 <footer>
-    {{ render_pagination(payments, 'payment_bp.get_payments') }}
+    {{ render_pagination(payments, 'payment_bp.get_archived_payments') }}
 </footer>
 
 <div id="delete-modal" class="modal">
     {{ render_delete_modal(
-    endpoint="payment_bp.delete_payment",
-    title="Eliminar",
-    msg="¿Está seguro de que desea eliminar el pago?",
-    msg_sub="Luego de confirmar, no se podrán revertir los cambios"
+    endpoint="payment_bp.unarchive_payment",
+    title="Desarchivar",
+    msg="¿Está seguro de que desea desarchivar el pago?",
+    msg_sub="Luego de confirmar, el pago volverá a estar activo"
     ) }}
 </div>
 </body>

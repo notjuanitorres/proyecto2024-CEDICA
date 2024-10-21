@@ -69,6 +69,8 @@ class PaymentRepository(AbstractPaymentRepository):
                 query = query.filter(Payment.payment_date <= search_query["payment_date__lte"])
             if "payment_type" in search_query:
                 query = query.filter(Payment.payment_type == search_query["payment_type"])
+            if "is_archived" in search_query:
+                query = query.filter(Payment.is_archived==search_query["is_archived"])
 
         # Aplicar orden
         if order_by:
