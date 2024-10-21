@@ -6,7 +6,6 @@ from src.core.container import Container
 from src.core.module.jockey_amazon import (
     JockeyAmazonAddDocumentsForm,
     JockeyAmazonDocumentSearchForm,
-    JockeyAmazonEditForm,
     JockeyAmazonSearchForm,
     jockey_amazon_enums as jockey_amazon_information,
     JockeyAmazonMapper as Mapper,
