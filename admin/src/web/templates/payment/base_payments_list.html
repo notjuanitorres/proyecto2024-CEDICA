@@ -2,6 +2,8 @@
 {% from "macros/pagination.html" import render_pagination %}
 {% from "macros/edit_menu.html" import render_actions_menu %}
 {% from "macros/delete_modal.html" import render_delete_modal %}
+{% from "macros/flash_message.html" import render_flash_messages %}
+
 
 {% block title %}Pagos - CEDICA{% endblock %}
 
@@ -34,7 +36,7 @@
         </li>
     </ul>
 </nav>
-
+{{ render_flash_messages(messages) }}
 <section class="is-fullheight-with-navbar pt-4">
     <h2 class="title is-size-3 has-text-centered">
         {% block page_title %}Pagos{% endblock %}
@@ -74,7 +76,7 @@
             </header>
             <div class="card-content" id="toggle-search">
                 <div class="content">
-                    <form action="{{ url_for(request.endpoint) }}" method="post">
+                    <form action="{{ url_for(request.endpoint) }}" method="get">
                         <div class="is-flex is-flex-direction-row is-flex-wrap-wrap is-gap-1">
                             {{ form.hidden_tag() }}
                             <div class="field is-flex-grow-1">
@@ -104,7 +106,7 @@
                           <label class="label">Ordenar por</label>
                           <div class="control">
                               <div class="select">
-                                  {{ search_form.order_by() }}
+                                  {{ form.order_by() }}
                               </div>
                           </div>
                         </div>
@@ -112,7 +114,7 @@
                           <label class="label">En orden</label>
                           <div class="control">
                               <div class="select">
-                                  {{ search_form.order() }}
+                                  {{ form.order() }}
                               </div>
                           </div>
                         </div>
@@ -124,7 +126,7 @@
                           </a>
                         </div>
                         <div class="control card-footer-item">
-                          {{ search_form.submit_search(class="button is-flex-grow-1 is-link")}}
+                          {{ form.submit_search(class="button is-flex-grow-1 is-link")}}
                         </div>
                       </div>
                     </form>

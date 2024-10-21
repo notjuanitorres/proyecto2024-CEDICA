@@ -9,8 +9,8 @@
 
 {% block delete_modal %}
     {{ render_delete_modal(
-    endpoint="payment_bp.delete_payment",
-    title="}Eliminar",
+    endpoint=url_for("payment_bp.delete_payment"),
+    title="Eliminar",
     msg="¿Está seguro de que desea eliminar el pago?",
     msg_sub="Luego de confirmar, no se podrán revertir los cambios"
     ) }}

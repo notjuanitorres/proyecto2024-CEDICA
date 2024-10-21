@@ -57,6 +57,12 @@ class PaymentForm(FlaskForm):
         return True
     
 class PaymentSearchForm(FlaskForm):
+
+    def __init__(self, *args, **kwargs):
+        super(PaymentSearchForm, self).__init__(*args, **kwargs)
+        self.order_by.choices = [('payment_date', 'Fecha de Pago'), ('payment_type', 'Tipo de Pago')]
+        self.order.choices = [('asc', 'Ascendente'), ('desc', 'Descendente')]
+
     start_date = DateField('Start Date', format='%Y-%m-%d', validators=[Optional()])
     end_date = DateField('End Date', format='%Y-%m-%d', validators=[Optional()])
     payment_type = SelectField('Payment Type', choices=[
