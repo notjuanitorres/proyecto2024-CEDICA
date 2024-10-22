@@ -1,0 +1,9 @@
+{% macro render_boolean_tag(boolean = "None") %}
+{% if boolean == "None" %}
+<span class="tag is-info is-small ml-2">Sin informacion</span>
+{% elif boolean %}
+<span class="tag is-success is-small ml-2">Si</span>
+{% else %}
+<span class="tag is-danger is-small ml-2">No</span>
+{% endif %}
+{% endmacro %}

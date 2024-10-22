@@ -7,13 +7,12 @@
 <li>
   <a href="{{ url_for('jockey_amazon_bp.update.link_professor_therapist', jockey_id=jockey_amazon.id) }}">
     <span class="icon is-small">
-      <!-- <i class="fa-solid fa-circle-user" aria-hidden="true"></i> -->
+      <i class="fa-solid fa-user-tie"></i>
     </span>
     <span>Asociar Profesor/Terapeuta</span>
   </a>
 </li>
 {% endblock %}
-
 
 {% block pagination %}
   {{ render_pagination(employees, '', {"jockey_id":jockey_amazon.id}) }}

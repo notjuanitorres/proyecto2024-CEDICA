@@ -78,6 +78,17 @@ class AbstractJockeyAmazonRepository(ABC):
     def is_dni_used(self, dni: str) -> bool:
         raise NotImplementedError
 
+    @abstractmethod
+    def update_employee_link(self) -> bool:
+        raise NotImplementedError
+
+    @abstractmethod
+    def update_horse_link(self, jockey_id: int, horse_id: int) -> bool:
+        raise NotImplementedError
+
+    @abstractmethod
+    def unlink_assignments(self, jockey_id: int, link_to: str) -> bool:
+        raise NotImplementedError
 
 class JockeyAmazonRepository(AbstractJockeyAmazonRepository):
     def __init__(self):

@@ -1,19 +1,12 @@
 {% extends "base_show.html" %}
 
 {% from "macros/file_icon.html" import render_file_icon %}
+{% from "macros/boolean_tag.html" import render_boolean_tag %}
 {% from "jockey_amazon/macros/parse_categories.html" import render_category %}
+
 
 {% block title %}Jockey Amazon {{ jockey_amazon.first_name + " " + jockey_amazon.last_name }} - CEDICA{% endblock %}
 
-{% macro render_boolean_tag(boolean = "None") %}
-{% if boolean == "None" %}
-<span class="tag is-info is-small ml-2">Sin informacion</span>
-{% elif boolean %}
-<span class="tag is-success is-small ml-2">Si</span>
-{% else %}
-<span class="tag is-danger is-small ml-2">No</span>
-{% endif %}
-{% endmacro %}
 
 {% block breadcrumb_items %}
 <li>
@@ -135,7 +128,7 @@
                     Información de Salud
                 </h3>
                 <ul>
-                    <li><strong>tiene discapacidad: </strong>{{ jockey_amazon.has_disability | natural_boolean }}</li>
+                    <li><strong>Tiene discapacidad: </strong>{{ render_boolean_tag(jockey_amazon.has_disability) }}</li>
                     {% if jockey_amazon.has_disability %}
                     <li><strong>Diagnóstico: </strong>{{ jockey_amazon.disability_diagnosis.value }}</li>
                     <li><strong>Otro diagnóstico: </strong>{{ jockey_amazon.disability_other }}</li>
@@ -275,7 +268,7 @@
 
         <div id="family-assignment-info" class="">
             <ul>
-                <li><strong>¿Tiene asignación familiar? </strong>{{ jockey_amazon.has_family_assignment | natural_boolean }}</li>
+                <li><strong>¿Tiene asignación familiar? </strong>{{ render_boolean_tag(jockey_amazon.has_family_assignment) }}</li>
                 {% if jockey_amazon.has_family_assignment %}
                 <li><strong>Tipo de asignación: </strong>{{ jockey_amazon.family_assignment_type.value }}</li>
                 {% endif %}
@@ -509,12 +502,12 @@
 <div id="documents" class="card">
     <header class="card-header py-4">
         <h2 class="card-header-title is-size-4">
-            <span class="icon mr-3 is-size-4"><i class="fa-solid fa-link"></i></span>
-            Documentos anexos: 
+            <span class="icon mr-3 is-size-4"><i class="fa-regular fa-folder-open"></i></span>
+            Documentación Complementaria
             {% if jockey_amazon.files | length  > 0 %} 
                 <span class="tag is-medium is-success ml-2">Total: {{ jockey_amazon.files | length }}</span> 
             {% else %}
-                <span class="tag is-medium is-info ml-2">No hay</span>
+                <span class="tag is-medium is-info ml-2">No posee</span>
             {% endif %}
         </h2>
         <button class="card-header-icon" aria-label="more options" id="toggle-search-button">
