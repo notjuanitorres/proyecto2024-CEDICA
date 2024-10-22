@@ -230,7 +230,6 @@ def edit_documents(
     jockey_repository: AbstractJockeyAmazonRepository = Provide[
         Container.jockey_amazon_repository
     ],
-    storage: AbstractStorageServices = Provide[Container.storage_services],
 ):
     page = request.args.get("page", type=int)
     per_page = request.args.get("per_page", type=int)

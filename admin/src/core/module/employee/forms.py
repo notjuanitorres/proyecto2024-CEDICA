@@ -261,7 +261,7 @@ class EmployeeLinkSearchForm(FlaskForm):
     submit_search = SubmitField("Buscar")
 
 class EmployeeLinkSelectForm(FlaskForm):
-    selected_employee = HiddenField(
+    selected_item = HiddenField(
         "Miembro del equipo seleccionado",
         validators=[DataRequired("Se debe seleccionar un miembro del equipo"), IsNumber()],
     )

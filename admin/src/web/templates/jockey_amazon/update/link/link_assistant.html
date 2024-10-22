@@ -23,7 +23,7 @@
 <form method="POST" id="select-form" class="">
   {{ select_form.hidden_tag() }}
   {% for employee in employees %}
-    <a class="panel-block field mb-0" data-id="employee-{{ employee.id }}">
+    <a class="panel-block field mb-0" data-id="item-{{ employee.id }}">
       <div class="media">
         <div class="media-left">
           <i class="fa-solid fa-circle-user is-size-3" aria-hidden="true"></i>
@@ -51,7 +51,7 @@
   {% endfor %}
   <div class="panel-block">
     {% if employees.items %}
-      {{ select_form.submit_employee(class="button is-primary is-fullwidth", id="submit-employee", type="submit")}}
+      {{ select_form.submit_employee(class="button is-primary is-fullwidth", id="submit-item", type="submit")}}
     {% else %}
       <a href="{{ url_for("jockey_amazon_bp.show_jockey", jockey_id=jockey_amazon.id )}}" class="button is-fullwidth">Volver</a>
     {% endif %}

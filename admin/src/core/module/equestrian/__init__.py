@@ -12,4 +12,4 @@ Forms:
     HorseEditForm: Form for editing an existing horse.
 """
 from .repositories import EquestrianRepository, AbstractEquestrianRepository
-from .forms import HorseCreateForm, HorseEditForm
+from .forms import HorseCreateForm, HorseEditForm, HorseAssignSelectForm, HorseAssignSearchForm

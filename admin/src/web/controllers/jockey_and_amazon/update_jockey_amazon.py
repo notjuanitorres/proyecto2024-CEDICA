@@ -2,6 +2,11 @@ from flask import Blueprint, render_template, request, url_for, redirect, flash
 from dependency_injector.wiring import inject, Provide
 from src.web.helpers.auth import check_user_permissions
 from src.core.container import Container
+from src.core.module.equestrian import (
+    AbstractEquestrianRepository,
+    HorseAssignSearchForm,
+    HorseAssignSelectForm,
+)
 from src.core.module.employee import (
     AbstractEmployeeRepository,
     EmployeeLinkSearchForm,
@@ -55,7 +60,9 @@ def link_employee(
     job_positions,
     template: str,
     page: int = 1,
-    employee_repository: AbstractEmployeeRepository = Provide[Container.employee_repository],
+    employee_repository: AbstractEmployeeRepository = Provide[
+        Container.employee_repository
+    ],
     jockeys: AbstractJockeyAmazonRepository = Provide[
         Container.jockey_amazon_repository
     ],
@@ -77,7 +84,7 @@ def link_employee(
                 select_form=selected_employee,
             )
         jockey_id = jockey.id
-        employee_id = selected_employee.selected_employee.data
+        employee_id = selected_employee.selected_item.data
         jockeys.assign_employee(jockey_id, employee_id, job_positions[0])
         flash(
             "Se ha asociado correctamente al Jockey/Amazona con un Terapeuta/Profesor",
@@ -129,14 +136,12 @@ def edit_jockey(
                 flash("Informacion general actualizada con exito", "success")
 
         elif "school_submit" in request.form and education_form.validate():
-            print("submitted")
             update = SchoolInformationForm.school_info_to_flat(education_form)
             if jockeys.update_school_information(jockey_id, update):
                 flash("Informacion escolar actualizada con exito", "success")
 
         elif "assignment_submit" in request.form and assignment_form.validate():
             update = WorkAssignmentForm.work_assignment_to_flat(assignment_form)
-            print(update)
             if jockeys.update_assignments(jockey_id, update):
                 flash("Informacion general actualizada con exito", "success")
 
@@ -196,12 +201,12 @@ def assign_track_assistant(jockey_id: int):
     page = request.args.get("page", type=int, default=1)
     job_positions = [Jobs.AUXILIAR_PISTA.name]
     template = "./jockey_amazon/update/link/link_assistant.html"
- 
+
     return link_employee(
         jockey_id=jockey_id, page=page, job_positions=job_positions, template=template
     )
-    
-    
+
+
 @update_jockey_amazon_bp.route(
     "/<int:jockey_id>/quitar-asistente-pista",
     methods=["GET", "POST"],
@@ -210,7 +215,9 @@ def assign_track_assistant(jockey_id: int):
 @inject
 def unlink_track_assistant(
     jockey_id: int,
-    jockeys: AbstractJockeyAmazonRepository = Provide[Container.jockey_amazon_repository],
+    jockeys: AbstractJockeyAmazonRepository = Provide[
+        Container.jockey_amazon_repository
+    ],
 ):
     jockey = jockeys.get_by_id(jockey_id)
     jockeys.unassign_employee(jockey_id, link_to=Jobs.AUXILIAR_PISTA.name)
@@ -221,7 +228,6 @@ def unlink_track_assistant(
     return redirect(url_for("jockey_amazon_bp.show_jockey", jockey_id=jockey.id))
 
 
-
 @update_jockey_amazon_bp.route(
     "/<int:jockey_id>/asignar-conductor", methods=["GET", "POST"]
 )
@@ -230,11 +236,10 @@ def assign_conductor(jockey_id: int):
     page = request.args.get("page", type=int, default=1)
     job_positions = [Jobs.CONDUCTOR.name]
     template = "./jockey_amazon/update/link/link_conductor.html"
- 
+
     return link_employee(
         jockey_id=jockey_id, page=page, job_positions=job_positions, template=template
     )
-
 
 
 @update_jockey_amazon_bp.route(
@@ -245,7 +250,9 @@ def assign_conductor(jockey_id: int):
 @inject
 def unlink_conductor(
     jockey_id: int,
-    jockeys: AbstractJockeyAmazonRepository = Provide[Container.jockey_amazon_repository], 
+    jockeys: AbstractJockeyAmazonRepository = Provide[
+        Container.jockey_amazon_repository
+    ],
 ):
     jockey = jockeys.get_by_id(jockey_id)
     jockeys.unassign_employee(jockey_id, link_to=Jobs.CONDUCTOR.name)
@@ -256,14 +263,56 @@ def unlink_conductor(
     return redirect(url_for("jockey_amazon_bp.show_jockey", jockey_id=jockey.id))
 
 
-
-
 @update_jockey_amazon_bp.route(
     "/<int:jockey_id>/asignar-caballo", methods=["GET", "POST"]
 )
 @check_user_permissions(permissions_required=["jockey_amazon_update"])
-def assign_horse(jockey_id: int):
-    pass
+@inject
+def assign_horse(
+    jockey_id: int,
+    page: int = 1,
+    equestrian: AbstractEquestrianRepository = Provide[Container.equestrian_repository],
+    jockeys: AbstractJockeyAmazonRepository = Provide[
+        Container.jockey_amazon_repository
+    ],
+):
+    page = request.args.get("page", type=int, default=1)
+    searched_horse = HorseAssignSearchForm(request.args)
+    selected_horse = HorseAssignSelectForm()
+    jockey = jockeys.get_by_id(jockey_id)
+    horses = equestrian.get_active_horses(page=page)
+    if request.method == "POST":
+        if not (selected_horse.submit_horse.data and selected_horse.validate()):
+            return render_template(
+                "./jockey_amazon/update/link/link_horse.html",
+                jockey_amazon=jockey,
+                horses=horses,
+                search_form=searched_horse,
+                select_form=selected_horse,
+            )
+        jockey_id = jockey.id
+        horse_id = selected_horse.selected_item.data
+        jockeys.assign_horse(jockey_id, horse_id)
+        flash(
+            "Se ha asociado correctamente al Jockey/Amazona con un Terapeuta/Profesor",
+            "success",
+        )
+        return redirect(url_for("jockey_amazon_bp.show_jockey", jockey_id=jockey.id))
+
+    if searched_horse.submit_search.data and searched_horse.validate():
+        horses = equestrian.get_active_horses(
+            page=page,
+            search=searched_horse.search_text.data,
+            activity=searched_horse.filter_activity.data,
+        )
+
+    return render_template(
+        "./jockey_amazon/update/link/link_horse.html",
+        jockey_amazon=jockey,
+        horses=horses,
+        search_form=searched_horse,
+        select_form=selected_horse,
+    )
 
 
 @update_jockey_amazon_bp.route(
@@ -272,5 +321,16 @@ def assign_horse(jockey_id: int):
 )
 @check_user_permissions(permissions_required=["jockey_amazon_update"])
 @inject
-def unlink_horse():
-    pass
+def unlink_horse(
+    jockey_id: int,
+    jockeys: AbstractJockeyAmazonRepository = Provide[
+        Container.jockey_amazon_repository
+    ],
+):
+    jockey = jockeys.get_by_id(jockey_id)
+    jockeys.unassign_horse(jockey_id)
+    flash(
+        f"Se ha desasociado correctamente al Conductor de {jockey.first_name}",
+        "warning",
+    )
+    return redirect(url_for("jockey_amazon_bp.show_jockey", jockey_id=jockey.id))

@@ -348,7 +348,7 @@ class EmployeeRepository(AbstractEmployeeRepository):
             query = query.filter(Employee.position.in_(job_positions))
 
         if search:
-            search_fields = ["alias", "email", "dni"]
+            search_fields = ["name", "lastname", "email", "dni"]
             query = apply_multiple_search_criteria(
                 Employee, query, search_query={"text": search, "fields": search_fields}
             ) 

@@ -85,12 +85,17 @@ class AbstractJockeyAmazonRepository(ABC):
         raise NotImplementedError
 
     @abstractmethod
+    def unassign_employee(self, jockey_id: int, link_to: str) -> bool:
+        raise NotImplementedError
+
+    @abstractmethod
     def assign_horse(self, jockey_id: int, horse_id: int) -> bool:
         raise NotImplementedError
 
     @abstractmethod
-    def unassign_employee(self, jockey_id: int, link_to: str) -> bool:
+    def unassign_horse(self, jockey_id: int) -> bool:
         raise NotImplementedError
+
 
 
 class JockeyAmazonRepository(AbstractJockeyAmazonRepository):
@@ -298,6 +303,8 @@ class JockeyAmazonRepository(AbstractJockeyAmazonRepository):
 
     def unassign_employee(self, jockey_id: int, link_to: str):
         jockey = self.get_by_id(jockey_id)
+        if not jockey:
+            return False
         if link_to in {Jobs.PROFESOR_EQUITACION.name, Jobs.TERAPEUTA.name}:
             jockey.work_assignment.professor_or_therapist_id = None
         elif link_to == Jobs.AUXILIAR_PISTA.name:
@@ -309,5 +316,13 @@ class JockeyAmazonRepository(AbstractJockeyAmazonRepository):
         else:
             return False
 
+        self.save()
+        return True
+    
+    def unassign_horse(self, jockey_id: int) -> bool:
+        jockey = self.get_by_id(jockey_id)
+        if not jockey:
+            return False
+        jockey.work_assignment.horse_id = None
         self.save()
         return True
