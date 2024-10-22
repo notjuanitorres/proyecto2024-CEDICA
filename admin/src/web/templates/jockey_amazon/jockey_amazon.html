@@ -359,12 +359,16 @@
                                 </div>
                             </div>
                         </article>
-                        <a href="{{ url_for("jockey_amazon_bp.update.unlink_professor", jockey_id=jockey_amazon.id )}}" class="button is-fullwidth is-small">Quitar</a>
+                        {% if "jockey_amazon_update" in permissions or is_admin %}
+                            <a href="{{ url_for("jockey_amazon_bp.update.unlink_professor", jockey_id=jockey_amazon.id )}}" class="button is-fullwidth is-small">Quitar</a>
+                        {% endif  %}
                     </div>
                     {% else %}
-                    <a href="{{ url_for("jockey_amazon_bp.update.assign_professor_or_therapist", jockey_id=jockey_amazon.id ) }}" class="button is-fullwidth mt-3">
-                        Asignar Profesor o Terapeuta
-                    </a>
+                        {% if "jockey_amazon_update" in permissions or is_admin %}
+                        <a href="{{ url_for("jockey_amazon_bp.update.assign_professor_or_therapist", jockey_id=jockey_amazon.id ) }}" class="button is-fullwidth mt-3">
+                            Asignar Profesor o Terapeuta
+                        </a>
+                        {% endif %}
                     {% endif %}
                 </div>
                 <div id="conductor" class="cell mt-5 px-2">
@@ -401,12 +405,18 @@
                                 </div>
                             </div>
                         </article>
-                        <button class="button is-fullwidth is-small">Quitar</button>
+                        {% if "jockey_amazon_update" in permissions or is_admin %}
+                        <a href="{{ url_for("jockey_amazon_bp.update.unlink_conductor", jockey_id=jockey_amazon.id ) }}" class="button is-fullwidth mt-3">
+                            Quitar
+                        </a>
+                        {% endif %}
                     </div>
                     {% else %}
-                        <a href="" class="button is-fullwidth mt-3">
+                        {% if "jockey_amazon_update" in permissions or is_admin %}
+                        <a href="{{ url_for("jockey_amazon_bp.update.assign_conductor", jockey_id=jockey_amazon.id ) }}" class="button is-fullwidth mt-3">
                             Asignar Conductor
-                        </a>                    
+                        </a>
+                        {% endif %}  
                     {% endif %}
                 </div>
             </div>
@@ -445,13 +455,18 @@
                                 </div>
                             </div>
                         </article>
-                        <button class="button is-fullwidth is-small">Quitar</button>
+                        {% if "jockey_amazon_update" in permissions or is_admin %}
+                            <a href="{{ url_for("jockey_amazon_bp.update.unlink_track_assistant", jockey_id=jockey_amazon.id ) }}" class="button is-fullwidth mt-3">
+                                Quitar
+                            </a>
+                        {% endif %}
                     </div>
                     {% else %}
-                        <a href="" class="button is-fullwidth mt-3">
+                        <a href="{{ url_for("jockey_amazon_bp.update.assign_track_assistant", jockey_id=jockey_amazon.id ) }}" class="button is-fullwidth mt-3">
                             Asignar Asistente de Pista
                         </a>
                     {% endif %}
+                    
                 </div>
                 <div class="horse mt-5 px-2">
                     <h3 class="title mb-3 is-size-5 has-text-centered">
@@ -487,12 +502,18 @@
                                 </div>
                             </div>
                         </article>
-                        <button class="button is-fullwidth is-small">Quitar</button>
+                        {% if "jockey_amazon_update" in permissions or is_admin %}
+                        <a href="{{ url_for("jockey_amazon_bp.update.unlink_horse", jockey_id=jockey_amazon.id ) }}" class="button is-fullwidth mt-3">
+                            Quitar
+                        </a>      
+                        {% endif %}              
                     </div>
                     {% else %}
-                        <a href="" class="button is-fullwidth mt-3">
+                        {% if "jockey_amazon_update" in permissions or is_admin %}
+                        <a href="{{ url_for("jockey_amazon_bp.update.assign_horse", jockey_id=jockey_amazon.id ) }}" class="button is-fullwidth mt-3">
                             Asignar Caballo
                         </a>
+                        {% endif %}
                     {% endif %}
                 </div>
             </div>
