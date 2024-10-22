@@ -41,19 +41,6 @@
                     </div>
                 </div>
 
-                <div class="field" id="beneficiaryField">
-                    <label class="label">{{ form.beneficiary.label }}</label>
-                    <div class="control">
-                        {{ form.beneficiary(class="input", type="text", readonly=True, placeholder="No se seleccionó beneficiario") }}
-                        {{ form.beneficiary_id() }}
-                        <br />
-                        {% if form.beneficiary.errors %}
-                        <p class="help is-danger">{{ form.beneficiary.errors[0] }}</p>
-                        {% endif %}
-                        <br />
-                        <a class="button is-info" href="{{ url_for('payment_bp.select_employee') }}">Seleccionar Beneficiario</a>
-                    </div>
-                </div>
                 <div class="field">
                     <label class="label">{{ form.description.label }}</label>
                     <div class="control">
@@ -63,7 +50,7 @@
                         <p class="help is-danger">{{ form.description.errors[0] }}</p>
                     {% endif %}
                 </div>
-                
+
                 <div class="field">
                     <div class="control">
                         {% if edit %}
@@ -76,12 +63,5 @@
             </form>
         </div>
     </section>
-
-{% endblock %}
-
-{% block extra_scripts %}
-
-{{ super() }}
-<script src="{{ url_for('static', filename='js/payment-form-employee.js') }}"></script>
 
 {% endblock %}

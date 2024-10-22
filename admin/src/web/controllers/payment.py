@@ -54,11 +54,14 @@ def create_payment(
             "payment_date": form.date.data,
             "payment_type": form.payment_type.data,
             "description": form.description.data,
-            "beneficiary_id": form.beneficiary_id.data if form.beneficiary_id.data else None,
+            "beneficiary_id": None,
         }
+        if form.payment_type.data == 'HONORARIOS':
+            session["payment"] = payment_data
+            return redirect(url_for('payment_bp.select_employee'))
         payment_repository.add(PaymentMapper.to_entity(payment_data))
         flash('Pago creado exitosamente', 'success')
-        return redirect(url_for('payment_bp.create_payment'))
+        return redirect(url_for('payment_bp.get_payments'))
     else:
         if(form.amount.data):
             flash('Error al crear el pago', 'danger')
@@ -167,6 +170,8 @@ def unarchive_payment(
 @inject
 def select_employee(
     employee_repository: EmployeeRepository = Provide[Container.employee_repository],
+    payment_repository: PaymentRepository = Provide[Container.payment_repository],
+    is_edit=False
 ):
     form = EmployeeSearchForm(request.args)
     select_form = EmployeeSelectForm()
@@ -182,6 +187,12 @@ def select_employee(
 
     if request.method == "POST" and select_form.validate_on_submit():
         selected_employee_id = select_form.selected_employee.data
-        return redirect(url_for('payment_bp.create_payment', beneficiary_id=selected_employee_id))
+        payment_data=session["payment"]
+        session.pop("payment", None)
+        payment_data["beneficiary_id"] = selected_employee_id
+        pago_entity= PaymentMapper.to_entity(payment_data)
+        pago_entity=payment_repository.add(pago_entity)
+        flash('Pago creado exitosamente', 'success')
+        return redirect(url_for('payment_bp.show_payment', payment_id=pago_entity.id))
 
     return render_template("payment/select_employee.html", form=form, select_form=select_form, employees=employees)
