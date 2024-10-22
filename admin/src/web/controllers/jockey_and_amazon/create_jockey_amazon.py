@@ -13,16 +13,13 @@ from src.core.module.jockey_amazon import (
     AbstractJockeyAmazonRepository,
     EducationLevelEnum,
 )
-from src.core.module.employee import AbstractEmployeeRepository
-from src.core.module.equestrian import AbstractEquestrianRepository
-
+from src.web.helpers.create import check_creation_in_process
 
 create_jockey_amazon_bp = Blueprint(
     "create",
     __name__,
     url_prefix="/crear",
 )
-
 
 @inject
 def add_jockey(
@@ -32,14 +29,14 @@ def add_jockey(
     ],
 ):
     created_jockey = jockeys.add(Mapper.to_entity(create_form))
-    print(Mapper.from_entity(created_jockey))
+    session["create_ja"] = None
     flash("Jockey/Amazon creado con éxito!", "success")
     return redirect(
         url_for("jockey_amazon_bp.show_jockey", jockey_id=created_jockey.id)
     )
 
 
-@create_jockey_amazon_bp.route("/", methods=["GET", "POST"])
+@create_jockey_amazon_bp.route("/", methods=["GET"])
 @check_user_permissions(permissions_required=["jockey_amazon_new"])
 @inject
 def init():
@@ -57,6 +54,7 @@ def init():
 @create_jockey_amazon_bp.route("/informacion-general", methods=["GET", "POST"])
 def create_general_information():
     general_information = GeneralInformationForm()
+
     if general_information.validate_on_submit():
         session["create_ja"]["general_information"] = general_information.data
         return redirect(url_for("jockey_amazon_bp.create.create_health_information"))
@@ -66,6 +64,7 @@ def create_general_information():
 
 # Step two
 @create_jockey_amazon_bp.route("/informacion-salud", methods=["GET", "POST"])
+@check_creation_in_process("create_ja")
 def create_health_information():
     health_information = HealthInformationForm()
 
@@ -78,10 +77,11 @@ def create_health_information():
 
 # Step three
 @create_jockey_amazon_bp.route("/informacion-familia", methods=["GET", "POST"])
+@check_creation_in_process("create_ja")
 def create_family_information():
     family_information = FamilyInformationForm()
-    print(family_information.validate())
-    print(family_information.errors)
+
+    # TODO: Check family members creation
     # if family_information.validate_on_submit():
     #     session["create_ja"]["family_information"] = family_information.data
     #     return redirect(url_for("jockey_amazon_bp.create.create_school_information"))
@@ -97,6 +97,7 @@ def create_family_information():
 
 # Step four
 @create_jockey_amazon_bp.route("/informacion-escuela", methods=["GET", "POST"])
+@check_creation_in_process("create_ja")
 def create_school_information():
     school_information = SchoolInformationForm()
 
@@ -109,13 +110,12 @@ def create_school_information():
 
 # Step five
 @create_jockey_amazon_bp.route('/asignacion-trabajo', methods=['GET', 'POST'])
+@check_creation_in_process("create_ja")
 def create_work_assignment():
     assignment_information = WorkAssignmentForm()
 
     if assignment_information.validate_on_submit():
         session["create_ja"]["work_assignment_information"] = assignment_information.data
-        
-        print(session["create_ja"])
         return add_jockey(create_form=session["create_ja"])
 
     return render_template('create/work_assignments_information.html', assignments_form=assignment_information)
