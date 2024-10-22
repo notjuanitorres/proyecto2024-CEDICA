@@ -253,3 +253,16 @@ class TrainerSelectForm(FlaskForm):
 
     def set_selected_account(self, account_id):
         self.selected_trainer.data = account_id
+
+class EmployeeLinkSearchForm(FlaskForm):
+    search_text = StringField(
+        "Buscar por nombre, email o dni", validators=[Length(message="Debe ingresar un texto", min=1, max=50)]
+    )
+    submit_search = SubmitField("Buscar")
+
+class EmployeeLinkSelectForm(FlaskForm):
+    selected_employee = HiddenField(
+        "Miembro del equipo seleccionado",
+        validators=[DataRequired("Se debe seleccionar un miembro del equipo"), IsNumber()],
+    )
+    submit_employee = SubmitField("Asociar")

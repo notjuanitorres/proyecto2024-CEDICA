@@ -16,12 +16,12 @@ class AbstractJockeyAmazonRepository(ABC):
 
     @abstractmethod
     def get_page(
-            self,
-            page: int,
-            per_page: int,
-            max_per_page: int,
-            search_query: Dict = None,
-            order_by: List = None,
+        self,
+        page: int,
+        per_page: int,
+        max_per_page: int,
+        search_query: Dict = None,
+        order_by: List = None,
     ):
         pass
 
@@ -59,13 +59,13 @@ class AbstractJockeyAmazonRepository(ABC):
 
     @abstractmethod
     def get_file_page(
-            self,
-            jockey_id: int,
-            page: int,
-            per_page: int,
-            max_per_page: int = 10,
-            search_query: Dict = None,
-            order_by: List = None,
+        self,
+        jockey_id: int,
+        page: int,
+        per_page: int,
+        max_per_page: int = 10,
+        search_query: Dict = None,
+        order_by: List = None,
     ):
 
         pass
@@ -78,13 +78,16 @@ class AbstractJockeyAmazonRepository(ABC):
     def is_dni_used(self, dni: str) -> bool:
         raise NotImplementedError
 
+
 class JockeyAmazonRepository(AbstractJockeyAmazonRepository):
     def __init__(self):
         super().__init__()
         self.db = db
-    
+
     def __get_by_dni(self, dni: str) -> JockeyAmazon | None:
-        return self.db.session.query(JockeyAmazon).filter(JockeyAmazon.dni == dni).first()
+        return (
+            self.db.session.query(JockeyAmazon).filter(JockeyAmazon.dni == dni).first()
+        )
 
     def add(self, jockey: JockeyAmazon) -> JockeyAmazon:
         self.db.session.add(jockey)
@@ -93,12 +96,12 @@ class JockeyAmazonRepository(AbstractJockeyAmazonRepository):
         return jockey
 
     def get_page(
-            self,
-            page: int,
-            per_page: int,
-            max_per_page: int = 20,
-            search_query: Dict = None,
-            order_by: List = None,
+        self,
+        page: int,
+        per_page: int,
+        max_per_page: int = 20,
+        search_query: Dict = None,
+        order_by: List = None,
     ):
         query = JockeyAmazon.query
 
@@ -109,7 +112,11 @@ class JockeyAmazonRepository(AbstractJockeyAmazonRepository):
         )
 
     def get_by_id(self, jockey_id: int) -> Optional[JockeyAmazon]:
-        return self.db.session.query(JockeyAmazon).filter(JockeyAmazon.id == jockey_id).first()
+        return (
+            self.db.session.query(JockeyAmazon)
+            .filter(JockeyAmazon.id == jockey_id)
+            .first()
+        )
 
     def update(self, jockey_id: int, data: Dict) -> bool:
         jockey = JockeyAmazon.query.filter_by(id=jockey_id)
@@ -118,7 +125,7 @@ class JockeyAmazonRepository(AbstractJockeyAmazonRepository):
         jockey.update(data)
         self.save()
         return True
-    
+
     def archive(self, jockey_id: int) -> bool:
         jockey = self.get_by_id(jockey_id)
         if not jockey or jockey.is_deleted:
@@ -126,7 +133,7 @@ class JockeyAmazonRepository(AbstractJockeyAmazonRepository):
         jockey.is_deleted = True
         self.save()
         return True
-    
+
     def recover(self, jockey_id: int) -> bool:
         jockey = self.get_by_id(jockey_id)
         if not jockey or not jockey.is_deleted:
@@ -155,9 +162,8 @@ class JockeyAmazonRepository(AbstractJockeyAmazonRepository):
         return self.db.session.query(JockeyAmazonFile).all()
 
     def __get_query_document(self, jockey_id: int, document_id: int):
-        query = (
-            self.db.session.query(JockeyAmazonFile)
-            .filter_by(jockey_amazon_id=jockey_id, id=document_id)
+        query = self.db.session.query(JockeyAmazonFile).filter_by(
+            jockey_amazon_id=jockey_id, id=document_id
         )
         return query
 
@@ -172,13 +178,13 @@ class JockeyAmazonRepository(AbstractJockeyAmazonRepository):
         self.save()
 
     def get_file_page(
-            self,
-            jockey_id: int,
-            page: int,
-            per_page: int,
-            max_per_page: int = 10,
-            search_query: Dict = None,
-            order_by: List = None,
+        self,
+        jockey_id: int,
+        page: int,
+        per_page: int,
+        max_per_page: int = 10,
+        search_query: Dict = None,
+        order_by: List = None,
     ):
 
         query = JockeyAmazonFile.query
@@ -195,28 +201,33 @@ class JockeyAmazonRepository(AbstractJockeyAmazonRepository):
         )
 
     def update_document(self, jockey_id: int, document_id: int, data: Dict) -> bool:
-        doc_query = self.db.session.query(JockeyAmazonFile).filter_by(jockey_amazon_id=jockey_id, id=document_id)
+        doc_query = self.db.session.query(JockeyAmazonFile).filter_by(
+            jockey_amazon_id=jockey_id, id=document_id
+        )
         if not doc_query:
             return False
         doc_query.update(data)
         self.save()
         return True
-    
+
     def update_school_information(self, jockey_id: int, data: Dict) -> bool:
         jockey = JockeyAmazon.query.get(jockey_id)
         if not jockey:
             return False
-        
+
         school_data = data.get("school_institution", {})
         for key, value in school_data.items():
             if hasattr(jockey.school_institution, key):
                 setattr(jockey.school_institution, key, value)
- 
-        jockey.current_grade_year = data.get('current_grade_year', jockey.current_grade_year)
-        jockey.school_observations = data.get('school_observations', jockey.school_observations)
+
+        jockey.current_grade_year = data.get(
+            "current_grade_year", jockey.current_grade_year
+        )
+        jockey.school_observations = data.get(
+            "school_observations", jockey.school_observations
+        )
 
         self.save()
-
 
         return True
 
@@ -237,11 +248,52 @@ class JockeyAmazonRepository(AbstractJockeyAmazonRepository):
         self.db.session.add(assignment)
         self.db.session.add(jockey)
         days_abbreviations = assignment_data.get("days", [])
-        assignment.days = [DAYS_MAPPING[abbr] for abbr in days_abbreviations if abbr in DAYS_MAPPING]
+        assignment.days = [
+            DAYS_MAPPING[abbr] for abbr in days_abbreviations if abbr in DAYS_MAPPING
+        ]
         self.save()
         return True
-
 
     def is_dni_used(self, dni: str) -> bool:
         return self.__get_by_dni(dni) is not None
 
+    def update_employee_link(
+        self, jockey_id: int, employee_id: int, employee_job_position: str
+    ):
+        jockey = self.get_by_id(jockey_id)
+        if not jockey:
+            return False
+        if employee_job_position in {"Professor", "Therapist"}:
+            jockey.work_assignment.professor_or_therapist_id = employee_id
+        elif employee_job_position == "Assistant":
+            jockey.work_assignment.track_assistant_id = employee_id
+        elif employee_job_position == "Conductor":
+            jockey.work_assignment.conductor_id = employee_id
+        else:
+            return False
+        self.save()
+        return True
+
+    def update_horse_link(self, jockey_id: int, horse_id: int):
+        jockey = self.get_by_id(jockey_id)
+        if not jockey:
+            return False
+        jockey.work_assignment.horse_id = horse_id
+        self.save()
+        return True
+
+    def unlink_assignments(self, jockey_id: int, link_to: str):
+        jockey = self.get_by_id(jockey_id)
+        if link_to in {"Professor", "Therapist"}:
+            jockey.work_assignment.professor_or_therapist_id = None
+        elif link_to == "Assistant":
+            jockey.work_assignment.track_assistant_id = None
+        elif link_to == "Conductor":
+            jockey.work_assignment.conductor_id = None
+        elif link_to == "Horse":
+            jockey.work_assignment.horse_id = None
+        else:
+            return False
+
+        self.save()
+        return True

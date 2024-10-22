@@ -1,14 +1,14 @@
 from typing import Dict, List
 from abc import abstractmethod
-from sqlalchemy import or_
+from sqlalchemy import or_, and_
 from flask_sqlalchemy import SQLAlchemy
 from flask_sqlalchemy.pagination import Pagination
 from src.core.database import db as database
 from src.core.module.employee.models import Employee, EmployeeFile
-from src.core.module.common.repositories import apply_filters
+from src.core.module.common.repositories import apply_filters, apply_filter_criteria, apply_multiple_search_criteria
 from src.core.module.employee.data import JobPositionEnum as PositionEnum
+from src.core.module.equestrian.models import HorseTrainers
 from .mappers import EmployeeMapper as Mapper
-from ..equestrian.models import HorseTrainers
 
 
 class AbstractEmployeeRepository:
@@ -27,6 +27,13 @@ class AbstractEmployeeRepository:
         max_per_page: int,
         search_query: Dict = None,
         order_by: list = None,
+    ) -> Pagination:
+        raise NotImplementedError
+
+    @abstractmethod
+    def get_active_employees(
+        self,
+        job_positions: list[str], page: int = 1, search: str = ""
     ) -> Pagination:
         raise NotImplementedError
 
@@ -330,18 +337,20 @@ class EmployeeRepository(AbstractEmployeeRepository):
         employee = self.__get_by_id(employee_id)
         return employee.is_active
 
-    def get_therapist(self):
-        return (self.db.session.query(Employee)
-                .filter(or_(Employee.position == PositionEnum.PROFESOR_EQUITACION,
-                            Employee.position == PositionEnum.TERAPEUTA))
-                .all())
+    def get_active_employees(
+        self, job_positions: list[str], page: int = 1, search: str = ""
+    ):
+        per_page = 7
 
-    def get_rider(self):
-        return (self.db.session.query(Employee)
-                .filter(or_(Employee.position == PositionEnum.CONDUCTOR))
-                .all())
+        query = self.db.session.query(Employee)
 
-    def get_track_auxiliary(self):
-        return (self.db.session.query(Employee)
-                .filter(or_(Employee.position == PositionEnum.AUXILIAR_PISTA))
-                .all())
+        if job_positions:
+            query = query.filter(Employee.position.in_(job_positions))
+
+        if search:
+            search_fields = ["alias", "email", "dni"]
+            query = apply_multiple_search_criteria(
+                Employee, query, search_query={"text": search, "fields": search_fields}
+            ) 
+
+        return query.paginate(page=page, per_page=per_page, error_out=False)
