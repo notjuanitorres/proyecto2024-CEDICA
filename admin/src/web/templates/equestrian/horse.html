@@ -36,31 +36,38 @@
 {% endblock %}
 
 {% block card_content %}
-    <ul class="grid desktop-is-col-min-16">
-        <div class="cell">
-            <h4>Información general</h4>
-            <li><strong>ID: </strong> {{ horse.id }}</li>
+    <div class="grid is-col-min-16">
+    <div id="general-info" class="cell">
+        <h3>Información general</h3>
+        <ul>
+            <li><strong>ID: </strong>{{ horse.id }}</li>
             <li><strong>Nombre: </strong>{{ horse.name }}</li>
             <li><strong>Raza: </strong>{{ horse.breed }}</li>
             <li><strong>Fecha de nacimiento: </strong>{{ horse.birth_date | format_date }}</li>
             <li><strong>Pelaje: </strong>{{ horse.coat }}</li>
             <li><strong>Sexo: </strong>{{ horse.sex }}</li>
-        </div>
+        </ul>
+    </div>
 
-        <div class="cell">
-            <h4>Información adicional</h4>
+    <div id="additional-info" class="cell">
+        <h3>Información adicional</h3>
+        <ul>
             <li><strong>Es donación: </strong>{{ horse.is_donation | natural_boolean }}</li>
             <li><strong>Fecha de admisión: </strong>{{ horse.admission_date | format_date }}</li>
             <li><strong>Sede asignada: </strong>{{ horse.assigned_facility }}</li>
-            <li><strong>Tipo de actividad: </strong>{{ horse.ja_type.value }}</li>
-        </div>
+            <li><strong>Tipo de actividad: </strong>{{ horse.ja_type }}</li>
+        </ul>
+    </div>
 
-        <div class="cell">
-            <h4>Estampas</h4>
+    <div id="stamp-info" class="cell">
+        <h3>Estampas</h3>
+        <ul>
             <li><strong>Dado de alta: </strong>{{ horse.inserted_at | format_date }}</li>
             <li><strong>Última modificación: </strong>{{ horse.updated_at | format_date }}</li>
-        </div>
-    </ul>
+        </ul>
+    </div>
+</div>
+
 {% endblock %}
 
 {% block card_actions %}

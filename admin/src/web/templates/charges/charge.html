@@ -99,7 +99,7 @@
                 {#    NOTE: employee should always be true    #}
                 {% if not employee %}
                 <span class="tag is-info is-medium ml-2">Sin informacion</span>
-                {% elif employee.is_archived %}
+                {% elif employee.is_deleted %}
                 <span class="tag is-danger is-medium ml-2">Empleado archivado</span>
                 {% endif %}
             </h2>
@@ -153,6 +153,8 @@
                     <span class="tag is-info is-medium ml-2">Sin informacion</span>
                 {% elif jya.has_debts %}
                     <span class="tag is-danger is-medium ml-2">Deudor</span>
+                {% elif jya.is_deleted %}
+                    <span class="tag is-danger is-medium ml-2">Jinete archivado</span>
                 {% endif %}
             </h2>
         </header>
