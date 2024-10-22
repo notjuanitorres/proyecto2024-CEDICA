@@ -330,7 +330,6 @@ def link_charge_employee(
 @check_user_permissions(permissions_required=["cobros_update"])
 @inject
 def link_jya(
-        jya_repository: AbstractJockeyAmazonRepository = Provide[Container.jockey_amazon_repository],
 ):
     if not session.get("charge"):
         flash(f"Esta pagina solo puede ser accedida al crear un cobro", "danger")
@@ -423,7 +422,6 @@ def add_charge_employee(
 def change_jya(
         charge_id: int,
         charges_repository: ACR = Provide[Container.charges_repository],
-        jyas: AbstractJockeyAmazonRepository = Provide[Container.jockey_amazon_repository],
 ):
     charge = charges_repository.get_by_id(charge_id)
     if not charge:
