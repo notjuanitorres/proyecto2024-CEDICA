@@ -1,19 +1,18 @@
 from typing import Dict
 from flask_wtf import FlaskForm
-from wtforms import StringField, BooleanField, SelectField, TextAreaField, IntegerField, DateField, FormField, \
-    FloatField, SubmitField, HiddenField
-from wtforms.validators import DataRequired, Length, Optional
 from wtforms import (
     StringField,
     BooleanField,
     SelectField,
     TextAreaField,
+    IntegerField,
     DateField,
     FormField,
     FloatField,
     SubmitField,
     HiddenField,
 )
+from wtforms.validators import DataRequired, Length, Optional
 from src.core.module.common.forms import (
     AddressForm,
     PhoneForm,
@@ -34,6 +33,7 @@ from .extras.forms import (
     SchoolInstitutionForm,
     enum_choices,
 )
+from src.core.module.common.validators import IsNumber
 
 
 class GeneralInformationForm(FlaskForm):
@@ -69,7 +69,6 @@ class GeneralInformationForm(FlaskForm):
             "phone": general_form.phone.number.data,
             "emergency_contact_name": general_form.emergency_contact.emergency_contact_name.data,
             "emergency_contact_phone": general_form.emergency_contact.emergency_contact_phone.data,
-
         }
         return flat_data
 
@@ -98,11 +97,9 @@ class FamilyInformationForm(FlaskForm):
         if not super().validate(extra_validators):
             return False
 
-
         if not self.family_member1.first_name.data:
             self.family_member1.first_name.errors.append("Este campo es obligatorio.")
             return False
-
 
         return True
 
@@ -133,23 +130,22 @@ class HealthInformationForm(FlaskForm):
         "Observaciones sobre la Curatela", validators=[Optional()]
     )
     submit = SubmitField("Actualizar Informacion de Salud", name="health_submit")
-        
+
     @staticmethod
-    def health_info_to_flat(form: 'HealthInformationForm') -> dict:
+    def health_info_to_flat(form: "HealthInformationForm") -> dict:
         """
         Flattens the data from the HealthInformationForm into a dictionary.
         """
         return {
-            'has_disability': form.has_disability.data,
-            'disability_diagnosis': form.disability_diagnosis.data,
-            'disability_other': form.disability_other.data,
-            'disability_type': form.disability_type.data,
-            'social_security': form.social_security.data,
-            'social_security_number': form.social_security_number.data,
-            'has_curatorship': form.has_curatorship.data,
-            'curatorship_observations': form.curatorship_observations.data,
+            "has_disability": form.has_disability.data,
+            "disability_diagnosis": form.disability_diagnosis.data,
+            "disability_other": form.disability_other.data,
+            "disability_type": form.disability_type.data,
+            "social_security": form.social_security.data,
+            "social_security_number": form.social_security_number.data,
+            "has_curatorship": form.has_curatorship.data,
+            "curatorship_observations": form.curatorship_observations.data,
         }
-    
 
 
 class SchoolInformationForm(FlaskForm):
@@ -161,26 +157,26 @@ class SchoolInformationForm(FlaskForm):
         "Observaciones sobre la Institución Escolar", validators=[Optional()]
     )
     submit = SubmitField("Actualizar Informacion Escolar", name="school_submit")
-    
+
     @staticmethod
-    def school_info_to_flat(form: 'SchoolInformationForm') -> dict:
+    def school_info_to_flat(form: "SchoolInformationForm") -> dict:
         """
         Flattens the data from the SchoolInformationForm into a dictionary.
         """
         return {
-            'school_institution': {
-                'name': form.school_institution.school_name.data,
-                'street': form.school_institution.street.data,
-                'number': form.school_institution.number.data,
-                'department': form.school_institution.department.data,
-                'locality': form.school_institution.locality.data,
-                'province': form.school_institution.province.data,
-                'phone_country_code': form.school_institution.phone_country_code.data,
-                'phone_area_code': form.school_institution.phone_area_code.data,
-                'phone_number': form.school_institution.phone_number.data,
+            "school_institution": {
+                "name": form.school_institution.school_name.data,
+                "street": form.school_institution.street.data,
+                "number": form.school_institution.number.data,
+                "department": form.school_institution.department.data,
+                "locality": form.school_institution.locality.data,
+                "province": form.school_institution.province.data,
+                "phone_country_code": form.school_institution.phone_country_code.data,
+                "phone_area_code": form.school_institution.phone_area_code.data,
+                "phone_number": form.school_institution.phone_number.data,
             },
-            'current_grade_year': form.current_grade_year.data,
-            'school_observations': form.school_observations.data,
+            "current_grade_year": form.current_grade_year.data,
+            "school_observations": form.school_observations.data,
         }
 
 
@@ -199,22 +195,23 @@ class WorkAssignmentForm(FlaskForm):
     submit = SubmitField("Actualizar Asignaciones Laborales", name="assignment_submit")
 
     @staticmethod
-    def work_assignment_to_flat(form: 'WorkAssignmentForm') -> dict:
+    def work_assignment_to_flat(form: "WorkAssignmentForm") -> dict:
         """
         Flattens the data from the WorkAssignmentForm into a dictionary.
         """
         return {
-            'has_scholarship': form.has_scholarship.data,
-            'scholarship_observations': form.scholarship_observations.data,
-            'scholarship_percentage': form.scholarship_percentage.data,
-            'professionals': form.professionals.data,
-            'work_assignments': {
-                'proposal': form.work_assignments.proposal.data,
-                'condition': form.work_assignments.condition.data,
-                'sede': form.work_assignments.sede.data,
-                'days': form.work_assignments.days.data,
-            }
+            "has_scholarship": form.has_scholarship.data,
+            "scholarship_observations": form.scholarship_observations.data,
+            "scholarship_percentage": form.scholarship_percentage.data,
+            "professionals": form.professionals.data,
+            "work_assignments": {
+                "proposal": form.work_assignments.proposal.data,
+                "condition": form.work_assignments.condition.data,
+                "sede": form.work_assignments.sede.data,
+                "days": form.work_assignments.days.data,
+            },
         }
+
 
 class JockeyAmazonManagementForm(FlaskForm):
     # General information
@@ -231,7 +228,6 @@ class JockeyAmazonManagementForm(FlaskForm):
 
 class JockeyAmazonCreateForm(JockeyAmazonManagementForm):
     pass
-
 
 
 class JockeyAmazonEditForm(JockeyAmazonManagementForm):
@@ -290,8 +286,8 @@ class JockeyAmazonDocumentSearchForm(DocumentsSearchForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.filter_tag.choices = [
-                                      ("", "Ver Todos"),
-                                  ] + [(e.name, e.value) for e in FileTagEnum]
+            ("", "Ver Todos"),
+        ] + [(e.name, e.value) for e in FileTagEnum]
 
 
 class JockeyAmazonSelectForm(FlaskForm):
@@ -306,5 +302,7 @@ class JockeyAmazonSelectForm(FlaskForm):
 
 
 class JockeyAmazonMiniSearchForm(FlaskForm):
-    search_text = StringField(validators=[Length(message="Debe ingresar un texto", min=1, max=50)])
+    search_text = StringField(
+        validators=[Length(message="Debe ingresar un texto", min=1, max=50)]
+    )
     submit_search = SubmitField("Buscar")

@@ -9,8 +9,8 @@ from src.core.module.equestrian import (
 )
 from src.core.module.employee import (
     AbstractEmployeeRepository,
-    EmployeeLinkSearchForm,
-    EmployeeLinkSelectForm,
+    EmployeeMiniSearchForm,
+    EmployeeSelectForm,
     JobPositionEnum as Jobs,
 )
 from src.core.module.jockey_amazon import (
@@ -68,8 +68,8 @@ def link_employee(
     ],
 ):
     page = request.args.get("page", type=int, default=1)
-    searched_employee = EmployeeLinkSearchForm(request.args)
-    selected_employee = EmployeeLinkSelectForm()
+    searched_employee = EmployeeMiniSearchForm(request.args)
+    selected_employee = EmployeeSelectForm()
     jockey = jockeys.get_by_id(jockey_id)
     employees = employee_repository.get_active_employees(job_positions, page=page)
     if request.method == "POST":

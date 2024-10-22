@@ -5,8 +5,8 @@ from .forms import (
     EmployeeSearchForm,
     EmployeeAddDocumentsForm,
     EmployeeDocumentSearchForm,
-    EmployeeLinkSearchForm,
-    EmployeeLinkSelectForm,,
+    EmployeeMiniSearchForm,
+    EmployeeSelectForm,
 )
 from .mappers import EmployeeMapper
 from .data import ProfessionsEnum, JobPositionEnum, JobConditionEnum, employment_enums, FileTagEnum
@@ -20,8 +20,8 @@ __all__ = [
     "EmployeeSearchForm",
     "EmployeeAddDocumentsForm",
     "EmployeeDocumentSearchForm",
-    "EmployeeLinkSearchForm",
-    "EmployeeLinkSelectForm",
+    "EmployeeMiniSearchForm",
+    "EmployeeSelectForm",
     "EmployeeMapper",
     "ProfessionsEnum",
     "JobPositionEnum",
