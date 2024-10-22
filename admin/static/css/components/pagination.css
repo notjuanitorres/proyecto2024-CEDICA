@@ -1,0 +1,48 @@
+/* Disabled pagination buttons with improved contrast */
+.pagination-previous[disabled],
+.pagination-next[disabled] {
+    /* Using a darker gray for better contrast */
+    color: #595959 !important;
+    background-color: #ffffff !important;
+    opacity: 0.8 !important;
+}
+
+/* Active/enabled pagination buttons */
+.pagination-previous:not([disabled]),
+.pagination-next:not([disabled]) {
+    color: #2b2b2b !important;
+    background-color: #ffffff !important;
+}
+
+/* Current page number */
+.pagination-link.is-current {
+    background-color: #4258FF !important;
+    color: #ffffff !important;
+    border-color: #4258FF !important;
+}
+
+/* Regular page numbers */
+.pagination-link {
+    color: #2b2b2b !important;
+    background-color: #ffffff !important;
+}
+
+/* Remove any semi-transparent backgrounds */
+.pagination a {
+    background-color: #ffffff !important;
+}
+
+/* Fix for the specific inline styles shown in your screenshot */
+.pagination-previous[disabled],
+.pagination-next[disabled] {
+    opacity: 1 !important;
+    color: #595959 !important;
+    background-color: #ffffff !important;
+}
+
+/* Ensure the text "Anterior" and "Siguiente" have sufficient contrast */
+.pagination-previous,
+.pagination-next {
+    color: #2b2b2b !important;
+    background-color: #ffffff !important;
+}

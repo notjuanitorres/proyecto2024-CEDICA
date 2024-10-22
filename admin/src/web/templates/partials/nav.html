@@ -12,7 +12,7 @@
         <a
                 role="button"
                 class="navbar-burger"
-                aria-label="menu"
+                aria-label="Abrir menú"
                 aria-expanded="false"
                 data-target="top-navbar"
         >
@@ -97,12 +97,12 @@
                         </div>
                         <div class="dropdown-menu" id="dropdown-menu" role="menu">
                             <div class="dropdown-content">
-                                <a href="#" class="dropdown-item"> Perfil </a>
-                                <a class="dropdown-item"> Configuración </a>
+                                <a href="#" class="dropdown-item" role="menuitem"> Perfil </a>
+                                <a class="dropdown-item" role="menuitem"> Configuración </a>
                                 <hr class="dropdown-divider"/>
                                 <form action="{{ url_for('auth_bp.logout') }}" method="POST" style="display: flex; justify-content: center;">
                                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                    <button type="submit" class="button is-danger is-small is-outlined">
+                                    <button type="submit" class="button is-danger is-small is-outlined" role="menuitem">
                                         <span class="icon is-small">
                                             <i class="fas fa-sign-out"></i>
                                           </span>

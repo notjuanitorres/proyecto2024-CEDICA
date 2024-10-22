@@ -13,8 +13,10 @@
   </li>
 {% endblock %}
 
-{% block inner_title %}  
-  Usuarios
+{% block inner_title %}
+    <h2 class="title is-size-3 has-text-centered">
+        Usuarios
+    </h2>
 {% endblock %}
 
 {% block tabs %}
@@ -75,7 +77,6 @@
   <th>Admin</th>
   <th>Ingreso</th>
   <th>Actualizado</th>
-  <th></th>
 {% endblock %}
 
 {% block top_pagination %}
@@ -121,7 +122,7 @@
     <td><span class="is-hidden-tablet has-text-weight-bold">Actualizado: </span>{{ user.updated_at | format_date }}</td>
     
     <td class="is-hidden-tablet is-flex">
-      <a href="{{ url_for('users_bp.show_user', user_id=user.id)}}" class="button  is-flex-grow-1 ">
+      <a href="{{ url_for('users_bp.show_user', user_id=user.id)}}" class="button is-flex-grow-1 ">
         <span class=" is-bold ">
             Ver usuario
             <i class="fa-regular fa-eye ml-2"></i>
@@ -141,7 +142,6 @@
   <th>Admin</th>
   <th>Ingreso</th>
   <th>Actualizado</th>
-  <th></th>
 {% endblock %}
 
 {% block bottom_pagination %}

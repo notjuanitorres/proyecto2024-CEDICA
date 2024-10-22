@@ -6,8 +6,9 @@
 {% from "macros/flash_message.html" import render_flash_messages %}
 
 {% block extra_styles %}
-{{ super() }}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/components/table.css' )}}">
+    {{ super() }}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/components/table.css' )}}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/components/pagination.css') }}">
 {% endblock%}
 
 
@@ -30,9 +31,7 @@
   {{ render_flash_messages(messages) }}
   {% block doc_header %}{% endblock %}
   <section class="is-fullheight-with-navbar pt-4">
-    <h2 class="title is-size-3 has-text-centered">
       {% block inner_title %}{% endblock %}
-    </h2>
     {% block tabs %} {% endblock %}
     <div id="filter" class="px-3">
       {% block create_button %}{% endblock %}
@@ -121,6 +120,7 @@
         <thead class="is-centered">
           <tr class="has-text-centered">
             {% block table_header %}{% endblock %}
+          <td></td>
           </tr>
         </thead>
         <tbody>
@@ -129,6 +129,7 @@
         <tfoot class="is-centered">
           <tr class="has-text-centered">
             {% block table_footer %}{% endblock %}
+          <td></td>
           </tr>
         </tfoot>
       </table>
