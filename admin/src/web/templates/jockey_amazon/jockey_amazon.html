@@ -362,7 +362,7 @@
                         <a href="{{ url_for("jockey_amazon_bp.update.unlink_professor", jockey_id=jockey_amazon.id )}}" class="button is-fullwidth is-small">Quitar</a>
                     </div>
                     {% else %}
-                    <a href="{{ url_for("jockey_amazon_bp.update.link_professor_therapist", jockey_id=jockey_amazon.id ) }}" class="button is-fullwidth mt-3">
+                    <a href="{{ url_for("jockey_amazon_bp.update.assign_professor_or_therapist", jockey_id=jockey_amazon.id ) }}" class="button is-fullwidth mt-3">
                         Asignar Profesor o Terapeuta
                     </a>
                     {% endif %}

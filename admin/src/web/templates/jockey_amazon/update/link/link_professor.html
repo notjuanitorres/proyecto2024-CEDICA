@@ -5,7 +5,7 @@
 
 {% block actual_breadcrumb %}
 <li>
-  <a href="{{ url_for('jockey_amazon_bp.update.link_professor_therapist', jockey_id=jockey_amazon.id) }}">
+  <a href="{{ url_for('jockey_amazon_bp.update.assign_professor_or_therapist', jockey_id=jockey_amazon.id) }}">
     <span class="icon is-small">
       <i class="fa-solid fa-user-tie"></i>
     </span>
@@ -15,7 +15,7 @@
 {% endblock %}
 
 {% block pagination %}
-  {{ render_pagination(employees, '', {"jockey_id":jockey_amazon.id}) }}
+  {{ render_pagination(employees, 'jockey_amazon_bp.update.assign_professor_or_therapist', {"jockey_id":jockey_amazon.id}) }}
 {% endblock %}
 
 

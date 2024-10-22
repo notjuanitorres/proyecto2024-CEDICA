@@ -65,6 +65,12 @@
           {{ search_form.submit_search(class="button is-flex-grow-1 is-link")}}
       </div>
     </div>
+    <div class="field">
+      <div class="control">
+        <div class="block"></div>
+        <a class="button" href="{{ url_for("jockey_amazon_bp.update.assign_professor_or_therapist", jockey_id=jockey_amazon.id )}}">Limpiar</a>
+      </div>
+    </div>
   </form>
   <div class="container p-4">
     <h3 class="subtitle">Mostrando empleados activos</h3>

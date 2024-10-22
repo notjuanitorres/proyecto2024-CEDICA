@@ -4,7 +4,7 @@ from src.core.module.jockey_amazon.data import DAYS_MAPPING
 from src.core.module.jockey_amazon.models import JockeyAmazon, JockeyAmazonFile
 from src.core.database import db
 from src.core.module.common.repositories import apply_filters
-
+from src.core.module.employee.data import JobPositionEnum as Jobs
 
 class AbstractJockeyAmazonRepository(ABC):
     def __init__(self):
@@ -79,16 +79,19 @@ class AbstractJockeyAmazonRepository(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def update_employee_link(self) -> bool:
+    def assign_employee(
+        self, jockey_id: int, employee_id: int, employee_job_position: str
+    ) -> bool:
         raise NotImplementedError
 
     @abstractmethod
-    def update_horse_link(self, jockey_id: int, horse_id: int) -> bool:
+    def assign_horse(self, jockey_id: int, horse_id: int) -> bool:
         raise NotImplementedError
 
     @abstractmethod
-    def unlink_assignments(self, jockey_id: int, link_to: str) -> bool:
+    def unassign_employee(self, jockey_id: int, link_to: str) -> bool:
         raise NotImplementedError
+
 
 class JockeyAmazonRepository(AbstractJockeyAmazonRepository):
     def __init__(self):
@@ -268,24 +271,24 @@ class JockeyAmazonRepository(AbstractJockeyAmazonRepository):
     def is_dni_used(self, dni: str) -> bool:
         return self.__get_by_dni(dni) is not None
 
-    def update_employee_link(
+    def assign_employee(
         self, jockey_id: int, employee_id: int, employee_job_position: str
     ):
         jockey = self.get_by_id(jockey_id)
         if not jockey:
             return False
-        if employee_job_position in {"Professor", "Therapist"}:
+        if employee_job_position in {Jobs.PROFESOR_EQUITACION.name, Jobs.TERAPEUTA.name}:
             jockey.work_assignment.professor_or_therapist_id = employee_id
-        elif employee_job_position == "Assistant":
+        elif employee_job_position == Jobs.AUXILIAR_PISTA.name:
             jockey.work_assignment.track_assistant_id = employee_id
-        elif employee_job_position == "Conductor":
+        elif employee_job_position == Jobs.CONDUCTOR.name:
             jockey.work_assignment.conductor_id = employee_id
         else:
             return False
         self.save()
         return True
 
-    def update_horse_link(self, jockey_id: int, horse_id: int):
+    def assign_horse(self, jockey_id: int, horse_id: int):
         jockey = self.get_by_id(jockey_id)
         if not jockey:
             return False
@@ -293,13 +296,13 @@ class JockeyAmazonRepository(AbstractJockeyAmazonRepository):
         self.save()
         return True
 
-    def unlink_assignments(self, jockey_id: int, link_to: str):
+    def unassign_employee(self, jockey_id: int, link_to: str):
         jockey = self.get_by_id(jockey_id)
-        if link_to in {"Professor", "Therapist"}:
+        if link_to in {Jobs.PROFESOR_EQUITACION.name, Jobs.TERAPEUTA.name}:
             jockey.work_assignment.professor_or_therapist_id = None
-        elif link_to == "Assistant":
+        elif link_to == Jobs.AUXILIAR_PISTA.name:
             jockey.work_assignment.track_assistant_id = None
-        elif link_to == "Conductor":
+        elif link_to == Jobs.CONDUCTOR.name:
             jockey.work_assignment.conductor_id = None
         elif link_to == "Horse":
             jockey.work_assignment.horse_id = None

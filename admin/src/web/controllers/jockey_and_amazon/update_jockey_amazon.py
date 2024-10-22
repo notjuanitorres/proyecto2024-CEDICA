@@ -6,7 +6,7 @@ from src.core.module.employee import (
     AbstractEmployeeRepository,
     EmployeeLinkSearchForm,
     EmployeeLinkSelectForm,
-    ProfessionsEnum,
+    JobPositionEnum as Jobs,
 )
 from src.core.module.jockey_amazon import (
     GeneralInformationForm,
@@ -25,6 +25,77 @@ update_jockey_amazon_bp = Blueprint(
     __name__,
     url_prefix="/editar",
 )
+
+
+@inject
+def update_jockey(
+    jockey_id: int,
+    update_form,
+    jockeys: AbstractJockeyAmazonRepository = Provide[
+        Container.jockey_amazon_repository
+    ],
+):
+    jockey = jockeys.get_by_id(jockey_id)
+    if not update_form.validate_on_submit():
+        return render_template(
+            "./jockey_amazon/update_jockey_amazon.html", form=update_form, jockey=jockey
+        )
+
+    # if not jockeys.update(jockey_id, Mapper.flat_form(update_form.data)):
+    #     flash("No se ha podido actualizar al Jockey/Amazon", "warning")
+    #     return render_template("./jockey_amazon/update_jockey_amazon.html")
+
+    flash("El Jockey/Amazon ha sido actualizado exitosamente ")
+    return redirect(url_for("jockey_amazon_bp.show_jockey", jockey_id=jockey_id))
+
+
+@inject
+def link_employee(
+    jockey_id: int,
+    job_positions,
+    template: str,
+    page: int = 1,
+    employee_repository: AbstractEmployeeRepository = Provide[Container.employee_repository],
+    jockeys: AbstractJockeyAmazonRepository = Provide[
+        Container.jockey_amazon_repository
+    ],
+):
+    page = request.args.get("page", type=int, default=1)
+    searched_employee = EmployeeLinkSearchForm(request.args)
+    selected_employee = EmployeeLinkSelectForm()
+    jockey = jockeys.get_by_id(jockey_id)
+    employees = employee_repository.get_active_employees(job_positions, page=page)
+    if request.method == "POST":
+        if not (
+            selected_employee.submit_employee.data and selected_employee.validate()
+        ):
+            return render_template(
+                "/update/link_professor.html",
+                jockey_amazon=jockey,
+                employees=employees,
+                search_form=searched_employee,
+                select_form=selected_employee,
+            )
+        jockey_id = jockey.id
+        employee_id = selected_employee.selected_employee.data
+        jockeys.assign_employee(jockey_id, employee_id, job_positions[0])
+        flash(
+            "Se ha asociado correctamente al Jockey/Amazona con un Terapeuta/Profesor",
+            "success",
+        )
+        return redirect(url_for("jockey_amazon_bp.show_jockey", jockey_id=jockey.id))
+    if searched_employee.submit_search.data and searched_employee.validate():
+        employees = employee_repository.get_active_employees(
+            job_positions, page=page, search=searched_employee.search_text.data
+        )
+
+    return render_template(
+        template,
+        jockey_amazon=jockey,
+        employees=employees,
+        search_form=searched_employee,
+        select_form=selected_employee,
+    )
 
 
 @update_jockey_amazon_bp.route("/<int:jockey_id>", methods=["GET", "POST"])
@@ -84,26 +155,17 @@ def edit_jockey(
     )
 
 
-@inject
-def update_jockey(
-    jockey_id: int,
-    update_form,
-    jockeys: AbstractJockeyAmazonRepository = Provide[
-        Container.jockey_amazon_repository
-    ],
-):
-    jockey = jockeys.get_by_id(jockey_id)
-    if not update_form.validate_on_submit():
-        return render_template(
-            "./jockey_amazon/update_jockey_amazon.html", form=update_form, jockey=jockey
-        )
-
-    # if not jockeys.update(jockey_id, Mapper.flat_form(update_form.data)):
-    #     flash("No se ha podido actualizar al Jockey/Amazon", "warning")
-    #     return render_template("./jockey_amazon/update_jockey_amazon.html")
-
-    flash("El Jockey/Amazon ha sido actualizado exitosamente ")
-    return redirect(url_for("jockey_amazon_bp.show_jockey", jockey_id=jockey_id))
+@update_jockey_amazon_bp.route(
+    "/<int:jockey_id>/asignar_profesor", methods=["GET", "POST"]
+)
+@check_user_permissions(permissions_required=["jockey_amazon_update"])
+def assign_professor_or_therapist(jockey_id: int):
+    page = request.args.get("page", type=int, default=1)
+    job_positions = [Jobs.TERAPEUTA.name, Jobs.PROFESOR_EQUITACION.name]
+    template = "./jockey_amazon/update/link/link_professor.html"
+    return link_employee(
+        jockey_id=jockey_id, page=page, job_positions=job_positions, template=template
+    )
 
 
 @update_jockey_amazon_bp.route(
@@ -170,8 +232,11 @@ def unlink_professor(
     ],
 ):
     jockey = jockeys.get_by_id(jockey_id)
-    jockeys.unlink_assignments(jockey_id, link_to="Professor")
-    flash(f"Se ha desasociado correctamente al profesor/terapeuta de {jockey.first_name}", "warning",)
+    jockeys.unassign_employee(jockey_id, link_to=Jobs.TERAPEUTA.name)
+    flash(
+        f"Se ha desasociado correctamente al profesor/terapeuta de {jockey.first_name}",
+        "warning",
+    )
     return redirect(url_for("jockey_amazon_bp.show_jockey", jockey_id=jockey.id))
-    
+
 
