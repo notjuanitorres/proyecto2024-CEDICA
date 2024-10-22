@@ -11,6 +11,15 @@ from .validators import IsNumber
 
 
 def max_file_size(size_in_mb: int):
+    """
+        Calculate the maximum file size in bytes.
+
+        Args:
+            size_in_mb (int): The size in megabytes.
+
+        Returns:
+            int: The size in bytes.
+        """
     BYTES_PER_MB = 1024 * 1024
 
     size_in_bytes = size_in_mb * BYTES_PER_MB
@@ -19,6 +28,16 @@ def max_file_size(size_in_mb: int):
 
 
 class AddressForm(FlaskForm):
+    """
+    Form for entering address details.
+
+    Attributes:
+        street (StringField): The street name.
+        number (IntegerField): The street number.
+        department (StringField): The department name.
+        locality (StringField): The locality name.
+        province (StringField): The province name.
+    """
     street = StringField("Calle", validators=[DataRequired(), Length(max=50)])
     number = IntegerField("Numero", validators=[DataRequired()])
     department = StringField("Departamento", validators=[Optional(), Length(max=50)])
@@ -27,6 +46,14 @@ class AddressForm(FlaskForm):
 
 
 class PhoneForm(FlaskForm):
+    """
+    Form for entering phone details.
+
+    Attributes:
+        country_code (TelField): The country code.
+        area_code (TelField): The area code.
+        number (TelField): The phone number.
+    """
     country_code = TelField(
         "Codigo de pais", validators=[DataRequired(), Length(max=3)]
     )
@@ -39,6 +66,13 @@ class PhoneForm(FlaskForm):
 
 
 class EmergencyContactForm(FlaskForm):
+    """
+    Form for entering emergency contact details.
+
+    Attributes:
+        emergency_contact_name (StringField): The name of the emergency contact.
+        emergency_contact_phone (TelField): The phone number of the emergency contact.
+    """
     emergency_contact_name = StringField(
         "Nombre contacto de emergencia", validators=[DataRequired(), Length(max=50)]
     )
@@ -53,11 +87,21 @@ filetypes_message = f"Formato no reconocido. Formato válido: {formatted_filetyp
 
 
 class BaseManageDocumentsForm(FlaskForm):
+    """
+    Base form for managing documents.
+
+    Attributes:
+        upload_type (RadioField): The type of upload (file or URL).
+        title (StringField): The title of the document.
+        file (FileField): The file to be uploaded.
+        url (StringField): The URL of the document.
+    """
     upload_type = RadioField(
         'Tipo de subida',
         choices=[('file', 'Archivo'), ('url', 'URL')],
         validators=[DataRequired(message="Debe seleccionar el tipo de subida")],
-        default='url'
+        default='url',
+        validate_choice=True
     )
 
     title = StringField(
@@ -94,11 +138,16 @@ class BaseManageDocumentsForm(FlaskForm):
 
     def validate(self, *args, is_file_already_uploaded: bool = False, **kwargs):
         """
-        Validate the form
+        Validate the form.
 
-        :param is_file_already_uploaded: In the case of editing a document,
-        this parameter is used to determine if the file is already uploaded, so
-        if there is no data in the file field, the form is still valid
+        It checks that the file field is not empty when the upload type is 'file' and the file isn't already uploaded,
+        and if the url field is empty when the upload type is 'url'.
+
+        Args:
+            is_file_already_uploaded (bool): Indicates if the file is already uploaded.
+
+        Returns:
+            bool: True if the form is valid, False otherwise.
         """
         if not super(BaseManageDocumentsForm, self).validate():
             return False
@@ -116,6 +165,16 @@ class BaseManageDocumentsForm(FlaskForm):
 
 
 class BaseSearchForm(FlaskForm):
+    """
+    Base form for search functionality.
+
+    Attributes:
+        search_by (SelectField): The field to search by.
+        search_text (StringField): The search text.
+        order_by (SelectField): The field to order by.
+        order (SelectField): The order direction (asc or desc).
+        submit_search (SubmitField): The submit button for the search.
+    """
     class Meta:
         csrf = False
 
@@ -138,7 +197,14 @@ class BaseSearchForm(FlaskForm):
 
 
 class DocumentsSearchForm(BaseSearchForm):
+    """
+    Form for searching documents.
+
+    Attributes:
+        filter_tag (SelectField): The filter for document tags.
+    """
     def __init__(self, *args, **kwargs):
+        """Initialize the form with search and order choices."""
         super().__init__(*args, **kwargs)
         self.search_by.choices = [
             ("title", "Título"),

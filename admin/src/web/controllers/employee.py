@@ -27,6 +27,7 @@ employee_bp = Blueprint(
     url_prefix="/equipo/",
 )
 
+
 @inject
 def search_employees(
     search: EmployeeSearchForm,
@@ -378,7 +379,6 @@ def edit_documents(
     employee_repository: AbstractEmployeeRepository = Provide[
         Container.employee_repository
     ],
-    storage: AbstractStorageServices = Provide[Container.storage_services],
 ):
     page = request.args.get("page", type=int)
     per_page = request.args.get("per_page", type=int)
@@ -414,29 +414,10 @@ def edit_documents(
         search_query=search_query,
     )
 
-    documents = []
-    for file in paginated_files:
-        file = file.to_dict()
-        if not file.get("is_link"):
-            documents.append(
-                {
-                    "file": file,
-                    "download_url": storage.presigned_download_url(file.get("path")),
-                }
-            )
-        else:
-            documents.append({"file": file, "download_url": None})
-
-        if not documents[-1].get("file").get("is_link") and not documents[-1].get(
-            "download_url"
-        ):
-            flash(f"Algunos archivos no se pudieron obtener", "warning")
-            break
-
     return render_template(
         "/update/update_documents.html",
         employee=employee,
-        documents=documents,
+        files=paginated_files,
         add_form=add_document_form,
         search_form=search_document_form,
         paginated_files=paginated_files,

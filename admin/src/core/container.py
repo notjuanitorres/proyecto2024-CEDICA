@@ -6,9 +6,16 @@ from .module.employee import EmployeeRepository
 from .module.equestrian import EquestrianRepository
 from .module.common import StorageServices
 from .module.jockey_amazon import JockeyAmazonRepository
+from .module.charges import ChargeRepository
 
 
 class Container(containers.DeclarativeContainer):
+    """
+    Dependency injection container for the application.
+
+    This container initializes and provides the necessary components
+    such as repositories and services for the application.
+    """
     config = providers.Configuration()
 
     # TODO: Initialize the db in the container so it can be injected into the repository
@@ -17,6 +24,7 @@ class Container(containers.DeclarativeContainer):
     employee_repository = providers.Factory(EmployeeRepository)
     equestrian_repository = providers.Factory(EquestrianRepository)
     jockey_amazon_repository = providers.Factory(JockeyAmazonRepository)
+    charges_repository = providers.Factory(ChargeRepository)
 
     # Services
     storage_services = providers.Factory(StorageServices)

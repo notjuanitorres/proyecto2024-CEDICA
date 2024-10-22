@@ -1,0 +1,168 @@
+{% extends "layout.html" %}
+
+{% from "macros/pagination.html" import render_pagination %}
+{% from "macros/flash_message.html" import render_flash_messages %}
+
+{% block title %} Cambiar estado {% endblock %}
+
+{% block card_title %}Cambiando el estado de deuda de un jinete{% endblock %}
+
+{% block main_content %}
+    {{ render_flash_messages(messages) }}
+<nav class="breadcrumb" aria-label="breadcrumbs">
+  <ul>
+    <li>
+      <a href="{{ url_for('index_bp.home')}}">
+        <span class="icon is-small">
+          <i class="fas fa-home" aria-hidden="true"></i>
+        </span>
+        <span>Inicio</span>
+      </a>
+    </li>
+    <li>
+      <a href="{{ url_for('charges_bp.get_charges') }}">
+        <span class="icon is-small">
+          <i class="fas fa-file-invoice-dollar" aria-hidden="true"></i>
+        </span>
+        <span>Cobros</span>
+      </a>
+    </li>
+    <li class=>
+      <a href="{{ url_for('charges_bp.choose_debtor') }}">
+        <span class="icon is-small">
+          <i class="fas fa-user" aria-hidden="true"></i>
+        </span>
+        <span>Cambiar estado de deuda</span>
+      </a>
+    </li>
+  </ul>
+</nav>
+
+<section id="change-jya" class="panel">
+  <div class="container p-4">
+    <h1 class="title is-size-4">
+      Selecciona un jinete
+    </h1>
+  </div>
+  <form id="search-jya" method="GET" class="panel-block is-gap-2">
+  {{ search_form.hidden_tag() }}
+    {{ search_form.csrf_token }}
+    <div class="field is-flex-grow-1">
+      <label for="filtrar" class="label">Buscar Jinete y amazona</label>
+      <p class="control has-icons-left">
+        {{ search_form.search_text(class="input", placeholder="Buscar por nombre o email") }}
+        <span class="icon is-left">
+          <i class="fas fa-search" aria-hidden="true"></i>
+        </span>
+      </p>
+      {% if search_form.search_text.errors %}
+      <p class="help is-danger">{{ search_form.search_text.errors[0] }}</p>
+      {% endif %}
+    </div>
+    <div class="field">
+      <label for="submit-search" class="is-invisible"> {{ search_form.submit_search.label }}</label>
+      <div class="control">
+          {{ search_form.submit_search(class="button is-flex-grow-1 is-link")}}
+      </div>
+    </div>
+  </form>
+  <div class="container p-5">
+    {{ render_pagination(jyas, 'charges_bp.choose_debtor') }}
+  </div>
+  <form method="POST" id="select-form" class="">
+    {{ select_form.hidden_tag() }}
+    {{ select_form.csrf_token }}
+      {% if jyas.total %}
+        {% for jya in jyas %}
+          <a class="panel-block field mb-0" data-id="jya-{{ jya.id }}">
+            <div class="media">
+              <div class="media-left">
+                <i class="fas fa-user is-size-3" aria-hidden="true"></i>
+              </div>
+              <div class="media-content">
+                <div class="content">
+                  <p>
+                    <strong>{{ jya.first_name }} {{ jya.last_name }}</strong> <small>{{ jya.inserted_at | format_date }}</small>
+                    <br />
+                    Dni: {{ jya.dni }}
+                      <br />
+                      Deudor: {{ jya.has_debts | natural_boolean }}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </a>
+        {% endfor %}
+        {% else %}
+            <div class="media-content is-flex is-justify-content-center is-align-items-center">
+              <p class="has-text-centered">
+                No hay jinetes y amazonas
+              </p>
+            </div>
+        {% endif %}
+    <div class="panel-block">
+      <div class="columns is-mobile is-gapless" style="width: 100%;">
+        <div class="column">
+          {{ select_form.submit_jya(class="button is-primary is-fullwidth", id="submit-jya", type="submit") }}
+        </div>
+        <div class="column is-1"></div>  <!-- This creates a gap between buttons -->
+        <div class="column">
+          <a href="{{ url_for('charges_bp.get_charges') }}" class="button is-danger is-fullwidth">Cancelar</a>
+        </div>
+      </div>
+    </div>
+  </form>
+</section>
+{% endblock %}
+{% block extra_scripts %}
+    {{ super() }}
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+    const pagination = document.getElementById("pagination");
+    const selectForm = document.getElementById("select-form");
+    const jyaLinks = document.querySelectorAll('[data-id^="jya-"]');
+    const selectedJya = document.getElementById('selected_jya');
+    const submitButton = document.getElementById('submit-jya');
+    const isActive = "has-background-warning";
+
+    function selectJya(jyaId, clickedElement) {
+        selectedJya.value = jyaId;
+
+        if (pagination) {
+            pagination.classList.add("is-invisible");
+        }
+        jyaLinks.forEach(link => {
+            link.classList.remove(isActive);
+        });
+        clickedElement.classList.add(isActive);
+        submitButton.disabled = false;
+    }
+
+    function deselectJya() {
+        if (pagination) {
+            pagination.classList.remove("is-invisible");
+        }
+        selectedJya.value = '';
+        jyaLinks.forEach(link => {
+            link.classList.remove(isActive);
+        });
+        submitButton.disabled = true;
+    }
+
+    jyaLinks.forEach(link => {
+        link.addEventListener('click', function(event) {
+            event.preventDefault();
+            const jyaId = this.getAttribute('data-id').split('-')[1];
+
+            if (this.classList.contains(isActive)) {
+                deselectJya();
+            } else {
+                selectJya(jyaId, this);
+            }
+        });
+    });
+
+    submitButton.disabled = true;
+});
+    </script>
+{% endblock %}

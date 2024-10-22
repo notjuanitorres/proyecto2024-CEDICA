@@ -1,5 +1,7 @@
 from typing import Dict
 from flask_wtf import FlaskForm
+from wtforms import StringField, BooleanField, SelectField, TextAreaField, IntegerField, DateField, FormField, \
+    FloatField, SubmitField, HiddenField
 from wtforms.validators import DataRequired, Length, Optional
 from wtforms import (
     StringField,
@@ -96,9 +98,11 @@ class FamilyInformationForm(FlaskForm):
         if not super().validate(extra_validators):
             return False
 
+
         if not self.family_member1.first_name.data:
             self.family_member1.first_name.errors.append("Este campo es obligatorio.")
             return False
+
 
         return True
 
@@ -229,6 +233,7 @@ class JockeyAmazonCreateForm(JockeyAmazonManagementForm):
     pass
 
 
+
 class JockeyAmazonEditForm(JockeyAmazonManagementForm):
     def __init__(self, *args, **kwargs):
         super(JockeyAmazonEditForm, self).__init__(*args, **kwargs)
@@ -277,6 +282,7 @@ class JockeyAmazonAddDocumentsForm(BaseManageDocumentsForm):
                 message="Debe seleccionar lo que representa este archivo",
             )
         ],
+        validate_choice=True,
     )
 
 
@@ -284,5 +290,21 @@ class JockeyAmazonDocumentSearchForm(DocumentsSearchForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.filter_tag.choices = [
-            ("", "Ver Todos"),
-        ] + [(e.name, e.value) for e in FileTagEnum]
+                                      ("", "Ver Todos"),
+                                  ] + [(e.name, e.value) for e in FileTagEnum]
+
+
+class JockeyAmazonSelectForm(FlaskForm):
+    selected_jya = HiddenField(
+        "Empleado seleccionado",
+        validators=[DataRequired("Se debe seleccionar un empleado"), IsNumber()],
+    )
+    submit_jya = SubmitField("Asociar")
+
+    def set_selected_jya(self, account_id):
+        self.selected_jya.data = account_id
+
+
+class JockeyAmazonMiniSearchForm(FlaskForm):
+    search_text = StringField(validators=[Length(message="Debe ingresar un texto", min=1, max=50)])
+    submit_search = SubmitField("Buscar")

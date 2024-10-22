@@ -9,6 +9,7 @@ from wtforms.fields import (
 )
 from wtforms.validators import DataRequired, Length
 from src.core.module.common.validators import IsNumber
+from src.core.module.common import IsValidName
 from src.core.module.common.forms import BaseSearchForm, BaseManageDocumentsForm, DocumentsSearchForm
 from src.core.module.equestrian.models import JAEnum, FileTagEnum
 
@@ -28,6 +29,7 @@ class HorseAddDocumentsForm(BaseManageDocumentsForm):
                 message="Debe seleccionar lo que representa este archivo",
             )
         ],
+        validate_choice=True,
     )
 
 
@@ -51,6 +53,7 @@ class HorseManagementForm(FlaskForm):
         validators=[
             DataRequired(),
             Length(max=100),
+            IsValidName(),
         ],
     )
 
@@ -75,6 +78,7 @@ class HorseManagementForm(FlaskForm):
         validators=[
             DataRequired(),
         ],
+        validate_choice=True,
     )
 
     coat = StringField(
@@ -108,6 +112,7 @@ class HorseManagementForm(FlaskForm):
         validators=[
             DataRequired(),
         ],
+        validate_choice=True,
     )
 
 

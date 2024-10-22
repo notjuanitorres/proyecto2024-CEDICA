@@ -12,6 +12,7 @@ from src.core.module.common.validators import IsNumber
 from src.core.module.auth.data import RoleEnum
 from .validators import EmailExistence
 from src.core.module.common.forms import BaseSearchForm
+from ..common import IsValidName
 
 
 def email_existence(form, field):
@@ -41,6 +42,7 @@ class UserManagementForm(FlaskForm):
         "Rol",
         coerce=int,
         validators=[Optional()],
+        validate_choice=True,
     )
 
     email = StringField(
@@ -52,7 +54,7 @@ class UserManagementForm(FlaskForm):
             Length(max=100),
         ],
     )
-    alias = StringField("Alias", validators=[DataRequired(), Length(min=3, max=15)])
+    alias = StringField("Alias", validators=[DataRequired(), Length(min=3, max=15), IsValidName()])
 
     system_admin = BooleanField("System Admin", default=False)
 
@@ -78,7 +80,6 @@ class UserCreateForm(UserManagementForm):
     )
 
     submit_another = SubmitField("Agregar otro")
-
 
 
 class UserEditForm(UserManagementForm):
@@ -111,6 +112,7 @@ class UserSearchForm(BaseSearchForm):
     filter_role_id = SelectField(
         choices=[("", "Todos")]
         + [(str(index + 1), role.value) for index, role in enumerate(RoleEnum)],
+        validate_choice=True,
     )
 
 

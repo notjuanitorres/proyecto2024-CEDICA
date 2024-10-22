@@ -1,5 +1,7 @@
 from datetime import datetime
 from sqlalchemy import Enum as SQLAEnum
+from sqlalchemy.orm import backref
+
 from src.core.module.common import File
 from src.core.module.common import AddressMixin, EmergencyContactMixin, PhoneMixin
 from src.core.database import db
@@ -66,10 +68,12 @@ class WorkAssignment(db.Model):
     sede = db.Column(SQLAEnum(SedeEnum), nullable=False)
     days = db.Column(db.ARRAY(SQLAEnum(DayEnum)), nullable=False)
 
-    professor_or_therapist_id = db.Column(db.Integer, db.ForeignKey('employees.id'), nullable=True)
-    conductor_id = db.Column(db.Integer, db.ForeignKey('employees.id'), nullable=True)
-    track_assistant_id = db.Column(db.Integer, db.ForeignKey('employees.id'), nullable=True)
+    professor_or_therapist_id = db.Column(db.Integer, db.ForeignKey('employees.id'), nullable=False)
+    conductor_id = db.Column(db.Integer, db.ForeignKey('employees.id'), nullable=False)
+    track_assistant_id = db.Column(db.Integer, db.ForeignKey('employees.id'), nullable=False)
+
     horse_id = db.Column(db.Integer, db.ForeignKey('horses.id'), nullable=True)
+    horse = db.relationship('Horse')
 
     inserted_at = db.Column(db.DateTime, default=datetime.now)
     updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
@@ -79,7 +83,6 @@ class WorkAssignment(db.Model):
     conductor = db.relationship('Employee', foreign_keys=[conductor_id], backref='work_assignments_as_conductor')
     track_assistant = db.relationship('Employee', foreign_keys=[track_assistant_id],
                                       backref='work_assignments_as_track_assistant')
-    horse = db.relationship('Horse')
     jockey_amazon_id = db.Column(db.Integer, db.ForeignKey('jockeys_amazons.id', ondelete='CASCADE'), nullable=False)
     jockey_amazon = db.relationship('JockeyAmazon', 
                                  back_populates='work_assignment', 
@@ -95,11 +98,11 @@ class JockeyAmazon(db.Model, AddressMixin, PhoneMixin, EmergencyContactMixin):
     dni = db.Column(db.String(20), unique=True, nullable=False)
     birth_date = db.Column(db.Date, nullable=False)
     birthplace = db.Column(db.String(100), nullable=False)
+    has_debts = db.Column(db.Boolean, default=False)
 
     has_scholarship = db.Column(db.Boolean, default=False)
     scholarship_observations = db.Column(db.Text, nullable=True)
     scholarship_percentage = db.Column(db.Float, nullable=True)
-
 
     has_disability = db.Column(db.Boolean, default=False)
     disability_diagnosis = db.Column(SQLAEnum(DisabilityDiagnosisEnum), nullable=True)
@@ -143,7 +146,14 @@ class JockeyAmazon(db.Model, AddressMixin, PhoneMixin, EmergencyContactMixin):
 
     inserted_at = db.Column(db.DateTime, default=datetime.now)
     updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
-    
+
+    family_member_jockey_amazon = db.Table('family_member_jockey_amazon',
+                                           db.Column('family_member_id', db.Integer, db.ForeignKey('family_members.id'),
+                                                     primary_key=True),
+                                           db.Column('jockey_amazon_id', db.Integer,
+                                                     db.ForeignKey('jockeys_amazons.id'), primary_key=True)
+                                           )
+    charges = db.relationship("Charge", back_populates="jya", lazy="select")
     files = db.relationship("JockeyAmazonFile", 
                          back_populates="owner", 
                          cascade="all, delete-orphan")

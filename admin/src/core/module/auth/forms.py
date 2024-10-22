@@ -3,9 +3,11 @@ from wtforms import StringField, PasswordField
 from wtforms.validators import DataRequired, Email, Length, EqualTo
 from src.core.module.user.validators import EmailExistence
 
+
 def email_existence(form, field):
     validator = EmailExistence(message="Email en uso")
     validator(form, field)
+
 
 class UserLoginForm(FlaskForm):
     email = StringField(

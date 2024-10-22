@@ -17,6 +17,16 @@ session = Session()
 
 
 def create_app(env="development", static_folder="../../static"):
+    """
+        Create and configure the Flask application.
+
+        Args:
+            env (str): The environment configuration to use.
+            static_folder (str): The folder to serve static files from.
+
+        Returns:
+            Flask: The configured Flask application.
+        """
     app = Flask(__name__, static_folder=static_folder)
 
     app.config.from_object(config[env])

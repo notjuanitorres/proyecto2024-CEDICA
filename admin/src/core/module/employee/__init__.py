@@ -6,7 +6,7 @@ from .forms import (
     EmployeeAddDocumentsForm,
     EmployeeDocumentSearchForm,
     EmployeeLinkSearchForm,
-    EmployeeLinkSelectForm,
+    EmployeeLinkSelectForm,,
 )
 from .mappers import EmployeeMapper
 from .data import ProfessionsEnum, JobPositionEnum, JobConditionEnum, employment_enums, FileTagEnum

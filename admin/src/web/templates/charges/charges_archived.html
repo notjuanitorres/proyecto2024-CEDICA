@@ -1,0 +1,153 @@
+{% extends "base_list.html" %}
+
+{% block title %}Cobros - CEDICA{% endblock %}
+
+{% block breadcrumb_items %}
+  <li>
+    <a href="">
+      <span class="icon is-small">
+        <i class="fas fa-file-invoice-dollar" aria-hidden="true"></i>
+      </span>
+      <span>Cobros</span>
+    </a>
+  </li>
+{% endblock %}
+
+{% block inner_title %}  
+  Cobros
+{% endblock %}
+
+{% block tabs %}
+<div class="tabs is-medium is-toggle is-toggle-rounded is-centered">
+  <ul>
+    <li>
+      <a href="{{ url_for("charges_bp.get_charges")}}">
+        <span class="icon is-small"><i class="fa-solid fa-file-invoice-dollar"></i></span>
+        <span>Todos</span>
+      </a>
+    </li>
+    <li class="is-active">
+      <a href="{{ url_for("charges_bp.get_archived_charges")}}">
+        <span class="icon is-small"><i class="fa-solid fa-box-archive"></i></span>
+        <span>Archivo</span>
+      </a>
+    </li>
+  </ul>
+</div>
+{% endblock %}
+
+{% block form_action %}{{ url_for("charges_bp.get_archived_charges") }}{% endblock %}
+{% block clear_url %}{{ url_for("charges_bp.get_archived_charges") }}{% endblock %}
+
+{% block aditional_filters %}
+    <div class="field">
+        <label class="label"> {{ search_form.filter_payment_method.label }} </label>
+        <div class="control">
+            <div class="select">
+                {{ search_form.filter_payment_method() }}
+            </div>
+        </div>
+    </div>
+
+    <div class="field">
+        <label class="label"> {{ search_form.start_date.label }} </label>
+        <div class="control">
+                {{ search_form.start_date(class="input", type="date") }}
+        </div>
+        {% if search_form.start_date.errors %}
+            <p class="help is-danger">{{ search_form.start_date.errors[0] }}</p>
+        {% endif %}
+    </div>
+
+    <div class="field">
+        <label class="label"> {{ search_form.finish_date.label }} </label>
+        <div class="control">
+                {{ search_form.finish_date(class="input", type="date") }}
+        </div>
+        {% if search_form.finish_date.errors %}
+            <p class="help is-danger">{{ search_form.finish_date.errors[0] }}</p>
+        {% endif %}
+    </div>
+{% endblock %}
+
+
+{% block table_header %}
+  <th></th>
+  <th>ID</th>
+  <th>Fecha de carga</th>
+  <th>Monto</th>
+  <th>Método de Pago</th>
+  <th>Empleado</th>
+  <th>Jinete o Amazona</th>
+  <th></th>
+{% endblock %}
+
+{% block top_pagination %}
+  {{ render_pagination(charges, 'charges_bp.get_charges') }}
+{% endblock %}
+
+{% block table_body %}
+  {% for charge in charges %}
+  <tr class="">
+    <td class="is-hidden-mobile">
+      {{
+        render_actions_menu(
+        field="charge_id",
+        value=charge.id,
+        to_left=true,
+        endpoints={
+          'show':'charges_bp.show_charge',
+          'edit': 'charges_bp.edit_charge',
+          'delete':'charges_bp.delete_charge'
+        },
+        permission_to_show="cobros_show",
+        permission_to_edit="cobros_update",
+        permission_to_delete="cobros_destroy",
+        user_permissions=permissions,
+        is_admin=is_admin
+        )
+      }}
+    </td>
+    <td><span class="is-hidden-tablet has-text-weight-bold">ID: </span>{{ charge.id }}</td>
+    <td><span class="is-hidden-tablet has-text-weight-bold">Fecha de carga: </span>{{ charge.date_of_charge | format_date }}</td>
+    <td><span class="is-hidden-tablet has-text-weight-bold">Monto: </span>{{ charge.amount }}</td>
+    <td><span class="is-hidden-tablet has-text-weight-bold">Método de Pago: </span>{{ charge.payment_method.value }}</td>
+    <td><span class="is-hidden-tablet has-text-weight-bold">Empleado: </span>{{ charge.employee.name + " " + charge.employee.lastname }}</td>
+    <td><span class="is-hidden-tablet has-text-weight-bold">Jinete o Amazona: </span>{{ charge.jya.first_name + " " + charge.jya.last_name }}</td>
+    <td class="is-hidden-tablet is-flex">
+      <a href="{{ url_for('charges_bp.show_charge', charge_id=charge.id)}}" class="button  is-flex-grow-1 ">
+        <span class=" is-bold ">
+            Ver cobro
+            <i class="fa-regular fa-eye ml-2"></i>
+        </span>
+      </a>
+    </td>
+  </tr>
+  {% endfor %}
+{% endblock %}
+
+{% block table_footer %}
+  <th></th>
+  <th>ID</th>
+  <th>Fecha de carga</th>
+  <th>Monto</th>
+  <th>Método de Pago</th>
+  <th>Empleado</th>
+  <th>Jinete o Amazona</th>
+  <th></th>
+{% endblock %}
+
+{% block bottom_pagination %}
+  {{ render_pagination(charges, 'charges_bp.get_charges') }}
+{% endblock %}
+
+{% block delete_modal %}
+  {{
+    render_delete_modal(
+      endpoint=url_for("charges_bp.delete_charge"),
+      title="Eliminar",
+      msg="¿Está seguro de que desea eliminar este cobro?",
+      msg_sub="Luego de confirmar, no se podrán revertir los cambios"
+    )
+  }}
+{% endblock %}
