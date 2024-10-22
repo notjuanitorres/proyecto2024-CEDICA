@@ -8,7 +8,7 @@
 
     <section class="section">
         <div class="container">
-            <h1 class="title">Registrar Pago</h1>
+            <h1 class="title">{{ "Editar" if edit else "Registrar"}} Pago</h1>
             <form method="POST">
                {{ form.hidden_tag() }}
                 
@@ -35,11 +35,23 @@
                 <div class="field">
                     <label class="label">{{ form.payment_type.label }}</label>
                     <div class="control">
-                        <div class="select">
-                            {{ form.payment_type() }}
-                        </div>
+                        {% if edit %}
+                            <input class="input" type="text" value="{{ form.payment_type.data }}" readonly disabled>
+                        {% else %}
+                            <div class="select">
+                                {{ form.payment_type() }}
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
+                {% if edit %}
+                <div class="field">
+                    <label class="label">Beneficiario Actual</label>
+                    <div class="control">
+                        <input class="input" type="text" value="{{ payment.beneficiary_name }}" readonly disabled>
+                    </div>
+                </div>
+            {% endif %}
 
                 <div class="field">
                     <label class="label">{{ form.description.label }}</label>

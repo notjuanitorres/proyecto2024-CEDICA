@@ -33,6 +33,7 @@ class PaymentForm(FlaskForm):
         "Tipo de pago",
         choices=[(e.name, e.value) for e in types],
         validators=[DataRequired()],
+        validate_choice=True
     )
     beneficiary = StringField(
         "Beneficiario",
@@ -45,16 +46,7 @@ class PaymentForm(FlaskForm):
     )
 
     submit = SubmitField("Submit")
-    # def validate(self, extra_validators=None):
-    #     rv = FlaskForm.validate(self)
-    #     if not rv:
-    #         return False
 
-    #     if self.payment_type.data == 'HONORARIOS' and not self.beneficiary_id.data:
-    #         self.beneficiary.errors.append('El beneficiario es obligatorio para pagos de honorarios.')
-    #         return False
-
-    #     return True
     
 class PaymentSearchForm(FlaskForm):
 
