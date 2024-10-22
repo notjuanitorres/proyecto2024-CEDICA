@@ -1,4 +1,5 @@
 {% extends "layout.html" %}
+{% from "macros/flash_message.html" import render_flash_messages %}
 
 {% block title %}Caballos - Actualizar caballo{% endblock %}
 
@@ -7,30 +8,40 @@
         <ul>
             <li>
                 <a href="{{ url_for('index_bp.home') }}">
-        <span class="icon is-small">
-          <i class="fas fa-home" aria-hidden="true"></i>
-        </span>
+                    <span class="icon is-small">
+                      <i class="fas fa-home" aria-hidden="true"></i>
+                    </span>
                     <span>Inicio</span>
                 </a>
             </li>
             <li>
                 <a href="{{ url_for('equestrian_bp.get_horses') }}">
-        <span class="icon is-small">
-          <i class="fas fa-horse" aria-hidden="true"></i>
-        </span>
+                    <span class="icon is-small">
+                      <i class="fas fa-horse" aria-hidden="true"></i>
+                    </span>
                     <span>Caballos</span>
                 </a>
             </li>
             <li>
+              <a href="{{ url_for('equestrian_bp.show_horse', horse_id=horse.id) }}">
+                <span class="icon is-small">
+                  <i class="fas fa-horse-head" aria-hidden="true"></i>
+                </span>
+                <span>{{ horse.name }}</span>
+              </a>
+            </li>
+            <li>
                 <a href="">
-        <span class="icon is-small">
-          <i class="fa-solid fa-pen-nib"></i>
-        </span>
+                    <span class="icon is-small">
+                      <i class="fa-solid fa-pen-nib"></i>
+                    </span>
                     <span>Actualizar caballo</span>
                 </a>
             </li>
         </ul>
     </nav>
+
+    {{ render_flash_messages(messages) }}
 
     <div class="container">
         <h4 class="title is-fullwidth has-text-centered">Actualizando a {{ horse.name }}</h4>
@@ -45,11 +56,19 @@
                     </a>
                 </li>
                 <li>
-                    <a>
+                    <a href="{{ url_for("equestrian_bp.edit_documents",  horse_id=horse.id ) }}">
                           <span class="icon is-small">
                               <i class="far fa-file-alt" aria-hidden="true"></i>
                           </span>
                         <span>Documentacion Anexa</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for("equestrian_bp.get_horse_trainers",  horse_id=horse.id ) }}">
+                          <span class="icon is-small">
+                              <i class="far fa-user" aria-hidden="true"></i>
+                          </span>
+                        <span>Entrenadores asociados</span>
                     </a>
                 </li>
             </ul>
@@ -135,21 +154,6 @@
                     <p class="help is-danger">{{ form.assigned_facility.errors[0] }}</p>
                 {% endif %}
             </div>
-
-            {#TODO: make this look better#}
-            <div class="field">
-                <div class="dropdown-toggle">
-                    <label class="label">{{ form.trainers.label }}</label>
-                    <div class="dropdown-content" id="trainers-content">
-                        {% for choice in form.trainers %}
-                            <div class="checkbox-item">
-                                {{ choice }}
-                                {{ choice.label }}
-                            </div>
-                        {% endfor %}
-                    </div>
-                </div>
-
 
                 <div class="field">
                     <label class="label">{{ form.ja_type.label }}</label>

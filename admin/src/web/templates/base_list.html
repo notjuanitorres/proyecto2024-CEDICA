@@ -28,13 +28,13 @@
   </nav>
 
   {{ render_flash_messages(messages) }}
-
+  {% block doc_header %}{% endblock %}
   <section class="is-fullheight-with-navbar pt-4">
     <h2 class="title is-size-3 has-text-centered">
-      {% block inner_title %}
-      {% endblock %}
+      {% block inner_title %}{% endblock %}
     </h2>
-    <div class="px-3">
+    {% block tabs %} {% endblock %}
+    <div id="filter" class="px-3">
       {% block create_button %}{% endblock %}
 
       {% block filter_form %}
@@ -66,9 +66,9 @@
                     </div>
                     {% block aditional_filters %}{% endblock %}
                     <div class="field is-flex-grow-1">
-                      <label for="filtrar" class="label is-invisible-tablet">Buscar</label>
+                      <label for="filtrar" class="label is-invisible-tablet">Buscar </label>
                       <p class="control has-icons-left">
-                        {{ search_form.search_text(class="input", placeholder="Buscar") }}
+                        {{ search_form.search_text(class="input", placeholder="Buscar", id="filtrar") }}
                         <span class="icon is-left">
                           <i class="fas fa-search" aria-hidden="true"></i>
                         </span>
@@ -111,8 +111,8 @@
             </div>
           </div>
       {% endblock %}
-
     </div>
+
     <div class="table-container p-2 mt-2">
       <table class="table is-striped is-scrollable is-fullwidth">
         <div class="container p-5">

@@ -1,0 +1,65 @@
+{% extends "base_document_management.html" %}
+
+{% block title %}Editar documento{% endblock %}
+
+{% block breadcrumb_items %}
+    <li>
+      <a href="{{ url_for('equestrian_bp.get_horses') }}">
+        <span class="icon is-small">
+          <i class="fas fa-horse" aria-hidden="true"></i>
+        </span>
+        <span>Caballos</span>
+      </a>
+    </li>
+    <li>
+      <a href="{{ url_for('equestrian_bp.show_horse', horse_id=horse.id) }}">
+        <span class="icon is-small">
+          <i class="fas fa-horse-head" aria-hidden="true"></i>
+        </span>
+        <span>{{ horse.name }}</span>
+      </a>
+    </li>
+    <li>
+      <a href="{{ url_for('equestrian_bp.edit_documents', horse_id=horse.id) }}">
+        <span class="icon is-small">
+          <i class="fa-solid fa-pen-nib"></i>
+        </span>
+        <span>Actualizar documentos</span>
+      </a>
+    </li>
+    <li>
+      <a href="{{ url_for('equestrian_bp.edit_document', horse_id=horse.id, document_id=document.id) }}">
+        <span class="icon is-small">
+          <i class="fa-solid fa-pen-nib"></i>
+        </span>
+        <span>Documento: {{ document.title }}</span>
+      </a>
+    </li>
+{% endblock %}
+
+{% block visibility %}is-hidden{% endblock %}
+
+{% block card_title %}
+	Modifcar documento
+{% endblock %}
+
+{% block filename %}
+	{% if not document.is_link %}
+        Se usará el archivo previamente cargado
+      {% else %}
+        No se ha seleccionado ningún archivo
+      {% endif %}
+{% endblock %}
+
+{% block submit_label %}
+	Modificar
+{% endblock %}
+
+{% block exit_button %}
+	<a href="{{ url_for('equestrian_bp.edit_documents', horse_id=horse.id) }}" class="button is-half is-danger">
+        Cerrar
+        <span class="icon ml-1">
+            <i class="fa-solid"></i>
+        </span>
+    </a>
+{% endblock %}

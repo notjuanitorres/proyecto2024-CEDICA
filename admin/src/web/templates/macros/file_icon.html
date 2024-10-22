@@ -1,9 +1,11 @@
 {% macro render_file_icon(mimetype, size) %}
-  {% if mimetype.startswith("image/") %}
-    <i class="fas fa-file-image is-size-{{size}}" aria-hidden="true"></i>
-  {% elif mimetype == "application/pdf" %}
-    <i class="fas fa-file-pdf is-size-{{size}}" aria-hidden="true"></i>
-  {% else %}
-    <i class="fas fa-file-alt is-size-{{size}}"></i>" aria-hidden="true"></i>
-  {% endif %}
+    {% if not mimetype %}
+      <i class="fas fa-file-alt is-size-{{size}}" aria-hidden="true"></i>
+    {% elif mimetype.startswith("image/") %}
+      <i class="fas fa-file-image is-size-{{size}}" aria-hidden="true"></i>
+    {% elif mimetype == "application/pdf" %}
+      <i class="fas fa-file-pdf is-size-{{size}}" aria-hidden="true"></i>
+    {% else %}
+      <i class="fas fa-file-alt is-size-{{size}}"></i>" aria-hidden="true"></i>
+    {% endif %}
 {% endmacro %}

@@ -1,11 +1,17 @@
 {% extends "layout.html" %}
 
+{% from "macros/flash_message.html" import render_flash_messages %}
+
 {% block title %} Usuarios - Crear usuario {% endblock %}
 
 {% block main_content %}
     <section class="section">
+
         <div class="container">
             <h1 class="title">Crear usuario</h1>
+
+            <div class="mb-2">{{ render_flash_messages(messages) }}</div>
+
             <form method="POST">
                 {{ form.hidden_tag() }}
                 
@@ -61,22 +67,26 @@
                 <div class="field">
                     <div class="control">
                         <label class="checkbox">
-                            {{ form.enabled() }} {{ form.enabled.label }}
-                        </label>
-                    </div>
-                </div>
-
-                <div class="field">
-                    <div class="control">
-                        <label class="checkbox">
                             {{ form.system_admin() }} {{ form.system_admin.label }}
                         </label>
                     </div>
                 </div>
 
-                <div class="field">
-                    <div class="control">
-                        <button class="button is-primary" type="submit">Agregar Usuario</button>
+                <div class="field-body">
+                    <div class="field">
+                        <div class="control">          
+                            {{ form.submit_another(class="button is-fullwidth is-medium is-outlined is-primary")}}
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="control">
+                            <button class="button is-primary is-medium is-fullwidth" type="submit">
+                                Guardar y salir
+                                <span class="icon ml-1">
+                                    <i class="fa-solid fa-floppy-disk is-size-4"></i>
+                                </span>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </form>

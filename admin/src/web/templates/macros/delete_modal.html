@@ -1,4 +1,4 @@
-{% macro render_delete_modal(endpoint, title, msg, msg_sub, field='user') %}
+{% macro render_delete_modal(endpoint, title, msg, msg_sub, field='user', delete_text="Eliminar") %}
   <div class="modal" id="{{ field }}-delete-modal">
     <div class="modal-background"></div>
     <div class="modal-card">
@@ -19,7 +19,7 @@
             >
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <input type="hidden" name="item_id" id="item-id">
-            <button type="submit" id="delete-btn" class="button has-text-danger">Eliminar</button>
+            <button type="submit" id="delete-btn" class="button has-text-danger">{{ delete_text }}</button>
           </form>
           <button class="button">Cancelar</button>
         </div>

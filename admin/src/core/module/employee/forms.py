@@ -1,7 +1,8 @@
 from datetime import datetime
 from flask_wtf import FlaskForm
-from flask_wtf.file import FileAllowed, FileSize, FileRequired
-from wtforms.validators import DataRequired, Email, Length, Optional, ValidationError
+from flask_wtf.file import FileAllowed, FileSize
+from wtforms import SubmitField
+from wtforms.validators import DataRequired, Email, Length, Optional
 from wtforms.fields import (
     StringField,
     BooleanField,
@@ -9,10 +10,19 @@ from wtforms.fields import (
     FormField,
     DateField,
     TextAreaField,
-    SubmitField,
     FileField,
     MultipleFileField,
     HiddenField,
+)
+
+from src.core.module.common import IsValidName
+
+from src.core.module.common.forms import (
+    filetypes_message,
+    allowed_filetypes,
+    BaseManageDocumentsForm,
+    BaseSearchForm,
+    DocumentsSearchForm,
 )
 from src.core.module.employee.data import (
     ProfessionsEnum,
@@ -27,6 +37,7 @@ from src.core.module.common import (
     PhoneForm,
     FilesNumber,
     IsNumber,
+    max_file_size,
 )
 
 
@@ -40,26 +51,24 @@ def dni_existence(form, field):
     validator(form, field)
 
 
-allowed_filetypes = ["pdf", "jpg", "jpeg", "png", "webp"]
-formatted_filetypes = ", ".join(f".{ext}" for ext in allowed_filetypes[:-1]) + f" y .{allowed_filetypes[-1]}"
-filetypes_message = f"Formato no reconocido. Formato válido: {formatted_filetypes}"
-
-
 class EmploymentInformationForm(FlaskForm):
     profession = SelectField(
         "Profesión",
         choices=[(e.name, e.value) for e in ProfessionsEnum],
         validators=[DataRequired()],
+        validate_choice=True,
     )
     position = SelectField(
         "Posición laboral",
         choices=[(e.name, e.value) for e in PositionEnum],
         validators=[DataRequired()],
+        validate_choice=True,
     )
     job_condition = SelectField(
         "Condición laboral",
         choices=[(e.name, e.value) for e in ConditionEnum],
         validators=[DataRequired()],
+        validate_choice=True,
     )
     start_date = DateField(
         "Inicio de actividades",
@@ -67,15 +76,7 @@ class EmploymentInformationForm(FlaskForm):
         default=datetime.today,
     )
     end_date = DateField("Finalización de actividades", validators=[Optional()])
-    is_active = BooleanField("Activo en la organización")
-
-
-def max_file_size(size_in_mb: int):
-    BYTES_PER_MB = 1024 * 1024
-
-    size_in_bytes = size_in_mb * BYTES_PER_MB
-
-    return size_in_bytes
+    is_active = BooleanField("Activo en la organización", default=True)
 
 
 class EmployeeDocumentsForm(FlaskForm):
@@ -122,7 +123,7 @@ class EmployeeDocumentsForm(FlaskForm):
     )
 
 
-class EmployeeAddDocumentsForm(FlaskForm):
+class EmployeeAddDocumentsForm(BaseManageDocumentsForm):
     tag = SelectField(
         "Tag",
         choices=[(e.name, e.value) for e in FileTagEnum],
@@ -131,19 +132,7 @@ class EmployeeAddDocumentsForm(FlaskForm):
                 message="Debe seleccionar lo que representa este archivo",
             )
         ],
-    )
-    file = FileField(
-        validators=[
-            FileRequired("Debe adjuntar un archivo"),
-            FileSize(
-                max_size=max_file_size(size_in_mb=5),
-                message="El archivo es demasiado grande",
-            ),
-            FileAllowed(
-                upload_set=allowed_filetypes,
-                message=filetypes_message,
-            ),
-        ]
+        validate_choice=True,
     )
 
 
@@ -153,15 +142,14 @@ class EmployeeManagementForm(FlaskForm):
         self.current_email = None
         self.current_dni = None
 
-    name = StringField("Nombre", validators=[DataRequired()])
-    lastname = StringField("Apellido", validators=[DataRequired()])
+    name = StringField("Nombre", validators=[DataRequired(), IsValidName()])
+    lastname = StringField("Apellido", validators=[DataRequired(), IsValidName()])
     address = FormField(AddressForm)
     phone = FormField(PhoneForm)
     employment_information = FormField(EmploymentInformationForm)
     health_insurance = TextAreaField("Obra Social", validators=[Optional()])
     affiliate_number = StringField("Numero de afiliado", validators=[Optional()])
     emergency_contact = FormField(EmergencyContactForm)
-    documents = FormField(EmployeeDocumentsForm)
 
     # TODO: Find a way to relationate an account's email or id
 
@@ -214,36 +202,76 @@ class EmployeeEditForm(EmployeeManagementForm):
     )
 
 
-class EmployeeSearchForm(FlaskForm):
-    class Meta:
-        csrf = False
-
-    search_by = SelectField(
-        choices=[
+class EmployeeSearchForm(BaseSearchForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.search_by.choices = [
             ("name", "Nombre"),
             ("lastname", "Apellido"),
             ("dni", "DNI"),
             ("email", "Email"),
-        ],
-        validate_choice=True,
-    )
-    search_text = StringField(validators=[Length(max=50)])
-    filter_job_position = SelectField(
-        "Puesto laboral",
-        choices=[("", "Ver Todas")] + [(e.name, e.value) for e in PositionEnum],
-        validate_choice=True,
-    )
-    order_by = SelectField(
-        choices=[
+        ]
+
+        self.order_by.choices = [
             ("id", "ID"),
             ("name", "Nombre"),
             ("lastname", "Apellido"),
             ("dni", "DNI"),
             ("email", "Email"),
+        ]
+    filter_is_active = SelectField(
+        choices=[
+            ("", "Ver Todos"),
+            ("true", "Activo"),
+            ("false", "Inactivo"),
         ],
         validate_choice=True,
+        validators=[Optional()]
     )
-    order = SelectField(
-        choices=[("asc", "Ascendente"), ("desc", "Descendente")], validate_choice=True
+    filter_job_position = SelectField(
+        "Puesto laboral",
+        choices=[("", "Ver Todas")] + [(e.name, e.value) for e in PositionEnum],
+        validate_choice=True,
     )
+
+
+class EmployeeDocumentSearchForm(DocumentsSearchForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.filter_tag.choices = [
+            ("", "Ver Todos"),
+        ] + [(e.name, e.value) for e in FileTagEnum]
+
+
+class TrainerSearchForm(FlaskForm):
+    search_text = StringField(
+        "Buscar por nombre o email", validators=[Length(message="Debe ingresar un texto", min=1, max=50)]
+    )
+    submit_search = SubmitField("Buscar")
+
+
+class TrainerSelectForm(FlaskForm):
+    selected_trainer = HiddenField(
+        "Cuenta seleccionada",
+        validators=[DataRequired("Se debe seleccionar una cuenta"), IsNumber()],
+    )
+    submit_trainer = SubmitField("Asociar")
+
+    def set_selected_account(self, account_id):
+        self.selected_trainer.data = account_id
+
+
+class EmployeeSelectForm(FlaskForm):
+    selected_employee = HiddenField(
+        "Empleado seleccionado",
+        validators=[DataRequired("Se debe seleccionar un empleado"), IsNumber()],
+    )
+    submit_employee = SubmitField("Asociar")
+
+    def set_selected_employee(self, account_id):
+        self.selected_employee.data = account_id
+
+
+class EmployeeMiniSearchForm(FlaskForm):
+    search_text = StringField(validators=[Length(message="Debe ingresar un texto", min=1, max=50)])
     submit_search = SubmitField("Buscar")
