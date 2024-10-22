@@ -62,6 +62,7 @@
                 </li>
             </ul>
         </div>
+    </div>
 {% endblock %}
 
 
@@ -92,15 +93,13 @@
 
 {% block table_header %}
     <th></th>
-    <th>ID</th>
-    <th>Email</th>
     <th>Nombre</th>
     <th>Apellido</th>
+    <th>Email</th>
     <th>Profesión</th>
     <th>Posición</th>
-    <th>Condición</th>
     <th>Activo</th>
-    <th></th>
+    <th>Desvincular</th>
 {% endblock %}
 
 {% block top_pagination %}
@@ -123,30 +122,39 @@
                 },
                 permission_to_show="equipo_show",
                 permission_to_edit="equipo_update",
-                permission_to_delete="equipo_destroy",
+                permission_to_delete="ecuestre_update",
                 user_permissions=permissions,
                 is_admin=is_admin,
                 delete_text="Desvincular"
                         )
                 }}
             </td>
-            <td><span class="is-hidden-tablet has-text-weight-bold">ID: </span>{{ employee.id }}</td>
-            <td><span class="is-hidden-tablet has-text-weight-bold">Email: </span>{{ employee.email }}</td>
             <td><span class="is-hidden-tablet has-text-weight-bold">Nombre: </span>{{ employee.name }}</td>
             <td><span class="is-hidden-tablet has-text-weight-bold">Apellido: </span>{{ employee.lastname }}</td>
+            <td><span class="is-hidden-tablet has-text-weight-bold">Email: </span>{{ employee.email }}</td>
             <td><span class="is-hidden-tablet has-text-weight-bold">Profesion: </span>{{ employee.profession.value }}
             </td>
-            <td><span class="is-hidden-tablet has-text-weight-bold">Posición: </span>{{ employee.position.value }}
-            </td>
-            <td><span class="is-hidden-tablet has-text-weight-bold">Condicion: </span>{{ employee.job_condition.value }}
-            </td>
+            <td><span class="is-hidden-tablet has-text-weight-bold">Posición: </span>{{ employee.position.value }}</td>
             <td><span
                     class="is-hidden-tablet has-text-weight-bold">Activo: </span>{{ employee.active | natural_boolean }}
             </td>
+            <td><span class="is-hidden-mobile has-text-weight-bold"></span>
+            <button class="is-hidden-mobile has-text-danger" data-id="{{ employee.id }}" data-target="user-delete-modal">
+                    Desvincular
+            </button>
+            </td>
+            <td class="is-hidden-tablet is-flex">
+                <button class="button has-text-danger is-flex-grow-1" data-id="{{ employee.id }}" data-target="user-delete-modal">
+                    <span class="is-bold">
+                        Desvincular
+                        <i class="fa-regular fa-trash-can ml-2"></i>
+                    </span>
+                </button>
+            </td>
             <td class="is-hidden-tablet is-flex">
                 <a href="{{ url_for('employee_bp.show_employee', employee_id=employee.id) }}"
-                   class="button  is-flex-grow-1 ">
-                    <span class=" is-bold ">
+                   class="button is-flex-grow-1">
+                    <span class="is-bold">
                         Ver en detalle
                         <i class="fa-regular fa-eye ml-2"></i>
                     </span>
@@ -173,5 +181,5 @@
       msg_sub="",
       delete_text="Desvincular"
     )
-  }}{# Trainer id is also needed but is passed in the modal #}
+  }}
 {% endblock %}
