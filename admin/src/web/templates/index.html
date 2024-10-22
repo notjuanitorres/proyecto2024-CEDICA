@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+
+{% from "macros/flash_message.html" import render_flash_messages %}
+{% block html_class %}{% endblock %}
+{% block theme %}{{super()}}{% endblock %}
+{% block title %}Inicio - CEDICA{% endblock %}
+
+{% block head %}
+    {{ super() }}
+    {% block extra_styles %}
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/home.css') }}"
+    />
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
+    {% endblock %}
+{% endblock %}
+
+
+{% block content %}
+<main class="has-background-white">
+    <section class="section hero is-fullheight bg-watercolor-stain shape-divider-top">
+        {{ render_flash_messages(messages) }}
+        <div class="hero-head has-background-white p-5 px-6 container"  style="border-radius: 30px">
+            <header class="container is-flex is-flex-direction-row is-justify-content-space-between">
+                <a href="#">
+                    <figure class="image">
+                        <img
+                        src="{{ url_for('static', filename="assets/cedica_isotipo.png")}}"
+                        alt="CEDICA isologotipo"
+                        style="height: autopx; width: 75px;"
+                        />
+                    </figure>                
+                </a>
+                {% if is_authenticated %}
+                <a href="{{ url_for("index_bp.home") }}" class="button is-black is-outlined is-medium level-item pt-2" aria-label="Iniciar Sesion">
+                  Administrar
+                </a>
+                {% else %}
+                <a href="{{ url_for("auth_bp.login") }}" class="button is-black is-outlined is-medium level-item pt-2" aria-label="Iniciar Sesion">
+                    Iniciar Sesion
+                </a>
+                {% endif %}
+            </header>
+        </div>
+            <h2 class="title is-size-2 has-text-text-20"></h2>
+        </div>
+        <div class="hero-body">
+            <article class="container has-text-centered py-5">
+                <figure class="image is-3by1 container" style="max-width: 400px; height:auto;">
+                    <img
+                    src="{{ url_for('static', filename="assets/cedica_isologotipo_conmemorative.png")}}"
+                    alt="CEDICA isologotipo"
+                    />
+                </figure>      
+                <div class="block"></div>
+                {% include 'partials/contact.html' %}
+            </article>
+        </div>
+        <!-- Hero footer: will stick at the bottom -->
+        <div class="hero-foot is-centered" style="z-index: 10;">
+            <nav class="tabs is-large is-fullwidth">
+                <div class="container">
+                    <a href="#conocenos" class="is-flex has-text-black is-size-4 is-flex-direction-column">
+                        Conocenos
+                        <span><i class="fa-solid fa-arrow-down"></i></span>
+                    </a>
+                </div>
+            </nav>
+        </div>
+    </section>
+    <section id="conocenos" class="container section is-medium has-background-white">
+        <div id="about-us" class="grid is-min-col-16 is-gap-8">
+            <div class="container">
+              <h3 class="title is-size-5 has-text-black has-text-centered">Sobre Nosotros</h3>
+              <p class="has-text-dark">
+                Desde 1994, CEDICA es una Asociación Civil sin Fines de Lucro en La Plata, dedicada a transformar vidas a través de la igualdad de oportunidades. Nos enfocamos en la reinserción familiar, escolar y laboral de nuestros Jinetes y Amazonas, mejorando su calidad de vida.
+              </p>
+            </div>
+            <div class="container">
+              <h3 class="title is-size-5 has-text-black has-text-centered">Qué Hacemos</h3>
+              <p class="has-text-dark">
+                Ofrecemos Terapias y Actividades Asistidas con Caballos (TACAs), una poderosa herramienta que utiliza el vínculo con los caballos para impulsar la recuperación integral de las personas en sus aspectos físico, mental y social.
+              </p>
+            </div>
+        </div>
+    </section>
+    <footer class="footer bg-watercolor-blueish-stain has-text-black shape-divider-bottom">
+        <div class="content">
+            <div class="container mt-6 section is-flex-direction-column is-align-content-end is-flex is-flex-grow-1 is-gap-2">
+                <p class="has-text-centered">
+                    <strong>Dirección:</strong><br>
+                    Calle Ejemplo 123, <br>
+                    La Plata, Argentina <br>
+                    <strong class="subtitle">CEDICA</strong> &copy; <span id="current-year"></span>. Todos los derechos reservados.
+
+                    <br>
+                    <span class="tag is-small mt-2 p-4">Desarrollado por Grupo19</span>
+
+                </p>
+            </div>
+        </div>
+    </footer>
+</main>
+{% endblock %}
+
+{% block footer %}
+
+{% endblock %}
+
+{% block extra_scripts %}
+
+<script>
+    window.addEventListener('scroll', function() {
+        const reveals = document.querySelectorAll('.reveal');
+        for (let i = 0; i < reveals.length; i++) {
+            const windowHeight = window.innerHeight;
+            const elementTop = reveals[i].getBoundingClientRect().top;
+            const elementVisible = 150;
+    
+            if (elementTop < windowHeight - elementVisible) {
+                reveals[i].classList.add('active');
+            } else {
+                reveals[i].classList.remove('active');
+            }
+        }
+    });
+</script>
+{% endblock %}
