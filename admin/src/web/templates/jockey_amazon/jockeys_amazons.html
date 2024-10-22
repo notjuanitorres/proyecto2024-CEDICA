@@ -14,7 +14,9 @@
 {% endblock %}
 
 {% block inner_title %}
-  Jinetes y Amazonas
+    <h2 class="title is-size-3 has-text-centered">
+        Jinetes y amazonas
+    </h2>
 {% endblock %}
 
 {% block create_button %}
@@ -28,7 +30,6 @@
 {% block clear_url %}{{ url_for("jockey_amazon_bp.get_jockeys") }}{% endblock %}
 
 {% block table_header %}
-  <th></th>
   <th>Nombre</th>
   <th>Apellido</th>
   <th>DNI</th>

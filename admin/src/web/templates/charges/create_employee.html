@@ -3,6 +3,11 @@
 {% from "macros/pagination.html" import render_pagination %}
 {% from "macros/flash_message.html" import render_flash_messages %}
 
+{% block extra_styles %}
+	{{ super() }}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/components/pagination.css') }}">
+{% endblock %}
+
 {% block title %} Cobros - CEDICA {% endblock %}
 
 {% block card_title %}Asociando un empleado {% endblock %}
@@ -61,7 +66,7 @@
     <div class="field is-flex-grow-1">
       <label for="filtrar" class="label">Buscar empleado</label>
       <p class="control has-icons-left">
-        {{ search_form.search_text(class="input", placeholder="Buscar por nombre o email") }}
+        {{ search_form.search_text(class="input", placeholder="Buscar por nombre o email", id='filtrar') }}
         <span class="icon is-left">
           <i class="fas fa-search" aria-hidden="true"></i>
         </span>
