@@ -6,7 +6,6 @@ from src.core.container import Container
 from src.core.module.jockey_amazon import (
     JockeyAmazonAddDocumentsForm,
     JockeyAmazonDocumentSearchForm,
-    JockeyAmazonEditForm,
     JockeyAmazonSearchForm,
     jockey_amazon_enums as jockey_amazon_information,
     JockeyAmazonMapper as Mapper,
@@ -231,7 +230,6 @@ def edit_documents(
     jockey_repository: AbstractJockeyAmazonRepository = Provide[
         Container.jockey_amazon_repository
     ],
-    storage: AbstractStorageServices = Provide[Container.storage_services],
 ):
     page = request.args.get("page", type=int)
     per_page = request.args.get("per_page", type=int)

@@ -1,7 +1,6 @@
 from abc import abstractmethod
 from typing import List, Dict
-
-from src.core.module.common.repositories import apply_filters
+from src.core.module.common.repositories import apply_filters, apply_multiple_search_criteria, apply_filter_criteria
 from src.core.module.equestrian.models import Horse, HorseTrainers, HorseFile
 from src.core.database import db as database
 from src.core.module.employee.models import Employee
@@ -208,6 +207,22 @@ class AbstractEquestrianRepository:
         Args:
             horse_id (int): The ID of the horse.
             trainer_id (int): The ID of the trainer.
+
+        Returns:
+            bool: True if the removal was successful, False otherwise.
+        """
+        raise NotImplementedError
+
+    
+    @abstractmethod
+    def get_active_horses(self, page: int = 1, search: str = "", activity: str = "") -> bool:
+        """
+        Get a paginated list with the active horses.
+
+        Args:
+            page (int): Page requested.
+            search (str): A text for searching hose.
+            activity (str): Filter by activities assigned to the horse.
 
         Returns:
             bool: True if the removal was successful, False otherwise.
@@ -507,3 +522,20 @@ class EquestrianRepository(AbstractEquestrianRepository):
             List: The list of horses.
         """
         return Horse.query.all()
+
+    def get_active_horses(self, page: int = 1, search: str = "", activity: str = "") -> bool:
+        per_page = 7
+
+        query = self.db.session.query(Horse).filter(Horse.is_deleted == False)
+
+        if search:
+            search_fields = ["name", "assigned_facility"]
+            query = apply_multiple_search_criteria(
+                Horse, query, search_query={"text": search, "fields": search_fields}
+        )
+        print(query.all())
+        if activity:
+            search_query = { "filters": { "ja_type": activity }}
+            query = apply_filter_criteria(model=Horse, query=query, search_query=search_query)
+        print(query.all())
+        return query.paginate(page=page, per_page=per_page, error_out=False)

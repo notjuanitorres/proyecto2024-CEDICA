@@ -1,0 +1,79 @@
+{% extends 'jockey_amazon/update/update_relationship.html' %}
+
+{% block card_title %}Asociandole un Caballo a: {{ jockey_amazon.first_name + " " + jockey_amazon.last_name }}{% endblock %} 
+
+{% block actual_breadcrumb %}
+<li>
+  <a href="{{ url_for('jockey_amazon_bp.update.assign_horse', jockey_id=jockey_amazon.id) }}">
+    <span class="icon is-small">
+      <i class="fa-solid fa-horse" aria-hidden="true"></i>
+    </span>
+    <span>Asociar Caballo</span>
+  </a>
+</li>
+{% endblock %}
+
+{% block search_label %}
+Buscar caballo por Nombre o Sede
+{% endblock %}
+
+{% block extra_filter %}
+<div class="column is-3">
+  <div class="field">
+    <label class="label">{{ search_form.filter_activity.label }}</label>
+    <div class="control">
+      <div class="select">
+        {{ search_form.filter_activity() }}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block search_size %}
+  is-9
+{% endblock %}
+
+{% block clear_search %}
+<a class="button is-fullwidth" href="{{ url_for("jockey_amazon_bp.update.assign_horse", jockey_id=jockey_amazon.id )}}"">
+  Limpiar
+</a>
+{% endblock %}
+
+{% block pagination %}
+  {{ render_pagination(horses, 'jockey_amazon_bp.update.assign_horse', {"jockey_id":jockey_amazon.id}) }}
+{% endblock %}
+
+
+{% block select_form %}
+<form method="POST" id="select-form" class="">
+  {{ select_form.hidden_tag() }}
+  {% for horse in horses %}
+    <a class="panel-block field mb-0" data-id="item-{{ horse.id }}">
+      <div class="media">
+        <div class="media-left">
+          <i class="fa-solid fa-circle-user is-size-3" aria-hidden="true"></i>
+        </div>
+        <div class="media-content">
+          <div class="content">
+            <p>
+              <strong>{{ horse.name }}</strong> <small>admitido en {{ horse.admission_date }}</small> 
+              <br />
+              <small>Actividad asignada: </small>
+              <strong>{{ horse.ja_type.value }} </strong>
+              <br>
+              <small>Sede Asignada:</small> 
+              <strong>{{ horse.assigned_facility  }} </strong>
+              <br>
+            </p>
+          </div>
+        </div>
+      </div>
+    </a>
+  {% endfor %}
+  <div class="panel-block">
+    {{ select_form.submit_horse(class="button is-primary is-fullwidth", id="submit-item", type="submit")}}
+  </div>
+</form>
+
+{% endblock %}
