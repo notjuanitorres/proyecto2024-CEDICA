@@ -1,5 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 from dependency_injector.wiring import inject, Provide
+from src.core.module.employee.forms import EmployeeSearchForm, EmployeeSelectForm
+from src.core.module.employee.repositories import EmployeeRepository
 from src.core.module.payment.forms import PaymentForm, PaymentSearchForm, PaymentEditForm
 from src.core.container import Container
 from src.web.helpers.auth import check_user_permissions
@@ -158,3 +160,28 @@ def unarchive_payment(
     payment_repository.unarchive_payment(payment_id)
     flash('Pago desarchivado exitosamente', 'success')
     return redirect(url_for('payment_bp.get_payments'))
+
+
+@payment_bp.route("/select_employee", methods=["GET", "POST"])
+@check_user_permissions(permissions_required=['pagos_create'])
+@inject
+def select_employee(
+    employee_repository: EmployeeRepository = Provide[Container.employee_repository],
+):
+    form = EmployeeSearchForm(request.args)
+    select_form = EmployeeSelectForm()
+    search_query = {}
+    if form.validate():
+        if form.search_text.data:
+            search_query["search_text"] = form.search_text.data
+
+    page = request.args.get("page", 1, type=int)
+    per_page = request.args.get("per_page", 10, type=int)
+
+    employees = employee_repository.get_page(page, per_page, search_query)
+
+    if request.method == "POST" and select_form.validate_on_submit():
+        selected_employee_id = select_form.selected_employee.data
+        return redirect(url_for('payment_bp.create_payment', beneficiary_id=selected_employee_id))
+
+    return render_template("payment/select_employee.html", form=form, select_form=select_form, employees=employees)
