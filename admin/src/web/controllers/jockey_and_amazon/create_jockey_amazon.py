@@ -3,7 +3,6 @@ from dependency_injector.wiring import inject, Provide
 from src.web.helpers.auth import check_user_permissions
 from src.core.container import Container
 from src.core.module.jockey_amazon import (
-    # JockeyAmazonCreateForm,
     GeneralInformationForm,
     HealthInformationForm,
     FamilyInformationForm,
@@ -76,24 +75,24 @@ def create_health_information():
 
 
 # Step three
+# @check_creation_in_process("create_ja")
 @create_jockey_amazon_bp.route("/informacion-familia", methods=["GET", "POST"])
-@check_creation_in_process("create_ja")
 def create_family_information():
-    family_information = FamilyInformationForm()
+    family_information = FamilyInformationForm(second_member_optional=True)
+    family_information.validate()
+    print(family_information.family_members.data)
 
     # TODO: Check family members creation
     # if family_information.validate_on_submit():
     #     session["create_ja"]["family_information"] = family_information.data
     #     return redirect(url_for("jockey_amazon_bp.create.create_school_information"))
-    if request.method == "GET":
+    
+    if request.method == "GET" or request.method == "POST":
         return render_template(
             "create/family_information.html",
             family_form=family_information,
             EducationLevelEnum=EducationLevelEnum,
         )
-
-    return redirect(url_for("jockey_amazon_bp.create.create_school_information"))
-
 
 # Step four
 @create_jockey_amazon_bp.route("/informacion-escuela", methods=["GET", "POST"])

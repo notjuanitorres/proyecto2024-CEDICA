@@ -3,6 +3,7 @@ from wtforms import (
     StringField,
     SelectField,
     IntegerField,
+    HiddenField
 )
 from wtforms.validators import DataRequired, Length, Optional
 from src.core.module.common.forms import (
@@ -21,8 +22,10 @@ from src.core.module.jockey_amazon.models import (
 )
 
 
-def enum_choices(enum):
-    return [(choice.name, choice.value) for choice in enum]
+def enum_choices(enum, first_value: tuple[str, str] = None):
+    if first_value:
+        return [first_value] + [(choice.name, choice.value) for choice in enum]
+    return [(choice.name, choice.value) for choice in enum] 
 
 
 class SchoolInstitutionForm(FlaskForm):
@@ -48,6 +51,7 @@ class SchoolInstitutionForm(FlaskForm):
 class FamilyMemberForm(FlaskForm):
     class Meta:
         csrf = False  
+    is_optional = HiddenField("Es opcional", default=False)
     relationship = StringField("Relación", validators=[DataRequired(), Length(max=50)])
     first_name = StringField("Nombre", validators=[DataRequired(), Length(max=100)])
     last_name = StringField("Apellido", validators=[DataRequired(), Length(max=100)])
@@ -75,7 +79,7 @@ class FamilyMemberForm(FlaskForm):
         validators=[DataRequired()],
     )
     occupation = StringField("Ocupación", validators=[DataRequired(), Length(max=100)])
-
+    
 
 class WorkAssignmentsForm(FlaskForm):
     class Meta:

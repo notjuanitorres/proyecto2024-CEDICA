@@ -1,488 +1,304 @@
 <!-- Family and Pension Information -->
 {{ family_form.hidden_tag() }}
 <div id="family-pension-info">
-
-  <div id="pension">
-    <h2 class="label is-size-5">Información de Asignación Familiar</h2>
-    <div class="field">
-      <div class="control">
-        <label class="checkbox">
-          {{ family_form.has_family_assignment.label(class="has-text-weight-bold is-size-5") }} 
-          {{ family_form.has_family_assignment(class="ml-2", type="checkbox", style="transform: scale(1.5)") }}
-        </label>
-      </div>
-      {% if family_form.has_family_assignment.errors %}
-      <p class="help is-danger">{{ family_form.has_family_assignment.errors[0] }}</p>
-      {% endif %}
+    <div id="pension">
+        <h2 class="label is-size-5">Información de Asignación Familiar</h2>
+        <div class="field">
+            <div class="control">
+                <label class="checkbox">
+                    {{ family_form.has_family_assignment.label(class="has-text-weight-bold is-size-5") }} 
+                    {{ family_form.has_family_assignment(class="ml-2", type="checkbox", style="transform: scale(1.5)") }}
+                </label>
+            </div>
+            {% if family_form.has_family_assignment.errors %}
+            <p class="help is-danger">{{ family_form.has_family_assignment.errors[0] }}</p>
+            {% endif %}
+        </div>
+        <div class="field" id="family-assignment-details" style="display: none">
+            <label class="label">Tipo de Asignación Familiar</label>
+            <div class="control">
+                {{ family_form.family_assignment_type(class="textarea", placeholder="Ingrese el tipo de asignación familiar") }}
+            </div>
+            {% if family_form.family_assignment_type.errors %}
+            <p class="help is-danger">{{ family_form.family_assignment_type.errors[0] }}</p>
+            {% endif %}
+        </div>
+        <div class="field">
+            <div class="control">
+                <label class="checkbox">
+                    {{ family_form.has_pension.label(class="has-text-weight-bold is-size-5") }} 
+                    {{ family_form.has_pension(class="ml-2", type="checkbox", style="transform: scale(1.5)") }}
+                </label>
+            </div>
+            {% if family_form.has_pension.errors %}
+            <p class="help is-danger">{{ family_form.has_pension.errors[0] }}</p>
+            {% endif %}
+        </div>
+        <div class="field" id="pension-details" style="display: none">
+            <label class="label">Tipo de Pensión</label>
+            <div class="control">
+                {{ family_form.pension_type(class="input", placeholder="Ingrese el tipo de pensión") }}
+            </div>
+            {% if family_form.pension_type.errors %}
+            <p class="help is-danger">{{ family_form.pension_type.errors[0] }}</p>
+            {% endif %}
+            <label class="label">Detalles de Pensión</label>
+            <div class="control">
+                {{ family_form.pension_details(class="textarea", placeholder="Ingrese detalles de la pensión") }}
+            </div>
+            {% if family_form.pension_details.errors %}
+            <p class="help is-danger">{{ family_form.pension_details.errors[0] }}</p>
+            {% endif %}
+        </div>
     </div>
-    <div class="field" id="family-assignment-details" style="display: none">
-      <label class="label">Tipo de Asignación Familiar</label>
-      <div class="control">
-        {{ family_form.family_assignment_type(class="textarea", placeholder="Ingrese el tipo de asignación familiar") }}
-      </div>
-      {% if family_form.family_assignment_type.errors %}
-      <p class="help is-danger">{{ family_form.family_assignment_type.errors[0] }}</p>
-      {% endif %}
-    </div>
-    <div class="field">
-      <div class="control">
-        <label class="checkbox">
-          {{ family_form.has_pension.label(class="has-text-weight-bold is-size-5") }} 
-          {{ family_form.has_pension(class="ml-2", type="checkbox", style="transform: scale(1.5)") }}
-        </label>
-      </div>
-      {% if family_form.has_pension.errors %}
-      <p class="help is-danger">{{ family_form.has_pension.errors[0] }}</p>
-      {% endif %}
-    </div>
-    <div class="field" id="pension-details" style="display: none">
-      <label class="label">Tipo de Pensión</label>
-      <div class="control">
-        {{ family_form.pension_type(class="input", placeholder="Ingrese el tipo de pensión") }}
-      </div>
-      {% if family_form.pension_type.errors %}
-      <p class="help is-danger">{{ family_form.pension_type.errors[0] }}</p>
-      {% endif %}
-      <label class="label">Detalles de Pensión</label>
-      <div class="control">
-        {{ family_form.pension_details(class="textarea", placeholder="Ingrese detalles de la pensión") }}
-      </div>
-      {% if family_form.pension_details.errors %}
-      <p class="help is-danger">{{ family_form.pension_details.errors[0] }}</p>
-      {% endif %}
-    </div>
-  </div>
-  <!-- Family Members -->
-  <div id="family-members" class="py-4">
-    <h2 class="label is-size-4">Miembros de la Familia</h2>
-  <div id="family-members-container">
-    <div class="family-member" data-id="1">
-      <h3 class="label is-size-5">Miembro 1</h3>
-      <div class="field-body">
-        <div class="field">
-          <label class="label" for="family_member1-relationship">Relación</label>
-          <div class="control">
-            <input
-              type="text"
-              name="family_member1-relationship"
-              id="family_member1-relationship"
-              class="input"
-              placeholder="Ingrese la relación"
-              required
-            />
-          </div>
-        </div>
-        <div class="field">
-          <label class="label" for="family_member1-first_name">Nombre</label>
-          <div class="control">
-            <input
-              type="text"
-              name="family_member1-first_name"
-              id="family_member1-first_name"
-              class="input"
-              placeholder="Ingrese el nombre"
-              required
-            />
-          </div>
-        </div>
-        <div class="field">
-          <label class="label" for="family_member1-last_name">Apellido</label>
-          <div class="control">
-            <input
-              type="text"
-              name="family_member1-last_name"
-              id="family_member1-last_name"
-              class="input"
-              placeholder="Ingrese el apellido"
-              required
-            />
-          </div>
-        </div>
-        <div class="field">
-          <label class="label" for="family_member1-dni">DNI</label>
-          <div class="control">
-            <input
-              type="text"
-              name="family_member1-dni"
-              id="family_member1-dni"
-              class="input"
-              placeholder="Ingrese el DNI"
-              required
-              maxlength="8"
-            />
-          </div>
-        </div>
-      </div>
-      <div class="field-body mt-4">
-        <div class="field">
-          <label class="label" for="family_member1-street">Calle</label>
-          <div class="control">
-            <input
-              type="text"
-              name="family_member1-street"
-              id="family_member1-street"
-              class="input"
-              placeholder="Ingrese la calle"
-              required
-            />
-          </div>
-        </div>
-        <div class="field">
-          <label class="label" for="family_member1-number">Número</label>
-          <div class="control">
-            <input
-              type="number"
-              name="family_member1-number"
-              id="family_member1-number"
-              class="input"
-              placeholder="Ingrese el número"
-              required
-            />
-          </div>
-        </div>
-        <div class="field">
-          <label class="label" for="family_member1-department">Departamento</label>
-          <div class="control">
-            <input
-              type="text"
-              name="family_member1-department"
-              id="family_member1-department"
-              class="input"
-              placeholder="Ingrese el departamento"
-              required
-            />
-          </div>
-        </div>
-      </div>
-        <div class="field-body mt-4">
-        <div class="field">
-          <label class="label" for="family_member1-locality">Localidad</label>
-          <div class="control">
-            <input
-              type="text"
-              name="family_member1-locality"
-              id="family_member1-locality"
-              class="input"
-              placeholder="Ingrese la localidad"
-              required
-            />
-          </div>
-        </div>
-        <div class="field">
-          <label class="label" for="family_member1-province">Provincia</label>
-          <div class="control">
-            <input
-              type="text"
-              name="family_member1-province"
-              id="family_member1-province"
-              class="input"
-              placeholder="Ingrese la provincia"
-              required
-            />
-          </div>
-        </div>
-      </div>
-
-      <div class="field-body mt-4">
-        <div class="field">
-          <label class="label" for="family_member1-phone_country_code">Código de País</label>
-          <div class="control">
-            <input
-              type="text"
-              name="family_member1-phone_country_code"
-              id="family_member1-phone_country_code"
-              class="input"
-              placeholder="Código de País"
-              required
-            />
-          </div>
-        </div>
-        <div class="field">
-          <label class="label" for="family_member1-phone_area_code">Código de Área</label>
-          <div class="control">
-            <input
-              type="text"
-              name="family_member1-phone_area_code"
-              id="family_member1-phone_area_code"
-              class="input"
-              placeholder="Código de Área"
-              required
-            />
-          </div>
-        </div>
-        <div class="field">
-          <label class="label" for="family_member1-phone_number">Número de Teléfono</label>
-          <div class="control">
-            <input
-              type="text"
-              name="family_member1-phone_number"
-              id="family_member1-phone_number"
-              class="input"
-              placeholder="Ingrese el número de teléfono"
-              required
-              maxlength="15"
-            />
-          </div>
-        </div>
-      </div>
-
-      <div class="field mt-4">
-        <label class="label" for="family_member1-email">Correo Electrónico</label>
-        <div class="control">
-          <input
-            type="email"
-            name="family_member1-email"
-            id="family_member1-email"
-            class="input"
-            placeholder="Ingrese el correo electrónico"
-            required
-          />
-        </div>
-      </div>
-
-      <div class="field">
-        <label class="label" for="family_member1-education_level">Nivel Educativo</label>
-        <div class="control">
-          <div class="select">
-            <select
-              name="family_member1-education_level"
-              id="family_member1-education_level"
-              required
-            >
-              <option value="">Seleccione el nivel educativo</option>
-              {% for key, value in EducationLevelEnum.__members__.items() %}
-              <option value="{{ key }}">{{ value.value }}</option>
-              {% endfor %}
-            </select>
-          </div>
-        </div>
-      </div>
-
-      <div class="field">
-        <label class="label" for="family_member1-occupation">Ocupación</label>
-        <div class="control">
-          <input
-            type="text"
-            name="family_member1-occupation"
-            id="family_member1-occupation"
-            class="input"
-            placeholder="Ingrese la ocupación"
-            required
-          />
-        </div>
-      </div>
-    </div>
-  </div>
-
-    <div class="field pt-4">
-    <div class="control">
-      <button id="add-family-member" type="button" class="button is-primary is-outlined add-family-member">
-        Agregar Miembro de la Familia
-      </button>
-    </div>
-    </div>
-  
-    <div class="box family-member" data-id="2" style="display: none">
-      <h3 class="label is-size-5">Miembro 2</h3>
-      <div class="field-body">
-        <div class="field">
-          <label class="label">Relación</label>
-          <div class="control">
-            <input
-              type="text"
-              name="family_member2-relationship"
-              class="input"
-              placeholder="Ingrese la relación"
-              
-            />
-          </div>
-        </div>
-        <div class="field">
-          <label class="label">Nombre</label>
-          <div class="control">
-            <input
-              type="text"
-              name="family_member2-first_name"
-              class="input"
-              placeholder="Ingrese el nombre"
-              
-            />
-          </div>
-        </div>
-        <div class="field">
-          <label class="label">Apellido</label>
-          <div class="control">
-            <input
-              type="text"
-              name="family_member2-last_name"
-              class="input"
-              placeholder="Ingrese el apellido"
-              
-            />
-          </div>
-        </div>
-        <div class="field">
-          <label class="label">DNI</label>
-          <div class="control">
-            <input
-              type="text"
-              name="family_member2-dni"
-              class="input"
-              placeholder="Ingrese el DNI"
-              
-              maxlength="8"
-            />
-          </div>
-        </div>
-      </div>
-      <div class="field-body mt-4">
-        <div class="field">
-          <label class="label">Calle</label>
-          <div class="control">
-            <input
-              type="text"
-              name="family_member2-street"
-              class="input"
-              placeholder="Ingrese la calle"
-              
-            />
-          </div>
-        </div>
-        <div class="field">
-          <label class="label">Número</label>
-          <div class="control">
-            <input
-              type="number"
-              name="family_member2-number"
-              class="input"
-              placeholder="Ingrese el número"
-              
-            />
-          </div>
-        </div>
-        <div class="field">
-          <label class="label">Departamento</label>
-          <div class="control">
-            <input
-              type="text"
-              name="family_member2-department"
-              class="input"
-              placeholder="Ingrese el departamento"
-              
-            />
-          </div>
-        </div>
-      </div>
-      <div class="field-body mt-4">
-        <div class="field">
-          <label class="label">Localidad</label>
-          <div class="control">
-            <input
-              type="text"
-              name="family_member2-locality"
-              class="input"
-              placeholder="Ingrese la localidad"
-              
-            />
-          </div>
-        </div>
-        <div class="field">
-          <label class="label">Provincia</label>
-          <div class="control">
-            <input
-              type="text"
-              name="family_member2-province"
-              class="input"
-              placeholder="Ingrese la provincia"
-              
-            />
-          </div>
-        </div>
-      </div>
-      <div class="field-body mt-4">
-        <div class="field">
-          <label class="label">Código de País</label>
-          <div class="control">
-            <input
-              type="text"
-              name="family_member2-phone_country_code"
-              class="input"
-              placeholder="Código de País"
-              
-            />
-          </div>
-        </div>
-        <div class="field">
-          <label class="label">Código de Área</label>
-          <div class="control">
-            <input
-              type="text"
-              name="family_member2-phone_area_code"
-              class="input"
-              placeholder="Código de Área"
-              
-            />
-          </div>
-        </div>
-        <div class="field">
-          <label class="label">Número de Teléfono</label>
-          <div class="control">
-            <input
-              type="text"
-              name="family_member2-phone_number"
-              class="input"
-              placeholder="Ingrese el número de teléfono"
-              
-              maxlength="15"
-            />
-          </div>
-        </div>
-      </div>
-      <div class="field mt-4">
-        <label class="label">Correo Electrónico</label>
-        <div class="control">
-          <input
-            type="email"
-            name="family_member2-email"
-            class="input"
-            placeholder="Ingrese el correo electrónico"
-            
-          />
-        </div>
-      </div>
-      <div class="field">
-        <label class="label">Nivel Educativo</label>
-        <div class="control">
-          <div class="select">
-            <select name="family_member2-education_level" >
-              <option value="">Seleccione el nivel educativo</option>
-              {% for key, value in EducationLevelEnum.__members__.items() %}
-              <option value="{{ key }}">{{ value.value }}</option>
-              {% endfor %}
-            </select>
-          </div>
-        </div>
-      </div>
-      <div class="field">
-        <label class="label">Ocupación</label>
-        <div class="control">
-          <input
-            type="text"
-            name="family_member2-occupation"
-            class="input"
-            placeholder="Ingrese la ocupación"
-            
-          />
-        </div>
-      </div>
-      <div class="field">
-        <div class="control">
-          <button type="button" class="button is-fullwidth is-outlined is-danger remove-family-member mt-4">
-            Eliminar
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
 </div>
-<!-- Family Members -->
+
+<div id="family-members" class="pt-5">
+    <h2 class="title is-size-3">Miembros de la Familia</h2>
+    <div id="family-member-container" class="container">
+        {% for member in family_form.family_members %}
+        {{ member.hidden_tag() }}
+        <div data-id="{{ loop.index }}" class="family-member box container mb-4" data-visible="{% if loop.index > 1 %}false{% endif %}">
+            <h3 class="title is-size-4 py-4">Agregando miembro {{ loop.index }}</h2>
+
+            <h4 class="subtitle is-size-5">Información General</h4>
+            <div class="columns is-mobile is-1 mb-0 pb-0">
+                <div class="field column">
+                    <label class="label">{{ member.relationship.label }}</label>
+                    <div class="control">
+                        {{ member.form.relationship(class="input family-input") }}
+                        {% if member.form.relationship.errors %}
+                            <p class="help is-danger">{{ member.form.relationship.errors[0] }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="field column">
+                    <label class="label">{{ member.form.dni.label }}</label>
+                    <div class="control">
+                        {{ member.form.dni(class="input family-input") }}
+                        {% if member.dni.errors %}
+                            <p class="help is-danger">{{ member.form.dni.errors[0] }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="columns is-1">
+                <div class="field column is-half">
+                    <label class="label">{{ member.form.first_name.label }}</label>
+                    <div class="control">
+                        {{ member.form.first_name(class="input family-input") }}
+                        {% if member.form.first_name.errors %}
+                            <p class="help is-danger">{{ member.form.first_name.errors[0] }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="field column is-half">
+                    <label class="label">{{ member.form.last_name.label }}</label>
+                    <div class="control">
+                        {{ member.form.last_name(class="input family-input") }}
+                        {% if member.form.last_name.errors %}
+                            <p class="help is-danger">{{ member.form.last_name.errors[0] }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <h4 class="subtitle is-size-5">Dirección</h4>
+            <div class="columns is-1 is-mobile mb-0 pb-0">
+                <div class="field column is-half">
+                    <label class="label">{{ member.form.street.label }}</label>
+                    <div class="control">
+                        {{ member.form.street(class="input family-input") }}
+                        {% if member.form.street.errors %}
+                            <p class="help is-danger">{{ member.form.street.errors[0] }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="field column is-half">
+                    <label class="label">{{ member.form.number.label }}</label>
+                    <div class="control">
+                        {{ member.form.number(class="input family-input") }}
+                        {% if member.form.number.errors %}
+                            <p class="help is-danger">{{ member.form.number.errors[0] }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="columns is-1">
+                <div class="field column is-third">
+                    <label class="label">{{ member.form.province.label }}</label>
+                    <div class="control">
+                        {{ member.form.province(class="input family-input") }}
+                        {% if member.form.province.errors %}
+                            <p class="help is-danger">{{ member.form.province.errors[0] }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="field column is-third">
+                    <label class="label">{{ member.form.locality.label }}</label>
+                    <div class="control">
+                        {{ member.form.locality(class="input family-input") }}
+                        {% if member.form.locality.errors %}
+                            <p class="help is-danger">{{ member.form.locality.errors[0] }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="field column is-third">
+                    <label class="label">{{ member.form.department.label }}</label>
+                    <div class="control">
+                        {{ member.form.department(class="input family-input") }}
+                        {% if member.form.department.errors %}
+                            <p class="help is-danger">{{ member.form.department.errors[0] }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <h4 class="subtitle is-size-5">Información de Contacto</h4>
+            <div class="field">
+                <label class="label">{{ member.form.email.label }}</label>
+                <div class="control">
+                    {{ member.form.email(class="input family-input") }}
+                    {% if member.form.email.errors %}
+                        <p class="help is-danger">{{ member.form.email.errors[0] }}</p>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="columns is-mobile is-gapless">
+                <div class="field column">
+                    <label class="label">{{ member.form.phone_country_code.label(class="is-size-7 has-text-semibold") }}</label>
+                    <div class="control">
+                        {{ member.form.phone_country_code(class="input family-input") }}
+                        {% if member.form.phone_country_code.errors %}
+                            <p class="help is-danger">{{ member.form.phone_country_code.errors[0] }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="field column">
+                    <label class="label">{{ member.form.phone_area_code.label(class="is-size-7 has-text-semibold") }}</label>
+                    <div class="control">
+                        {{ member.form.phone_area_code(class="input family-input") }}
+                        {% if member.form.phone_area_code.errors %}
+                            <p class="help is-danger">{{ member.form.phone_area_code.errors[0] }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="field column is-half">
+                    <label class="label">{{ member.form.phone_number.label(class="is-size-7 has-text-semibold") }} </label>
+                    <div class="control">
+                        {{ member.form.phone_number(class="input family-input") }}
+                        {% if member.form.phone_number.errors %}
+                            <p class="help is-danger">{{ member.form.phone_number.errors[0] }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="columns is-1 is-mobile">
+                <div class="field column is-half">
+                    <label class="label">{{ member.form.education_level.label }}</label>
+                    <div class="control">
+                        <p class="select is-fullwidth">{{ member.form.education_level(class="is-fullwidth family-input") }}</p>
+                        {% if member.form.education_level.errors %}
+                            <p class="help is-danger">{{ member.form.education_level.errors[0] }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="field column is-half">
+                    <label class="label">{{ member.form.occupation.label }}</label>
+                    <div class="control">
+                        {{ member.form.occupation(class="input family-input") }}
+                        {% if member.form.occupation.errors %}
+                            <p class="help is-danger">{{ member.form.occupation.errors[0] }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% if loop.index > 1 %}
+            <div class="field">
+                <div class="control">
+                    <button 
+                        id="remove-family-member" 
+                        type="button"
+                        style="display: none;" 
+                        class="button is-fullwidth is-outlined is-danger remove-family-member mt-4">
+                        Eliminar
+                    </button>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+
+        <div class="field pt-4">
+            <div class="control">
+                <button id="add-family-member" type="button" class="button is-primary is-outlined is-fullwidth add-family-member">
+                    Agregar otro miembro
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_scripts %}
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        // Family member functionality
+        const addFamilyMemberButton = document.getElementById('add-family-member');
+        const removeFamilyMemberButton = document.getElementById('remove-family-member');
+        const familyMemberContainer = document.getElementById('family-member-container');
+        const secondFamilyMember = document.querySelector('.family-member[data-id="2"]');
+        const is_optional = document.querySelector('#family_members-1-is_optional')
+        function updateRequiredFields() {
+            const fields = secondFamilyMember.querySelectorAll('.family-input');
+            const isVisible = secondFamilyMember.dataset.visible === 'true';
+            if (isVisible) {
+                is_optional.value = "False"
+                secondFamilyMember.style.display = 'block'
+            }else {
+                secondFamilyMember.style.display = "none"
+                is_optional.value = "True"
+            }
+            fields.forEach(field => {
+                if (isVisible) {
+                    field.setAttribute('required', 'required');
+                    field.style.display = 'block';
+                } else {
+                    field.removeAttribute('required');
+                    field.style.display = 'none';
+                }
+            });
+        }
+        addFamilyMemberButton.addEventListener('click', function () {
+            secondFamilyMember.dataset.visible = true
+            addFamilyMemberButton.style.display = 'none';
+            removeFamilyMemberButton.style.display = 'block'
+            secondFamilyMember.style.display = "block"
+            updateRequiredFields(secondFamilyMember)
+        });
+
+
+        removeFamilyMemberButton.addEventListener('click', function (event) {
+            const familyMember = event.target.closest('.family-member');
+            if (familyMember) {
+                updateRequiredFields(familyMember)
+                addFamilyMemberButton.style.display = 'block';
+                secondFamilyMember.dataset.visible = false
+            }
+        });
+
+        familyMemberContainer.addEventListener('click', function (event) {
+            if (event.target.classList.contains('remove-family-member')) {
+                const familyMember = event.target.closest('.family-member');
+                if (familyMember) {
+                    familyMember.style.display = 'none';
+                    familyMember.querySelectorAll('input, select').forEach(input => {
+                        input.value = '';
+                        input.required = false;
+                    });
+                }
+            }
+        });
+        updateRequiredFields()
+    })
+
+</script>
+{% endblock %}
+

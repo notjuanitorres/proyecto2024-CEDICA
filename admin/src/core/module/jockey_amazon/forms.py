@@ -5,12 +5,12 @@ from wtforms import (
     BooleanField,
     SelectField,
     TextAreaField,
-    IntegerField,
     DateField,
     FormField,
     FloatField,
     SubmitField,
     HiddenField,
+    FieldList,
 )
 from wtforms.validators import DataRequired, Length, Optional
 from src.core.module.common.forms import (
@@ -20,6 +20,7 @@ from src.core.module.common.forms import (
     DocumentsSearchForm,
     BaseManageDocumentsForm,
 )
+from src.core.module.common.validators import IsNumber
 from src.core.module.jockey_amazon.data import (
     DisabilityDiagnosisEnum,
     DisabilityTypeEnum,
@@ -33,14 +34,18 @@ from .extras.forms import (
     SchoolInstitutionForm,
     enum_choices,
 )
-from src.core.module.common.validators import IsNumber
+from .validators import DniExistence
+
+def dni_existence(form, field):
+    validator = DniExistence(message="DNI en uso")
+    validator(form, field)
 
 
 class GeneralInformationForm(FlaskForm):
     id = HiddenField("id")
     first_name = StringField("Nombre", validators=[DataRequired(), Length(max=100)])
     last_name = StringField("Apellido", validators=[DataRequired(), Length(max=100)])
-    dni = StringField("DNI", validators=[DataRequired(), Length(min=8, max=8)])
+    dni = StringField("DNI", validators=[DataRequired(), Length(min=8, max=8), dni_existence])
     birth_date = DateField("Fecha de Nacimiento", validators=[DataRequired()])
     birthplace = StringField(
         "Lugar de Nacimiento", validators=[DataRequired(), Length(max=100)]
@@ -89,26 +94,30 @@ class FamilyInformationForm(FlaskForm):
     pension_details = StringField(
         "Detalles de la Pensión", validators=[Optional(), Length(max=100)]
     )
-    family_member1 = FormField(FamilyMemberForm)
-    family_member2 = FormField(FamilyMemberForm)
+    family_members = FieldList(FormField(FamilyMemberForm), min_entries=2, max_entries=2)
     submit = SubmitField("Actualizar Informacion Familiar", name="family_submit")
-
+    
     def validate(self, extra_validators=None):
-        if not super().validate(extra_validators):
+        # Run default validation first
+        super().validate(extra_validators)
+        first_has_errors = self.family_members[0].errors
+        if first_has_errors:
             return False
+        second_member = self.family_members[1]
+        if second_member.data.get("is_optional"):
+            second_member.errors.clear()
+            return True
+        else:
+            if not second_member.validate():
+                return False
 
-        if not self.family_member1.first_name.data:
-            self.family_member1.first_name.errors.append("Este campo es obligatorio.")
-            return False
-
-        return True
 
 
 class HealthInformationForm(FlaskForm):
     has_disability = BooleanField("¿Posee Certificado de Discapacidad?")
     disability_diagnosis = SelectField(
         "Diagnóstico",
-        choices=enum_choices(DisabilityDiagnosisEnum),
+        choices=enum_choices(DisabilityDiagnosisEnum, ("None", "No posee")),
         validators=[Optional()],
     )
     disability_other = StringField(
@@ -116,7 +125,7 @@ class HealthInformationForm(FlaskForm):
     )
     disability_type = SelectField(
         "Tipo de Discapacidad",
-        choices=enum_choices(DisabilityTypeEnum),
+        choices=enum_choices(DisabilityTypeEnum, ("None", "No corresponde")),
         validators=[Optional()],
     )
     social_security = StringField(
@@ -225,10 +234,8 @@ class JockeyAmazonManagementForm(FlaskForm):
     # Work assignments information
     organization_information = FormField(WorkAssignmentForm)
 
-
 class JockeyAmazonCreateForm(JockeyAmazonManagementForm):
     pass
-
 
 class JockeyAmazonEditForm(JockeyAmazonManagementForm):
     def __init__(self, *args, **kwargs):
