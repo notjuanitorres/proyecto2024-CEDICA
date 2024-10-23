@@ -1,6 +1,7 @@
 from enum import Enum
 
 class DisabilityDiagnosisEnum(Enum):
+    NO_DIAGNOSIS = "Sin diagnóstico"
     ECNE = "ECNE"
     POST_TRAUMATIC_INJURY = "Lesión post-traumática"
     MIOLOMENINGOCELE = "Mielomeningocele"
@@ -23,6 +24,7 @@ class DisabilityDiagnosisEnum(Enum):
 
 
 class DisabilityTypeEnum(Enum):
+    NONE = "No aplica"
     MENTAL = "Mental"
     MOTOR = "Motora"
     SENSORY = "Sensorial"

@@ -5,7 +5,6 @@ from .extras.mappers import (
     WorkAssignmentMapper,
     SchoolInstitutionMapper,
 )
-from .forms import GeneralInformationForm, HealthInformationForm, FamilyInformationForm, SchoolInformationForm, WorkAssignmentsForm
 
 
 class JockeyAmazonMapper:
@@ -129,23 +128,8 @@ class JockeyAmazonMapper:
         health = data.get("health_information", {})
         school = data.get("school_information", {})
         assignments = data.get("work_assignment_information", {})
-        family_members = []
 
-        # Handling family member 1
-        if "family_member1" in data:
-            family_member1_data = data["family_member1"]
-            family_member1 = FamilyMemberMapper.to_entity(family_member1_data)
-            family_members.append(family_member1)
-
-        # Handling family member 2
-        if "family_member2" in data:
-            family_member2_data = data["family_member2"]
-            if any(family_member2_data.values()):  # Check if family_member2 data is not empty
-                family_member2 = FamilyMemberMapper.to_entity(family_member2_data)
-                family_members.append(family_member2)
-
-        # Return the entity with corrected mappings
-        return JockeyAmazon(
+        jockey = JockeyAmazon(
             id=data.get("id"),
 
             # General Information
@@ -183,7 +167,6 @@ class JockeyAmazonMapper:
             # Family Information
             has_family_assignment=family.get("has_family_assignment"),
             family_assignment_type=family.get("family_assignment_type"),
-            family_members=family_members,
 
             # Work Assignments Information
             professionals=assignments.get("professionals"),
@@ -196,3 +179,14 @@ class JockeyAmazonMapper:
             inserted_at=data.get("inserted_at"),
             updated_at=data.get("updated_at"),
         )
+        
+        for member in family.get("family_members", []):
+            print(member)
+            if member:
+                is_optional = member.get("is_optional")
+                has_been_filled = is_optional.lower() == 'false'
+                if has_been_filled:
+                    family_member = FamilyMemberMapper.to_entity(member)
+                    jockey.family_members.append(family_member)
+
+        return jockey

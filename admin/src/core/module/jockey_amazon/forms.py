@@ -107,9 +107,8 @@ class FamilyInformationForm(FlaskForm):
         if second_member.data.get("is_optional"):
             second_member.errors.clear()
             return True
-        else:
-            if not second_member.validate():
-                return False
+        if not second_member.validate():
+            return False
 
 
 
@@ -117,7 +116,7 @@ class HealthInformationForm(FlaskForm):
     has_disability = BooleanField("¿Posee Certificado de Discapacidad?")
     disability_diagnosis = SelectField(
         "Diagnóstico",
-        choices=enum_choices(DisabilityDiagnosisEnum, ("None", "No posee")),
+        choices=enum_choices(DisabilityDiagnosisEnum),
         validators=[Optional()],
     )
     disability_other = StringField(
@@ -125,7 +124,7 @@ class HealthInformationForm(FlaskForm):
     )
     disability_type = SelectField(
         "Tipo de Discapacidad",
-        choices=enum_choices(DisabilityTypeEnum, ("None", "No corresponde")),
+        choices=enum_choices(DisabilityTypeEnum),
         validators=[Optional()],
     )
     social_security = StringField(

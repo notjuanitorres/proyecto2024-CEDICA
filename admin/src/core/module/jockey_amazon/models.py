@@ -68,9 +68,9 @@ class WorkAssignment(db.Model):
     sede = db.Column(SQLAEnum(SedeEnum), nullable=False)
     days = db.Column(db.ARRAY(SQLAEnum(DayEnum)), nullable=False)
 
-    professor_or_therapist_id = db.Column(db.Integer, db.ForeignKey('employees.id'), nullable=False)
-    conductor_id = db.Column(db.Integer, db.ForeignKey('employees.id'), nullable=False)
-    track_assistant_id = db.Column(db.Integer, db.ForeignKey('employees.id'), nullable=False)
+    professor_or_therapist_id = db.Column(db.Integer, db.ForeignKey('employees.id'), nullable=True)
+    conductor_id = db.Column(db.Integer, db.ForeignKey('employees.id'), nullable=True)
+    track_assistant_id = db.Column(db.Integer, db.ForeignKey('employees.id'), nullable=True)
 
     horse_id = db.Column(db.Integer, db.ForeignKey('horses.id'), nullable=True)
     horse = db.relationship('Horse')

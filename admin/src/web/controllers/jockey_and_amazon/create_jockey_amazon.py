@@ -79,13 +79,10 @@ def create_health_information():
 @create_jockey_amazon_bp.route("/informacion-familia", methods=["GET", "POST"])
 def create_family_information():
     family_information = FamilyInformationForm(second_member_optional=True)
-    family_information.validate()
-    print(family_information.family_members.data)
 
-    # TODO: Check family members creation
-    # if family_information.validate_on_submit():
-    #     session["create_ja"]["family_information"] = family_information.data
-    #     return redirect(url_for("jockey_amazon_bp.create.create_school_information"))
+    if family_information.validate_on_submit():
+        session["create_ja"]["family_information"] = family_information.data
+        return redirect(url_for("jockey_amazon_bp.create.create_school_information"))
     
     if request.method == "GET" or request.method == "POST":
         return render_template(
