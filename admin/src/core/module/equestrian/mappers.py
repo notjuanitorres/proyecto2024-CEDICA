@@ -1,5 +1,6 @@
 from typing import Dict, List
 from .models import Horse, HorseFile
+from src.core.module.employee.mappers import EmployeeMapper
 
 
 class HorseMapper:
@@ -104,12 +105,20 @@ class HorseMapper:
             "ja_type": horse.ja_type.value,
             "inserted_at": horse.inserted_at,
             "updated_at": horse.updated_at,
-            "is_archived": horse.is_archived
+            "is_archived": horse.is_archived,
         }
 
         if documents:
-            serialized_horse["files"] = [file.to_dict() for file in horse.files if file]
-
+            serialized_horse["files_number"] = len(horse.files)
+            serialized_horse["files"] = [file.to_dict() for file in horse.files[:5] if file]
+        if horse.trainers:
+            print(horse.trainers.count)
+            serialized_horse["trainers_number"] = len(horse.trainers)
+            serialized_horse["trainers"] = [
+                EmployeeMapper.from_entity(trainer.employee)
+                for trainer in horse.trainers[:5]
+                if trainer
+            ]
         return serialized_horse
 
     @classmethod

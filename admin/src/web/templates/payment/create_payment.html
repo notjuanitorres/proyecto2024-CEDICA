@@ -1,0 +1,81 @@
+{% extends "layout.html" %}
+{% from "macros/flash_message.html" import render_flash_messages %}
+
+{% block title %} Pagos - Registrar Pago {% endblock %}
+
+{% block main_content %}
+{{ render_flash_messages(messages) }}
+
+    <section class="section">
+        <div class="container">
+            <h1 class="title">{{ "Editar" if edit else "Registrar"}} Pago</h1>
+            <form method="POST">
+               {{ form.hidden_tag() }}
+                
+                <div class="field">
+                    <label class="label">{{ form.amount.label }}</label>
+                    <div class="control">
+                        {{ form.amount(class="input", placeholder="Ingrese el monto") }}
+                    </div>
+                    {% if form.amount.errors %}
+                        <p class="help is-danger">{{ form.amount.errors[0] }}</p>
+                    {% endif %}
+                </div>
+
+                <div class="field">
+                    <label class="label">{{ form.date.label }}</label>
+                    <div class="control">
+                        {{ form.date(class="input", placeholder="Ingrese la fecha del pago") }}
+                    </div>
+                    {% if form.date.errors %}
+                        <p class="help is-danger">{{ form.date.errors[0] }}</p>
+                    {% endif %}
+                </div>
+
+                <div class="field">
+                    <label class="label" for="tipo-pago">{{ form.payment_type.label }}</label>
+                    <div class="control">
+                        {% if edit %}
+                            <input id="tipo-pago" class="input" type="text" value="{{ form.payment_type.data }}" readonly disabled>
+                        {% else %}
+                            <div class="select">
+                                {{ form.payment_type(id="tipo-pago") }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% if edit %}
+                <div class="field">
+                    <label class="label" for="beneficiario-actual">Beneficiario Actual</label>
+                    <div class="control">
+                        <input id="beneficiario-actual" class="input" type="text"
+                               value="{{ beneficiary.name}} {{ beneficiary.lastname }}"
+                               readonly disabled>
+                    </div>
+                </div>
+            {% endif %}
+
+                <div class="field">
+                    <label class="label">{{ form.description.label }}</label>
+                    <div class="control">
+                        {{ form.description(class="input", type="text", placeholder="Ingrese la descripción") }}
+                    </div>
+                    {% if form.description.errors %}
+                        <p class="help is-danger">{{ form.description.errors[0] }}</p>
+                    {% endif %}
+                </div>
+
+                <div class="field">
+                    <div class="control">
+                        {% if edit %}
+                        <button class="button is-primary" type="submit">Aplicar cambios</button>
+                        {% else %}
+                        <button class="button is-primary" type="submit">Registrar el pago</button>
+                        {% endif %}
+                    </div>
+                </div>
+            </form>
+        </div>
+    </section>
+
+{% endblock %}
