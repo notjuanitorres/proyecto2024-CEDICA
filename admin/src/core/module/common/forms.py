@@ -100,7 +100,8 @@ class BaseManageDocumentsForm(FlaskForm):
         'Tipo de subida',
         choices=[('file', 'Archivo'), ('url', 'URL')],
         validators=[DataRequired(message="Debe seleccionar el tipo de subida")],
-        default='url'
+        default='url',
+        validate_choice=True
     )
 
     title = StringField(

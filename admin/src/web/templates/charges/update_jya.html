@@ -3,9 +3,14 @@
 {% from "macros/pagination.html" import render_pagination %}
 {% from "macros/flash_message.html" import render_flash_messages %}
 
+{% block extra_styles %}
+	{{ super() }}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/components/pagination.css') }}">
+{% endblock %}
+
 {% block title %} Cobro {{ charge.id }} - CEDICA {% endblock %}
 
-{% block card_title %}Asociando un JYA {% endblock %}
+{% block card_title %}Asociando un jinete {% endblock %}
 
 {% block main_content %}
     {{ render_flash_messages(messages) }}
@@ -40,9 +45,9 @@
     <li>
       <a href="{{ url_for('charges_bp.change_jya', charge_id=charge.id) }}">
         <span class="icon is-small">
-          <i class="fas fa-horse" aria-hidden="true"></i>
+          <i class="fas fa-user" aria-hidden="true"></i>
         </span>
-        <span>Asociar JYA</span>
+        <span>Asociar jinete</span>
       </a>
     </li>
   </ul>
@@ -71,29 +76,28 @@
                 <li class="is-active">
                     <a href="{{ url_for("charges_bp.change_jya",  charge_id=charge.id ) }}">
                           <span class="icon is-small">
-                              <i class="fas fa-horse" aria-hidden="true"></i>
+                              <i class="far fa-user" aria-hidden="true"></i>
                           </span>
-                        <span>JYA asociado</span>
+                        <span>Jinete asociado</span>
                     </a>
                 </li>
             </ul>
         </div>
-    </div>
 
 
 <section id="change-jya" class="panel">
   <div class="container p-4">
     <h1 class="title is-size-4">
-      Asociando un JYA
+      Asociando un jinete
     </h1>
   </div>
   <form id="search-jya" method="GET" class="panel-block is-gap-2">
   {{ search_form.hidden_tag() }}
     {{ search_form.csrf_token }}
     <div class="field is-flex-grow-1">
-      <label for="filtrar" class="label">Buscar JYA</label>
+      <label for="filtrar" class="label">Buscar jinete</label>
       <p class="control has-icons-left">
-        {{ search_form.search_text(class="input", placeholder="Buscar por nombre o email") }}
+        {{ search_form.search_text(class="input", placeholder="Buscar por nombre o email", id='filtrar') }}
         <span class="icon is-left">
           <i class="fas fa-search" aria-hidden="true"></i>
         </span>

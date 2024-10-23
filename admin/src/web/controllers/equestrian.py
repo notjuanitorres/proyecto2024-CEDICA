@@ -16,12 +16,6 @@ from src.core.module.equestrian.mappers import HorseMapper
 equestrian_bp = Blueprint(
     "equestrian_bp", __name__, template_folder="../templates/equestrian", url_prefix="/ecuestre"
 )
-"""
-Blueprint for equestrian-related routes.
-
-Attributes:
-    equestrian_bp (Blueprint): The equestrian blueprint.
-"""
 
 
 @inject
@@ -77,7 +71,7 @@ def get_horses():
 
     paginated_horses = search_horses(search=search, need_archived=False)
 
-    return render_template("horses.html", horses=paginated_horses, search_form=search)
+    return render_template("./equestrian/horses.html", horses=paginated_horses, search_form=search)
 
 
 @equestrian_bp.route("/archivados", methods=["GET"])
@@ -102,7 +96,7 @@ def get_archived_horses():
 @check_user_permissions(permissions_required=["ecuestre_destroy"])
 @inject
 def archive_horse(
-    horses_repository: AbstractEquestrianRepository = Provide[Container.equestrian_repository],
+        horses_repository: AbstractEquestrianRepository = Provide[Container.equestrian_repository],
 ):
     """
     Route to archive a horse.
@@ -126,7 +120,7 @@ def archive_horse(
 @check_user_permissions(permissions_required=["ecuestre_destroy"])
 @inject
 def recover_horse(
-    horses: AbstractEquestrianRepository = Provide[Container.equestrian_repository],
+        horses: AbstractEquestrianRepository = Provide[Container.equestrian_repository],
 ):
     """
     Route to recover a horse.
@@ -169,7 +163,7 @@ def show_horse(horse_id: int,
         return get_horses()
 
     trainers = equestrian_repository.get_trainers_of_horse(horse_id)
-    return render_template('horse.html', horse=horse, horse_trainers=trainers)
+    return render_template('./equestrian/horse.html', horse=horse, horse_trainers=trainers)
 
 
 @equestrian_bp.route("/crear", methods=["GET", "POST"])
@@ -186,7 +180,7 @@ def create_horse():
     if request.method == "POST":
         return add_horse(create_form=create_form)
 
-    return render_template("create_horse.html", form=create_form)
+    return render_template("./equestrian/create_horse.html", form=create_form)
 
 
 @inject
@@ -204,7 +198,7 @@ def add_horse(create_form: HorseCreateForm,
          or redirect to document creation.
     """
     if not create_form.validate_on_submit():
-        return render_template("create_horse.html", form=create_form)
+        return render_template("./equestrian/create_horse.html", form=create_form)
 
     horse = equestrian_repository.add(HorseMapper.to_entity(create_form.data, []))
 
@@ -237,7 +231,7 @@ def create_document(horse_id: int,
     if request.method == "POST":
         return add_document(horse=horse, create_form=create_form)
 
-    return render_template("create_document.html", form=create_form, horse=horse)
+    return render_template("./equestrian/create_document.html", form=create_form, horse=horse)
 
 
 @inject
@@ -258,7 +252,7 @@ def add_document(horse,
         Response: The rendered template for creating a document if form wasn't valid or redirect to document creation.
     """
     if not create_form.validate_on_submit():
-        return render_template("create_document.html", form=create_form, horse=horse)
+        return render_template("./equestrian/create_document.html", form=create_form, horse=horse)
 
     if create_form.upload_type.data == "file":
         uploaded_document = storage.upload_file(
@@ -307,7 +301,7 @@ def edit_horse(horse_id: int,
     if request.method in ["POST", "PUT"]:
         return update_horse(horse_id=horse_id, edit_form=edit_form)
 
-    return render_template("edit_horse.html", form=edit_form, horse=horse)
+    return render_template("./equestrian/edit_horse.html", form=edit_form, horse=horse)
 
 
 @inject
@@ -325,7 +319,7 @@ def update_horse(horse_id: int, edit_form: HorseEditForm,
         Response: The rendered template for editing a horse if the form wasn't valid or redirect to horse details.
     """
     if not edit_form.validate_on_submit():
-        return render_template("edit_horse.html", form=edit_form)
+        return render_template("./equestrian/edit_horse.html", form=edit_form)
 
     equestrian_repository.update(
         horse_id=horse_id,
@@ -705,7 +699,8 @@ def get_horse_trainers(
 @check_user_permissions(permissions_required=["ecuestre_update"])
 @inject
 def unlink_horse_trainer(horse_id: int,
-                         equestrian_repository: AbstractEquestrianRepository = Provide[Container.equestrian_repository]):
+                         equestrian_repository: AbstractEquestrianRepository = Provide[
+                             Container.equestrian_repository]):
     """
     Route to unlink a trainer from a horse.
 

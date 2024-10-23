@@ -17,6 +17,7 @@ def apply_filters(model, query, search_query, order_by):
     if search_query:
         query = apply_filter_criteria(model, query, search_query)
         query = apply_search_criteria(model, query, search_query)
+        query = apply_multiple_search_criteria(model, query, search_query)
 
     return order_query(model, query, order_by)
 

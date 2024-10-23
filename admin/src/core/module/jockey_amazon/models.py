@@ -180,6 +180,7 @@ class JockeyAmazon(db.Model, AddressMixin, PhoneMixin, EmergencyContactMixin):
     dni = db.Column(db.String(20), unique=True, nullable=False)
     birth_date = db.Column(db.Date, nullable=False)
     birthplace = db.Column(db.String(100), nullable=False)
+    has_debts = db.Column(db.Boolean, default=False)
 
     has_scholarship = db.Column(db.Boolean, default=False)
     scholarship_observations = db.Column(db.Text, nullable=True)

@@ -1,7 +1,7 @@
-from .models import AddressMixin, EmergencyContactMixin, PhoneMixin, File
+from .models import AddressMixin, EmergencyContactMixin, PhoneMixin, File, ArgentinaProvincies
 from .forms import AddressForm, EmergencyContactForm, PhoneForm, max_file_size
 from .services import AbstractStorageServices, StorageServices
-from .validators import IsNumber, FilesNumber
+from .validators import IsNumber, FilesNumber, IsValidName
 from .mappers import FileMapper
 
 __all__ = [
@@ -20,4 +20,6 @@ __all__ = [
     "FilesNumber",
     "max_file_size",
     "FileMapper",
+    "IsValidName",
+    "ArgentinaProvincies",
 ]

@@ -3,17 +3,20 @@ from wtforms import StringField, BooleanField, SelectField, TextAreaField, Integ
     FloatField, SubmitField, HiddenField
 from wtforms.validators import DataRequired, Length, Optional
 
+from src.core.module.common import IsValidName, ArgentinaProvincies
 from src.core.module.common import IsNumber
 from src.core.module.jockey_amazon.models import FileTagEnum
 from src.core.module.common.forms import AddressForm, PhoneForm, EmergencyContactForm, DocumentsSearchForm, \
     BaseManageDocumentsForm
 from src.core.module.jockey_amazon.models import (
-    DisabilityDiagnosisEnum, DisabilityTypeEnum, FamilyAssignmentEnum, PensionEnum, WorkProposalEnum, WorkConditionEnum, SedeEnum, DayEnum, EducationLevelEnum
+    DisabilityDiagnosisEnum, DisabilityTypeEnum, FamilyAssignmentEnum, PensionEnum, WorkProposalEnum, WorkConditionEnum,
+    SedeEnum, DayEnum, EducationLevelEnum
 )
 
 
 def enum_choices(enum):
     return [(choice.name, choice.value) for choice in enum]
+
 
 class SchoolInstitutionForm(FlaskForm):
     school_name = StringField('Nombre', validators=[DataRequired(), Length(max=200)])
@@ -21,27 +24,43 @@ class SchoolInstitutionForm(FlaskForm):
     number = IntegerField('Número', validators=[DataRequired()])
     department = StringField('Departamento', validators=[Optional(), Length(max=50)])
     locality = StringField('Localidad', validators=[DataRequired(), Length(max=50)])
-    province = StringField('Provincia', validators=[DataRequired(), Length(max=50)])
-    phone_country_code = StringField('Código de País', validators=[DataRequired(), Length(max=5)])
+    province = SelectField(
+        'Provincia',
+        validators=[DataRequired()],
+        choices=enum_choices(ArgentinaProvincies),
+        validate_choice=True,
+    )
+    phone_country_code = StringField('Código de País', validators=[DataRequired(), Length(max=5)], default='54')
     phone_area_code = StringField('Código de Área', validators=[DataRequired(), Length(max=5)])
     phone_number = StringField('Número de Teléfono', validators=[DataRequired(), Length(max=15)])
 
+
 class FamilyMemberForm(FlaskForm):
     relationship = StringField('Relación', validators=[DataRequired(), Length(max=50)])
-    first_name = StringField('Nombre', validators=[DataRequired(), Length(max=100)])
-    last_name = StringField('Apellido', validators=[DataRequired(), Length(max=100)])
+    first_name = StringField('Nombre', validators=[DataRequired(), IsValidName()])
+    last_name = StringField('Apellido', validators=[DataRequired(), IsValidName()])
     dni = StringField('DNI', validators=[DataRequired(), Length(min=8, max=8)])
     street = StringField('Calle', validators=[DataRequired(), Length(max=50)])
     number = IntegerField('Número', validators=[DataRequired()])
     department = StringField('Departamento', validators=[Optional(), Length(max=50)])
     locality = StringField('Localidad', validators=[DataRequired(), Length(max=50)])
-    province = StringField('Provincia', validators=[DataRequired(), Length(max=50)])
-    phone_country_code = StringField('Código de País', validators=[DataRequired(), Length(max=5)])
+    province = SelectField(
+        'Provincia',
+        validators=[DataRequired()],
+        choices=enum_choices(ArgentinaProvincies),
+        validate_choice=True,
+    )
+    phone_country_code = StringField('Código de País', validators=[DataRequired(), Length(max=5)], default='54')
     phone_area_code = StringField('Código de Área', validators=[DataRequired(), Length(max=5)])
     phone_number = StringField('Número de Teléfono', validators=[DataRequired(), Length(max=15)])
     email = StringField('Correo Electrónico', validators=[DataRequired(), Length(max=100)])
-    education_level = SelectField('Nivel Educativo', choices=enum_choices(EducationLevelEnum), validators=[DataRequired()])
+    education_level = SelectField(
+        'Nivel Educativo',
+        choices=enum_choices(EducationLevelEnum),
+        validators=[DataRequired()]
+    )
     occupation = StringField('Ocupación', validators=[DataRequired(), Length(max=100)])
+
 
 class WorkAssignmentForm(FlaskForm):
     proposal = SelectField('Propuesta de Trabajo', choices=enum_choices(WorkProposalEnum), validators=[DataRequired()])
@@ -53,32 +72,54 @@ class WorkAssignmentForm(FlaskForm):
     track_assistant_id = IntegerField('ID del Asistente de Pista', validators=[DataRequired()])
     horse_id = IntegerField('ID del Caballo', validators=[DataRequired()])
 
+
 class JockeyAmazonManagementForm(FlaskForm):
     # General information
-    first_name = StringField('Nombre', validators=[DataRequired(), Length(max=100)])
-    last_name = StringField('Apellido', validators=[DataRequired(), Length(max=100)])
+    first_name = StringField('Nombre', validators=[DataRequired(), Length(max=100), IsValidName()])
+    last_name = StringField('Apellido', validators=[DataRequired(), Length(max=100), IsValidName()])
     dni = StringField('DNI', validators=[DataRequired(), Length(min=8, max=8)])
     birth_date = DateField('Fecha de Nacimiento', validators=[DataRequired()])
     birthplace = StringField('Lugar de Nacimiento', validators=[DataRequired(), Length(max=100)])
     address = FormField(AddressForm)
     phone = FormField(PhoneForm)
     emergency_contact = FormField(EmergencyContactForm)
-    
+
     # Family information
     has_family_assignment = BooleanField('¿Percibe alguna Asignación Familiar?')
-    family_assignment_type = SelectField('Tipo de Asignación Familiar', choices=enum_choices(FamilyAssignmentEnum), validators=[Optional()])
-    pension_type = SelectField('Tipo de Pensión', choices=[(choice.name, choice.value) for choice in PensionEnum], validators=[Optional()])
+    family_assignment_type = SelectField(
+        'Tipo de Asignación Familiar', choices=enum_choices(FamilyAssignmentEnum),
+        validators=[Optional()],
+        validate_choice=True,
+    )
+    pension_type = SelectField(
+        'Tipo de Pensión',
+        choices=[(choice.name, choice.value) for choice in PensionEnum],
+        validators=[Optional()],
+        validate_choice=True,
+    )
     pension_details = StringField('Detalles de la Pensión', validators=[Optional(), Length(max=100)])
     has_curatorship = BooleanField('¿Posee curatela?')
     curatorship_observations = TextAreaField('Observaciones sobre la Curatela', validators=[Optional()])
     family_member1 = FormField(FamilyMemberForm)
     family_member2 = FormField(FamilyMemberForm)
-    
+
     # Health information
     has_disability = BooleanField('¿Posee Certificado de Discapacidad?')
-    disability_diagnosis = SelectField('Diagnóstico', choices=enum_choices(DisabilityDiagnosisEnum), validators=[Optional()])
+    disability_diagnosis = SelectField(
+        'Diagnóstico',
+        choices=enum_choices(DisabilityDiagnosisEnum),
+        validators=[Optional()],
+        validate_choice=True,
+    )
     disability_other = StringField('Otro diagnóstico', validators=[Optional(), Length(max=100)])
-    disability_type = SelectField('Tipo de Discapacidad', choices=enum_choices(DisabilityTypeEnum), validators=[Optional()])
+
+    disability_type = SelectField(
+        'Tipo de Discapacidad',
+        choices=enum_choices(DisabilityTypeEnum),
+        validators=[Optional()],
+        validate_choice=True,
+    )
+
     has_pension = BooleanField('¿Posee alguna Pensión?')  # Checkbox
     social_security = StringField('Obra Social del Alumno', validators=[Optional(), Length(max=100)])
     social_security_number = StringField('Número de Afiliado', validators=[Optional(), Length(max=50)])
@@ -87,12 +128,12 @@ class JockeyAmazonManagementForm(FlaskForm):
     school_institution = FormField(SchoolInstitutionForm)
     current_grade_year = StringField('Grado / Año Actual', validators=[Optional(), Length(max=50)])
     school_observations = TextAreaField('Observaciones sobre la Institución Escolar', validators=[Optional()])
-    
+
     # Scholarship information
     has_scholarship = BooleanField('¿Está becado?')
     scholarship_observations = TextAreaField('Observaciones sobre la Beca', validators=[Optional()])
     scholarship_percentage = FloatField('Porcentaje de Beca', validators=[Optional()])
-    
+
     # Organization work
     professionals = TextAreaField('Profesionales que lo atienden', validators=[Optional()])
     work_assignments = FormField(WorkAssignmentForm)
@@ -100,21 +141,23 @@ class JockeyAmazonManagementForm(FlaskForm):
     def validate(self, extra_validators=None):
         if not super().validate(extra_validators):
             return False
-        
+
         if not self.family_member1.first_name.data:
             self.family_member1.first_name.errors.append('Este campo es obligatorio.')
             return False
-        
+
         return True
 
 
 class JockeyAmazonCreateForm(JockeyAmazonManagementForm):
     pass
 
+
 class JockeyAmazonEditForm(JockeyAmazonManagementForm):
     def __init__(self, *args, **kwargs):
         super(JockeyAmazonEditForm, self).__init__(*args, **kwargs)
         self.current_dni = kwargs.pop('current_dni', None)
+
 
 class JockeyAmazonSearchForm(FlaskForm):
     class Meta:
@@ -157,6 +200,7 @@ class JockeyAmazonAddDocumentsForm(BaseManageDocumentsForm):
                 message="Debe seleccionar lo que representa este archivo",
             )
         ],
+        validate_choice=True,
     )
 
 
@@ -164,8 +208,8 @@ class JockeyAmazonDocumentSearchForm(DocumentsSearchForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.filter_tag.choices = [
-            ("", "Ver Todos"),
-        ] + [(e.name, e.value) for e in FileTagEnum]
+                                      ("", "Ver Todos"),
+                                  ] + [(e.name, e.value) for e in FileTagEnum]
 
 
 class JockeyAmazonSelectForm(FlaskForm):

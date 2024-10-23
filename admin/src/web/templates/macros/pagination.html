@@ -9,8 +9,8 @@
     {% set _ = args.update({key: value}) %}
   {% endfor %}
 
-  <nav id="pagination"class="pagination is-centered" role="navigation" aria-label="pagination">
-    {% if pagination.has_prev %}
+  <nav id="pagination" class="pagination is-centered" role="navigation" aria-label="pagination">
+      {% if pagination.has_prev %}
       <a href="{{ url_for(endpoint, page=pagination.prev_num, **args) }}" class="pagination-previous">Anterior</a>
     {% else %}
       <a class="pagination-previous" disabled>Anterior</a>
