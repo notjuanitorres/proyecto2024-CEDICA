@@ -105,6 +105,32 @@ class AbstractPaymentRepository:
         """
         raise NotImplementedError
 
+    @abstractmethod
+    def archive_payment(self, payment_id) -> bool:
+        """
+        Archives a payment by its ID.
+
+        Args:
+            payment_id (int): The ID of the payment to archive.
+
+        Returns:
+            bool: True if the payment was successfully archived, False otherwise.
+        """
+        raise NotImplementedError
+
+    @abstractmethod
+    def unarchive_payment(self, payment_id) -> bool:
+        """
+        Unarchives a payment by its ID.
+
+        Args:
+            payment_id (int): The ID of the payment to unarchive.
+
+        Returns:
+            bool: True if the payment was successfully unarchived, False otherwise.
+        """
+        raise NotImplementedError
+
 
 class PaymentRepository(AbstractPaymentRepository):
     """
@@ -172,7 +198,7 @@ class PaymentRepository(AbstractPaymentRepository):
             if "payment_type" in search_query:
                 query = query.filter(Payment.payment_type == search_query["payment_type"])
             if "is_archived" in search_query:
-                query = query.filter(Payment.is_archived==search_query["is_archived"])
+                query = query.filter(Payment.is_archived == search_query["is_archived"])
 
         # Aplicar orden
         if order_by:
@@ -181,7 +207,6 @@ class PaymentRepository(AbstractPaymentRepository):
                 query = query.order_by(getattr(getattr(Payment, column), direction)())
 
         return query.paginate(page=page, per_page=per_page, error_out=False)
-
 
     def get_by_id(self, payment_id: int) -> Payment:
         return (
@@ -196,20 +221,21 @@ class PaymentRepository(AbstractPaymentRepository):
         self.save()
         return True
 
-    def archive_payment(self, payment_id):
-        payment = Payment.query.filter_by(id=payment_id).first()
-        if payment:
-            payment.is_archived = True
-            self.save()
-        return payment
+    def archive_payment(self, payment_id) -> bool:
+        payment = Payment.query.get(payment_id)
+        if not payment or payment.is_archived:
+            return False
+        payment.is_archived = True
+        self.save()
+        return True
 
-    def unarchive_payment(self, payment_id):
-        payment = Payment.query.filter_by(id=payment_id).first()
-        if payment:
-            payment.is_archived = False
-            self.payment_repository.update(payment)
-            self.save()
-        return payment
+    def unarchive_payment(self, payment_id) -> bool:
+        payment = Payment.query.get(payment_id)
+        if not payment or not payment.is_archived:
+            return False
+        payment.is_archived = False
+        self.save()
+        return True
 
     def delete(self, payment_id: int) -> bool:
         payment = Payment.query.filter_by(id=payment_id).first()

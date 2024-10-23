@@ -5,6 +5,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, SelectField, SubmitField, DateField, DecimalField, HiddenField
 from wtforms.validators import DataRequired, Length, Optional
 
+
 class PaymentForm(FlaskForm):
     """
     Form for creating and editing payments.
@@ -27,7 +28,7 @@ class PaymentForm(FlaskForm):
         ],
         places=2,
     )
-    date= DateField(
+    date = DateField(
         "Fecha del pago",
         validators=[
             DataRequired(),
@@ -77,16 +78,26 @@ class PaymentSearchForm(FlaskForm):
         self.order_by.choices = [('payment_date', 'Fecha de Pago'), ('payment_type', 'Tipo de Pago')]
         self.order.choices = [('asc', 'Ascendente'), ('desc', 'Descendente')]
 
-    start_date = DateField('Start Date', format='%Y-%m-%d', validators=[Optional()])
-    end_date = DateField('End Date', format='%Y-%m-%d', validators=[Optional()])
-    payment_type = SelectField('Payment Type', choices=[
-        ('', 'Todos'),
-        ('HONORARIOS', 'Honorarios'),
-        ('PROOVEDOR', 'Proveedor'),
-        ('GASTOS', 'Gastos Varios')
-    ], validators=[Optional()])
-    order_by = SelectField('Order By', choices=[('payment_date', 'Fecha de Pago'), ('amount', 'Monto')], validators=[Optional()])
-    order = SelectField('Order', choices=[('asc', 'Ascendente'), ('desc', 'Descendente')], validators=[Optional()])
+    start_date = DateField('Fecha de inicio', format='%Y-%m-%d', validators=[Optional()])
+    end_date = DateField('Fecha de fin', format='%Y-%m-%d', validators=[Optional()])
+    payment_type = SelectField(
+        'Tipo de pago',
+        choices=[('', 'Todos'), ('HONORARIOS', 'Honorarios'), ('PROOVEDOR', 'Proveedor'), ('GASTOS', 'Gastos Varios')],
+        validators=[Optional()],
+        validate_choice=True
+    )
+    order_by = SelectField(
+        'Ordenar por',
+        choices=[('payment_date', 'Fecha de Pago'), ('amount', 'Monto')],
+        validators=[Optional()],
+        validate_choice=True
+    )
+    order = SelectField(
+        'En orden',
+        choices=[('asc', 'Ascendente'), ('desc', 'Descendente')],
+        validators=[Optional()],
+        validate_choice=True
+    )
     submit_search = SubmitField("Buscar")
 
     

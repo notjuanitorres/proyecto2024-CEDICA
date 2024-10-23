@@ -33,22 +33,24 @@
                 </div>
 
                 <div class="field">
-                    <label class="label">{{ form.payment_type.label }}</label>
+                    <label class="label" for="tipo-pago">{{ form.payment_type.label }}</label>
                     <div class="control">
                         {% if edit %}
-                            <input class="input" type="text" value="{{ form.payment_type.data }}" readonly disabled>
+                            <input id="tipo-pago" class="input" type="text" value="{{ form.payment_type.data }}" readonly disabled>
                         {% else %}
                             <div class="select">
-                                {{ form.payment_type() }}
+                                {{ form.payment_type(id="tipo-pago") }}
                             </div>
                         {% endif %}
                     </div>
                 </div>
                 {% if edit %}
                 <div class="field">
-                    <label class="label">Beneficiario Actual</label>
+                    <label class="label" for="beneficiario-actual">Beneficiario Actual</label>
                     <div class="control">
-                        <input class="input" type="text" value="{{ payment.beneficiary_name }}" readonly disabled>
+                        <input id="beneficiario-actual" class="input" type="text"
+                               value="{{ beneficiary.name}} {{ beneficiary.lastname }}"
+                               readonly disabled>
                     </div>
                 </div>
             {% endif %}
@@ -68,7 +70,7 @@
                         {% if edit %}
                         <button class="button is-primary" type="submit">Aplicar cambios</button>
                         {% else %}
-                        <button class="button is-primary" type="submit">Registrar El Pago</button>
+                        <button class="button is-primary" type="submit">Registrar el pago</button>
                         {% endif %}
                     </div>
                 </div>

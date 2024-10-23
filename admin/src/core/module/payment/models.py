@@ -3,18 +3,23 @@ from src.core.database import db
 from src.core.module.payment.data import PaymentTypeEnum
 from src.core.module.employee.models import Employee
 
+
 class Payment(db.Model):
     """
-        Converts a Payment entity to a dictionary of payment data.
+     Model representing a payment
 
-        Args:
-            payment (Payment): An instance of the Payment entity.
-
-        Returns:
-            Dict: A dictionary containing the payment's attributes, including "id",
-                  "amount", "payment_date", "payment_type", "description", "beneficiary_id",
-                  "beneficiary_name", "inserted_at", and "updated_at".
-        """
+    Attributes:
+        id (int): The unique identifier of the payment.
+        amount (float): The amount to be paid.
+        payment_date (datetime.date): The date of the payment.
+        payment_type (PaymentTypeEnum): The type of payment.
+        description (str): The description of the payment.
+        beneficiary_id (int): The ID of the beneficiary.
+        beneficiary (Employee): The beneficiary of the payment.
+        is_archived (bool): Indicates if the payment is deleted.
+        inserted_at (datetime.datetime): The timestamp when the payment was inserted.
+        updated_at (datetime.datetime): The timestamp when the payment was last updated.
+    """
     __tablename__ = "payments"
 
     id = db.Column(db.Integer, primary_key=True)

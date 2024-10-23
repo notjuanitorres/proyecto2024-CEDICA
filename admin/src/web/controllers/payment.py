@@ -1,11 +1,11 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 from dependency_injector.wiring import inject, Provide
 from src.core.module.employee.forms import EmployeeSearchForm, EmployeeSelectForm
-from src.core.module.employee.repositories import EmployeeRepository
+from src.core.module.employee.repositories import AbstractEmployeeRepository as EmployeeRepository
 from src.core.module.payment.forms import PaymentForm, PaymentSearchForm, PaymentEditForm
 from src.core.container import Container
 from src.web.helpers.auth import check_user_permissions
-from src.core.module.payment.repositories import PaymentRepository
+from src.core.module.payment.repositories import AbstractPaymentRepository as PaymentRepository
 from src.core.module.payment.mappers import PaymentMapper
 
 
@@ -48,7 +48,8 @@ def get_payments(
 
     payments = payment_repository.get_page(page, per_page, search_query, order_by)
 
-    return render_template("payments.html", form=form, payments=payments)
+    return render_template("./payment/payments.html", form=form, payments=payments)
+
 
 @payment_bp.route("/crear", methods=["GET", "POST"])
 @check_user_permissions(permissions_required=['pagos_create'])
@@ -77,11 +78,12 @@ def create_payment(
         if form.payment_type.data == 'HONORARIOS':
             session["payment"] = payment_data
             return redirect(url_for('payment_bp.select_employee'))
-        payment_repository.add(PaymentMapper.to_entity(payment_data))
+        else:
+            payment_repository.add(PaymentMapper.to_entity(payment_data))
         flash('Pago creado exitosamente', 'success')
         return redirect(url_for('payment_bp.get_payments'))
     else:
-        if(form.amount.data):
+        if form.amount.data:
             flash('Error al crear el pago', 'danger')
     return render_template('payment/create_payment.html', form=form,  edit=False)
 
@@ -92,6 +94,7 @@ def create_payment(
 def show_payment(
     payment_id: int,
     payment_repository: PaymentRepository = Provide[Container.payment_repository],
+        employee_repository: EmployeeRepository = Provide[Container.employee_repository],
 ):
     """
     Route to show details of a specific payment.
@@ -99,12 +102,15 @@ def show_payment(
     Args:
         payment_id (int): The ID of the payment.
         payment_repository (PaymentRepository): The payment repository.
+        employee_repository (EmployeeRepository): The employee repository.
 
     Returns:
         Response: The rendered template for the payment details (str).
     """
-    payment =PaymentMapper.from_entity(payment_repository.get_by_id(payment_id))
-    return render_template("payment/payment.html", payment=payment)
+    payment = PaymentMapper.from_entity(payment_repository.get_by_id(payment_id))
+    beneficiary = employee_repository.get_employee(payment["beneficiary_id"]) if payment["beneficiary_id"] else {}
+    return render_template("payment/payment.html", payment=payment, beneficiary=beneficiary)
+
 
 @payment_bp.route("/editar/<int:payment_id>", methods=["GET", "POST"])
 @inject
@@ -112,6 +118,7 @@ def show_payment(
 def edit_payment(
     payment_id: int,
     payment_repository: PaymentRepository = Provide[Container.payment_repository],
+    employee_repository: EmployeeRepository = Provide[Container.employee_repository],
 ):
     """
     Route to edit an existing payment.
@@ -119,16 +126,17 @@ def edit_payment(
     Args:
         payment_id (int): The ID of the payment.
         payment_repository (PaymentRepository): The payment repository.
+        employee_repository (EmployeeRepository): The employee repository.
 
     Returns:
         Response: The rendered template for editing a payment (str).
     """
-    payment =PaymentMapper.from_entity(payment_repository.get_by_id(payment_id))
-    payment["amount"] = float(payment["amount"]) # Convierte el string de ammount a float 
+    payment = PaymentMapper.from_entity(payment_repository.get_by_id(payment_id))
+    payment["amount"] = float(payment["amount"])  # Convierte el string de ammount a float
+    beneficiary = employee_repository.get_employee(payment["beneficiary_id"]) if payment["beneficiary_id"] else {}
     form = PaymentEditForm(data=payment)
     if form.validate_on_submit():
         payment_data = {
-            "id": payment_id,
             "amount": form.amount.data,
             "payment_date": form.date.data,
             "payment_type": form.payment_type.data,
@@ -140,7 +148,9 @@ def edit_payment(
         flash('Pago actualizado exitosamente', 'success')
         return redirect(url_for('payment_bp.show_payment', payment_id=payment_id))
 
-    return render_template('payment/create_payment.html', form=form, payment=payment, edit=True)
+    return render_template('payment/create_payment.html',
+                           form=form, payment=payment, edit=True, beneficiary=beneficiary)
+
 
 @payment_bp.route("/eliminar", methods=["POST"])
 @inject
@@ -162,6 +172,7 @@ def delete_payment(
     flash('Pago eliminado exitosamente', 'success')
     return redirect(url_for('payment_bp.get_archived_payments'))
 
+
 @payment_bp.route("/archivados", methods=["GET", "POST"])
 @check_user_permissions(permissions_required=['pagos_index'])
 @inject
@@ -179,7 +190,7 @@ def get_archived_payments(
     """
     form = PaymentSearchForm(request.args)
     
-    search_query={}
+    search_query = {}
     order_by = []
 
     if form.validate():
@@ -196,7 +207,8 @@ def get_archived_payments(
     search_query["is_archived"] = True
 
     payments = payment_repository.get_page(page, per_page, search_query, order_by)
-    return render_template("payments_archived.html", form=form, payments=payments)
+    return render_template("./payment/payments_archived.html", form=form, payments=payments)
+
 
 @payment_bp.route("/archivar", methods=["POST"])
 @check_user_permissions(permissions_required=['pagos_destroy'])
@@ -214,9 +226,13 @@ def archive_payment(
         Response: Redirect to the list of payments.
     """
     payment_id = request.form["item_id"]
-    payment_repository.archive_payment(payment_id)
-    flash('Pago archivado exitosamente', 'success')
+    success = payment_repository.archive_payment(payment_id)
+    if success:
+        flash('Pago archivado exitosamente', 'success')
+    else:
+        flash('El pago ya esta archivado o no existe', 'danger')
     return redirect(url_for('payment_bp.get_payments'))
+
 
 @payment_bp.route("/desarchivar/<int:payment_id>", methods=["POST"])
 @check_user_permissions(permissions_required=['pagos_destroy'])
@@ -235,8 +251,11 @@ def unarchive_payment(
     Returns:
         Response: Redirect to the list of payments.
     """
-    payment_repository.unarchive_payment(payment_id)
-    flash('Pago desarchivado exitosamente', 'success')
+    success = payment_repository.unarchive_payment(payment_id)
+    if success:
+        flash('Pago desarchivado exitosamente', 'success')
+    else:
+        flash('El pago ya esta desarchivado o no existe', 'danger')
     return redirect(url_for('payment_bp.get_payments'))
 
 
@@ -253,7 +272,6 @@ def select_employee(
     Args:
         employee_repository (EmployeeRepository): The employee repository.
         payment_repository (PaymentRepository): The payment repository.
-        is_edit (bool): Indicates if an existing payment is being edited.
 
     Returns:
         Response: The rendered template for selecting an employee (str).
@@ -268,15 +286,15 @@ def select_employee(
     page = request.args.get("page", 1, type=int)
     per_page = request.args.get("per_page", 10, type=int)
 
-    employees = employee_repository.get_page(page, per_page, search_query)
+    employees = employee_repository.get_page(page, per_page, search_query=search_query)
 
     if request.method == "POST" and select_form.validate_on_submit():
         selected_employee_id = select_form.selected_employee.data
-        payment_data=session["payment"]
+        payment_data = session["payment"]
         session.pop("payment", None)
         payment_data["beneficiary_id"] = selected_employee_id
-        pago_entity= PaymentMapper.to_entity(payment_data)
-        pago_entity=payment_repository.add(pago_entity)
+        pago_entity = PaymentMapper.to_entity(payment_data)
+        pago_entity = payment_repository.add(pago_entity)
         flash('Pago creado exitosamente', 'success')
         return redirect(url_for('payment_bp.show_payment', payment_id=pago_entity.id))
 

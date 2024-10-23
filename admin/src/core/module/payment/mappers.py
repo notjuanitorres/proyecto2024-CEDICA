@@ -2,6 +2,7 @@ from typing import Dict
 from src.core.module.payment.models import Payment
 from src.core.module.employee.models import Employee
 
+
 class PaymentMapper:
     """
     A mapper class for converting between Payment entities and dictionaries.
@@ -44,7 +45,7 @@ class PaymentMapper:
         Returns:
             Dict: A dictionary containing the payment's attributes, including "id",
                   "amount", "payment_date", "payment_type", "description", "beneficiary_id",
-                  "beneficiary_name", "inserted_at", and "updated_at".
+                  "inserted_at", and "updated_at".
         """
         return {
             "id": payment.id,
@@ -53,7 +54,6 @@ class PaymentMapper:
             "payment_type": payment.payment_type.name,
             "description": payment.description,
             "beneficiary_id": payment.beneficiary_id,
-            "beneficiary_name": payment.beneficiary.fullname if payment.beneficiary else None,
             "inserted_at": payment.inserted_at,
             "updated_at": payment.updated_at,
         }
