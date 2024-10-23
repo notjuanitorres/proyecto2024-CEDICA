@@ -20,6 +20,15 @@ payment_bp = Blueprint(
 def get_payments(
     payment_repository: PaymentRepository = Provide[Container.payment_repository],
 ):
+    """
+    Route to get a paginated list of payments.
+
+    Args:
+        payment_repository (PaymentRepository): The payment repository.
+
+    Returns:
+        Response: The rendered template for the list of payments (str).
+    """
     form = PaymentSearchForm(request.args)
     search_query = {}
     order_by = []
@@ -37,7 +46,7 @@ def get_payments(
     per_page = request.args.get("per_page", 10, type=int)
     search_query["is_archived"] = False
 
-    payments = payment_repository.get_page(page, per_page, 100, search_query, order_by)
+    payments = payment_repository.get_page(page, per_page, search_query, order_by)
 
     return render_template("payments.html", form=form, payments=payments)
 
@@ -47,6 +56,15 @@ def get_payments(
 def create_payment(
     payment_repository: PaymentRepository = Provide[Container.payment_repository],
 ):
+    """
+    Route to create a new payment.
+
+    Args:
+        payment_repository (PaymentRepository): The payment repository.
+
+    Returns:
+        Response: The rendered template for creating a payment (str).
+    """
     form = PaymentForm()
     if form.validate_on_submit() and form.amount.data:
         payment_data = {
@@ -75,6 +93,16 @@ def show_payment(
     payment_id: int,
     payment_repository: PaymentRepository = Provide[Container.payment_repository],
 ):
+    """
+    Route to show details of a specific payment.
+
+    Args:
+        payment_id (int): The ID of the payment.
+        payment_repository (PaymentRepository): The payment repository.
+
+    Returns:
+        Response: The rendered template for the payment details (str).
+    """
     payment =PaymentMapper.from_entity(payment_repository.get_by_id(payment_id))
     return render_template("payment/payment.html", payment=payment)
 
@@ -85,6 +113,16 @@ def edit_payment(
     payment_id: int,
     payment_repository: PaymentRepository = Provide[Container.payment_repository],
 ):
+    """
+    Route to edit an existing payment.
+
+    Args:
+        payment_id (int): The ID of the payment.
+        payment_repository (PaymentRepository): The payment repository.
+
+    Returns:
+        Response: The rendered template for editing a payment (str).
+    """
     payment =PaymentMapper.from_entity(payment_repository.get_by_id(payment_id))
     payment["amount"] = float(payment["amount"]) # Convierte el string de ammount a float 
     form = PaymentEditForm(data=payment)
@@ -110,6 +148,15 @@ def edit_payment(
 def delete_payment(
     payment_repository: PaymentRepository = Provide[Container.payment_repository],
 ):
+    """
+    Route to delete a payment.
+
+    Args:
+        payment_repository (PaymentRepository): The payment repository.
+
+    Returns:
+        Response: Redirect to the list of archived payments.
+    """
     payment_id = request.form["item_id"]
     payment_repository.delete(payment_id)
     flash('Pago eliminado exitosamente', 'success')
@@ -121,6 +168,15 @@ def delete_payment(
 def get_archived_payments(
     payment_repository: PaymentRepository = Provide[Container.payment_repository],
 ):
+    """
+    Route to get a paginated list of archived payments.
+
+    Args:
+        payment_repository (PaymentRepository): The payment repository.
+
+    Returns:
+        Response: The rendered template for the list of archived payments (str).
+    """
     form = PaymentSearchForm(request.args)
     
     search_query={}
@@ -139,7 +195,7 @@ def get_archived_payments(
     
     search_query["is_archived"] = True
 
-    payments = payment_repository.get_page(page, per_page,100, search_query, order_by)
+    payments = payment_repository.get_page(page, per_page, search_query, order_by)
     return render_template("payments_archived.html", form=form, payments=payments)
 
 @payment_bp.route("/archivar", methods=["POST"])
@@ -148,6 +204,15 @@ def get_archived_payments(
 def archive_payment(
     payment_repository: PaymentRepository = Provide[Container.payment_repository],
 ):
+    """
+    Route to archive a payment.
+
+    Args:
+        payment_repository (PaymentRepository): The payment repository.
+
+    Returns:
+        Response: Redirect to the list of payments.
+    """
     payment_id = request.form["item_id"]
     payment_repository.archive_payment(payment_id)
     flash('Pago archivado exitosamente', 'success')
@@ -160,6 +225,16 @@ def unarchive_payment(
     payment_id: int,
     payment_repository: PaymentRepository = Provide[Container.payment_repository],
 ):
+    """
+    Route to unarchive a payment.
+
+    Args:
+        payment_id (int): The ID of the payment.
+        payment_repository (PaymentRepository): The payment repository.
+
+    Returns:
+        Response: Redirect to the list of payments.
+    """
     payment_repository.unarchive_payment(payment_id)
     flash('Pago desarchivado exitosamente', 'success')
     return redirect(url_for('payment_bp.get_payments'))
@@ -171,8 +246,18 @@ def unarchive_payment(
 def select_employee(
     employee_repository: EmployeeRepository = Provide[Container.employee_repository],
     payment_repository: PaymentRepository = Provide[Container.payment_repository],
-    is_edit=False
 ):
+    """
+    Route to select an employee as the beneficiary of a payment.
+
+    Args:
+        employee_repository (EmployeeRepository): The employee repository.
+        payment_repository (PaymentRepository): The payment repository.
+        is_edit (bool): Indicates if an existing payment is being edited.
+
+    Returns:
+        Response: The rendered template for selecting an employee (str).
+    """
     form = EmployeeSearchForm(request.args)
     select_form = EmployeeSelectForm()
     search_query = {}

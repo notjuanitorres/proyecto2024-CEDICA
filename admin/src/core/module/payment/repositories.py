@@ -9,8 +9,36 @@ from src.core.module.common.repositories import apply_filters
 
 
 class AbstractPaymentRepository:
+    """
+    Abstract interface for the payment repository.
+
+    Methods:
+        add(payment: Payment) -> Payment | None:
+            Adds a new payment to the repository.
+
+        get_page(page: int, per_page: int, max_per_page: int, search_query: Dict = None, order_by: list = None) -> Pagination:
+            Retrieves a page of payments based on search and order parameters.
+
+        get_by_id(payment_id: int) -> Payment:
+            Retrieves a payment by its ID.
+
+        update(payment_id: int, data: Dict) -> bool:
+            Updates an existing payment with the provided data.
+
+        delete(payment_id: int) -> bool:
+            Deletes a payment by its ID.
+    """
     @abstractmethod
     def add(self, payment: Payment) -> Payment | None:
+        """
+        Adds a new payment to the repository.
+
+        Args:
+            payment (Payment): The payment instance to add.
+
+        Returns:
+            Payment | None: The added payment instance or None if the addition failed.
+        """
         pass
 
     @abstractmethod
@@ -22,26 +50,101 @@ class AbstractPaymentRepository:
         search_query: Dict = None,
         order_by: list = None,
     ) -> Pagination:
+        """
+        Retrieves a page of payments based on search and order parameters.
+
+        Args:
+            page (int): The page number.
+            per_page (int): The number of items per page.
+            max_per_page (int): The maximum number of items per page.
+            search_query (Dict, optional): The search parameters.
+            order_by (list, optional): The order parameters.
+
+        Returns:
+            Pagination: A pagination instance with the results.
+        """
         raise NotImplementedError
 
     @abstractmethod
     def get_by_id(self, payment_id: int) -> Payment:
+        """
+        Retrieves a payment by its ID.
+
+        Args:
+            payment_id (int): The ID of the payment.
+
+        Returns:
+            Payment: The retrieved payment instance.
+        """
         raise NotImplementedError
 
     @abstractmethod
     def update(self, payment_id: int, data: Dict) -> bool:
+        """
+        Updates an existing payment with the provided data.
+
+        Args:
+            payment_id (int): The ID of the payment to update.
+            data (Dict): The data to update in the payment.
+
+        Returns:
+            bool: True if the payment was successfully updated, False otherwise.
+        """
         raise NotImplementedError
 
     @abstractmethod
     def delete(self, payment_id: int) -> bool:
+        """
+        Deletes a payment by its ID.
+
+        Args:
+            payment_id (int): The ID of the payment to delete.
+
+        Returns:
+            bool: True if the payment was successfully deleted, False otherwise.
+        """
         raise NotImplementedError
 
 
 class PaymentRepository(AbstractPaymentRepository):
+    """
+    Concrete implementation of the payment repository using SQLAlchemy.
+
+    Methods:
+        __init__():
+            Initializes the payment repository.
+
+        save():
+            Commits the changes to the database.
+
+        add(payment: Payment) -> Payment:
+            Adds a new payment to the repository and commits it to the database.
+
+        get_page(page: int, per_page: int, max_per_page: int, search_query: Dict = None, order_by: List = None) -> Pagination:
+            Retrieves a page of payments based on search and order parameters.
+
+        get_by_id(payment_id: int) -> Payment:
+            Retrieves a payment by its ID.
+
+        update(payment_id: int, data: Dict) -> bool:
+            Updates an existing payment with the provided data.
+
+        archive_payment(payment_id: int) -> Payment:
+            Archives a payment by its ID.
+
+        unarchive_payment(payment_id: int) -> Payment:
+            Unarchives a payment by its ID.
+
+        delete(payment_id: int) -> bool:
+            Deletes a payment by its ID.
+    """
     def __init__(self):
         self.db: SQLAlchemy = database
 
     def save(self):
+        """
+        Commits the changes to the database.
+        """
         self.db.session.commit()
 
     def add(self, payment: Payment):
@@ -55,7 +158,6 @@ class PaymentRepository(AbstractPaymentRepository):
         self,
         page: int,
         per_page: int,
-        max_per_page: int,
         search_query: Dict = None,
         order_by: List = None,
     ):

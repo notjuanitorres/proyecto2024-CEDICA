@@ -6,6 +6,18 @@ from wtforms import StringField, SelectField, SubmitField, DateField, DecimalFie
 from wtforms.validators import DataRequired, Length, Optional
 
 class PaymentForm(FlaskForm):
+    """
+    Form for creating and editing payments.
+
+    Attributes:
+        amount (DecimalField): The amount to be paid.
+        date (DateField): The date of the payment.
+        description (StringField): The description of the payment.
+        payment_type (SelectField): The type of payment.
+        beneficiary (StringField): The beneficiary of the payment (read-only).
+        beneficiary_id (HiddenField): The ID of the beneficiary.
+        submit (SubmitField): The submit button for the form.
+    """
     def __init__(self, *args, **kwargs):
         super(PaymentForm, self).__init__(*args, **kwargs)
     amount = DecimalField(
@@ -49,7 +61,17 @@ class PaymentForm(FlaskForm):
 
     
 class PaymentSearchForm(FlaskForm):
+    """
+    Form for searching payments.
 
+    Attributes:
+        start_date (DateField): The start date for the search.
+        end_date (DateField): The end date for the search.
+        payment_type (SelectField): The type of payment to search for.
+        order_by (SelectField): The field to order the results by.
+        order (SelectField): The order direction (ascending or descending).
+        submit_search (SubmitField): The submit button for the search form.
+    """
     def __init__(self, *args, **kwargs):
         super(PaymentSearchForm, self).__init__(*args, **kwargs)
         self.order_by.choices = [('payment_date', 'Fecha de Pago'), ('payment_type', 'Tipo de Pago')]
