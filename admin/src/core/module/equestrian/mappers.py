@@ -109,9 +109,11 @@ class HorseMapper:
         }
 
         if documents:
+            serialized_horse["files_number"] = len(horse.files)
             serialized_horse["files"] = [file.to_dict() for file in horse.files[:5] if file]
-
         if horse.trainers:
+            print(horse.trainers.count)
+            serialized_horse["trainers_number"] = len(horse.trainers)
             serialized_horse["trainers"] = [
                 EmployeeMapper.from_entity(trainer.employee)
                 for trainer in horse.trainers[:5]

@@ -103,55 +103,53 @@
             <span class="icon mr-2">
                 <i class="fa-solid fa-user"></i>                
             </span>
-            Usuario asociado a {{ employee.name }}
-            {% if not account %}
+            Entrenadores asociados a {{ horse.name }}
+            {% if not horse.trainers %}
             <span class="tag is-info is-medium ml-2">Sin informacion</span>
             {% else %}
-            {% if account.enabled %}
-            <span class="tag is-success is-medium ml-2">Activo</span>
-            {% else %}
-            <span class="tag is-danger is-medium ml-2">Bloqueado</span>
-            {% endif %}
+            <span class="tag is-success is-medium ml-2">Total: {{ horse.trainers_number }}</span>
             {% endif %}
         </h2>
     </header>
-    {% if account %}
+    {% if horse.trainers %}
     <div class="card-content">
         <div class="content">
             <article class="media">
-                <div class="media-left">
-                    <figure class="image is-64x64">
-                        <img src="https://bulma.io/assets/images/placeholders/128x128.png" alt="Image" />
-                    </figure>
-                </div>
                 <div class="media-content">
                     <div class="content">
-                        <p>
-                            <strong class="is-size-5">{{ account.alias }}</strong> 
-                            <small>{{ account.inserted_at | format_date }}</small>
-                            <br />
-                            {{ account.email }}
-                            <br />
-                        </p>
+                        {% for trainer in horse.trainers %}
+                        <div class="box">
+                            <div class="content">
+                                <p class="mb-0">
+                                    <strong class="is-size-5">
+                                        {{ trainer.name }}
+                                        {{ trainer.lastname}} 
+                                    </strong>
+                                    <small>es miembro desde {{ trainer.employment_information.start_date | format_date }}</small>
+                                </p>
+                                <p>
+                                    <strong>Correo: </strong>{{ trainer.email }}
+                                    <br>
+                                    <strong>Puesto laboral: </strong> {{ trainer.employment_information.position }}
+                                </p>
+                            </div>
+                        </div>
+                        {% else %}
+                        <p>Oops. Parece que no hay entradores asociados.</p>
+                        {% endfor %} 
                     </div>
                 </div>
             </article>
         </div>
     </div>
-    <footer class="card-footer">
-        <a href="{{ url_for( "employee_bp.unlink_account", employee_id=employee.id ) }}" class="card-footer-item has-text-link">Desasociar</a>
-    </footer>
     {% else %}
-    <div class="card-content">
-        <div class="content">
-            <p>No existe un usuario asociado a este integrante</p>
-        </div>
-    </div>
     <footer class="card-footer">
-        {% if employee.employment_information.is_active %}
-        <a href="{{ url_for( "employee_bp.link_account", employee_id=employee.id ) }}" class="card-footer-item has-text-link">Asociar cuenta</a>
+        {% if "ecuestre_update" in permissions or is_admin %}
+        <a href="{{ url_for( "employee_bp.edit_trainers", horse_id=horse.id ) }}" class="card-footer-item has-text-link">Agregar</a>
         {% else %}
-        <button type="disabled" class="card-footer-item has-text-info">No se puede asociar una cuenta a un miembro inactivo o eliminado</button>
+        <button type="disabled" class="card-footer-item has-text-info">
+            <p>No existen entrenadores asociados a este caballo</p>
+        </button>
         {% endif %}
     </footer>
     {% endif %}
@@ -163,8 +161,8 @@
                 <i class="fa-solid fa-file"></i>
             </span>
             Documentos anexos:
-            {% if horse.files | length > 0%}
-                <span class="tag is-medium is-success ml-2">Total: {{ horse.files | length }}</span>
+            {% if horse.files_number > 0%}
+                <span class="tag is-medium is-success ml-2">Total: {{ horse.files_number }}</span>
             {% else %}
                 <span class="tag is-medium is-info ml-2">No posee</span>
             {% endif %}
