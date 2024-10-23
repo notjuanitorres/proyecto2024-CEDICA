@@ -31,16 +31,15 @@
             <form method="POST" class="block" enctype="multipart/form-data">
                 {{ form.hidden_tag() }}
                 <div class="columns is-multiline">
-
                     {% block upload_type %}
                     <div class="column is-full {% block visibility %}{% endblock %}">
                         <div class="field">
-                            <label class="label">{{ form.upload_type.label }}</label>
-                            <div class="control is-flex">
+                            {{ form.upload_type.label(class="label has-text-centered-touch") }}
+                            <div class="control grid-touch is-flex-mobile is-justify-content-center is-gap-4">
                                 {% for subfield in form.upload_type %}
-                                <label class="radio">
-                                    {{ subfield }}
-                                    <span class="radio-label">{{ subfield.label }}</span>
+                                <label class="radio is-flex-touch is-justify-content-center p-2">
+                                    {{ subfield(style="transform: scale(1.25)") }}
+                                    <span class="radio-label pl-2">{{ subfield.label }}</span>
                                 </label>
                                 {% endfor %}
                             </div>
@@ -122,11 +121,11 @@
 
                     <div class="column is-full">
                         <div class="field">
-                            <div class="control">
+                            <div class="control grid">
+                                {% block exit_button %}{% endblock %}
                                 <button type="submit" class="button is-half is-primary">
                                     {% block submit_label %}Crear{% endblock %}
                                 </button>
-                                {% block exit_button %}{% endblock %}
                             </div>
                         </div>
                     </div>
@@ -136,7 +135,6 @@
         </div>
     </div>
 </div>
-
 {% endblock %}
 
 {% block extra_scripts %}

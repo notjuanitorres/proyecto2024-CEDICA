@@ -33,7 +33,9 @@
 {% endblock %}
 
 {% block inner_title %}
-  Caballos
+    <h2 class="title is-size-3 has-text-centered">
+        Caballos
+    </h2>
 {% endblock %}
 
 {% block form_action %}{{ url_for("equestrian_bp.get_archived_horses") }}{% endblock %}
@@ -52,7 +54,6 @@
 
 
 {% block table_header %}
-  <th></th>
   <th>ID</th>
   <th>Nombre</th>
   <th>Raza</th>
@@ -63,7 +64,6 @@
   <th>Sede Asignada</th>
   <th>Tipo de Actividad</th>
   <th>Sexo</th>
-  <th></th>
 {% endblock %}
 
 {% block top_pagination %}
@@ -81,8 +81,7 @@
         to_left=true,
         endpoints={
           'show':'equestrian_bp.show_horse',
-          'edit': 'equestrian_bp.edit_horse',
-          'archive':'equestrian_bp.archive_horse'
+          'delete':'equestrian_bp.delete_horse'
         },
         permission_to_show="ecuestre_show",
         permission_to_edit="ecuestre_update",
@@ -115,7 +114,6 @@
 {% endblock %}
 
 {% block table_footer %}
-  <th></th>
   <th>ID</th>
   <th>Nombre</th>
   <th>Raza</th>
@@ -126,7 +124,6 @@
   <th>Sede Asignada</th>
   <th>Tipo de Actividad</th>
   <th>Sexo</th>
-  <th></th>
 {% endblock %}
 
 {% block bottom_pagination %}
@@ -140,7 +137,7 @@
       title="Eliminar",
       msg="¿Está seguro de que desea eliminar al caballo?",
       msg_sub="Luego de confirmar, no se podrán revertir los cambios.
-       Todas las relaciones con este caballo serán eliminadas."
+       Todos los documentos asociados a este caballo serán eliminados."
     )
   }}
 {% endblock %}

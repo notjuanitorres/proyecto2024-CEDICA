@@ -9,6 +9,7 @@
 {% block extra_styles %}
     {{ super() }}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/components/table.css' )}}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/components/pagination.css' )}}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/documents/buttons.css' )}}">
 {% endblock%}
 
@@ -29,10 +30,8 @@
     {% block doc_header %}
     {% endblock %}
     <section class="is-fullheight-with-navbar pt-4">
-    <h2 class="title is-size-3 has-text-centered">
       {% block inner_title %}
       {% endblock %}
-    </h2>
     </section>
       <div class="column is-full">
         <div class="field">
@@ -87,7 +86,7 @@
                     <div class="field is-flex-grow-1">
                       <label for="filtrar" class="label is-invisible-tablet">Buscar</label>
                       <p class="control has-icons-left">
-                        {{ search_form.search_text(class="input", placeholder="Buscar") }}
+                        {{ search_form.search_text(class="input", placeholder="Buscar", id='filtrar') }}
                         <span class="icon is-left">
                           <i class="fas fa-search" aria-hidden="true"></i>
                         </span>

@@ -158,8 +158,8 @@ class WorkAssignment(db.Model):
     conductor_id = db.Column(db.Integer, db.ForeignKey('employees.id'), nullable=False)
     track_assistant_id = db.Column(db.Integer, db.ForeignKey('employees.id'), nullable=False)
 
-    horse_id = db.Column(db.Integer, db.ForeignKey('horses.id'), nullable=True)
-    horse = db.relationship('Horse')
+    horse_id = db.Column(db.Integer, db.ForeignKey('horses.id', ondelete='SET NULL'), nullable=True)
+    horse = db.relationship('Horse', back_populates='work_assignments')
 
     inserted_at = db.Column(db.DateTime, default=datetime.now)
     updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)

@@ -33,7 +33,9 @@
 {% endblock %}
 
 {% block inner_title %}
-  Caballos
+    <h2 class="title is-size-3 has-text-centered">
+        Caballos
+    </h2>
 {% endblock %}
 
 {% block create_button %}
@@ -59,7 +61,6 @@
 
 
 {% block table_header %}
-  <th></th>
   <th>ID</th>
   <th>Nombre</th>
   <th>Raza</th>
@@ -70,7 +71,6 @@
   <th>Sede Asignada</th>
   <th>Tipo de Actividad</th>
   <th>Sexo</th>
-  <th></th>
 {% endblock %}
 
 {% block top_pagination %}
@@ -122,7 +122,6 @@
 {% endblock %}
 
 {% block table_footer %}
-  <th></th>
   <th>ID</th>
   <th>Nombre</th>
   <th>Raza</th>
@@ -133,7 +132,6 @@
   <th>Sede Asignada</th>
   <th>Tipo de Actividad</th>
   <th>Sexo</th>
-  <th></th>
 {% endblock %}
 
 {% block bottom_pagination %}
@@ -146,7 +144,7 @@
       endpoint=url_for("equestrian_bp.archive_horse"),
       title="Archivar",
       msg="¿Está seguro de que desea archivar al caballo?",
-      msg_sub="",
+      msg_sub="Se borrará de todos los jinetes a los que esté asignado.",
       delete_text="Archivar"
     )
   }}

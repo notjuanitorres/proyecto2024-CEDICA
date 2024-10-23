@@ -1,0 +1,17 @@
+{% extends "payment/base_payments_list.html" %}
+
+{% block title %}Pagos Archivados - CEDICA{% endblock %}
+
+{% block page_title %}Pagos Archivados{% endblock %}
+{% block archive_title %}Archivo{% endblock %}
+{% block all_tab_active %}{% endblock %}
+{% block archive_tab_active %}is-active{% endblock %}
+
+{% block delete_modal %}
+    {{ render_delete_modal(
+    endpoint=url_for("payment_bp.delete_payment"),
+    title="Eliminar",
+    msg="¿Está seguro de que desea eliminar el pago?",
+    msg_sub="Luego de confirmar, no se podrán revertir los cambios"
+    ) }}
+{% endblock %}

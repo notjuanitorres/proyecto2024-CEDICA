@@ -3,6 +3,9 @@ from dependency_injector import containers, providers
 from .module.auth import AuthRepository, AuthServices
 from .module.user import UserRepository
 from .module.employee import EmployeeRepository
+from .module.payment import PaymentRepository
+
+from .module.employee import EmployeeRepository
 from .module.equestrian import EquestrianRepository
 from .module.common import StorageServices
 from .module.jockey_amazon import JockeyAmazonRepository
@@ -22,6 +25,7 @@ class Container(containers.DeclarativeContainer):
     user_repository = providers.Factory(UserRepository)
     auth_repository = providers.Factory(AuthRepository)
     employee_repository = providers.Factory(EmployeeRepository)
+    payment_repository = providers.Factory(PaymentRepository)
     equestrian_repository = providers.Factory(EquestrianRepository)
     jockey_amazon_repository = providers.Factory(JockeyAmazonRepository)
     charges_repository = providers.Factory(ChargeRepository)
@@ -32,3 +36,4 @@ class Container(containers.DeclarativeContainer):
     auth_services = providers.Factory(
         AuthServices, auth_repository=auth_repository, user_repository=user_repository
     )
+

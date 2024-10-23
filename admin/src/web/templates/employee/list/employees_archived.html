@@ -13,8 +13,10 @@
   </li>
 {% endblock %}
 
-{% block inner_title %}  
-  Equipo
+{% block inner_title %}
+    <h2 class="title is-size-3 has-text-centered">
+        Equipo
+    </h2>
 {% endblock %}
 
 {% block tabs %}
@@ -51,7 +53,6 @@
 {% endblock %}
 
 {% block table_header %}
-  <th></th>
   <th>ID</th>
   <th>Email</th>
   <th>Nombre</th>
@@ -59,11 +60,9 @@
   <th>Puesto</th>
   <th>Inicio</th>
   <th>Eliminado</th>
-  <th></th>
 {% endblock %}
 
 {% block table_footer %}
-  <th></th>
   <th>ID</th>
   <th>Email</th>
   <th>Nombre</th>
@@ -71,7 +70,6 @@
   <th>Puesto</th>
   <th>Inicio</th>
   <th>Eliminado</th>
-  <th></th>
 {% endblock %}
 
 {% block top_pagination %}
@@ -89,6 +87,7 @@
         to_left=true,
         endpoints={
           'show':'employee_bp.show_employee',
+          'delete':'employee_bp.delete_employee',
         },
         permission_to_show="equipo_show",
         permission_to_edit="equipo_update",
