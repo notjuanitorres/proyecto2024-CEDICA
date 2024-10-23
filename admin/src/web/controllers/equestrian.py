@@ -1,15 +1,17 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
-
+from dependency_injector.wiring import inject, Provide
 from src.core.module.employee import AbstractEmployeeRepository
 from src.core.module.employee.forms import TrainerSearchForm, TrainerSelectForm, EmployeeSearchForm
 from src.core.module.common import AbstractStorageServices, FileMapper
 from src.web.helpers.auth import check_user_permissions
 from src.core.container import Container
-from dependency_injector.wiring import inject, Provide
-from src.core.module.equestrian.forms import (HorseCreateForm,
-                                              HorseEditForm, HorseSearchForm,
-                                              HorseAddDocumentsForm,
-                                              HorseDocumentSearchForm)
+from src.core.module.equestrian.forms import (
+    HorseCreateForm,
+    HorseEditForm, 
+    HorseSearchForm,
+    HorseAddDocumentsForm,
+    HorseDocumentSearchForm
+)
 from src.core.module.equestrian import AbstractEquestrianRepository
 from src.core.module.equestrian.mappers import HorseMapper
 
@@ -156,8 +158,7 @@ def show_horse(horse_id: int,
         Response: The rendered template for the horse details if the horse exists,
          otherwise redirect to the list of horses.
     """
-    horse = equestrian_repository.get_by_id(horse_id, documents=False)
-
+    horse = equestrian_repository.get_by_id(horse_id, documents=True)
     if not horse:
         flash(f"El caballo con ID = {horse_id} no existe", "danger")
         return get_horses()
