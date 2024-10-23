@@ -1,0 +1,68 @@
+{% extends "base_show.html" %}
+
+{% block title %}Ver Pago - CEDICA{% endblock %}
+
+{% block breadcrumb_items %}
+    <li>
+        <a href="{{ url_for('payment_bp.get_payments' )}}">
+            <span class="icon is-small">
+                <i class="fas fa-money-bill-wave" aria-hidden="true"></i>
+            </span>
+            <span>Pagos</span>
+        </a>
+    </li>
+    <li>
+        <a href="">
+            <span class="icon is-small">
+                <i class="fa-solid fa-receipt" aria-hidden="true"></i>
+            </span>
+            <span>Pago </span>
+        </a>
+    </li>
+{% endblock %}
+{% block card_title %}Pago de {{ payment.payment_type | capitalize}}{% endblock %}
+
+{% block card_content %}
+        <ul>
+            <li><strong>ID:</strong> {{ payment.id }}</li>
+            <li><strong>Tipo de Pago:</strong> {{ payment.payment_type }}</li>
+            <li><strong>Monto:</strong> {{ payment.amount }}</li>
+            <li><strong>Fecha de Pago:</strong> {{ payment.payment_date.strftime('%d-%m-%Y') }}</li>
+            <li><strong>Descripción:</strong> {{ payment.description }}</li>
+            <li><strong>Ultima modificación:</strong>{{ payment.updated_at.strftime('%d-%m-%Y %H:%M')}}</li>
+            <li><strong>Creado:</strong>{{ payment.inserted_at.strftime('%d-%m-%Y %H:%M')}}</li>
+        </ul>
+{% endblock %}
+
+{% block card_actions %}
+    <button href="" class="card-footer-item has-text-danger modal-trigger" data-id="{{ payment.id }}" data-target="user-delete-modal">
+        Eliminar
+    </button>
+    <a href="{{ url_for('payment_bp.edit_payment', payment_id=payment.id) }}" class="card-footer-item has-text-warning">Editar</a>
+{% endblock %}
+
+{% block additional_cards %}
+{% if payment.beneficiary_name %}
+    <div class="card">
+        <header class="card-header">
+            <p class="card-header-title is-size-4">Empleado al cual se le realizo el pago</p>
+        </header>
+        <div class="card-content">
+            <div class="content is-size-3">
+              <a href="{{ url_for('employee_bp.show_employee', employee_id=payment.beneficiary_id )}}" class="card-footer-item">
+              {{payment.beneficiary_name}} 
+            </a>
+            </div>
+        </div>
+    </div>
+{% endif %}
+{% endblock %}
+
+{% block modal %}
+    {{ render_delete_modal(
+        endpoint="payment_bp.delete_payment",
+        title="Eliminar",
+        msg="¿Está seguro de que desea eliminar el pago?",
+        msg_sub="Luego de confirmar, no se podrán revertir los cambios"
+    ) }}
+{% endblock %}

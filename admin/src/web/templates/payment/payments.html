@@ -1,0 +1,25 @@
+{% extends "payment/base_payments_list.html" %}
+
+{% block title %}Pagos - CEDICA{% endblock %}
+
+{% block page_title %}Pagos{% endblock %}
+{% block archive_title %}Archivo{% endblock %}
+{% block all_tab_active %}is-active{% endblock %}
+{% block archive_tab_active %}{% endblock %}
+
+{% block add_payment_button %}
+<a class="button is-primary level-item" href="{{ url_for('payment_bp.create_payment')}}">
+    Agregar pago
+    <i class="fa-solid fa-money-bill-wave ml-2 is-size-5"></i>
+</a>
+{% endblock %}
+
+{% block delete_modal %}
+    {{ render_delete_modal(
+    endpoint=url_for("payment_bp.archive_payment"),
+    title="Archivar",
+    msg="¿Está seguro de que desea archivar el pago",
+    msg_sub="Luego de confirmar, no se podrán revertir los cambios",
+    delete_text="Archivar"
+    ) }}
+{% endblock %}
