@@ -73,7 +73,7 @@ class WorkAssignmentMapper:
             proposal=data.get("proposal"),
             condition=data.get("condition"),
             sede=data.get("sede"),
-            days=[data.get("days")],
+            days=data.get("days"),
             professor_or_therapist_id=data.get("professor_or_therapist_id"),
             conductor_id=data.get("conductor_id"),
             track_assistant_id=data.get("track_assistant_id"),

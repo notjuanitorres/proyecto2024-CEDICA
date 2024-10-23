@@ -9,12 +9,11 @@ class DniExistence(object):
         self.message = message
 
     def __call__(self, form, dni):
-        is_edit = form.current_dni is not None
-        dni_owned = dni.data == form.current_dni
-        if is_edit and dni_owned:
-            return
+        if self.current_dni:
+            if dni.data == form.current_dni:
+                return
 
-        repository = self.import_services()
+        repository = self.import_services().jockey_amazon_repository()
         if repository.is_dni_used(dni=dni.data):
             raise ValidationError(self.message)
     
@@ -25,4 +24,4 @@ class DniExistence(object):
         from src.core.container import Container
 
         container = Container()
-        return container.jockey_amazon_repository()
+        return container

@@ -3,16 +3,11 @@ from wtforms import (
     StringField,
     SelectField,
     IntegerField,
-    HiddenField
+    HiddenField,
+    SelectMultipleField,
+    widgets,
 )
 from wtforms.validators import DataRequired, Length, Optional
-from src.core.module.common.forms import (
-    AddressForm,
-    PhoneForm,
-    EmergencyContactForm,
-    DocumentsSearchForm,
-    BaseManageDocumentsForm,
-)
 from src.core.module.jockey_amazon.models import (
     WorkProposalEnum,
     WorkConditionEnum,
@@ -21,11 +16,24 @@ from src.core.module.jockey_amazon.models import (
     EducationLevelEnum,
 )
 
+class MultipleCheckboxField(SelectMultipleField):
+    widget = widgets.ListWidget(prefix_label=False)
+    option_widget = widgets.CheckboxInput()
+
+    def validate(self, form, extra_validators = []):
+        if not super().validate(form, extra_validators):
+            return False
+        
+        if not self.data or len(self.data) == 0:
+            self.errors.append("Debe seleccionar al menos un día")
+            return False
+            
+        return True
 
 def enum_choices(enum, first_value: tuple[str, str] = None):
     if first_value:
         return [first_value] + [(choice.name, choice.value) for choice in enum]
-    return [(choice.name, choice.value) for choice in enum] 
+    return [(choice.name, choice.value) for choice in enum]
 
 
 class SchoolInstitutionForm(FlaskForm):
@@ -50,7 +58,7 @@ class SchoolInstitutionForm(FlaskForm):
 
 class FamilyMemberForm(FlaskForm):
     class Meta:
-        csrf = False  
+        csrf = False
     is_optional = HiddenField("Es opcional", default=False)
     relationship = StringField("Relación", validators=[DataRequired(), Length(max=50)])
     first_name = StringField("Nombre", validators=[DataRequired(), Length(max=100)])
@@ -79,11 +87,11 @@ class FamilyMemberForm(FlaskForm):
         validators=[DataRequired()],
     )
     occupation = StringField("Ocupación", validators=[DataRequired(), Length(max=100)])
-    
+
 
 class WorkAssignmentsForm(FlaskForm):
     class Meta:
-        csrf = False  
+        csrf = False
     proposal = SelectField(
         "Propuesta de Trabajo",
         choices=enum_choices(WorkProposalEnum),
@@ -97,14 +105,6 @@ class WorkAssignmentsForm(FlaskForm):
     sede = SelectField(
         "Sede", choices=enum_choices(SedeEnum), validators=[DataRequired()]
     )
-    days = SelectField(
-        "Días", choices=enum_choices(DayEnum), validators=[DataRequired()]
+    days = MultipleCheckboxField(
+        "Días", choices=enum_choices(DayEnum), validate_choice=True
     )
-    # professor_or_therapist_id = IntegerField(
-    #     "ID del Profesor o Terapeuta", validators=[DataRequired()]
-    # )
-    # conductor_id = IntegerField("ID del Conductor", validators=[DataRequired()])
-    # track_assistant_id = IntegerField(
-    #     "ID del Asistente de Pista", validators=[DataRequired()]
-    # )
-    # horse_id = IntegerField("ID del Caballo", validators=[DataRequired()])

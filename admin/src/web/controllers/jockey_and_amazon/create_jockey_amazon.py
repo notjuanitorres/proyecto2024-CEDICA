@@ -109,9 +109,7 @@ def create_school_information():
 @check_creation_in_process("create_ja")
 def create_work_assignment():
     assignment_information = WorkAssignmentForm()
-
     if assignment_information.validate_on_submit():
         session["create_ja"]["work_assignment_information"] = assignment_information.data
         return add_jockey(create_form=session["create_ja"])
-
     return render_template('create/work_assignments_information.html', assignments_form=assignment_information)

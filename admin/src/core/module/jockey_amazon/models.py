@@ -1,6 +1,5 @@
 from datetime import datetime
 from sqlalchemy import Enum as SQLAEnum
-from sqlalchemy.orm import backref
 
 from src.core.module.common import File
 from src.core.module.common import AddressMixin, EmergencyContactMixin, PhoneMixin

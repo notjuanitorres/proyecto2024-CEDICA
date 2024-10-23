@@ -212,12 +212,11 @@
                     <li><strong>Sede: </strong> 
                         <span class="tag is-info">{{ jockey_amazon.work_assignment.sede.value }}</span>
                     </li>
-                    <li><strong>Días laborales: </strong>
-                        <span class="tag is-info">
-                            {% for day in jockey_amazon.work_assignment.days %}
-                            {{ day.value }}{% if not loop.last %}, {% endif %}
-                            {% endfor %}
-                        </span>
+                    <li><strong>Asiste los días: </strong>
+                        {% for day in jockey_amazon.work_assignment.days %}
+                            <div class="tag is-info">{{ day.value }}{% if not loop.last %}, {% endif %}</div>
+                        {% endfor %}
+
                     </li>
                     <li><strong>Profesor o Terapeuta: </strong> 
                         {% if jockey_amazon.work_assignment.profesor_or_therapist %}
