@@ -219,7 +219,8 @@
           endpoint=url_for("equestrian_bp.delete_horse", horse_id=horse.id),
           title="Eliminar",
           msg="¿Está seguro de que desea eliminar al caballo?",
-          msg_sub="Luego de confirmar, no se podrán revertir los cambios"
+          msg_sub="Luego de confirmar, no se podrán revertir los cambios.
+       Todos los documentos asociados a este caballo serán eliminados."
         ) }}
     {% else %}
         {{ render_delete_modal(
@@ -227,7 +228,7 @@
           endpoint=url_for("equestrian_bp.archive_horse", horse_id=horse.id),
           title="Archivar",
           msg="¿Está seguro de que desea archivar al caballo?",
-          msg_sub="",
+          msg_sub="Se borrará de todos los jinetes a los que esté asignado.",
           delete_text="Archivar"
         ) }}
     {% endif %}
