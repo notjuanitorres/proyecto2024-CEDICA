@@ -1,0 +1,143 @@
+{% extends "base_list.html" %}
+
+{% block title %}Caballos - CEDICA{% endblock %}
+
+{% block breadcrumb_items %}
+  <li>
+    <a href="">
+      <span class="icon is-small">
+        <i class="fa-solid fa-horse" aria-hidden="true"></i>
+      </span>
+      <span>Caballos</span>
+    </a>
+  </li>
+{% endblock %}
+
+{% block tabs %}
+<div class="tabs is-medium is-toggle is-toggle-rounded is-centered">
+  <ul>
+    <li>
+      <a href="{{ url_for("equestrian_bp.get_horses")}}">
+        <span class="icon is-small"><i class="fa-solid fa-horse"></i></span>
+        <span>Todos</span>
+      </a>
+    </li>
+    <li class="is-active">
+      <a href="{{ url_for("equestrian_bp.get_archived_horses")}}">
+        <span class="icon is-small"><i class="fa-solid fa-box-archive"></i></span>
+        <span>Archivo</span>
+      </a>
+    </li>
+  </ul>
+</div>
+{% endblock %}
+
+{% block inner_title %}
+    <h2 class="title is-size-3 has-text-centered">
+        Caballos
+    </h2>
+{% endblock %}
+
+{% block form_action %}{{ url_for("equestrian_bp.get_archived_horses") }}{% endblock %}
+{% block clear_url %}{{ url_for("equestrian_bp.get_archived_horses") }}{% endblock %}
+
+{% block aditional_filters %}
+    <div class="field">
+        <label class="label">Tipo de Actividad</label>
+        <div class="control">
+            <div class="select">
+                {{ search_form.filter_ja_type() }}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block table_header %}
+  <th>ID</th>
+  <th>Nombre</th>
+  <th>Raza</th>
+  <th>Fecha de Nacimiento</th>
+  <th>Pelaje</th>
+  <th>Es Donación</th>
+  <th>Fecha de Admisión</th>
+  <th>Sede Asignada</th>
+  <th>Tipo de Actividad</th>
+  <th>Sexo</th>
+{% endblock %}
+
+{% block top_pagination %}
+  {{ render_pagination(horses, 'equestrian_bp.get_archived_horses') }}
+{% endblock %}
+
+{% block table_body %}
+  {% for horse in horses %}
+  <tr class="">
+    <td class="is-hidden-mobile">
+      {{
+        render_actions_menu(
+        field="horse_id",
+        value=horse.id,
+        to_left=true,
+        endpoints={
+          'show':'equestrian_bp.show_horse',
+          'delete':'equestrian_bp.delete_horse'
+        },
+        permission_to_show="ecuestre_show",
+        permission_to_edit="ecuestre_update",
+        permission_to_delete="ecuestre_destroy",
+        user_permissions=permissions,
+        is_admin=is_admin
+        )
+      }}
+    </td>
+    <td><span class="is-hidden-tablet has-text-weight-bold">ID: </span>{{ horse.id }}</td>
+    <td><span class="is-hidden-tablet has-text-weight-bold">Nombre: </span>{{ horse.name }}</td>
+    <td><span class="is-hidden-tablet has-text-weight-bold">Raza: </span>{{ horse.breed }}</td>
+    <td><span class="is-hidden-tablet has-text-weight-bold">Fecha de Nacimiento: </span>{{ horse.birth_date | format_date }}</td>
+    <td><span class="is-hidden-tablet has-text-weight-bold">Pelaje: </span>{{ horse.coat }}</td>
+    <td><span class="is-hidden-tablet has-text-weight-bold">Es Donación: </span>{{ horse.is_donation | natural_boolean }}</td>
+    <td><span class="is-hidden-tablet has-text-weight-bold">Fecha de Admisión: </span>{{ horse.admission_date | format_date }}</td>
+    <td><span class="is-hidden-tablet has-text-weight-bold">Sede Asignada: </span>{{ horse.assigned_facility }}</td>
+    <td><span class="is-hidden-tablet has-text-weight-bold">Tipo de Actividad: </span>{{ horse.ja_type.value }}</td>
+    <td><span class="is-hidden-tablet has-text-weight-bold">Sexo: </span>{{ horse.sex }}</td>
+    <td class="is-hidden-tablet is-flex">
+      <a href="{{ url_for('equestrian_bp.show_horse', horse_id=horse.id)}}" class="button is-flex-grow-1 ">
+        <span class="is-bold">
+            Ver en detalle
+            <i class="fa-regular fa-eye ml-2"></i>
+        </span>
+      </a>
+    </td>
+  </tr>
+  {% endfor %}
+{% endblock %}
+
+{% block table_footer %}
+  <th>ID</th>
+  <th>Nombre</th>
+  <th>Raza</th>
+  <th>Fecha de Nacimiento</th>
+  <th>Pelaje</th>
+  <th>Es Donación</th>
+  <th>Fecha de Admisión</th>
+  <th>Sede Asignada</th>
+  <th>Tipo de Actividad</th>
+  <th>Sexo</th>
+{% endblock %}
+
+{% block bottom_pagination %}
+  {{ render_pagination(horses, 'equestrian_bp.get_archived_horses') }}
+{% endblock %}
+
+{% block delete_modal %}
+  {{
+    render_delete_modal(
+      endpoint=url_for("equestrian_bp.delete_horse"),
+      title="Eliminar",
+      msg="¿Está seguro de que desea eliminar al caballo?",
+      msg_sub="Luego de confirmar, no se podrán revertir los cambios.
+       Todas las relaciones con este caballo serán eliminadas."
+    )
+  }}
+{% endblock %}

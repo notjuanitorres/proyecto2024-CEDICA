@@ -12,7 +12,7 @@
         <a
                 role="button"
                 class="navbar-burger"
-                aria-label="menu"
+                aria-label="Abrir menú"
                 aria-expanded="false"
                 data-target="top-navbar"
         >
@@ -31,13 +31,14 @@
                 <div class="navbar-dropdown">
                     {% if is_admin %}
                         <a href="{{ url_for('users_bp.get_users') }}" class="navbar-item" aria-label="Usuarios">
-                            Usuarios </a>
+                            Usuarios 
+                        </a>
                     {% endif %}
                     {% if "equipo_index" in permissions or is_admin %}
-                        <a href="{{ url_for('employee_bp.get_employees') }}" class="navbar-item is-selected" aria-label="Equipo"> Equipo </a>
+                        <a href="{{ url_for('employee_bp.get_employees') }}" class="navbar-item" aria-label="Equipo"> Equipo </a>
                     {% endif %}
                     {% if "jya_index" in permissions or is_admin %}
-                        <a class="navbar-item" aria-label="Jinetes y Amazonas">
+                        <a href="{{ url_for('jockey_amazon_bp.get_jockeys') }}" class="navbar-item" aria-label="Jinetes y Amazonas">
                             Jinetes y Amazonas
                         </a>
                     {% endif %}
@@ -46,11 +47,11 @@
                     {% endif %}
                     {% if "pagos_index" in permissions or "cobros_index" in permissions or is_admin %}
                         <hr class="navbar-divider" aria-hidden="true"/>
-                        {% if "pagos_index" in permissions %}
-                            <a class="navbar-item" aria-label="Pagos"> Pagos </a>
+                        {% if "pagos_index" in permissions or is_admin %}
+                            <a href="{{ url_for('payment_bp.get_payments') }}" class="navbar-item" aria-label="Pagos"> Pagos </a>
                         {% endif %}
                         {% if "cobros_index" in pemissions or is_admin %}
-                            <a class="navbar-item" aria-label="Cobros"> Cobros </a>
+                            <a href="{{ url_for('charges_bp.get_charges') }}" class="navbar-item" aria-label="Cobros"> Cobros </a>
                         {% endif %}
                     {% endif %}
                     <hr class="is-hidden-desktop" /> 
@@ -102,14 +103,12 @@
                         </div>
                         <div class="dropdown-menu" id="dropdown-menu" role="menu">
                             <div class="dropdown-content">
-                                <a href="/usuarios/{{user_id}}" class="dropdown-item"> Perfil </a>
-                                {% if not is_admin %}
-                                <a class="dropdown-item" href="/usuarios/editar/{{user_id}}"> Configuración </a>
-                                {% endif %}
+                                <a href="#" class="dropdown-item" role="menuitem"> Perfil </a>
+                                <a class="dropdown-item" role="menuitem"> Configuración </a>
                                 <hr class="dropdown-divider"/>
                                 <form action="{{ url_for('auth_bp.logout') }}" method="POST" style="display: flex; justify-content: center;">
                                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                    <button type="submit" class="button is-danger is-small is-outlined">
+                                    <button type="submit" class="button is-danger is-small is-outlined" role="menuitem">
                                         <span class="icon is-small">
                                             <i class="fas fa-sign-out"></i>
                                           </span>

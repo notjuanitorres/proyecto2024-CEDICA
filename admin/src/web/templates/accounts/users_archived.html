@@ -13,8 +13,10 @@
   </li>
 {% endblock %}
 
-{% block inner_title %}  
-  Usuarios
+{% block inner_title %}
+    <h2 class="title is-size-3 has-text-centered">
+    Usuarios
+    </h2>
 {% endblock %}
 
 {% block tabs %}
@@ -51,7 +53,6 @@
 {% endblock %}
 
 {% block table_header %}
-  <th></th>
   <th>ID</th>
   <th>Correo</th>
   <th>Alias</th>
@@ -59,11 +60,9 @@
   <th>Rol</th>
   <th>Ingreso</th>
   <th>Archivado</th>
-  <th></th>
 {% endblock %}
 
 {% block table_footer %}
-  <th></th>
   <th>ID</th>
   <th>Email</th>
   <th>Alias</th>
@@ -71,7 +70,6 @@
   <th>Rol</th>
   <th>Ingreso</th>
   <th>Archivado</th>
-  <th></th>
 {% endblock %}
 
 {% block top_pagination %}

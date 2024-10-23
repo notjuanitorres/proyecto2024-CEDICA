@@ -86,7 +86,7 @@ class AbstractEquestrianRepository:
     @abstractmethod
     def delete(self, horse_id: int) -> bool:
         """
-        Mark a horse as deleted.
+        Delete a horse
 
         Args:
             horse_id (int): The ID of the horse.
@@ -214,6 +214,32 @@ class AbstractEquestrianRepository:
         """
         raise NotImplementedError
 
+    @abstractmethod
+    def archive_horse(self, horse_id: int) -> bool:
+        """
+        Archive a horse.
+
+        Args:
+            horse_id (int): The ID of the horse.
+
+        Returns:
+            bool: True if the archiving was successful, False otherwise.
+        """
+        raise NotImplementedError
+
+    @abstractmethod
+    def recover_horse(self, horse_id: int) -> bool:
+        """
+        Recover an archived horse.
+
+        Args:
+            horse_id (int): The ID of the horse.
+
+        Returns:
+            bool: True if the recovery was successful, False otherwise.
+        """
+        raise NotImplementedError
+
 
 class EquestrianRepository(AbstractEquestrianRepository):
     """
@@ -315,7 +341,10 @@ class EquestrianRepository(AbstractEquestrianRepository):
 
     def delete(self, horse_id: int):
         """
-        Mark a horse as deleted.
+        Delete a horse and its related data.
+
+        Before deleting the horse we cascade delete every related data like HorseFiles and HorseTrainers.
+        In workassignments we set the horse_id to null.
 
         Args:
             horse_id (int): The ID of the horse.
@@ -326,7 +355,7 @@ class EquestrianRepository(AbstractEquestrianRepository):
         horse = Horse.query.filter_by(id=horse_id)
         if not horse:
             return False
-        horse.update({"is_deleted": True})
+        horse.delete()
         self.save()
         return True
 
@@ -498,3 +527,28 @@ class EquestrianRepository(AbstractEquestrianRepository):
         trainer.delete()
         self.save()
         return True
+
+    def archive_horse(self, horse_id) -> bool:
+        horse = Horse.query.get(horse_id)
+        if not horse or horse.is_archived:
+            return False
+        horse.is_archived = True
+        self.save()
+        return True
+
+    def recover_horse(self, horse_id) -> bool:
+        horse = Horse.query.get(horse_id)
+        if not horse or not horse.is_archived:
+            return False
+        horse.is_archived = False
+        self.save()
+        return True
+
+    def get_horses(self):
+        """
+        Get all horses.
+
+        Returns:
+            List: The list of horses.
+        """
+        return Horse.query.all()

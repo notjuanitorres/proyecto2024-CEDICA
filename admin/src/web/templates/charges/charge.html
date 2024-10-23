@@ -1,0 +1,226 @@
+{% extends "base_show.html" %}
+
+{% block title %}Cobro #{{ charge.id }} - CEDICA{% endblock %}
+
+{% block breadcrumb_items %}
+    <li>
+        <a href="{{ url_for('charges_bp.get_charges' ) }}">
+            <span class="icon is-small">
+                <i class="fa-solid fa-file-invoice-dollar" aria-hidden="true"></i>
+            </span>
+            <span>Cobros</span>
+        </a>
+    </li>
+    <li>
+        <a href="">
+            <span class="icon is-small">
+                <i class="fas fa-receipt" aria-hidden="true"></i>
+            </span>
+            <span>Cobro #{{ charge.id }}</span>
+        </a>
+    </li>
+{% endblock %}
+
+{% block card_title %}Cobro: #{{ charge.id }}{% endblock %}
+
+{% block banner %}
+    {% if charge.is_archived %}
+        <div class="is-flex is-fullwidth is-justify-content-center has-background-danger p-4">
+            <h2 class="title">Cobro archivado</h2>
+        </div>
+    {% endif %}
+{% endblock %}
+
+{% block card_content %}
+    <div class="grid is-col-min-16">
+        <div id="basic-info" class="cell">
+            <h3>Información del cobro</h3>
+            <ul>
+                <li><strong>Fecha de cobro: </strong>{{ charge.date_of_charge | format_date }}</li>
+                <li><strong>Monto: </strong> {{ charge.amount }}</li>
+                <li><strong>Método de pago: </strong>{{ charge.payment_method}}</li>
+                <li><strong>Observaciones: </strong>{{ charge.observations or 'N/A' }}</li>
+                <li><strong>Creado: </strong>{{ charge.inserted_at | format_date }}</li>
+                <li><strong>Última modificación: </strong>{{ charge.updated_at | format_date }}</li>
+            </ul>
+        </div>
+        <div id="related-info1" class="cell">
+            <h3>Información del empleado</h3>
+            <ul>
+                <li><strong>Nombre: </strong> {{ employee.name }}</li>
+                <li><strong>Apellido: </strong> {{ employee.lastname }}</li>
+                <li><strong>Dni: </strong> {{ employee.dni }}</li>
+            </ul>
+        </div>
+        <div id="related-info2" class="cell">
+            <h3>Información del jya</h3>
+            <ul>
+                {% if charge.jya_id %}
+                    <li><strong>Nombre: </strong> {{ jya.first_name }}</li>
+                    <li><strong>Apellido: </strong> {{ jya.last_name }}</li>
+                    <li><strong>Dni: </strong> {{ jya.dni }}</li>
+                    <li><strong>Deudor: </strong> {{ jya.has_debts | natural_boolean }} </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+{% endblock %}
+
+{% block card_actions %}
+    {% if charge.is_archived %}
+        {% if "cobro_destroy" in permissions or is_admin %}
+            <button class="card-footer-item has-text-danger modal-trigger" data-id="{{ charge.id }}" data-target="charge-delete-modal">
+                Eliminar para siempre
+            </button>
+            <form class="card-footer-item" action="{{ url_for('charges_bp.recover_charge') }}" method="POST">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="charge_id" value="{{ charge.id }}">
+                <button type="submit" class="has-text-primary">Recuperar</button>
+            </form>
+        {% endif %}
+    {% else %}
+        {% if "cobros_destroy" in permissions or is_admin %}
+            <button class="card-footer-item has-text-danger modal-trigger" data-id="{{ charge.id }}" data-target="charge-delete-modal">
+                Archivar
+            </button>
+        {% if "cobros_update" in permissions or is_admin %}
+            <a href="{{ url_for( "charges_bp.edit_charge", charge_id=charge.id )}}" class="card-footer-item has-text-warning">Actualizar</a>
+            {% endif %}
+        {% endif %}
+    {% endif %}
+{% endblock %}
+
+{% block additional_cards %}
+    <div id="employee" class="card">
+        <header class="card-header">
+            <h2 class="card-header-title is-size-4">
+                Empleado asociado al cobro
+
+                {#    NOTE: employee should always be true    #}
+                {% if not employee %}
+                <span class="tag is-info is-medium ml-2">Sin informacion</span>
+                {% elif employee.is_deleted %}
+                <span class="tag is-danger is-medium ml-2">Empleado archivado</span>
+                {% endif %}
+            </h2>
+        </header>
+        {% if employee %}
+        <div class="card-content">
+            <div class="content">
+                <article class="media">
+                    <div class="media-left">
+                        <figure class="image is-64x64">
+                            <img src="https://bulma.io/assets/images/placeholders/128x128.png" alt="Image" />
+                        </figure>
+                    </div>
+                    <div class="media-content">
+                        <div class="content">
+                            <p>
+                                <strong class="is-size-5">{{ employee.name }} {{ employee.lastname }}</strong>
+                                <small>{{ employee.inserted_at | format_date }}</small>
+                                <br />
+                                {{ employee.email }}
+                                <br />
+                            </p>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </div>
+        <footer class="card-footer">
+            <a href="{{ url_for('employee_bp.show_employee', employee_id=employee.id) }}" class="card-footer-item has-text-link">Ver</a>
+            <a href="{{ url_for( "charges_bp.change_employee", charge_id=charge.id ) }}" class="card-footer-item has-text-warning">Cambiar</a>
+        </footer>
+        {% else %}
+        <div class="card-content">
+            <div class="content">
+                <p>No existe un empleado asociado a este cobro</p>
+            </div>
+        </div>
+        <footer class="card-footer">
+            <a href="{{ url_for( "charges_bp.change_employee", charge_id=charge.id ) }}" class="card-footer-item has-text-link">Asociar empleado</a>
+        </footer>
+        {% endif %}
+    </div>
+
+    <div id="jya" class="card">
+        <header class="card-header">
+            <h2 class="card-header-title is-size-4">
+                Jinete asociado al cobro
+
+                    {#    NOTE: jya should always be true    #}
+                {% if not jya %}
+                    <span class="tag is-info is-medium ml-2">Sin informacion</span>
+                {% elif jya.has_debts %}
+                    <span class="tag is-danger is-medium ml-2">Deudor</span>
+                {% elif jya.is_deleted %}
+                    <span class="tag is-danger is-medium ml-2">Jinete archivado</span>
+                {% endif %}
+            </h2>
+        </header>
+        {% if jya %}
+        <div class="card-content">
+            <div class="content">
+                <article class="media">
+                    <div class="media-left">
+                        <figure class="image is-64x64">
+                            <img src="https://bulma.io/assets/images/placeholders/128x128.png" alt="Image" />
+                        </figure>
+                    </div>
+                    <div class="media-content">
+                        <div class="content">
+                            <p>
+                                <strong class="is-size-5">{{ jya.first_name }} {{ jya.last_name }}</strong>
+                                <small>{{ jya.inserted_at | format_date }}</small>
+                                <br />
+                                Dni: {{ jya.dni }}
+                                <br />
+                            </p>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </div>
+
+        <footer class="card-footer">
+          <a href="{{ url_for('jockey_amazon_bp.show_jockey', jockey_id=jya.id) }}" class="card-footer-item has-text-link">Ver</a>
+          <a href="{{ url_for('charges_bp.change_jya', charge_id=charge.id) }}" class="card-footer-item has-text-warning">Cambiar</a>
+        </footer>
+        {% else %}
+        <div class="card-content">
+            <div class="content">
+                <p>No existe un jinete asociado a este cobro</p>
+            </div>
+        </div>
+        <footer class="card-footer">
+            <a href="{{ url_for( "charges_bp.change_jya", charge_id=charge.id ) }}" class="card-footer-item has-text-link">Asociar jinete</a>
+        </footer>
+        {% endif %}
+    </div>
+
+{% endblock %}
+
+{% block modal %}
+    {% if charge.is_archived %}
+        {{
+    render_delete_modal(
+      field="charge",
+      endpoint=url_for("charges_bp.delete_charge"),
+      title="Eliminar",
+      msg="¿Está seguro de que desea eliminar este cobro?",
+      msg_sub="Luego de confirmar, no se podrán revertir los cambios"
+    )
+        }}
+    {% else %}
+        {{
+        render_delete_modal(
+          field="charge",
+          endpoint=url_for("charges_bp.archive_charge"),
+          title="Archivar",
+          msg="¿Está seguro de que desea archivar este cobro?",
+          msg_sub="",
+          delete_text="Archivar"
+        )
+        }}
+    {% endif %}
+{% endblock %}

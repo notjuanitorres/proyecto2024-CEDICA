@@ -17,7 +17,7 @@
     <li>
         <a href="">
             <span class="icon is-small">
-                <i class="fa-solid fa-user" aria-hidden="true"></i>
+                <i class="fa-solid fa-user-tie"></i>
             </span>
             <span>{{ employee.name + " " + employee.lastname }}</span>
         </a>
@@ -45,9 +45,13 @@ Miembro: {{ employee.name + " " + employee.lastname }}
 {% if employee %}
 <div class="grid is-col-min-16">
     <div id="basic-info" class="cell">
-        <h3>Informacion general</h3>
+        <h3>
+            <span class="icon mr-2">
+                <i class="fa-solid fa-circle-info"></i>            
+            </span>
+            Informacion general
+        </h3>
         <ul>
-            <li><strong>ID: </strong> {{ employee.id }}</li>
             <li><strong>Nombre: </strong>{{ employee.name }}</li>
             <li><strong>Apellido: </strong> {{ employee.lastname }}</li>
             <li><strong>Email: </strong>{{ employee.email }}</li>
@@ -58,11 +62,22 @@ Miembro: {{ employee.name + " " + employee.lastname }}
         </ul>
     </div>
     <div id="job-info" class="cell">
-        <h3>Datos laborales</h3>
+        <h3>
+            <span class="icon mr-2">
+                <i class="fa-solid fa-user-tie"></i>
+            </span>
+            Datos laborales
+        </h3>
         <ul>
-            <li><strong>Profesion: </strong> {{ employee.employment_information.profession }}</li>
-            <li><strong>Cargo: </strong>{{ employee.employment_information.position }}</li>
-            <li><strong>Condicion laboral: </strong>{{ employee.employment_information.job_condition }}</li>
+            <li><strong>Profesion: </strong> 
+                {{ employee.employment_information.profession }}
+            </li>
+            <li><strong>Cargo: </strong>
+                <span class="tag is-info">{{ employee.employment_information.position }}</span>
+            </li>
+            <li><strong>Condicion laboral: </strong>
+                <span class="tag is-info">{{ employee.employment_information.job_condition }}</span>
+            </li>
             <li><strong>Comienzo de actividades: </strong> {{ employee.employment_information.start_date }}</li>
             {% if employee.employment_information.end_date %}
                 <li><strong>Finalizacion de actividades: </strong>{{ employee.employment_information.end_date }}</li>
@@ -74,7 +89,12 @@ Miembro: {{ employee.name + " " + employee.lastname }}
     </div>
 </div>
 <div id="emergency-contact-info has-bab" class="cell box">
-    <h3>Contacto de emergencia</h3>
+    <h3>
+        <span class="icon mr-2">
+            <i class="fa-solid fa-kit-medical"></i>
+        </span>
+        Contacto de emergencia
+    </h3>
     <ul id="emergency-contact">
         <li><strong>Nombre completo: </strong>{{ employee.emergency_contact.emergency_contact_name }}</li>
         <li><strong>Telefono: </strong>{{ employee.emergency_contact.emergency_contact_phone }}</li>
@@ -116,6 +136,9 @@ Miembro: {{ employee.name + " " + employee.lastname }}
     <div id="account" class="card">
         <header class="card-header">
             <h2 class="card-header-title is-size-4">
+                <span class="icon mr-2">
+                    <i class="fa-solid fa-user"></i>                
+                </span>
                 Usuario asociado a {{ employee.name }}
                 {% if not account %}
                 <span class="tag is-info is-medium ml-2">Sin informacion</span>
@@ -172,9 +195,12 @@ Miembro: {{ employee.name + " " + employee.lastname }}
     <div id="documents" class="card">
         <header class="card-header">
             <p class="card-header-title is-size-4">
-                Documentos anexos: 
-                {% if employee.files_number > 0%} 
-                    <span class="tag is-medium is-success ml-2">{{ employee.files_number }}</span> 
+                <span class="icon mr-2">
+                    <i class="fa-solid fa-file"></i>
+                </span>
+                Documentos anexos:
+                {% if employee.files_number > 0%}
+                    <span class="tag is-medium is-success ml-2">{{ employee.files_number }}</span>
                 {% else %}
                     <span class="tag is-medium is-info ml-2">No hay</span>
                 {% endif %}
@@ -224,7 +250,7 @@ Miembro: {{ employee.name + " " + employee.lastname }}
 
 {% block modal %}
     {% if employee.is_deleted %}
-        {{  
+        {{
             render_delete_modal(
             url_for("employee_bp.delete_employee", employee_id=employee.id),
             field="employee",
@@ -233,14 +259,14 @@ Miembro: {{ employee.name + " " + employee.lastname }}
             msg_sub="Luego de confirmar, no se podrán revertir los cambios"
         )}}
     {% else %}
-        {{  
+        {{
             render_delete_modal(
             url_for("employee_bp.archive_employee", employee_id=employee.id),
             field="employee",
             title="Archivar",
             msg="¿Está seguro de que desea archivar al empleado?",
             delete_text="Archivar"
-        )}}  
+        )}}
     {% endif %}
 
 {% endblock %}

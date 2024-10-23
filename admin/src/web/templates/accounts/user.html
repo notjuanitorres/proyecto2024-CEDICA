@@ -22,6 +22,9 @@
 {% endblock %}
 
 {% block card_title %}
+<span class="icon mr-2">
+    <i class="fa-solid fa-user"></i>                
+</span>
 Usuario: {{ user.alias }}
 {% if user.enabled %}
 <span class="tag is-success is-medium ml-2">Activo</span>
@@ -74,7 +77,7 @@ Usuario: {{ user.alias }}
             <a href="{{ url_for('users_bp.toggle_activation', user_id=user.id)}}" class="card-footer-item">
                 {% if user.enabled %}Deshabilitar{% else %}Habilitar{% endif %}
             </a>
-            <a href="{{ url_for('users_bp.edit_user', user_id=user.id)}}" class="card-footer-item has-text-warning">Editar</a>
+            <a href="{{ url_for('users_bp.edit_user', user_id=user.id)}}" class="card-footer-item has-text-warning">Actualizar</a>
         {% endif %}
     {% endif %}
 {% endblock %}
@@ -83,6 +86,9 @@ Usuario: {{ user.alias }}
     <div id="employee" class="card">
         <header class="card-header">
             <h2 class="card-header-title is-size-4">
+                <span class="icon mr-2">
+                    <i class="fa-solid fa-user-tie"></i>
+                </span>
                 Empleado asociado a {{ user.alias }}
                 {% if not employee %}
                     <span class="tag is-info is-medium ml-2">Sin informacion</span>
@@ -122,7 +128,7 @@ Usuario: {{ user.alias }}
             </footer>
             {% else %}
             <p>
-                <strong class="is-size-5">No existe un empleado asociado a esta cuenta<strong> 
+                <strong class="is-size-5">No existe un empleado asociado a esta cuenta</strong>
             </p>
             {% endif %}
         </div>

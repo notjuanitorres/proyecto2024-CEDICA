@@ -26,4 +26,37 @@
       </footer>
     </div>
   </div>
+  <style>
+        .button.has-text-danger {
+        /* Dark red text on white background */
+        color: #cc0000 !important; /* Darker red for better contrast */
+        background-color: #ffffff !important;
+}
+
+        /* Hover state */
+        .button.has-text-danger:hover {
+            color: #ffffff !important;
+            background-color: #cc0000 !important;
+            border: 1px solid #cc0000 !important;
+
+        }
+
+        /* Focus state for accessibility */
+        .button.has-text-danger:focus {
+            outline: 2px solid #cc0000;
+            outline-offset: 2px;
+        }
+
+        /* Alternative style using Bulma's built-in classes */
+        .button.is-danger {
+            background-color: #dc3545 !important;
+            color: #ffffff !important;
+            border-color: #dc3545 !important;
+        }
+
+        .button.is-danger:hover {
+            background-color: #c82333 !important;
+            border-color: #bd2130 !important;
+        }
+    </style>
 {% endmacro %}

@@ -1,47 +1,49 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
-
+from dependency_injector.wiring import inject, Provide
 from src.core.module.employee import AbstractEmployeeRepository
 from src.core.module.employee.forms import TrainerSearchForm, TrainerSelectForm, EmployeeSearchForm
 from src.core.module.common import AbstractStorageServices, FileMapper
 from src.web.helpers.auth import check_user_permissions
 from src.core.container import Container
-from dependency_injector.wiring import inject, Provide
-from src.core.module.equestrian.forms import (HorseCreateForm,
-                                              HorseEditForm, HorseSearchForm,
-                                              HorseAddDocumentsForm,
-                                              HorseDocumentSearchForm)
+from src.core.module.equestrian.forms import (
+    HorseCreateForm,
+    HorseEditForm, 
+    HorseSearchForm,
+    HorseAddDocumentsForm,
+    HorseDocumentSearchForm
+)
 from src.core.module.equestrian import AbstractEquestrianRepository
 from src.core.module.equestrian.mappers import HorseMapper
 
 equestrian_bp = Blueprint(
     "equestrian_bp", __name__, template_folder="../templates/equestrian", url_prefix="/ecuestre"
 )
-"""
-Blueprint for equestrian-related routes.
-
-Attributes:
-    equestrian_bp (Blueprint): The equestrian blueprint.
-"""
 
 
-@equestrian_bp.route("/")
-@check_user_permissions(permissions_required=["ecuestre_index"])
 @inject
-def get_horses(equestrian_repository: AbstractEquestrianRepository = Provide[Container.equestrian_repository]):
+def search_horses(search: HorseSearchForm,
+                  need_archived: bool = False,
+                  equestrian_repository: AbstractEquestrianRepository = Provide[Container.equestrian_repository]):
     """
-    Route to get a paginated list of horses.
+    Helper function to search horses.
 
     Args:
+        search (HorseSearchForm): The form for searching horses.
+        need_archived (bool): Indicates if the search should include archived horses.
         equestrian_repository (AbstractEquestrianRepository): The equestrian repository.
 
     Returns:
-        Response: The rendered template for the list of horses.
+        Pagination: The paginated list of horses.
     """
+
     page = request.args.get("page", type=int)
     per_page = request.args.get("per_page", type=int)
-    search = HorseSearchForm(request.args)
-    search_query = {}
     order_by = []
+    search_query = {
+        "filters": {
+            "is_archived": need_archived
+        }
+    }
 
     if search.submit_search.data and search.validate():
         order_by = [(search.order_by.data, search.order.data)]
@@ -52,16 +54,92 @@ def get_horses(equestrian_repository: AbstractEquestrianRepository = Provide[Con
         if search.filter_ja_type.data:
             search_query["filters"] = {"ja_type": search.filter_ja_type.data}
 
-    if search_query.get("filters"):
-        search_query["filters"]["is_deleted"] = False
-    else:
-        search_query["filters"] = {"is_deleted": False}
-
-    paginated_horses = equestrian_repository.get_page(
+    return equestrian_repository.get_page(
         page=page, per_page=per_page, order_by=order_by, search_query=search_query
     )
 
-    return render_template("horses.html", horses=paginated_horses, search_form=search)
+
+@equestrian_bp.route("/")
+@check_user_permissions(permissions_required=["ecuestre_index"])
+@inject
+def get_horses():
+    """
+    Route to get a paginated list of horses.
+
+    Returns:
+        Response: The rendered template for the list of horses.
+    """
+    search = HorseSearchForm(request.args)
+
+    paginated_horses = search_horses(search=search, need_archived=False)
+
+    return render_template("./equestrian/horses.html", horses=paginated_horses, search_form=search)
+
+
+@equestrian_bp.route("/archivados", methods=["GET"])
+@check_user_permissions(permissions_required=["ecuestre_index"])
+def get_archived_horses():
+    """
+    Route to get a paginated list of archived horses.
+
+    Returns:
+        Response: The rendered template for the list of archived horses.
+    """
+    search_form = HorseSearchForm(request.args)
+    paginated_horses = search_horses(search=search_form, need_archived=True)
+    return render_template(
+        "./equestrian/horses_archived.html",
+        horses=paginated_horses,
+        search_form=search_form,
+    )
+
+
+@equestrian_bp.route("/archivar/", methods=["POST"])
+@check_user_permissions(permissions_required=["ecuestre_destroy"])
+@inject
+def archive_horse(
+        horses_repository: AbstractEquestrianRepository = Provide[Container.equestrian_repository],
+):
+    """
+    Route to archive a horse.
+
+    Args:
+        horses_repository (AbstractEquestrianRepository): The equestrian repository.
+
+    Returns:
+        Response: Redirect to the horse details.
+    """
+    horse_id = request.form["item_id"]
+    archived = horses_repository.archive_horse(int(horse_id))
+    if not archived:
+        flash("El caballo no existe o ya ha sido archivado", "warning")
+    else:
+        flash("El caballo ha sido archivado correctamente", "success")
+    return redirect(url_for("equestrian_bp.show_horse", horse_id=horse_id))
+
+
+@equestrian_bp.route("/recuperar/", methods=["POST"])
+@check_user_permissions(permissions_required=["ecuestre_destroy"])
+@inject
+def recover_horse(
+        horses: AbstractEquestrianRepository = Provide[Container.equestrian_repository],
+):
+    """
+    Route to recover a horse.
+
+    Args:
+        horses (AbstractEquestrianRepository): The equestrian repository.
+
+    Returns:
+        Response: Redirect to the horse details.
+    """
+    horse_id = request.form["horse_id"]
+    recovered = horses.recover_horse(int(horse_id))
+    if not recovered:
+        flash("El caballo no existe o no puede ser recuperado", "warning")
+    else:
+        flash("El caballo ha sido recuperado correctamente", "success")
+    return redirect(url_for("equestrian_bp.show_horse", horse_id=horse_id))
 
 
 @equestrian_bp.route("/<int:horse_id>")
@@ -80,14 +158,13 @@ def show_horse(horse_id: int,
         Response: The rendered template for the horse details if the horse exists,
          otherwise redirect to the list of horses.
     """
-    horse = equestrian_repository.get_by_id(horse_id, documents=False)
-
+    horse = equestrian_repository.get_by_id(horse_id, documents=True)
     if not horse:
         flash(f"El caballo con ID = {horse_id} no existe", "danger")
         return get_horses()
 
     trainers = equestrian_repository.get_trainers_of_horse(horse_id)
-    return render_template('horse.html', horse=horse, horse_trainers=trainers)
+    return render_template('./equestrian/horse.html', horse=horse, horse_trainers=trainers)
 
 
 @equestrian_bp.route("/crear", methods=["GET", "POST"])
@@ -104,7 +181,7 @@ def create_horse():
     if request.method == "POST":
         return add_horse(create_form=create_form)
 
-    return render_template("create_horse.html", form=create_form)
+    return render_template("./equestrian/create_horse.html", form=create_form)
 
 
 @inject
@@ -122,7 +199,7 @@ def add_horse(create_form: HorseCreateForm,
          or redirect to document creation.
     """
     if not create_form.validate_on_submit():
-        return render_template("create_horse.html", form=create_form)
+        return render_template("./equestrian/create_horse.html", form=create_form)
 
     horse = equestrian_repository.add(HorseMapper.to_entity(create_form.data, []))
 
@@ -155,7 +232,7 @@ def create_document(horse_id: int,
     if request.method == "POST":
         return add_document(horse=horse, create_form=create_form)
 
-    return render_template("create_document.html", form=create_form, horse=horse)
+    return render_template("./equestrian/create_document.html", form=create_form, horse=horse)
 
 
 @inject
@@ -176,7 +253,7 @@ def add_document(horse,
         Response: The rendered template for creating a document if form wasn't valid or redirect to document creation.
     """
     if not create_form.validate_on_submit():
-        return render_template("create_document.html", form=create_form, horse=horse)
+        return render_template("./equestrian/create_document.html", form=create_form, horse=horse)
 
     if create_form.upload_type.data == "file":
         uploaded_document = storage.upload_file(
@@ -225,7 +302,7 @@ def edit_horse(horse_id: int,
     if request.method in ["POST", "PUT"]:
         return update_horse(horse_id=horse_id, edit_form=edit_form)
 
-    return render_template("edit_horse.html", form=edit_form, horse=horse)
+    return render_template("./equestrian/edit_horse.html", form=edit_form, horse=horse)
 
 
 @inject
@@ -243,7 +320,7 @@ def update_horse(horse_id: int, edit_form: HorseEditForm,
         Response: The rendered template for editing a horse if the form wasn't valid or redirect to horse details.
     """
     if not edit_form.validate_on_submit():
-        return render_template("edit_horse.html", form=edit_form)
+        return render_template("./equestrian/edit_horse.html", form=edit_form)
 
     equestrian_repository.update(
         horse_id=horse_id,
@@ -623,7 +700,8 @@ def get_horse_trainers(
 @check_user_permissions(permissions_required=["ecuestre_update"])
 @inject
 def unlink_horse_trainer(horse_id: int,
-                         equestrian_repository: AbstractEquestrianRepository = Provide[Container.equestrian_repository]):
+                         equestrian_repository: AbstractEquestrianRepository = Provide[
+                             Container.equestrian_repository]):
     """
     Route to unlink a trainer from a horse.
 

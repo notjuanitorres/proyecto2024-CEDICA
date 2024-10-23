@@ -15,6 +15,8 @@ from wtforms.fields import (
     HiddenField,
 )
 
+from src.core.module.common import IsValidName
+
 from src.core.module.common.forms import (
     filetypes_message,
     allowed_filetypes,
@@ -54,16 +56,19 @@ class EmploymentInformationForm(FlaskForm):
         "Profesión",
         choices=[(e.name, e.value) for e in ProfessionsEnum],
         validators=[DataRequired()],
+        validate_choice=True,
     )
     position = SelectField(
         "Posición laboral",
         choices=[(e.name, e.value) for e in PositionEnum],
         validators=[DataRequired()],
+        validate_choice=True,
     )
     job_condition = SelectField(
         "Condición laboral",
         choices=[(e.name, e.value) for e in ConditionEnum],
         validators=[DataRequired()],
+        validate_choice=True,
     )
     start_date = DateField(
         "Inicio de actividades",
@@ -135,6 +140,7 @@ class EmployeeAddDocumentsForm(BaseManageDocumentsForm):
                 message="Debe seleccionar lo que representa este archivo",
             )
         ],
+        validate_choice=True,
     )
 
 
@@ -144,8 +150,8 @@ class EmployeeManagementForm(FlaskForm):
         self.current_email = None
         self.current_dni = None
 
-    name = StringField("Nombre", validators=[DataRequired()])
-    lastname = StringField("Apellido", validators=[DataRequired()])
+    name = StringField("Nombre", validators=[DataRequired(), IsValidName()])
+    lastname = StringField("Apellido", validators=[DataRequired(), IsValidName()])
     address = FormField(AddressForm)
     phone = FormField(PhoneForm)
     employment_information = FormField(EmploymentInformationForm)
@@ -261,3 +267,19 @@ class TrainerSelectForm(FlaskForm):
 
     def set_selected_account(self, account_id):
         self.selected_trainer.data = account_id
+
+
+class EmployeeSelectForm(FlaskForm):
+    selected_employee = HiddenField(
+        "Empleado seleccionado",
+        validators=[DataRequired("Se debe seleccionar un empleado"), IsNumber()],
+    )
+    submit_employee = SubmitField("Asociar")
+
+    def set_selected_employee(self, account_id):
+        self.selected_employee.data = account_id
+
+
+class EmployeeMiniSearchForm(FlaskForm):
+    search_text = StringField(validators=[Length(message="Debe ingresar un texto", min=1, max=50)])
+    submit_search = SubmitField("Buscar")

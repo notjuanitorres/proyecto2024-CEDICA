@@ -1,0 +1,486 @@
+<!-- Family and Pension Information -->
+<div id="family-pension-info" class="tab-pane" style="display: none">
+  <div id="pension">
+    <h2 class="label is-size-5">Información de Asignación Familiar</h2>
+    <div class="field">
+      <div class="control">
+        <label class="checkbox">
+          {{ form.has_family_assignment.label(class="has-text-weight-bold is-size-5") }} 
+          {{ form.has_family_assignment(class="ml-2", type="checkbox", style="transform: scale(1.5)") }}
+        </label>
+      </div>
+      {% if form.has_family_assignment.errors %}
+      <p class="help is-danger">{{ form.has_family_assignment.errors[0] }}</p>
+      {% endif %}
+    </div>
+    <div class="field" id="family-assignment-details" style="display: none">
+      <label class="label">Tipo de Asignación Familiar</label>
+      <div class="control">
+        {{ form.family_assignment_type(class="textarea", placeholder="Ingrese el tipo de asignación familiar") }}
+      </div>
+      {% if form.family_assignment_type.errors %}
+      <p class="help is-danger">{{ form.family_assignment_type.errors[0] }}</p>
+      {% endif %}
+    </div>
+    <div class="field">
+      <div class="control">
+        <label class="checkbox">
+          {{ form.has_pension.label(class="has-text-weight-bold is-size-5") }} 
+          {{ form.has_pension(class="ml-2", type="checkbox", style="transform: scale(1.5)") }}
+        </label>
+      </div>
+      {% if form.has_pension.errors %}
+      <p class="help is-danger">{{ form.has_pension.errors[0] }}</p>
+      {% endif %}
+    </div>
+    <div class="field" id="pension-details" style="display: none">
+      <label class="label">Tipo de Pensión</label>
+      <div class="control">
+        {{ form.pension_type(class="input", placeholder="Ingrese el tipo de pensión") }}
+      </div>
+      {% if form.pension_type.errors %}
+      <p class="help is-danger">{{ form.pension_type.errors[0] }}</p>
+      {% endif %}
+      <label class="label">Detalles de Pensión</label>
+      <div class="control">
+        {{ form.pension_details(class="textarea", placeholder="Ingrese detalles de la pensión") }}
+      </div>
+      {% if form.pension_details.errors %}
+      <p class="help is-danger">{{ form.pension_details.errors[0] }}</p>
+      {% endif %}
+    </div>
+  </div>
+  <!-- Family Members -->
+  <div id="family-members" class="py-4">
+    <h2 class="label is-size-4">Miembros de la Familia</h2>
+  <div id="family-members-container">
+    <div class="family-member" data-id="1">
+      <h3 class="label is-size-5">Miembro 1</h3>
+      <div class="field-body">
+        <div class="field">
+          <label class="label" for="family_member1-relationship">Relación</label>
+          <div class="control">
+            <input
+              type="text"
+              name="family_member1-relationship"
+              id="family_member1-relationship"
+              class="input"
+              placeholder="Ingrese la relación"
+              required
+            />
+          </div>
+        </div>
+        <div class="field">
+          <label class="label" for="family_member1-first_name">Nombre</label>
+          <div class="control">
+            <input
+              type="text"
+              name="family_member1-first_name"
+              id="family_member1-first_name"
+              class="input"
+              placeholder="Ingrese el nombre"
+              required
+            />
+          </div>
+        </div>
+        <div class="field">
+          <label class="label" for="family_member1-last_name">Apellido</label>
+          <div class="control">
+            <input
+              type="text"
+              name="family_member1-last_name"
+              id="family_member1-last_name"
+              class="input"
+              placeholder="Ingrese el apellido"
+              required
+            />
+          </div>
+        </div>
+        <div class="field">
+          <label class="label" for="family_member1-dni">DNI</label>
+          <div class="control">
+            <input
+              type="text"
+              name="family_member1-dni"
+              id="family_member1-dni"
+              class="input"
+              placeholder="Ingrese el DNI"
+              required
+              maxlength="8"
+            />
+          </div>
+        </div>
+      </div>
+      <div class="field-body mt-4">
+        <div class="field">
+          <label class="label" for="family_member1-street">Calle</label>
+          <div class="control">
+            <input
+              type="text"
+              name="family_member1-street"
+              id="family_member1-street"
+              class="input"
+              placeholder="Ingrese la calle"
+              required
+            />
+          </div>
+        </div>
+        <div class="field">
+          <label class="label" for="family_member1-number">Número</label>
+          <div class="control">
+            <input
+              type="number"
+              name="family_member1-number"
+              id="family_member1-number"
+              class="input"
+              placeholder="Ingrese el número"
+              required
+            />
+          </div>
+        </div>
+        <div class="field">
+          <label class="label" for="family_member1-department">Departamento</label>
+          <div class="control">
+            <input
+              type="text"
+              name="family_member1-department"
+              id="family_member1-department"
+              class="input"
+              placeholder="Ingrese el departamento"
+              required
+            />
+          </div>
+        </div>
+      </div>
+        <div class="field-body mt-4">
+        <div class="field">
+          <label class="label" for="family_member1-locality">Localidad</label>
+          <div class="control">
+            <input
+              type="text"
+              name="family_member1-locality"
+              id="family_member1-locality"
+              class="input"
+              placeholder="Ingrese la localidad"
+              required
+            />
+          </div>
+        </div>
+        <div class="field">
+          <label class="label" for="family_member1-province">Provincia</label>
+          <div class="control">
+            <input
+              type="text"
+              name="family_member1-province"
+              id="family_member1-province"
+              class="input"
+              placeholder="Ingrese la provincia"
+              required
+            />
+          </div>
+        </div>
+      </div>
+
+      <div class="field-body mt-4">
+        <div class="field">
+          <label class="label" for="family_member1-phone_country_code">Código de País</label>
+          <div class="control">
+            <input
+              type="text"
+              name="family_member1-phone_country_code"
+              id="family_member1-phone_country_code"
+              class="input"
+              placeholder="Código de País"
+              required
+            />
+          </div>
+        </div>
+        <div class="field">
+          <label class="label" for="family_member1-phone_area_code">Código de Área</label>
+          <div class="control">
+            <input
+              type="text"
+              name="family_member1-phone_area_code"
+              id="family_member1-phone_area_code"
+              class="input"
+              placeholder="Código de Área"
+              required
+            />
+          </div>
+        </div>
+        <div class="field">
+          <label class="label" for="family_member1-phone_number">Número de Teléfono</label>
+          <div class="control">
+            <input
+              type="text"
+              name="family_member1-phone_number"
+              id="family_member1-phone_number"
+              class="input"
+              placeholder="Ingrese el número de teléfono"
+              required
+              maxlength="15"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div class="field mt-4">
+        <label class="label" for="family_member1-email">Correo Electrónico</label>
+        <div class="control">
+          <input
+            type="email"
+            name="family_member1-email"
+            id="family_member1-email"
+            class="input"
+            placeholder="Ingrese el correo electrónico"
+            required
+          />
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="label" for="family_member1-education_level">Nivel Educativo</label>
+        <div class="control">
+          <div class="select">
+            <select
+              name="family_member1-education_level"
+              id="family_member1-education_level"
+              required
+            >
+              <option value="">Seleccione el nivel educativo</option>
+              {% for key, value in EducationLevelEnum.__members__.items() %}
+              <option value="{{ key }}">{{ value.value }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="label" for="family_member1-occupation">Ocupación</label>
+        <div class="control">
+          <input
+            type="text"
+            name="family_member1-occupation"
+            id="family_member1-occupation"
+            class="input"
+            placeholder="Ingrese la ocupación"
+            required
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+
+    <div class="field pt-4">
+    <div class="control">
+      <button id="add-family-member" type="button" class="button is-primary is-outlined add-family-member">
+        Agregar Miembro de la Familia
+      </button>
+    </div>
+    </div>
+  
+    <div class="box family-member" data-id="2" style="display: none">
+      <h3 class="label is-size-5">Miembro 2</h3>
+      <div class="field-body">
+        <div class="field">
+          <label class="label">Relación</label>
+          <div class="control">
+            <input
+              type="text"
+              name="family_member2-relationship"
+              class="input"
+              placeholder="Ingrese la relación"
+              required
+            />
+          </div>
+        </div>
+        <div class="field">
+          <label class="label">Nombre</label>
+          <div class="control">
+            <input
+              type="text"
+              name="family_member2-first_name"
+              class="input"
+              placeholder="Ingrese el nombre"
+              required
+            />
+          </div>
+        </div>
+        <div class="field">
+          <label class="label">Apellido</label>
+          <div class="control">
+            <input
+              type="text"
+              name="family_member2-last_name"
+              class="input"
+              placeholder="Ingrese el apellido"
+              required
+            />
+          </div>
+        </div>
+        <div class="field">
+          <label class="label">DNI</label>
+          <div class="control">
+            <input
+              type="text"
+              name="family_member2-dni"
+              class="input"
+              placeholder="Ingrese el DNI"
+              required
+              maxlength="8"
+            />
+          </div>
+        </div>
+      </div>
+      <div class="field-body mt-4">
+        <div class="field">
+          <label class="label">Calle</label>
+          <div class="control">
+            <input
+              type="text"
+              name="family_member2-street"
+              class="input"
+              placeholder="Ingrese la calle"
+              required
+            />
+          </div>
+        </div>
+        <div class="field">
+          <label class="label">Número</label>
+          <div class="control">
+            <input
+              type="number"
+              name="family_member2-number"
+              class="input"
+              placeholder="Ingrese el número"
+              required
+            />
+          </div>
+        </div>
+        <div class="field">
+          <label class="label">Departamento</label>
+          <div class="control">
+            <input
+              type="text"
+              name="family_member2-department"
+              class="input"
+              placeholder="Ingrese el departamento"
+              required
+            />
+          </div>
+        </div>
+      </div>
+      <div class="field-body mt-4">
+        <div class="field">
+          <label class="label">Localidad</label>
+          <div class="control">
+            <input
+              type="text"
+              name="family_member2-locality"
+              class="input"
+              placeholder="Ingrese la localidad"
+              required
+            />
+          </div>
+        </div>
+        <div class="field">
+          <label class="label">Provincia</label>
+          <div class="control">
+            <input
+              type="text"
+              name="family_member2-province"
+              class="input"
+              placeholder="Ingrese la provincia"
+              required
+            />
+          </div>
+        </div>
+      </div>
+      <div class="field-body mt-4">
+        <div class="field">
+          <label class="label">Código de País</label>
+          <div class="control">
+            <input
+              type="text"
+              name="family_member2-phone_country_code"
+              class="input"
+              placeholder="Código de País"
+              required
+            />
+          </div>
+        </div>
+        <div class="field">
+          <label class="label">Código de Área</label>
+          <div class="control">
+            <input
+              type="text"
+              name="family_member2-phone_area_code"
+              class="input"
+              placeholder="Código de Área"
+              required
+            />
+          </div>
+        </div>
+        <div class="field">
+          <label class="label">Número de Teléfono</label>
+          <div class="control">
+            <input
+              type="text"
+              name="family_member2-phone_number"
+              class="input"
+              placeholder="Ingrese el número de teléfono"
+              required
+              maxlength="15"
+            />
+          </div>
+        </div>
+      </div>
+      <div class="field mt-4">
+        <label class="label">Correo Electrónico</label>
+        <div class="control">
+          <input
+            type="email"
+            name="family_member2-email"
+            class="input"
+            placeholder="Ingrese el correo electrónico"
+            required
+          />
+        </div>
+      </div>
+      <div class="field">
+        <label class="label">Nivel Educativo</label>
+        <div class="control">
+          <div class="select">
+            <select name="family_member2-education_level" required>
+              <option value="">Seleccione el nivel educativo</option>
+              {% for key, value in EducationLevelEnum.__members__.items() %}
+              <option value="{{ key }}">{{ value.value }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="field">
+        <label class="label">Ocupación</label>
+        <div class="control">
+          <input
+            type="text"
+            name="family_member2-occupation"
+            class="input"
+            placeholder="Ingrese la ocupación"
+            required
+          />
+        </div>
+      </div>
+      <div class="field">
+        <div class="control">
+          <button type="button" class="button is-fullwidth is-outlined is-danger remove-family-member mt-4">
+            Eliminar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Family Members -->

@@ -27,59 +27,209 @@
 
 {% block card_title %}Caballo: {{ horse.name }}{% endblock %}
 
+{% block banner %}
+    {% if horse.is_archived %}
+        <div class="is-flex is-fullwidth is-justify-content-center has-background-danger p-4">
+            <h2 class="title">Caballo archivado</h2>
+        </div>
+    {% endif %}
+{% endblock %}
+
 {% block card_content %}
-    <ul class="grid desktop-is-col-min-16">
-        <div class="cell">
-            <h4>Información general</h4>
-            <li><strong>ID: </strong> {{ horse.id }}</li>
+    <div class="grid is-col-min-16">
+    <div id="general-info" class="cell">
+        <h3>Información general</h3>
+        <ul>
+            <li><strong>ID: </strong>{{ horse.id }}</li>
             <li><strong>Nombre: </strong>{{ horse.name }}</li>
             <li><strong>Raza: </strong>{{ horse.breed }}</li>
             <li><strong>Fecha de nacimiento: </strong>{{ horse.birth_date | format_date }}</li>
             <li><strong>Pelaje: </strong>{{ horse.coat }}</li>
             <li><strong>Sexo: </strong>{{ horse.sex }}</li>
-        </div>
+        </ul>
+    </div>
 
-        <div class="cell">
-            <h4>Información adicional</h4>
+    <div id="additional-info" class="cell">
+        <h3>Información adicional</h3>
+        <ul>
             <li><strong>Es donación: </strong>{{ horse.is_donation | natural_boolean }}</li>
             <li><strong>Fecha de admisión: </strong>{{ horse.admission_date | format_date }}</li>
             <li><strong>Sede asignada: </strong>{{ horse.assigned_facility }}</li>
-            <li><strong>Tipo de actividad: </strong>{{ horse.ja_type.value }}</li>
-        </div>
+            <li><strong>Tipo de actividad: </strong>{{ horse.ja_type }}</li>
+        </ul>
+    </div>
 
-        <div class="cell">
-            <h4>Estampas</h4>
+    <div id="stamp-info" class="cell">
+        <h3>Estampas</h3>
+        <ul>
             <li><strong>Dado de alta: </strong>{{ horse.inserted_at | format_date }}</li>
             <li><strong>Última modificación: </strong>{{ horse.updated_at | format_date }}</li>
-        </div>
-    </ul>
+        </ul>
+    </div>
+</div>
+
 {% endblock %}
 
 {% block card_actions %}
-    {% if "ecuestre_destroy" in permissions or is_admin %}
-        <button class="card-footer-item has-text-danger modal-trigger" data-id="{{ horse.id }}"
-                data-target="horse-delete-modal">
-            Eliminar
-        </button>
+    {% if horse.is_archived %}
+        {% if "ecuestre_destroy" in permissions or is_admin %}
+            <button class="card-footer-item has-text-danger modal-trigger" data-id="{{ horse.id }}" data-target="horse-delete-modal">
+                Eliminar para siempre
+            </button>
+            <form class="card-footer-item" action="{{ url_for('equestrian_bp.recover_horse') }}" method="POST">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="horse_id" value="{{ horse.id }}">
+                <button type="submit" class="has-text-primary">Recuperar</button>
+            </form>
+        {% endif %}
+    {% else %}
+        {% if "ecuestre_destroy" in permissions or is_admin %}
+            <button class="card-footer-item has-text-danger modal-trigger" data-id="{{ horse.id }}" data-target="horse-delete-modal">
+                Archivar
+            </button>
+        {% endif %}
+        {% if "ecuestre_update" in permissions or is_admin %}
+            <a href="{{ url_for( "equestrian_bp.edit_horse", horse_id=horse.id )}}" class="card-footer-item has-text-warning">Actualizar</a>
+        {% endif %}
     {% endif %}
 
-    {% if "ecuestre_update" in permissions or is_admin %}
-        <a href="{{ url_for('equestrian_bp.edit_horse', horse_id=horse.id) }}"
-           class="card-footer-item has-text-warning">Editar</a>
+{% endblock %}
+
+
+{% block additional_cards %}
+<div id="account" class="card mt-5">
+    <header class="card-header">
+        <h2 class="card-header-title is-size-4">
+            <span class="icon mr-2">
+                <i class="fa-solid fa-user"></i>                
+            </span>
+            Entrenadores asociados a {{ horse.name }}
+            {% if not horse.trainers %}
+            <span class="tag is-info is-medium ml-2">Sin informacion</span>
+            {% else %}
+            <span class="tag is-success is-medium ml-2">Total: {{ horse.trainers_number }}</span>
+            {% endif %}
+        </h2>
+    </header>
+    {% if horse.trainers %}
+    <div class="card-content">
+        <div class="content">
+            <article class="media">
+                <div class="media-content">
+                    <div class="content">
+                        {% for trainer in horse.trainers %}
+                        <div class="box">
+                            <div class="content">
+                                <p class="mb-0">
+                                    <strong class="is-size-5">
+                                        {{ trainer.name }}
+                                        {{ trainer.lastname}} 
+                                    </strong>
+                                    <small>es miembro desde {{ trainer.employment_information.start_date | format_date }}</small>
+                                </p>
+                                <p>
+                                    <strong>Correo: </strong>{{ trainer.email }}
+                                    <br>
+                                    <strong>Puesto laboral: </strong> {{ trainer.employment_information.position }}
+                                </p>
+                            </div>
+                        </div>
+                        {% else %}
+                        <p>Oops. Parece que no hay entradores asociados.</p>
+                        {% endfor %} 
+                    </div>
+                </div>
+            </article>
+        </div>
+    </div>
+    {% else %}
+    <footer class="card-footer">
+        {% if "ecuestre_update" in permissions or is_admin %}
+        <a href="{{ url_for( "employee_bp.edit_trainers", horse_id=horse.id ) }}" class="card-footer-item has-text-link">Agregar</a>
+        {% else %}
+        <button type="disabled" class="card-footer-item has-text-info">
+            <p>No existen entrenadores asociados a este caballo</p>
+        </button>
+        {% endif %}
+    </footer>
     {% endif %}
-    <a href="{{ url_for('equestrian_bp.edit_documents', horse_id=horse.id) }}"
-           class="card-footer-item has-text-link">Ver documentos</a>
-    <a href="{{ url_for('equestrian_bp.get_horse_trainers', horse_id=horse.id) }}"
-           class="card-footer-item has-text-info">Ver entrenadores asociados</a>
+</div>
+<div id="documents" class="card mt-5">
+    <header class="card-header">
+        <p class="card-header-title is-size-4">
+            <span class="icon mr-2">
+                <i class="fa-solid fa-file"></i>
+            </span>
+            Documentos anexos:
+            {% if horse.files_number > 0%}
+                <span class="tag is-medium is-success ml-2">Total: {{ horse.files_number }}</span>
+            {% else %}
+                <span class="tag is-medium is-info ml-2">No posee</span>
+            {% endif %}
+        </p>
+    </header>
+    <div class="card-content">
+        <div class="content">
+            {% if horse.files %}
+                {% for file in horse.files %}
+                <div class="box">
+                    <article class="media">
+                        <div class="media-left">
+                            {{ render_file_icon(file.filetype, size=1) }}
+                        </div>
+                        <div class="media-content ml-2">
+                        <div class="content">
+                            <p>
+                            <strong>{{ render_category(file.tag) }}</strong>
+                            <small>{{ file.uploaded_at | format_date }}</small>
+                            <br />
+                            {{ file.title }}
+                            </p>
+                        </div>
+                        </div>
+                    </article>
+                </div>
+                <footer class="card-footer">
+                    {% if "ecuestre_update" in permissions or is_admin %}
+                    <a href="{{ url_for("equestrian_bp.edit_documents", horse_id=horse.id )}}" class="card-footer-item has-text-warning">Ver todos</a>
+                    {% endif %}
+                </footer>
+                {% endfor %}
+            {% else %}
+                <p>No se se ha subido ningun documento</p>
+                {% if "ecuestre_update" in permissions or is_admin %}
+                <footer class="card-footer">
+                    {% if not horse.is_deleted %}
+                        <a href="{{ url_for("equestrian_bp.create_document", horse_id=horse.id )}}" class="card-footer-item">Agregar</a>
+                    {% else %}
+                        <a href="{{ url_for("equestrian.edit_documents", horse_id=horse.id )}}" class="card-footer-item">Ver</a>
+                    {% endif %}
+                </footer>
+                {% endif%}
+            {% endif %}
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block modal %}
-    {{ render_delete_modal(
-      field="horse",
-      endpoint="equestrian_bp.delete_horse",
-      title="Eliminar",
-      msg="¿Está seguro de que desea eliminar al caballo?",
-      msg_sub="Luego de confirmar, no se podrán revertir los cambios"
-    ) }}
+    {% if horse.is_archived %}
+        {{ render_delete_modal(
+          field="horse",
+          endpoint=url_for("equestrian_bp.delete_horse", horse_id=horse.id),
+          title="Eliminar",
+          msg="¿Está seguro de que desea eliminar al caballo?",
+          msg_sub="Luego de confirmar, no se podrán revertir los cambios"
+        ) }}
+    {% else %}
+        {{ render_delete_modal(
+          field="horse",
+          endpoint=url_for("equestrian_bp.archive_horse", horse_id=horse.id),
+          title="Archivar",
+          msg="¿Está seguro de que desea archivar al caballo?",
+          msg_sub="",
+          delete_text="Archivar"
+        ) }}
+    {% endif %}
 {% endblock %}
 

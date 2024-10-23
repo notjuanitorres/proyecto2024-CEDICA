@@ -4,8 +4,18 @@ from dependency_injector.wiring import inject, Provide
 
 index_bp = Blueprint("index_bp", __name__, template_folder="../templates", url_prefix="/")
 
-
 @index_bp.route("/")
+def index():
+    """
+    Renders the home page.
+
+    Returns:
+        str: Rendered HTML template for the home page.
+    """
+    return render_template("index.html")
+
+
+@index_bp.route("/home")
 def home():
     """
     Renders the home page.

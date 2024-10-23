@@ -1,0 +1,140 @@
+{% extends "layout.html" %}
+
+{% from "macros/pagination.html" import render_pagination %}
+
+{% block title %}Seleccionar Beneficiario - CEDICA{% endblock %}
+
+{% block main_content %}
+<nav class="breadcrumb mb-2" aria-label="breadcrumbs">
+  <ul>
+      <li>
+          <a href="{{ url_for('index_bp.home')}}">
+              <span class="icon is-small">
+                  <i class="fas fa-home" aria-hidden="true"></i>
+              </span>
+              <span>Inicio</span>
+          </a>
+      </li>
+      <li>
+          <a href="{{ url_for('payment_bp.get_payments')}}">
+              <span class="icon is-small">
+                  <i class="fas fa-money-bill-wave" aria-hidden="true"></i>
+              </span>
+              <span>Pagos</span>
+          </a>
+      </li>
+      <li class="is-active">
+          <a href="#">
+              <span class="icon is-small">
+                  <i class="fa-solid fa-user" aria-hidden="true"></i>
+              </span>
+              <span>Seleccionar Beneficiario</span>
+          </a>
+  </ul>
+</nav>
+
+<section id="select-employee" class="panel">
+  <div class="container p-4">
+    <h1 class="title is-size-4">
+      Seleccionar Beneficiario
+    </h1>
+  </div>
+  <form id="search-employee" method="GET" class="panel-block is-gap-2">
+    <div class="field is-flex-grow-1">
+      <label for="filtrar" class="label">Buscar empleado</label>
+      <p class="control has-icons-left">
+        {{ form.search_text(class="input", placeholder="Buscar por nombre o correo") }}
+        <span class="icon is-left">
+          <i class="fas fa-search" aria-hidden="true"></i>
+        </span>
+      </p>
+      {% if form.search_text.errors %}
+      <p class="help is-danger">{{ form.search_text.errors[0] }}</p>
+      {% endif %}
+    </div>
+    <div class="field">
+      <label for="submit-search" class="is-invisible"> {{ form.submit_search.label }}</label>
+      <div class="control">
+          {{ form.submit_search(class="button is-flex-grow-1 is-link")}}
+      </div>
+    </div>
+  </form>
+  <div class="container p-4">
+    <h3 class="subtitle">Mostrando empleados</h3>
+    {{ render_pagination(employees, 'payment_bp.select_employee') }}
+  </div>
+  <form method="POST" id="select-form" class="">
+    {{ select_form.hidden_tag() }}
+    {% for employee in employees.items %}
+      <a class="panel-block field mb-0" data-id="employee-{{ employee.id }}">
+        <div class="media">
+          <div class="media-left">
+            <i class="fa-solid fa-circle-user is-size-3" aria-hidden="true"></i>
+          </div>
+          <div class="media-content">
+            <div class="content">
+              <p>
+                <strong>{{ employee.name }} {{ employee.lastname }}</strong> <small>{{ employee.email }}</small>
+                <br />
+                {{ employee.email }}
+              </p>
+            </div>
+          </div>
+        </div>
+      </a>
+    {% endfor %}
+    <div class="panel-block">
+      {{ select_form.submit_employee(class="button is-primary is-fullwidth", id="submit-employee", type="submit")}}
+    </div>
+  </form>
+</section>
+{% endblock %}
+
+{% block extra_scripts %}
+    {{ super() }}
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+          const pagination = document.getElementById("pagination")
+          const selectForm = document.getElementById("select-form");
+          const employeeLinks = document.querySelectorAll('[data-id^="employee-"]');
+          const selectedEmployee = document.getElementById('selected_employee');
+          const submitButton = document.getElementById('submit-employee');
+          const isActive = "has-background-warning"
+
+          function selectEmployee(employeeId, clickedElement) {  
+              selectedEmployee.value = employeeId;
+
+              pagination.classList.add("is-invisible")
+              employeeLinks.forEach(link => {
+                  link.classList.remove(isActive);
+              });
+              clickedElement.classList.add(isActive);
+              submitButton.disabled = false;
+          }
+
+          function deselectEmployee() {
+              pagination.classList.remove("is-invisible")
+              selectedEmployee.value = null;
+              employeeLinks.forEach(link => {
+                  link.classList.remove(isActive);
+              });
+              submitButton.disabled = true;
+          }
+
+          employeeLinks.forEach(link => {
+              link.addEventListener('click', function(event) {
+                  event.preventDefault();
+                  const employeeId = this.getAttribute('data-id').split('-')[1];
+                  
+                  if (this.classList.contains(isActive)) {
+                      deselectEmployee();
+                  } else {
+                      selectEmployee(employeeId, this);
+                  }
+              });
+          });
+
+          submitButton.disabled = true;
+      });
+    </script>
+{% endblock %}
