@@ -297,6 +297,10 @@ def edit_horse(horse_id: int,
         flash(f"Su búsqueda no devolvió un caballo existente", "danger")
         return redirect(url_for("equestrian_bp.get_horses"))
 
+    if horse.get("is_archived"):
+        flash("No se puede editar un caballo archivado", "danger")
+        return redirect(url_for("equestrian_bp.show_horse", horse_id=horse_id))
+
     edit_form = HorseEditForm(data=horse)
 
     if request.method in ["POST", "PUT"]:

@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, render_template, request, url_for, redirect, flash
+from flask import Blueprint, render_template, request, url_for, redirect, flash
 from dependency_injector.wiring import inject, Provide
 from src.web.helpers.auth import check_user_permissions
 from src.core.container import Container
@@ -66,7 +66,7 @@ def get_employees():
     paginated_employees = search_employees(search=search_form, need_archive=False)
 
     return render_template(
-        "/list/employees.html",
+        "./employee/list/employees.html",
         employees=paginated_employees,
         employment_information=employment_information,
         search_form=search_form,
@@ -79,7 +79,7 @@ def get_deleted_employees():
     search_form = EmployeeSearchForm(request.args)
     paginated_employees = search_employees(search=search_form, need_archive=True)
     return render_template(
-        "/list/employees_archived.html",
+        "./employee/list/employees_archived.html",
         employees=paginated_employees,
         employment_information=employment_information,
         search_form=search_form,
@@ -94,7 +94,7 @@ def create_employee():
     if request.method == "POST":
         return add_employee(create_form=create_form)
 
-    return render_template("/create/create_employee.html", form=create_form)
+    return render_template("./employee/create/create_employee.html", form=create_form)
 
 
 @inject
@@ -103,7 +103,7 @@ def add_employee(
     employees: AbstractEmployeeRepository = Provide[Container.employee_repository],
 ):
     if not create_form.validate_on_submit():
-        return render_template("/create/create_employee.html", form=create_form)
+        return render_template("./employee/create/create_employee.html", form=create_form)
 
     created_employee = employees.add(
         employee=EmployeeMapper.to_entity(create_form.data, []),
@@ -135,7 +135,7 @@ def create_document(
         return add_document(employee=employee, create_form=create_form)
 
     return render_template(
-        "/create/create_document.html", form=create_form, employee=employee
+        "./employee/create/create_document.html", form=create_form, employee=employee
     )
 
 
@@ -149,7 +149,7 @@ def add_document(
 
     if not create_form.validate_on_submit():
         return render_template(
-            "/create/create_document.html", form=create_form, employee=employee
+            "./employee/create/create_document.html", form=create_form, employee=employee
         )
 
     if create_form.upload_type.data == "file":
@@ -194,7 +194,7 @@ def show_employee(
     if not employee:
         return redirect(url_for("employee_bp.get_employees"))
 
-    return render_template("employee.html", employee=employee, account=employee_account)
+    return render_template("./employee/employee.html", employee=employee, account=employee_account)
 
 
 @employee_bp.route("/editar/<int:employee_id>", methods=["GET", "POST"])
@@ -206,7 +206,12 @@ def edit_employee(
 ):
     employee = employees.get_employee(employee_id)
     if not employee:
+        flash(f"El empleado solicitado no existe", "danger")
         return redirect(url_for("employee_bp.get_employees"))
+
+    if employee.get("is_deleted"):
+        flash("No se puede editar un empleado archivado", "warning")
+        return redirect(url_for("employee_bp.show_employee", employee_id=employee_id))
 
     update_form = EmployeeEditForm(
         data=employee,
@@ -219,7 +224,7 @@ def edit_employee(
         return update_employee(update_form=update_form, employee_id=employee_id)
 
     return render_template(
-        "/update/update_employee.html", form=update_form, employee=employee
+        "./employee/update/update_employee.html", form=update_form, employee=employee
     )
 
 
@@ -232,38 +237,16 @@ def update_employee(
     employee = employees.get_employee(employee_id)
     if not update_form.validate_on_submit():
         return render_template(
-            "/update/update_employee.html", form=update_form, employee=employee
+            "./employee/update/update_employee.html", form=update_form, employee=employee
         )
 
     if not employees.update(employee_id, EmployeeMapper.flat_form(update_form.data)):
         flash("No se ha podido actualizar al miembro del equipo", "warning")
-        return render_template("/update/update_employee.html")
+        return render_template("./employee/update/update_employee.html")
 
     flash("El miembro del equipo ha sido actualizado exitosamente ")
     return redirect(url_for("employee_bp.show_employee", employee_id=employee_id))
 
-@employee_bp.route("/api", methods=["GET"])
-@check_user_permissions(permissions_required=["equipo_index"])
-@inject
-def api_get_employees(
-    employees: AbstractEmployeeRepository = Provide[Container.employee_repository],
-):
-    search_query = request.args.get("search", type=str, default="")
-    search_query = search_query.strip().lower()
-
-    if not search_query:
-        return jsonify([])
-
-    search_results = employees.search_by_email(search_query)
-
-    return jsonify([
-        {
-            "id": employee.id,
-            "name": employee.fullname,
-            "email": employee.email,
-        }
-        for employee in search_results
-    ])
 
 @employee_bp.route("/archivar/", methods=["POST"])
 @check_user_permissions(permissions_required=["equipo_destroy"])
@@ -340,7 +323,7 @@ def link_account(
         )
 
     return render_template(
-        "/update/update_account.html",
+        "./employee/update/update_account.html",
         employee=employee,
         accounts=accounts,
         search_form=search_account,
@@ -358,7 +341,7 @@ def set_employee_account(
 ):
     if not (select_form.submit_account.data and select_form.validate()):
         return render_template(
-            "/update/update_account.html",
+            "./employee/update/update_account.html",
             employee=employee,
             accounts=active_accounts,
             search_form=search_form,
@@ -437,7 +420,7 @@ def edit_documents(
     )
 
     return render_template(
-        "/update/update_documents.html",
+        "./employee/update/update_documents.html",
         employee=employee,
         files=paginated_files,
         add_form=add_document_form,
@@ -460,7 +443,7 @@ def update_documents(
 ):
     if not add_form.validate_on_submit():
         return render_template(
-            "/update/update_documents.html",
+            "./employee/update/update_documents.html",
             add_form=add_form,
             employee=employee,
             documents=documents,
@@ -579,7 +562,7 @@ def edit_document(
         return update_document(employee, document, edit_form)
 
     return render_template(
-        "/update/edit_document.html",
+        "./employee/update/edit_document.html",
         employee=employee,
         document=document,
         form=edit_form,
@@ -603,7 +586,7 @@ def update_document(
     ):
 
         return render_template(
-            "/update/edit_document.html",
+            "./employee/update/edit_document.html",
             employee=employee,
             document=document,
             form=edit_form,

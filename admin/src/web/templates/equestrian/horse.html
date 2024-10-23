@@ -136,7 +136,12 @@
                         </div>
                         {% else %}
                         <p>Oops. Parece que no hay entradores asociados.</p>
-                        {% endfor %} 
+                        {% endfor %}
+                        <footer class="card-footer">
+                            {% if "ecuestre_update" in permissions or is_admin %}
+                            <a href="{{ url_for("equestrian_bp.edit_documents", horse_id=horse.id )}}" class="card-footer-item has-text-link">Ver todos</a>
+                            {% endif %}
+                        </footer>
                     </div>
                 </div>
             </article>
@@ -145,7 +150,13 @@
     {% else %}
     <footer class="card-footer">
         {% if "ecuestre_update" in permissions or is_admin %}
-        <a href="{{ url_for( "employee_bp.edit_trainers", horse_id=horse.id ) }}" class="card-footer-item has-text-link">Agregar</a>
+            {% if not horse.is_archived %}
+                <a href="{{ url_for( "equestrian_bp.link_trainer", horse_id=horse.id ) }}" class="card-footer-item has-text-link">Agregar</a>
+            {% else %}
+                <button type="disabled" class="card-footer-item has-text-info">
+                    <p>No se pueden agregar entrenadores a un caballo archivado</p>
+                </button>
+            {% endif %}
         {% else %}
         <button type="disabled" class="card-footer-item has-text-info">
             <p>No existen entrenadores asociados a este caballo</p>
@@ -189,21 +200,17 @@
                         </div>
                     </article>
                 </div>
+                {% endfor %}
                 <footer class="card-footer">
                     {% if "ecuestre_update" in permissions or is_admin %}
-                    <a href="{{ url_for("equestrian_bp.edit_documents", horse_id=horse.id )}}" class="card-footer-item has-text-warning">Ver todos</a>
+                    <a href="{{ url_for("equestrian_bp.edit_documents", horse_id=horse.id )}}" class="card-footer-item has-text-link">Ver todos</a>
                     {% endif %}
                 </footer>
-                {% endfor %}
             {% else %}
                 <p>No se se ha subido ningun documento</p>
                 {% if "ecuestre_update" in permissions or is_admin %}
                 <footer class="card-footer">
-                    {% if not horse.is_deleted %}
-                        <a href="{{ url_for("equestrian_bp.create_document", horse_id=horse.id )}}" class="card-footer-item">Agregar</a>
-                    {% else %}
-                        <a href="{{ url_for("equestrian.edit_documents", horse_id=horse.id )}}" class="card-footer-item">Ver</a>
-                    {% endif %}
+                    <a href="{{ url_for("equestrian_bp.create_document", horse_id=horse.id )}}" class="card-footer-item">Agregar</a>
                 </footer>
                 {% endif%}
             {% endif %}
