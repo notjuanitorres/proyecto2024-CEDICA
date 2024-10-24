@@ -11,7 +11,6 @@ from werkzeug.datastructures import FileStorage
 
 from flask import current_app
 
-# from typing import BinaryIO
 FileType = Dict[str, str | int]
 FilesType = List[FileType]
 
@@ -138,6 +137,18 @@ class AbstractStorageServices(object):
 
         Returns:
             bytes: The profile image data.
+        """
+        raise NotImplementedError
+
+    @abstractmethod
+    def get_profile_image_url(self, filename: str) -> str:
+        """Retrieves a profile image from storage.
+
+        Args:
+            filename (str): The name of the file.
+
+        Returns:
+            The file data.
         """
         raise NotImplementedError
 

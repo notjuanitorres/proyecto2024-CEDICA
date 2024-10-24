@@ -187,12 +187,9 @@ def edit_profile(
                 update_data["password"]= bcrypt.generate_password_hash(form.new_password.data).decode('utf-8')
 
             user_repository.update(user_id=user_id, data=update_data)
-
-            # Actualizar la variable de la sesión si la edición era del mismo perfil
-            session["profile_image_url"] = profile_image_url
-
+            
             flash("Perfil actualizado correctamente", "success")
-            return redirect(url_for("auth_bp.edit_profile"))
+            return redirect(url_for("auth_bp.view_profile"))
 
         else:
             flash("Error al actualizar el perfil", "danger")

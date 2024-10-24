@@ -18,7 +18,6 @@ users_bp = Blueprint(
 )
 
 
-
 @users_bp.before_request
 @inject
 def require_login_and_sys_admin(user_repository=Provide[Container.user_repository]):
@@ -220,7 +219,7 @@ def update_user(
     user_id: int,
     edit_form: UserEditForm,
     user_repository: AbstractUserRepository = Provide[Container.user_repository],
-    storage_service:AbstractStorageServices=Provide[Container.storage_services]
+    storage_service: AbstractStorageServices = Provide[Container.storage_services]
 ):
     """
     Update an existing user's information.
@@ -236,13 +235,15 @@ def update_user(
     if not edit_form.validate_on_submit():
         return render_template("edit_user.html", form=edit_form)
 
-    profile_image_url=None
+    profile_image_url = None
     if edit_form.profile_image.data:
         file = edit_form.profile_image.data
-        old= user_repository.get_profile_image_url(user_id)
+        old = user_repository.get_profile_image_url(user_id)
         if old:
             storage_service.delete_file(old)
-        profile_image_url = storage_service.upload_file(file, path=user_repository.storage_path)
+        profile_image_url = storage_service.upload_file(file, path=user_repository.storage_path)["path"]
+        if not profile_image_url:
+            flash("No se pudo actualizar la foto de perfil", "danger")
         
     user_repository.update(
         user_id=user_id,
@@ -251,7 +252,7 @@ def update_user(
             "alias": edit_form.alias.data,
             "system_admin": edit_form.system_admin.data,
             "role_id": edit_form.role_id.data,
-            "profile_image_url": profile_image_url["path"] if profile_image_url else None
+            "profile_image_url": profile_image_url
         },
     )
 
