@@ -27,39 +27,7 @@
 {% endblock %}
 
 {% block extra_scripts %}
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    // Funcionalidad para agregar miembros de la familia
-    // Funcionalidad para mostrar/ocultar detalles de la asignación familiar
-    const hasFamilyAssignmentCheckbox = document.querySelector('input[name="has_family_assignment"]');
-    const familyAssignmentDetails = document.getElementById('family-assignment-details');
-
-    function toggleFamilyAssignmentDetails() {
-        if (hasFamilyAssignmentCheckbox.checked) {
-            familyAssignmentDetails.style.display = 'block';
-        } else {
-            familyAssignmentDetails.style.display = 'none';
-        }
-    }
-
-    hasFamilyAssignmentCheckbox.addEventListener('change', toggleFamilyAssignmentDetails);
-    toggleFamilyAssignmentDetails();  // Initial check
-    // Funcionalidad para mostrar/ocultar detalles de la pensión
-    const hasPensionCheckbox = document.querySelector('input[name="has_pension"]');
-    const pensionDetails = document.getElementById('pension-details');
-
-    function togglePensionDetails() {
-        if (hasPensionCheckbox.checked) {
-            pensionDetails.style.display = 'block';
-        } else {
-            pensionDetails.style.display = 'none';
-        }
-    }
-
-    hasPensionCheckbox.addEventListener('change', togglePensionDetails);
-    togglePensionDetails();  // Initial check
-  });
-</script>
+<script src="{{ url_for('static', filename="js/jockey_amazon/family-form.js")}}"></script>
 {% endblock %}
 
 

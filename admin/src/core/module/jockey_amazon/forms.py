@@ -79,7 +79,6 @@ class GeneralInformationForm(FlaskForm):
     def __init__(self, *args, **kwargs):
         super(GeneralInformationForm, self).__init__(*args, **kwargs)
         self.current_dni = kwargs.pop("current_dni", None)
-        print(self.current_dni)
 
     id = HiddenField("id")
     first_name = StringField("Nombre", validators=[
