@@ -178,9 +178,6 @@ def update_user(
         },
     )
 
-    if user_id == session.get("user"):
-        session["profile_image_url"] = storage_service.get_profile_image_url(filename=profile_image_url["path"])
-
     return redirect(url_for("users_bp.show_user", user_id=user_id))
 
 

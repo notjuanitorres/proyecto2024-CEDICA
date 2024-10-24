@@ -64,6 +64,5 @@ def inject_session_data():
         user_name=session.get("user_name"),
         is_authenticated=is_authenticated(session),
         is_admin=session.get("is_admin", False),
-        permissions=session.get("permissions", []),
-        profile_image_url=session.get("profile_image_url"),
+        permissions=session.get("permissions", [])
     )
