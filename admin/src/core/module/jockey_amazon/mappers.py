@@ -1,3 +1,31 @@
+"""
+mappers.py
+
+This module contains the `JockeyAmazonMapper` class and its related functionality for mapping
+`JockeyAmazon` entities to and from dictionaries. It also handles creating and managing
+`JockeyAmazonFile` instances for handling file-related data, as well as mapping nested objects
+like family members, work assignments, and school institutions using their respective mappers.
+
+Classes:
+    JockeyAmazonMapper: A class responsible for converting `JockeyAmazon` entities to and from
+        dictionary representations. It also provides file management utilities for associated documents.
+
+Functions:
+    create_file(document_type, file_information):
+        Create a `JockeyAmazonFile` instance using the given document type and file information.
+        
+    create_files(files):
+        Create multiple `JockeyAmazonFile` instances from a list of document types and file information.
+        
+    from_entity(jockey):
+        Converts a `JockeyAmazon` entity to a dictionary format, containing general, health, family,
+        organizational work, and school information.
+        
+    to_entity(data):
+        Converts a dictionary back to a `JockeyAmazon` entity, including nested entities like
+        family members, school institution, and work assignments.
+"""
+
 from typing import Dict
 from .models import JockeyAmazon, JockeyAmazonFile
 from .extras.mappers import (
@@ -8,8 +36,33 @@ from .extras.mappers import (
 
 
 class JockeyAmazonMapper:
+    """
+    Mapper class for transforming JockeyAmazon entities to and from dictionary representations.
+    
+    This class provides methods to convert JockeyAmazon entities to dictionaries and vice versa,
+    as well as utilities for handling file-related operations.
+    
+    Class Methods:
+        create_file(document_type, file_information): Creates a JockeyAmazonFile instance
+        create_files(files): Creates multiple JockeyAmazonFile instances
+        from_entity(jockey): Converts a JockeyAmazon entity to a dictionary
+        to_entity(data): Converts a dictionary to a JockeyAmazon entity
+    """
+
     @classmethod
     def create_file(cls, document_type, file_information):
+        """
+        Create a JockeyAmazonFile instance from file information.
+
+        Args:
+            document_type: The type of document being created
+            file_information (dict): Dictionary containing file metadata
+                Expected keys: path, title, is_link, filetype, filesize
+
+        Returns:
+            JockeyAmazonFile: Created file instance with provided information
+        """
+
         horse_file = JockeyAmazonFile(
             path=file_information.get("path"),
             title=file_information.get("title"),
@@ -22,6 +75,19 @@ class JockeyAmazonMapper:
 
     @classmethod
     def create_files(cls, files):
+        """
+        Create multiple JockeyAmazonFile instances from a collection of file information.
+
+        Args:
+            files (list): List of tuples containing (document_type, files_info)
+                where files_info is a list of file information dictionaries
+
+        Returns:
+            list[JockeyAmazonFile]: List of created file instances
+        """
+
+        pass
+
         created_files = []
         for doc_type, files_info in files:
             for file_info in files_info:
@@ -31,6 +97,22 @@ class JockeyAmazonMapper:
 
     @classmethod
     def from_entity(cls, jockey: JockeyAmazon) -> Dict | None:
+        """
+        Convert a JockeyAmazon entity to a dictionary representation.
+
+        Args:
+            jockey (JockeyAmazon): The jockey entity to convert
+
+        Returns:
+            dict: Dictionary containing all jockey information, including:
+                - general_information (personal details, contact info)
+                - health_information (disability status, medical details)
+                - family_information (family members, assignments)
+                - organization_work (work details, scholarships)
+                - school_information (education details)
+                Returns None if jockey is None
+        """
+
         jockey_dict = {
             "id": jockey.id,
             "inserted_at": jockey.inserted_at,
@@ -123,6 +205,23 @@ class JockeyAmazonMapper:
 
     @classmethod
     def to_entity(cls, data: Dict) -> JockeyAmazon:
+        """
+        Convert a dictionary representation to a JockeyAmazon entity.
+
+        Args:
+            data (dict): Dictionary containing jockey information with sections:
+                - general_information
+                - family_information
+                - health_information
+                - school_information
+                - work_assignment_information
+
+        Returns:
+            JockeyAmazon: Created entity with all provided information populated
+                including nested objects like family members, school institution,
+                and work assignments
+        """
+
         general = data.get("general_information", {})
         family = data.get("family_information", {})
         health = data.get("health_information", {})

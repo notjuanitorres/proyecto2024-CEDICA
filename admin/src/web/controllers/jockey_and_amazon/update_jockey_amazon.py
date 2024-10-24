@@ -1,3 +1,11 @@
+"""
+update_jockey_amazon.py
+
+This module defines the routes and view functions for updating jockey and amazon records,
+including assigning and unassigning employees and horses. It leverages Flask, Flask-WTF,
+and dependency injection for form handling and validation.
+"""
+
 from flask import Blueprint, render_template, request, url_for, redirect, flash
 from dependency_injector.wiring import inject, Provide
 from src.web.helpers.auth import check_user_permissions
@@ -24,7 +32,6 @@ from src.core.module.jockey_amazon import (
     EducationLevelEnum,
 )
 
-
 update_jockey_amazon_bp = Blueprint(
     "update",
     __name__,
@@ -40,6 +47,17 @@ def update_jockey(
         Container.jockey_amazon_repository
     ],
 ):
+    """
+    Update the information of a jockey or amazon.
+
+    Args:
+        jockey_id (int): The ID of the jockey or amazon to update.
+        update_form: The form containing the updated information.
+        jockeys (AbstractJockeyAmazonRepository): The repository for jockey and amazon data.
+
+    Returns:
+        A rendered template with the update form if validation fails, or a redirect to the jockey's detail page if successful.
+    """
     jockey = jockeys.get_by_id(jockey_id)
     if not update_form.validate_on_submit():
         return render_template(
@@ -68,6 +86,21 @@ def link_employee(
         Container.jockey_amazon_repository
     ],
 ):
+    """
+    Link an employee to a jockey or amazon.
+
+    Args:
+        jockey_id (int): The ID of the jockey or amazon.
+        job_positions: The job positions to link.
+        template (str): The template to render.
+        flash_message (str): The flash message to display upon successful linking.
+        page (int): The page number for pagination.
+        employee_repository (AbstractEmployeeRepository): The repository for employee data.
+        jockeys (AbstractJockeyAmazonRepository): The repository for jockey and amazon data.
+
+    Returns:
+        A rendered template with the search and select forms if validation fails, or a redirect to the jockey's detail page if successful.
+    """
     jockey = jockeys.get_by_id(jockey_id)
     if not jockey:
         flash("No se ha encontrado al Jockey/Amazona solicitado", "warning")
@@ -123,6 +156,16 @@ def edit_jockey(
         Container.jockey_amazon_repository
     ],
 ):
+    """
+    Edit the information of a jockey or amazon.
+
+    Args:
+        jockey_id (int): The ID of the jockey or amazon to edit.
+        jockeys (AbstractJockeyAmazonRepository): The repository for jockey and amazon data.
+
+    Returns:
+        A rendered template with the edit forms if validation fails, or a redirect to the jockey's detail page if successful.
+    """
     jockey = Mapper.from_entity(jockeys.get_by_id(jockey_id))
     if not jockey:
         flash("No se ha encontrado al Jockey/Amazona solicitado", "warning")
@@ -181,6 +224,15 @@ def edit_jockey(
 )
 @check_user_permissions(permissions_required=["jockey_amazon_update"])
 def assign_professor_or_therapist(jockey_id: int):
+    """
+    Assign a professor or therapist to a jockey or amazon.
+
+    Args:
+        jockey_id (int): The ID of the jockey or amazon.
+    
+    Returns:
+        A rendered template with the search and select forms if validation fails, or a redirect to the jockey's detail page if successful.
+    """
     page = request.args.get("page", type=int, default=1)
     job_positions = [Jobs.TERAPEUTA.name, Jobs.PROFESOR_EQUITACION.name]
     template = "./jockey_amazon/update/link/link_professor.html"
@@ -201,6 +253,16 @@ def unlink_professor(
         Container.jockey_amazon_repository
     ],
 ):
+    """
+    Unlink a professor or therapist from a jockey or amazon.
+
+    Args:
+        jockey_id (int): The ID of the jockey or amazon.
+        jockeys (AbstractJockeyAmazonRepository): The repository for jockey and amazon data.
+
+    Returns:
+        A redirect to the jockey's detail page.
+    """
     jockey = jockeys.get_by_id(jockey_id)
     jockeys.unassign_employee(jockey_id, link_to=Jobs.TERAPEUTA.name)
     flash(
@@ -215,6 +277,15 @@ def unlink_professor(
 )
 @check_user_permissions(permissions_required=["jockey_amazon_update"])
 def assign_track_assistant(jockey_id: int):
+    """
+    Assign a track assistant to a jockey or amazon.
+
+    Args:
+        jockey_id (int): The ID of the jockey or amazon.
+    
+    Returns:
+        A rendered template with the search and select forms if validation fails, or a redirect to the jockey's detail page if successful.
+    """
     page = request.args.get("page", type=int, default=1)
     job_positions = [Jobs.AUXILIAR_PISTA.name]
     template = "./jockey_amazon/update/link/link_assistant.html"
@@ -237,6 +308,16 @@ def unlink_track_assistant(
         Container.jockey_amazon_repository
     ],
 ):
+    """
+    Unlink a track assistant from a jockey or amazon.
+
+    Args:
+        jockey_id (int): The ID of the jockey or amazon.
+        jockeys (AbstractJockeyAmazonRepository): The repository for jockey and amazon data.
+
+    Returns:
+        A redirect to the jockey's detail page.
+    """
     jockey = jockeys.get_by_id(jockey_id)
     jockeys.unassign_employee(jockey_id, link_to=Jobs.AUXILIAR_PISTA.name)
     flash(
@@ -251,6 +332,15 @@ def unlink_track_assistant(
 )
 @check_user_permissions(permissions_required=["jockey_amazon_update"])
 def assign_conductor(jockey_id: int):
+    """
+    Assign a conductor to a jockey or amazon.
+
+    Args:
+        jockey_id (int): The ID of the jockey or amazon.
+    
+    Returns:
+        A rendered template with the search and select forms if validation fails, or a redirect to the jockey's detail page if successful.
+    """
     page = request.args.get("page", type=int, default=1)
     job_positions = [Jobs.CONDUCTOR.name]
     template = "./jockey_amazon/update/link/link_conductor.html"
@@ -273,6 +363,16 @@ def unlink_conductor(
         Container.jockey_amazon_repository
     ],
 ):
+    """
+    Unlink a conductor from a jockey or amazon.
+
+    Args:
+        jockey_id (int): The ID of the jockey or amazon.
+        jockeys (AbstractJockeyAmazonRepository): The repository for jockey and amazon data.
+
+    Returns:
+        A redirect to the jockey's detail page.
+    """
     jockey = jockeys.get_by_id(jockey_id)
     jockeys.unassign_employee(jockey_id, link_to=Jobs.CONDUCTOR.name)
     flash(
@@ -295,6 +395,18 @@ def assign_horse(
         Container.jockey_amazon_repository
     ],
 ):
+    """
+    Assign a horse to a jockey or amazon.
+
+    Args:
+        jockey_id (int): The ID of the jockey or amazon.
+        page (int): The page number for pagination.
+        equestrian (AbstractEquestrianRepository): The repository for equestrian data.
+        jockeys (AbstractJockeyAmazonRepository): The repository for jockey and amazon data.
+
+    Returns:
+        A rendered template with the search and select forms if validation fails, or a redirect to the jockey's detail page if successful.
+    """
     page = request.args.get("page", type=int, default=1)
     searched_horse = HorseAssignSearchForm(request.args)
     selected_horse = HorseAssignSelectForm()
@@ -346,6 +458,16 @@ def unlink_horse(
         Container.jockey_amazon_repository
     ],
 ):
+    """
+    Unlink a horse from a jockey or amazon.
+
+    Args:
+        jockey_id (int): The ID of the jockey or amazon.
+        jockeys (AbstractJockeyAmazonRepository): The repository for jockey and amazon data.
+
+    Returns:
+        A redirect to the jockey's detail page.
+    """
     jockey = jockeys.get_by_id(jockey_id)
     jockeys.unassign_horse(jockey_id)
     flash(
