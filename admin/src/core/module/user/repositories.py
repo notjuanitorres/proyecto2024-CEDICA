@@ -57,7 +57,7 @@ class AbstractUserRepository:
         pass
 
     @abstractmethod
-    def get_active_users(self, page: int):
+    def get_active_users(self, page: int, search: str = ""):
         """
         Retrieve a paginated list of active users.
 

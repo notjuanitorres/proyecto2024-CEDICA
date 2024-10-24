@@ -1,8 +1,26 @@
-{% extends 'jockey_amazon/update/update_relationship.html' %}
+{% extends 'update_relationship.html' %}
 
 {% block card_title %}Asociandole un Conductor a: {{ jockey_amazon.first_name + " " + jockey_amazon.last_name }}{% endblock %} 
 
 {% block actual_breadcrumb %}
+    <li>
+      <a href="{{ url_for('jockey_amazon_bp.show_jockey', jockey_id=jockey_amazon.id) }}">
+        <span class="icon is-small">
+          <i class="fas fa-users" aria-hidden="true"></i>
+        </span>
+        <span>Jinetes y Amazonas</span>
+      </a>
+    </li>
+    <li>
+      <a
+        href="{{ url_for('jockey_amazon_bp.show_jockey', jockey_id=jockey_amazon.id) }}"
+      >
+        <span class="icon is-small">
+          <i class="fas fa-user" aria-hidden="true"></i>
+        </span>
+        <span>{{ jockey_amazon.first_name }} {{ jockey_amazon.last_name }}</span>
+      </a>
+    </li>
 <li>
   <a href="{{ url_for('jockey_amazon_bp.update.assign_conductor', jockey_id=jockey_amazon.id) }}">
     <span class="icon is-small">

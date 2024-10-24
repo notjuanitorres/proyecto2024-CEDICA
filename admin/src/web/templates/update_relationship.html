@@ -2,7 +2,12 @@
 
 {% from "macros/pagination.html" import render_pagination %}
 
-{% block title %} Jockey Amazona {{ jockey_amazon.first_name + " " + jockey_amazon.last_name }} - CEDICA {% endblock %} 
+{% block extra_styles %}
+	{{ super() }}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/components/pagination.css') }}">
+{% endblock %}
+
+{% block title %} {% endblock %}
 
 
 {% block main_content %}
@@ -16,27 +21,12 @@
         <span>Inicio</span>
       </a>
     </li>
-    <li>
-      <a href="{{ url_for('jockey_amazon_bp.show_jockey', jockey_id=jockey_amazon.id) }}">
-        <span class="icon is-small">
-          <i class="fas fa-users" aria-hidden="true"></i>
-        </span>
-        <span>Jinetes y Amazonas</span>
-      </a>
-    </li>
-    <li>
-      <a
-        href="{{ url_for('jockey_amazon_bp.show_jockey', jockey_id=jockey_amazon.id) }}"
-      >
-        <span class="icon is-small">
-          <i class="fas fa-user" aria-hidden="true"></i>
-        </span>
-        <span>{{ jockey_amazon.first_name }} {{ jockey_amazon.last_name }}</span>
-      </a>
-    </li>
-    {% block actual_breadcrumb %} {% endblock %}
+     {% block actual_breadcrumb %}
+     {% endblock %}
   </ul>
 </nav>
+
+{% block tab_bar %}{% endblock %}
 
 <section id="link-container" class="panel">
   <div class="container p-4">
@@ -87,11 +77,10 @@
     </div>
   </form>
   <div class="container p-4">
-    <h3 class="subtitle">Mostrando empleados activos</h3>
+    <h3 class="subtitle">{% block subtitle_text %} Mostrando empleados activos {% endblock %}</h3>
     {% block pagination %} {% endblock %}
   </div> 
   {% block select_form %}
-
   {% endblock %}
 
 </section>

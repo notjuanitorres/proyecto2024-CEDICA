@@ -199,11 +199,11 @@ class AccountSelectForm(FlaskForm):
         submit_account (SubmitField): The button to submit the account selection.
     """
 
-    selected_account = HiddenField(
+    selected_item = HiddenField(
         "Cuenta seleccionada",
         validators=[DataRequired("Se debe seleccionar una cuenta"), IsNumber()],
     )
-    submit_account = SubmitField("Asociar")
+    submit_item = SubmitField("Asociar")
 
     def set_selected_account(self, account_id):
         """
@@ -212,4 +212,4 @@ class AccountSelectForm(FlaskForm):
         Args:
             account_id: The ID of the selected account.
         """
-        self.selected_account.data = account_id
+        self.selected_item.data = account_id

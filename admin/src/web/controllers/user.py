@@ -309,12 +309,18 @@ def delete_user(
         A redirect to the user list page.
     """
     user_id = request.form["item_id"]
+    try:
+        user_id = int(user_id)
+    except ValueError:
+        flash("El usuario solicitado no existe", "warning")
+        return redirect(url_for("users_bp.get_users"))
+
     deleted = user_repository.delete(user_id)
 
     if not deleted:
         flash("El usuario no ha podido ser eliminado, intentelo nuevamente", "danger")
-
-    flash("El usuario ha sido eliminado correctamente", "success")
+    else:
+        flash("El usuario ha sido eliminado correctamente", "success")
     return redirect(url_for("users_bp.get_users", archive=True))
 
 

@@ -594,5 +594,5 @@ class EquestrianRepository(AbstractEquestrianRepository):
         if activity:
             search_query = {"filters": {"ja_type": activity}}
 
-        query = apply_filters(model=Horse, query=query, search_query=search_query)
+        query = apply_filters(model=Horse, query=query, search_query=search_query, order_by=[])
         return query.paginate(page=page, per_page=per_page, error_out=False)

@@ -15,10 +15,13 @@ Classes:
 
 from abc import ABC, abstractmethod
 from typing import Dict, List, Optional
+
+from flask_sqlalchemy.pagination import Pagination
+
 from src.core.module.jockey_amazon.data import DAYS_MAPPING
 from src.core.module.jockey_amazon.models import JockeyAmazon, JockeyAmazonFile
 from src.core.database import db
-from src.core.module.common.repositories import apply_filters
+from src.core.module.common.repositories import apply_filters, apply_multiple_search_criteria
 from src.core.module.employee.data import JobPositionEnum as Jobs
 
 
@@ -251,6 +254,39 @@ class AbstractJockeyAmazonRepository(ABC):
             bool: True if the status was successfully toggled, False otherwise.
         """
         pass
+
+    @abstractmethod
+    def count_id_in_charges(self, jockey_id: int) -> int:
+        """Count the number of charges that have the jockey_id
+
+        Args:
+            jockey_id (int): The jockey id
+
+        Returns:
+            int: The number of charges that have the jockey_id
+        """
+        pass
+
+    @abstractmethod
+    def get_active_jockeys(
+            self, page: int = 1, search: str = ""
+    ) -> Pagination:
+        """
+        Retrieve a paginated list of active jockeys filtered by an optional search term.
+
+        Args:
+            page (int, optional): The page number for pagination. Defaults to 1.
+            search (str, optional): A search term to filter employees by name or email.
+                                    Defaults to an empty string.
+
+        Returns:
+            Pagination: A Flask-SQLAlchemy Pagination object containing the active employees
+                         that match the provided filters.
+
+        Raises:
+            NotImplementedError: If the method is not implemented in a derived class.
+        """
+        raise NotImplementedError
 
 
 class JockeyAmazonRepository(AbstractJockeyAmazonRepository):
@@ -727,3 +763,22 @@ class JockeyAmazonRepository(AbstractJockeyAmazonRepository):
         jockey.work_assignment.horse_id = None
         self.save()
         return True
+
+    def count_id_in_charges(self, jockey_id: int) -> int:
+        from src.core.module.charges.models import Charge  # can't import outside due to circular import
+
+        return Charge.query.filter_by(jya_id=jockey_id).count()
+
+    def get_active_jockeys(
+            self, page: int = 1, search: str = ""
+    ) -> Pagination:
+        """Retrieve a paginated list of active jockeys filtered by search text."""
+
+        per_page = 7
+        query = self.db.session.query(JockeyAmazon).filter_by(is_deleted=False)
+        if search:
+            search_fields = ["first_name", "last_name", "dni"]
+            query = apply_multiple_search_criteria(
+                JockeyAmazon, query, search_query={"text": search, "fields": search_fields}
+            )
+        return query.paginate(page=page, per_page=per_page, error_out=False)

@@ -196,7 +196,7 @@ class HealthInformationForm(FlaskForm):
         has_curatorship (BooleanField): Indicates if they have a legal guardian
         curatorship_observations (TextAreaField): Additional curatorship details
     """
-        
+
     has_disability = BooleanField("¿Posee Certificado de Discapacidad?")
     disability_diagnosis = SelectField(
         "Diagnóstico",
@@ -486,14 +486,14 @@ class JockeyAmazonSelectForm(FlaskForm):
         submit_jya (SubmitField): Button to confirm the selection
     """
 
-    selected_jya = HiddenField(
+    selected_item = HiddenField(
         "Empleado seleccionado",
         validators=[DataRequired("Se debe seleccionar un empleado"), IsNumber()],
     )
     submit_jya = SubmitField("Asociar")
 
     def set_selected_jya(self, account_id):
-        self.selected_jya.data = account_id
+        self.selected_item.data = account_id
 
 
 class JockeyAmazonMiniSearchForm(FlaskForm):

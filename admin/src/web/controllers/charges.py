@@ -17,6 +17,7 @@ charges_bp = Blueprint(
     "charges_bp", __name__, template_folder="../templates/charges", url_prefix="/cobros"
 )
 
+
 @inject
 def search_charges(search: ChargeSearchForm,
                    need_archived: bool = False,
@@ -75,16 +76,15 @@ def search_jyas(search: JockeyAmazonMiniSearchForm,
         A paginated list of jockeys or amazons matching the search criteria.
     """
     page = request.args.get("page", type=int)
-    per_page = request.args.get("per_page", type=int)
-    search_query = {}
 
-    if request.method == "GET" and search.validate():
-        search_fields = ["name", "email"]
-        search_query = {"text": search.search_text.data, "fields": search_fields}
+    jyas = []
+    if request.method == "GET":
+        if search.validate():
+            jyas = jya_repository.get_active_jockeys(page=page, search=search.search_text.data)
+        else:
+            jyas = jya_repository.get_active_jockeys(page=page)
 
-    return jya_repository.get_page(
-        page=page, search_query=search_query, per_page=per_page
-    )
+    return jyas
 
 
 @charges_bp.route("/")
@@ -269,11 +269,17 @@ def delete_charge(charges_repository: ACR = Provide[Container.charges_repository
         A redirect to the charge list page.
     """
     charge_id = request.form["item_id"]
-    deleted = charges_repository.delete_charge(int(charge_id))
+    try:
+        charge_id = int(charge_id)
+    except ValueError:
+        flash("El cobro solicitado no existe", "danger")
+        return redirect(url_for("charges_bp.get_charges"))
+
+    deleted = charges_repository.delete_charge(charge_id)
     if not deleted:
         flash("El cobro no ha podido ser eliminado, inténtelo nuevamente", "danger")
-
-    flash("El cobro ha sido eliminado correctamente", "success")
+    else:
+        flash("El cobro ha sido eliminado correctamente", "success")
     return redirect(url_for("charges_bp.get_charges"))
 
 
@@ -333,7 +339,7 @@ def recover_charge(
 def change_employee(
         charge_id: int,
         charges_repository: ACR = Provide[Container.charges_repository],
-        employees: AbstractEmployeeRepository = Provide[Container.employee_repository],
+        employee_repository: AbstractEmployeeRepository = Provide[Container.employee_repository],
 ):
     """
     Change the employee associated with a charge.
@@ -341,40 +347,39 @@ def change_employee(
     Args:
         charge_id (int): The ID of the charge.
         charges_repository (ACR): The repository for charge data.
-        employees (AbstractEmployeeRepository): The repository for employee data.
+        employee_repository (AbstractEmployeeRepository): The repository for employee data.
 
     Returns:
         A rendered template displaying the employee change form, or a redirect to the charge list page if the charge does not exist.
     """
     page = request.args.get("page", type=int, default=1)
-    per_page = request.args.get("per_page", type=int, default=10)
-    search_query = {}
 
-    search_jya = EmployeeMiniSearchForm(request.args)
-    select_jya = EmployeeSelectForm()
+    search_employee = EmployeeMiniSearchForm(request.args)
+    select_employee = EmployeeSelectForm()
 
     charge = charges_repository.get_by_id(charge_id)
     if not charge:
         flash(f"El cobro con ID = {charge_id} no existe", "danger")
         return redirect(url_for("charges_bp.get_charges"))
 
-    if request.method == "GET" and search_jya.validate():
-        search_fields = ["name", "email"]
-        search_query = {"text": search_jya.search_text.data, "fields": search_fields}
-
-    employees = employees.get_page(
-        page=page, search_query=search_query, per_page=per_page
-    )
+    employees = []
+    if request.method == "GET":
+        if search_employee.validate():
+            employees = employee_repository.get_active_employees(
+                [], page=page, search=search_employee.search_text.data
+            )
+        else:
+            employees = employee_repository.get_active_employees([], page=page)
 
     if request.method == "POST":
-        return add_charge_employee(charge, search_jya, select_jya, employees)
+        return add_charge_employee(charge, search_employee, select_employee, employees)
 
     return render_template(
         "./charges/update_employee.html",
         charge=charge,
         employees=employees,
-        search_form=search_jya,
-        select_form=select_jya,
+        search_form=search_employee,
+        select_form=select_employee,
     )
 
 
@@ -382,13 +387,13 @@ def change_employee(
 @check_user_permissions(permissions_required=["cobros_update"])
 @inject
 def link_employee(
-        employees: AbstractEmployeeRepository = Provide[Container.employee_repository],
+        employee_repository: AbstractEmployeeRepository = Provide[Container.employee_repository],
 ):
     """
     Link an employee to a charge.
 
     Args:
-        employees (AbstractEmployeeRepository): The repository for employee data.
+        employee_repository (AbstractEmployeeRepository): The repository for employee data.
 
     Returns:
         A rendered template displaying the employee linking form, or a redirect to the charge list page if the session does not contain charge data.
@@ -399,29 +404,29 @@ def link_employee(
 
     charge = Mapper.from_session(session.get("charge"))
     page = request.args.get("page", type=int, default=1)
-    per_page = request.args.get("per_page", type=int, default=10)
-    search_query = {}
 
-    search_jya = EmployeeMiniSearchForm(request.args)
-    select_jya = EmployeeSelectForm()
+    search_employee = EmployeeMiniSearchForm(request.args)
+    select_employee = EmployeeSelectForm()
 
-    if request.method == "GET" and search_jya.validate():
-        search_fields = ["name", "email"]
-        search_query = {"text": search_jya.search_text.data, "fields": search_fields}
-
-    employees = employees.get_page(
-        page=page, search_query=search_query, per_page=per_page
-    )
+    employees = []
+    if request.method == "GET":
+        print(search_employee.data)
+        if search_employee.validate():
+            employees = employee_repository.get_active_employees(
+                [], page=page, search=search_employee.search_text.data
+            )
+        else:
+            employees = employee_repository.get_active_employees([], page=page)
 
     if request.method == "POST":
-        return link_charge_employee(charge, search_jya, select_jya, employees)
+        return link_charge_employee(charge, search_employee, select_employee, employees)
 
     return render_template(
         "./charges/create_employee.html",
         charge=charge,
         employees=employees,
-        search_form=search_jya,
-        select_form=select_jya,
+        search_form=search_employee,
+        select_form=select_employee,
     )
 
 
@@ -453,7 +458,7 @@ def link_charge_employee(
             select_form=select_form,
         )
 
-    employee_id = select_form.selected_employee.data
+    employee_id = select_form.selected_item.data
 
     session["charge"]["employee_id"] = employee_id
 
@@ -525,7 +530,7 @@ def link_charge_jya(
             select_form=select_form,
         )
 
-    jya_id = select_form.selected_jya.data
+    jya_id = select_form.selected_item.data
 
     session["charge"]["jya_id"] = jya_id
 
@@ -569,7 +574,7 @@ def add_charge_employee(
         )
 
     charge_id = charge.get("id")
-    employee_id = select_form.selected_employee.data
+    employee_id = select_form.selected_item.data
 
     if charges_repository.update_charge(charge_id, {"employee_id": employee_id}):
         flash(
@@ -656,7 +661,7 @@ def add_charge_jya(
         )
 
     charge_id = charge.get("id")
-    jya_id = select_form.selected_jya.data
+    jya_id = select_form.selected_item.data
 
     if charges_repository.update_charge(charge_id, {"jya_id": jya_id}):
         flash(
@@ -721,7 +726,7 @@ def toggle_debtor_status(
         A rendered template displaying the choose debtor form if validation fails,
         or a redirect to the charge detail page if successful.
     """
-    if not (select_form.submit_jya.data and select_form.validate()):
+    if not (select_form.submit_item.data and select_form.validate()):
         return render_template(
             "./charges/choose_debtor.html",
             jyas=jyas,
@@ -729,7 +734,7 @@ def toggle_debtor_status(
             select_form=select_form,
         )
 
-    jya_id = select_form.selected_jya.data
+    jya_id = select_form.selected_item.data
     updated = jya_repository.toggle_debtor_status(jya_id)
 
     if not updated:

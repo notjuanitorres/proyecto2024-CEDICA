@@ -421,6 +421,20 @@ def delete_employee(
     """
 
     employee_id = request.form["item_id"]
+    try:
+        employee_id = int(employee_id)
+    except ValueError:
+        flash("El ID del empleado no es valido", "danger")
+        return redirect(url_for("employee_bp.get_employees"))
+
+    conflicts = employee_repository.count_id_in_charges_and_payments(employee_id)
+    if conflicts:
+        flash(
+            f"El empleado no puede ser eliminado ya que está presente en {conflicts} pagos y/o cobros",
+            "danger",
+        )
+        return redirect(url_for("employee_bp.show_employee", employee_id=employee_id))
+
     deleted = employee_repository.delete(employee_id)
     if not deleted:
         flash("El empleado no ha podido ser eliminado, intentelo nuevamente", "danger")
@@ -457,19 +471,24 @@ def link_account(
         - paginated accounts list
         - search and selection forms
     """
-    page = request.args.get("page", type=int, default=1)
-    search_account = AccountSearchForm()
-    select_account = AccountSelectForm()
     employee = employees.get_employee(employee_id)
-    accounts = users.get_active_users(page=page)
+    if not employee:
+        flash(f"El empleado solicitado no existe", "danger")
+        return redirect(url_for("employee_bp.get_employees"))
 
-    if request.method == "POST":
-        return set_employee_account(employee, search_account, select_account, accounts)
+    page = request.args.get("page", type=int, default=1)
+    search_account = AccountSearchForm(request.args)
+    select_account = AccountSelectForm()
 
-    if search_account.submit_search.data and search_account.validate():
+    if request.method == "GET" and search_account.validate():
         accounts = users.get_active_users(
             page=page, search=search_account.search_text.data
         )
+    else:
+        accounts = users.get_active_users(page=page)
+
+    if request.method == "POST":
+        return set_employee_account(employee, search_account, select_account, accounts)
 
     return render_template(
         "./employee/update/update_account.html",
@@ -502,7 +521,7 @@ def set_employee_account(
         - A redirect to employee view page on success
         - The rendered update_account template on validation failure
     """
-    if not (select_form.submit_account.data and select_form.validate()):
+    if not (select_form.submit_item.data and select_form.validate()):
         return render_template(
             "./employee/update/update_account.html",
             employee=employee,
@@ -511,7 +530,7 @@ def set_employee_account(
             select_form=select_form,
         )
     employee_id = employee.get("id")
-    account_id = select_form.selected_account.data
+    account_id = select_form.selected_item.data
 
     employees.link_account(employee_id, account_id)
 
