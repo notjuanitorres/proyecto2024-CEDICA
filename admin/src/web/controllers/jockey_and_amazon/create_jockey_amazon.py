@@ -125,11 +125,12 @@ def create_family_information():
         session["create_ja"]["family_information"] = family_information.data
         return redirect(url_for("jockey_amazon_bp.create.create_school_information"))
     
-    return render_template(
-        "create/family_information.html",
-        family_form=family_information,
-        EducationLevelEnum=EducationLevelEnum,
-    )
+    if request.method == "GET" or request.method == "POST":
+        return render_template(
+            "create/family_information.html",
+            family_form=family_information,
+            EducationLevelEnum=EducationLevelEnum,
+        )
 
 
 # Step four: School Information
