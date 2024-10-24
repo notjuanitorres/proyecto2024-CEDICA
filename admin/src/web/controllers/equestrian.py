@@ -297,6 +297,10 @@ def edit_horse(horse_id: int,
         flash(f"Su búsqueda no devolvió un caballo existente", "danger")
         return redirect(url_for("equestrian_bp.get_horses"))
 
+    if horse.get("is_archived"):
+        flash("No se puede editar un caballo archivado", "danger")
+        return redirect(url_for("equestrian_bp.show_horse", horse_id=horse_id))
+
     edit_form = HorseEditForm(data=horse)
 
     if request.method in ["POST", "PUT"]:
@@ -345,7 +349,13 @@ def delete_horse(equestrian_repository: AbstractEquestrianRepository = Provide[C
         Response: Redirect to the list of horses.
     """
     horse_id = request.form["item_id"]
-    deleted = equestrian_repository.delete(int(horse_id))
+    try:
+        horse_id = int(horse_id)
+    except ValueError:
+        flash("El caballo solicitado no existe", "danger")
+        return redirect(url_for("equestrian_bp.get_horses"))
+
+    deleted = equestrian_repository.delete(horse_id)
     if not deleted:
         flash("El caballo no ha podido ser eliminado, inténtelo nuevamente", "danger")
     else:

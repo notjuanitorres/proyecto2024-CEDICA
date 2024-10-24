@@ -143,11 +143,14 @@ Miembro: {{ employee.name + " " + employee.lastname }}
                 {% if not account %}
                 <span class="tag is-info is-medium ml-2">Sin informacion</span>
                 {% else %}
-                {% if account.enabled %}
-                <span class="tag is-success is-medium ml-2">Activo</span>
-                {% else %}
-                <span class="tag is-danger is-medium ml-2">Bloqueado</span>
-                {% endif %}
+                    {% if account.enabled %}
+                        <span class="tag is-success is-medium ml-2">Activo</span>
+                    {% else %}
+                        <span class="tag is-danger is-medium ml-2">Bloqueado</span>
+                    {% endif %}
+                    {% if account.is_deleted %}
+                        <span class="tag is-danger is-medium ml-2">Archivado</span>
+                    {% endif %}
                 {% endif %}
             </h2>
         </header>
@@ -256,7 +259,9 @@ Miembro: {{ employee.name + " " + employee.lastname }}
             field="employee",
             title="Eliminar",
             msg="¿Está seguro de que desea eliminar este empleado?",
-            msg_sub="Luego de confirmar, no se podrán revertir los cambios"
+            msg_sub="Luego de confirmar, no se podrán revertir los cambios.",
+            related_entities_text="Todos los archivos asociados a este miembro del equipo serán eliminados
+            y todas las propuestas de trabajo con este empleado lo perderán."
         )}}
     {% else %}
         {{

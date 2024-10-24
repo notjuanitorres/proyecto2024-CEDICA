@@ -4,12 +4,13 @@ from wtforms.fields import (
     BooleanField,
     SelectField,
     DateField,
+    SubmitField,
+    HiddenField
 )
 from wtforms.validators import DataRequired, Length
-
+from src.core.module.common.validators import IsNumber
 from src.core.module.common import IsValidName
-from src.core.module.common.forms import BaseSearchForm, DocumentsSearchForm
-from src.core.module.common.forms import BaseManageDocumentsForm
+from src.core.module.common.forms import BaseSearchForm, BaseManageDocumentsForm, DocumentsSearchForm
 from src.core.module.equestrian.models import JAEnum, FileTagEnum
 
 
@@ -168,3 +169,22 @@ class HorseDocumentSearchForm(DocumentsSearchForm):
         self.filter_tag.choices = [
             ("", "Ver Todos"),
         ] + [(e.name, e.value) for e in FileTagEnum]
+
+
+class HorseAssignSearchForm(FlaskForm):
+    search_text = StringField(
+        "Buscar por nombre, email o dni"
+    )
+    filter_activity = SelectField(
+        "Actividad Asignada",
+        choices=[("", "Ver Todos")] + [(jtype.name, jtype.value) for jtype in JAEnum],
+        validate_choice=True,
+    )
+    submit_search = SubmitField("Buscar")
+
+class HorseAssignSelectForm(FlaskForm):
+    selected_item = HiddenField(
+        "Caballo seleccionado",
+        validators=[DataRequired("Se debe seleccionar un caballo"), IsNumber()],
+    )
+    submit_horse = SubmitField("Asociar")

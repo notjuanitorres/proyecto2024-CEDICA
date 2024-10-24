@@ -1,52 +1,87 @@
-from flask import Blueprint, render_template, request, url_for, redirect, flash
-from dependency_injector.wiring import inject, Provide
+"""
+jockey_amazon.py
 
-from src.core.module.common.mappers import FileMapper
-from src.core.module.jockey_amazon.forms import JockeyAmazonAddDocumentsForm, JockeyAmazonDocumentSearchForm
-from src.core.module.common import AbstractStorageServices
+This module defines the routes and view functions for managing jockey and amazon records,
+including creating, updating, deleting, and searching for jockeys and amazons. It leverages
+Flask, Flask-WTF, and dependency injection for form handling and validation.
+"""
+
+from flask import Blueprint, render_template, request, url_for, redirect, flash
+from dependency_injector.wiring import inject, Provide 
+from src.core.module.common import AbstractStorageServices, FileMapper
 from src.web.helpers.auth import check_user_permissions
 from src.core.container import Container
 from src.core.module.jockey_amazon import (
-    JockeyAmazonCreateForm,
-    JockeyAmazonEditForm,
+    JockeyAmazonAddDocumentsForm,
+    JockeyAmazonDocumentSearchForm,
     JockeyAmazonSearchForm,
+    jockey_amazon_enums as jockey_amazon_information,
+    JockeyAmazonMapper as Mapper,
+    AbstractJockeyAmazonRepository,
 )
-from src.core.module.jockey_amazon.models import jockey_amazon_enums as jockey_amazon_information
-from src.core.module.jockey_amazon.models import EducationLevelEnum
-from src.core.module.jockey_amazon.mappers import JockeyAmazonMapper as Mapper
-from src.core.module.jockey_amazon.repositories import AbstractJockeyAmazonRepository
-from src.core.module.employee.repositories import EmployeeRepository
-from src.core.module.equestrian.repositories import EquestrianRepository
+from .jockey_and_amazon import create_jockey_amazon_bp, update_jockey_amazon_bp
+
 
 jockey_amazon_bp = Blueprint(
     "jockey_amazon_bp",
     __name__,
-    template_folder="./templates/jockey_amazon/",
-    url_prefix="/jockey_amazon/",
+    template_folder="../templates/jockey_amazon/",
+    url_prefix="/jockey_amazon",
 )
+
+jockey_amazon_bp.register_blueprint(create_jockey_amazon_bp)
+jockey_amazon_bp.register_blueprint(update_jockey_amazon_bp)
+
+
+@inject
+def search_jockeys(
+    search: JockeyAmazonSearchForm,
+    need_archive: bool,
+    jockeys: AbstractJockeyAmazonRepository = Provide[Container.jockey_amazon_repository],
+):
+    """
+    Search for jockeys or amazons based on the search form criteria.
+
+    Args:
+        search (JockeyAmazonSearchForm): The search form containing the search criteria.
+        need_archive (bool): Whether to include archived jockeys or amazons in the search.
+        jockeys (AbstractJockeyAmazonRepository): The repository for jockey and amazon data.
+
+    Returns:
+        A paginated list of jockeys or amazons matching the search criteria.
+    """
+    page = request.args.get("page", type=int, default=1)
+    per_page = request.args.get("per_page", type=int, default=10)
+    order_by = []
+    search_query = {
+        "filters": {
+            "is_deleted": need_archive
+        }
+    }
+    if search.submit_search.data and search.validate():
+        order_by = [(search.order_by.data, search.order.data)]
+        search_query["text"] = search.search_text.data
+        search_query["field"] = search.search_by.data
+
+    paginated_jockeys = jockeys.get_page(
+        page=page, per_page=per_page, order_by=order_by, search_query=search_query
+    )
+    return paginated_jockeys
 
 
 @jockey_amazon_bp.route("/", methods=["GET"])
 @check_user_permissions(permissions_required=["jockey_amazon_index"])
 @inject
-def get_jockeys(
-        jockeys: AbstractJockeyAmazonRepository = Provide[Container.jockey_amazon_repository],
-):
-    page = request.args.get("page", type=int)
-    per_page = request.args.get("per_page", type=int)
+def get_jockeys():
+    """
+    Display a list of active jockeys or amazons.
+
+    Returns:
+        A rendered template displaying the list of active jockeys or amazons.
+    """
     search = JockeyAmazonSearchForm(request.args)
-    search_query = {}
-    order_by = []
-
-    if search.submit_search.data and search.validate():
-        order_by = [(search.order_by.data, search.order.data)]
-        search_query = {
-            "text": search.search_text.data,
-            "field": search.search_by.data,
-        }
-
-    paginated_jockeys_and_amazons = jockeys.get_page(
-        page=page, per_page=per_page, order_by=order_by, search_query=search_query
+    paginated_jockeys_and_amazons = search_jockeys(
+        search=search, need_archive=False
     )
 
     return render_template(
@@ -57,64 +92,25 @@ def get_jockeys(
     )
 
 
-@jockey_amazon_bp.route("/crear", methods=["GET", "POST"])
-@check_user_permissions(permissions_required=["jockey_amazon_new"])
-@inject
-def create_jockey(
-        jockeys: AbstractJockeyAmazonRepository = Provide[Container.jockey_amazon_repository],
-        employees: EmployeeRepository = Provide[Container.employee_repository],
-        equestrian: EquestrianRepository = Provide[Container.equestrian_repository]):
-    create_form = JockeyAmazonCreateForm()
+@jockey_amazon_bp.route("/archivados", methods=["GET"])
+@check_user_permissions(permissions_required=["jockey_amazon_index"])
+def get_deleted_jockeys():
+    """
+    Display a list of archived jockeys or amazons.
 
-    create_form.work_assignments.professor_or_therapist_id.choices = [(t.id, f"{t.name} {t.lastname}") for t in
-                                                                      employees.get_therapist()]
-
-    create_form.work_assignments.conductor_id.choices = [(r.id, f"{r.name} {r.lastname}") for r in
-                                                         employees.get_rider()]
-
-    create_form.work_assignments.track_assistant_id.choices = [(a.id, f"{a.name} {a.lastname}") for a in
-                                                               employees.get_track_auxiliary()]
-
-    create_form.work_assignments.horse_id.choices = [(h.id, h.name) for h in equestrian.get_horses()]
-
-    if request.method == "POST":
-        return add_jockey(create_form=create_form, jockeys=jockeys)
-
-    return render_template(
-        "./jockey_amazon/create_jockey_amazon.html",
-        form=create_form,
-        EducationLevelEnum=EducationLevelEnum,
+    Returns:
+        A rendered template displaying the list of archived jockeys or amazons.
+    """
+    search = JockeyAmazonSearchForm(request.args)
+    paginated_jockeys_and_amazons = search_jockeys(
+        search=search, need_archive=True
     )
 
-
-@inject
-def add_jockey(
-        create_form,
-        jockeys: AbstractJockeyAmazonRepository = Provide[Container.jockey_amazon_repository],
-        employees: EmployeeRepository = Provide[Container.employee_repository],
-        equestrian: EquestrianRepository = Provide[Container.equestrian_repository]):
-    
-    if not create_form.validate_on_submit():
-        print(create_form.data)
-        print(create_form.errors)
-        therapists = employees.get_therapist()
-        riders = employees.get_rider()
-        track_auxiliaries = employees.get_track_auxiliary()
-        horses = equestrian.get_horses()
-        return render_template(
-            "./jockey_amazon/create_jockey_amazon.html",
-            form=create_form,
-            EducationLevelEnum=EducationLevelEnum,
-            therapists=therapists,
-            riders=riders,
-            track_auxiliaries=track_auxiliaries,
-            horses=horses
-        )
-    created_jockey = jockeys.add(Mapper.to_entity(create_form.data))
-    flash("Jockey/Amazon creado con éxito!", "success")
-
-    return redirect(
-        url_for("jockey_amazon_bp.show_jockey", jockey_id=created_jockey.id)
+    return render_template(
+        "./jockey_amazon/jockeys_amazons_archived.html",
+        jockeys=paginated_jockeys_and_amazons,
+        jockey_amazon_information=jockey_amazon_information,
+        search_form=search,
     )
 
 
@@ -122,9 +118,21 @@ def add_jockey(
 @check_user_permissions(permissions_required=["jockey_amazon_show"])
 @inject
 def show_jockey(
-        jockey_id: int,
-        jockeys: AbstractJockeyAmazonRepository = Provide[Container.jockey_amazon_repository],
+    jockey_id: int,
+    jockeys: AbstractJockeyAmazonRepository = Provide[
+        Container.jockey_amazon_repository
+    ],
 ):
+    """
+    Display the details of a specific jockey or amazon.
+
+    Args:
+        jockey_id (int): The ID of the jockey or amazon to display.
+        jockeys (AbstractJockeyAmazonRepository): The repository for jockey and amazon data.
+
+    Returns:
+        A rendered template displaying the details of the jockey or amazon.
+    """
     jockey = jockeys.get_by_id(jockey_id=jockey_id)
     if not jockey:
         return redirect(url_for("jockey_amazon_bp.get_jockeys"))
@@ -132,103 +140,173 @@ def show_jockey(
     return render_template("./jockey_amazon/jockey_amazon.html", jockey_amazon=jockey)
 
 
-@jockey_amazon_bp.route("/editar/<int:jockey_id>", methods=["GET", "POST"])
-@check_user_permissions(permissions_required=["jockey_amazon_update"])
+@jockey_amazon_bp.route("/archivar/", methods=["POST"])
+@check_user_permissions(permissions_required=["jockey_amazon_destroy"])
 @inject
-def edit_jockey(
-        jockey_id: int,
-        jockeys: AbstractJockeyAmazonRepository = Provide[Container.jockey_amazon_repository],
+def archive_jockey(
+    jockeys: AbstractJockeyAmazonRepository = Provide[Container.jockey_amazon_repository]
 ):
-    jockey = jockeys.get_by_id(jockey_id)
-    if not jockey:
-        return redirect(url_for("jockey_amazon_bp.get_jockeys"))
+    """
+    Archive a jockey or amazon.
 
-    update_form = JockeyAmazonEditForm(
-        data=jockey,
-        id=jockey_id,
-        current_email=jockey["email"],
-        current_dni=jockey["dni"],
-    )
+    Args:
+        jockeys (AbstractJockeyAmazonRepository): The repository for jockey and amazon data.
 
-    if request.method == "POST":
-        return update_jockey(update_form=update_form, jockey_id=jockey_id)
+    Returns:
+        A redirect to the jockey's detail page with a flash message indicating success or failure.
+    """
+    jockey_amazon_id = request.form["item_id"]
+    archived = jockeys.archive(jockey_amazon_id)
 
-    return render_template(
-        "./jockey_amazon/update_jockey_amazon.html", form=update_form, jockey=jockey
-    )
+    if not archived:
+        flash("El Jinete/Amazona no existe o no ha podido ser archivado, intentelo nuevamente", "warning")
+    else:
+        flash("El Jinete/Amazona ha sido archivado correctamente", "success")
+    return redirect(url_for("jockey_amazon_bp.show_jockey", jockey_id=jockey_amazon_id))
 
 
+@jockey_amazon_bp.route("/recuperar/", methods=["POST"])
+@check_user_permissions(permissions_required=["jockey_amazon_destroy"])
 @inject
-def update_jockey(
-        jockey_id: int,
-        update_form,
-        jockeys: AbstractJockeyAmazonRepository = Provide[Container.jockey_amazon_repository],
+def recover_jockey(
+    jockeys: AbstractJockeyAmazonRepository = Provide[Container.jockey_amazon_repository]
 ):
-    jockey = jockeys.get_by_id(jockey_id)
-    if not update_form.validate_on_submit():
-        return render_template(
-            "./jockey_amazon/update_jockey_amazon.html", form=update_form, jockey=jockey
-        )
+    """
+    Recover an archived jockey or amazon.
 
-    if not jockeys.update(jockey_id, Mapper.flat_form(update_form.data)):
-        flash("No se ha podido actualizar al Jockey/Amazon", "warning")
-        return render_template("./jockey_amazon/update_jockey_amazon.html")
+    Args:
+        jockeys (AbstractJockeyAmazonRepository): The repository for jockey and amazon data.
 
-    flash("El Jockey/Amazon ha sido actualizado exitosamente ")
-    return redirect(url_for("jockey_amazon_bp.show_jockey", jockey_id=jockey_id))
+    Returns:
+        A redirect to the jockey's detail page with a flash message indicating success or failure.
+    """
+    jockey_amazon_id = request.form["jockey_amazon_id"]
+    recovered = jockeys.recover(jockey_amazon_id)
+
+    if not recovered:
+        flash("El Jinete/Amazona no existe o no ha podido ser recuperado, intentelo nuevamente", "warning")
+    else:
+        flash("El Jinete/Amazona ha sido recuperado correctamente", "success")
+    return redirect(url_for("jockey_amazon_bp.show_jockey", jockey_id=jockey_amazon_id))
 
 
 @jockey_amazon_bp.route("/delete/", methods=["POST"])
 @inject
-def delete_jockey(jockey_repository: AbstractJockeyAmazonRepository = Provide[Container.jockey_amazon_repository]):
+def delete_jockey(
+    jockey_repository: AbstractJockeyAmazonRepository = Provide[
+        Container.jockey_amazon_repository
+    ],
+):
+    """
+    Delete a jockey or amazon.
+
+    Args:
+        jockey_repository (AbstractJockeyAmazonRepository): The repository for jockey and amazon data.
+
+    Returns:
+        A redirect to the list of jockeys with a flash message indicating success or failure.
+    """
     jockey_id = request.form["item_id"]
+    try:
+        jockey_id = int(jockey_id)
+    except ValueError:
+        flash("El ID del Jockey/Amazon no es válido", "danger")
+        return redirect(url_for("jockey_amazon_bp.get_jockeys"))
+
+    conflicts = jockey_repository.count_id_in_charges(jockey_id)
+    if conflicts:
+        flash(
+            f"El Jockey/Amazon no puede ser eliminado, ya que está asociado a {conflicts} cobros",
+            "danger",
+        )
+        return redirect(url_for("jockey_amazon_bp.show_jockey", jockey_id=jockey_id))
+
     deleted = jockey_repository.delete(jockey_id)
     if not deleted:
-        flash("El Jockey/Amazon no ha podido ser eliminado, intentelo nuevamente", "danger")
+        flash(
+            "El Jockey/Amazon no ha podido ser eliminado, intentelo nuevamente",
+            "danger",
+        )
     else:
         flash("El Jockey/Amazon ha sido eliminado correctamente", "success")
 
     return redirect(url_for("jockey_amazon_bp.get_jockeys"))
 
 
-@jockey_amazon_bp.route("/editar/<int:jockey_id>/documentos/crear", methods=["GET", "POST"])
+@jockey_amazon_bp.route(
+    "/editar/<int:jockey_id>/documentos/crear", methods=["GET", "POST"]
+)
 @check_user_permissions(permissions_required=["jockey_amazon_update"])
 @inject
-def create_document(jockey_id: int,
-                    jockey_repository: AbstractJockeyAmazonRepository = Provide[Container.jockey_amazon_repository]):
+def create_document(
+    jockey_id: int,
+    jockey_repository: AbstractJockeyAmazonRepository = Provide[
+        Container.jockey_amazon_repository
+    ],
+):
+    """
+    Create a new document for a jockey or amazon.
 
+    Args:
+        jockey_id (int): The ID of the jockey or amazon.
+        jockey_repository (AbstractJockeyAmazonRepository): The repository for jockey and amazon data.
+
+    Returns:
+        A rendered template with the document creation form if validation fails, or a redirect to the document list if successful.
+    """
     jockey = jockey_repository.get_by_id(jockey_id)
     if not jockey:
         flash(f"El jockey con ID = {jockey_id} no existe", "danger")
         return redirect(url_for("jockey_amazon_bp.get_jockeys"))
 
-    jockey = Mapper.from_entity(jockey)
     create_form = JockeyAmazonAddDocumentsForm()
 
     if request.method == "POST":
-        return add_document(jockey=jockey, create_form=create_form)
+        return add_document(jockey=Mapper.from_entity(jockey), create_form=create_form)
 
-    return render_template("./jockey_amazon/create_document.html", form=create_form, jockey=jockey)
+    return render_template(
+        "./jockey_amazon/documents/create_document.html", form=create_form, jockey=jockey
+    )
 
 
 @inject
-def add_document(jockey,
-                 create_form: JockeyAmazonAddDocumentsForm,
-                 jockey_repository: AbstractJockeyAmazonRepository = Provide[Container.jockey_amazon_repository],
-                 storage: AbstractStorageServices = Provide[Container.storage_services]):
+def add_document(
+    jockey,
+    create_form: JockeyAmazonAddDocumentsForm,
+    jockey_repository: AbstractJockeyAmazonRepository = Provide[
+        Container.jockey_amazon_repository
+    ],
+    storage: AbstractStorageServices = Provide[Container.storage_services],
+):
+    """
+    Add a new document to a jockey or amazon.
 
+    Args:
+        jockey: The jockey or amazon to add the document to.
+        create_form (JockeyAmazonAddDocumentsForm): The form containing the document data.
+        jockey_repository (AbstractJockeyAmazonRepository): The repository for jockey and amazon data.
+        storage (AbstractStorageServices): The storage service for handling file uploads.
+
+    Returns:
+        A rendered template with the document creation form if validation fails, or a redirect to the document list if successful.
+    """
     if not create_form.validate_on_submit():
-        print(create_form.errors)
-        print(create_form.data)
-        return render_template("./jockey_amazon/create_document.html", form=create_form, jockey=jockey)
+        return render_template(
+            "./jockey_amazon/documents/create_document.html", form=create_form, jockey=jockey
+        )
 
     if create_form.upload_type.data == "file":
         uploaded_document = storage.upload_file(
-            file=create_form.file.data, path=jockey_repository.storage_path, title=create_form.title.data)
+            file=create_form.file.data,
+            path=jockey_repository.storage_path,
+            title=create_form.title.data,
+        )
 
         if not uploaded_document:
             flash(f"No se pudo subir el archivo, inténtelo nuevamente", "danger")
-            return redirect(url_for("jockey_amazon_bp.create_document", jockey_id=jockey["id"]))
+            return redirect(
+                url_for("jockey_amazon_bp.create_document", jockey_id=jockey["id"])
+            )
     else:
         uploaded_document = FileMapper.file_from_form(create_form.data)
 
@@ -236,9 +314,13 @@ def add_document(jockey,
         jockey_id=jockey["id"],
         document=Mapper.create_file(
             document_type=create_form.tag.data, file_information=uploaded_document
-        ))
+        ),
+    )
 
-    flash(f"El documento {uploaded_document.get('title')} se ha subido exitosamente", "success")
+    flash(
+        f"El documento {uploaded_document.get('title')} se ha subido exitosamente",
+        "success",
+    )
     return redirect(url_for("jockey_amazon_bp.create_document", jockey_id=jockey["id"]))
 
 
@@ -246,9 +328,21 @@ def add_document(jockey,
 @check_user_permissions(permissions_required=["jockey_amazon_update"])
 @inject
 def edit_documents(
-        jockey_id: int,
-        jockey_repository: AbstractJockeyAmazonRepository = Provide[Container.jockey_amazon_repository],
-        storage: AbstractStorageServices = Provide[Container.storage_services]):
+    jockey_id: int,
+    jockey_repository: AbstractJockeyAmazonRepository = Provide[
+        Container.jockey_amazon_repository
+    ],
+):
+    """
+    Edit the documents of a jockey or amazon.
+
+    Args:
+        jockey_id (int): The ID of the jockey or amazon.
+        jockey_repository (AbstractJockeyAmazonRepository): The repository for jockey and amazon data.
+
+    Returns:
+        A rendered template with the document edit form.
+    """
     page = request.args.get("page", type=int)
     per_page = request.args.get("per_page", type=int)
 
@@ -263,7 +357,9 @@ def edit_documents(
     search_query = {}
     order_by = []
     if search_document_form.submit_search.data and search_document_form.validate():
-        order_by = [(search_document_form.order_by.data, search_document_form.order.data)]
+        order_by = [
+            (search_document_form.order_by.data, search_document_form.order.data)
+        ]
         search_query = {
             "text": search_document_form.search_text.data,
             "field": search_document_form.search_by.data,
@@ -272,11 +368,15 @@ def edit_documents(
             search_query["filters"] = {"tag": search_document_form.filter_tag.data}
 
     paginated_files = jockey_repository.get_file_page(
-        jockey_id=jockey_id, page=page, per_page=per_page, order_by=order_by, search_query=search_query
+        jockey_id=jockey_id,
+        page=page,
+        per_page=per_page,
+        order_by=order_by,
+        search_query=search_query,
     )
 
     return render_template(
-        "./jockey_amazon/update_documents.html",
+        "./jockey_amazon/documents/update_documents.html",
         jockey=jockey,
         files=paginated_files,
         add_form=add_document_form,
@@ -288,34 +388,68 @@ def edit_documents(
 @jockey_amazon_bp.route("/editar/<int:jockey_id>/documentos/eliminar", methods=["POST"])
 @inject
 def delete_document(
-        jockey_id: int,
-        jockey_repository: AbstractJockeyAmazonRepository = Provide[Container.jockey_amazon_repository],
-        storage: AbstractStorageServices = Provide[Container.storage_services]):
+    jockey_id: int,
+    jockey_repository: AbstractJockeyAmazonRepository = Provide[
+        Container.jockey_amazon_repository
+    ],
+    storage: AbstractStorageServices = Provide[Container.storage_services],
+):
+    """
+    Delete a document from a jockey or amazon.
 
+    Args:
+        jockey_id (int): The ID of the jockey or amazon.
+        jockey_repository (AbstractJockeyAmazonRepository): The repository for jockey and amazon data.
+        storage (AbstractStorageServices): The storage service for handling file deletions.
+
+    Returns:
+        A redirect to the document list with a flash message indicating success or failure.
+    """
     document_id = int(request.form["item_id"])
-    print(document_id, jockey_id)
     document = jockey_repository.get_document(jockey_id, document_id)
-    print([(document.id, document.jockey_amazon_id) for document in jockey_repository.get_all()])
     if not document.get("is_link"):
         deleted_in_bucket = storage.delete_file(document.get("path"))
         if not deleted_in_bucket:
-            flash("No se ha podido eliminar el documento, inténtelo nuevamente", "danger")
-            return redirect(url_for("jockey_amazon_bp.edit_documents", jockey_id=jockey_id))
+            flash(
+                "No se ha podido eliminar el documento, inténtelo nuevamente", "danger"
+            )
+            return redirect(
+                url_for("jockey_amazon_bp.edit_documents", jockey_id=jockey_id)
+            )
 
     jockey_repository.delete_document(jockey_id, document_id)
-    flash(f"El documento {document.get('title')} ha sido eliminado correctamente", "success")
+    flash(
+        f"El documento {document.get('title')} ha sido eliminado correctamente",
+        "success",
+    )
 
     return redirect(url_for("jockey_amazon_bp.edit_documents", jockey_id=jockey_id))
 
 
-@jockey_amazon_bp.route("/editar/<int:jockey_id>/documentos/editar/<int:document_id>", methods=["GET", "POST"])
+@jockey_amazon_bp.route(
+    "/editar/<int:jockey_id>/documentos/editar/<int:document_id>",
+    methods=["GET", "POST"],
+)
 @check_user_permissions(permissions_required=["jockey_amazon_update"])
 @inject
 def edit_document(
-        jockey_id: int,
-        document_id: int,
-        jockey_repository: AbstractJockeyAmazonRepository = Provide[Container.jockey_amazon_repository]):
+    jockey_id: int,
+    document_id: int,
+    jockey_repository: AbstractJockeyAmazonRepository = Provide[
+        Container.jockey_amazon_repository
+    ],
+):
+    """
+    Edit a document of a jockey or amazon.
 
+    Args:
+        jockey_id (int): The ID of the jockey or amazon.
+        document_id (int): The ID of the document to edit.
+        jockey_repository (AbstractJockeyAmazonRepository): The repository for jockey and amazon data.
+
+    Returns:
+        A rendered template with the document edit form if validation fails, or a redirect to the document list if successful.
+    """
     jockey = Mapper.from_entity(jockey_repository.get_by_id(jockey_id=jockey_id))
     if not jockey:
         flash(f"El jockey con ID = {jockey_id} no existe", "danger")
@@ -331,7 +465,7 @@ def edit_document(
         return update_document(jockey, document, edit_form)
 
     return render_template(
-        "./jockey_amazon/edit_document.html",
+        "./jockey_amazon/documents/edit_document.html",
         jockey=jockey,
         document=document,
         form=edit_form,
@@ -339,39 +473,58 @@ def edit_document(
 
 
 @inject
-def update_document(jockey: dict,
-                    document: dict,
-                    edit_form: JockeyAmazonAddDocumentsForm,
-                    jockey_repository: AbstractJockeyAmazonRepository = Provide[Container.jockey_amazon_repository],
-                    storage: AbstractStorageServices = Provide[Container.storage_services]):
-    if not (edit_form.is_submitted()
-            and
-            edit_form.validate(is_file_already_uploaded=not document.get("is_link"))):
+def update_document(
+    jockey: dict,
+    document: dict,
+    edit_form: JockeyAmazonAddDocumentsForm,
+    jockey_repository: AbstractJockeyAmazonRepository = Provide[
+        Container.jockey_amazon_repository
+    ],
+    storage: AbstractStorageServices = Provide[Container.storage_services],
+):
+    """
+    Update a document of a jockey or amazon.
 
+    Args:
+        jockey (dict): The jockey or amazon to update the document for.
+        document (dict): The document to update.
+        edit_form (JockeyAmazonAddDocumentsForm): The form containing the updated document data.
+        jockey_repository (AbstractJockeyAmazonRepository): The repository for jockey and amazon data.
+        storage (AbstractStorageServices): The storage service for handling file uploads.
+
+    Returns:
+        A rendered template with the document edit form if validation fails, or a redirect to the document list if successful.
+    """
+    if not (
+        edit_form.is_submitted()
+        and edit_form.validate(is_file_already_uploaded=not document.get("is_link"))
+    ):
         return render_template(
-            "./jockey_amazon/edit_document.html",
+            "./jockey_amazon/documents/edit_document.html",
             jockey=jockey,
             document=document,
             form=edit_form,
         )
 
     uploaded_document = {}
-    if edit_form.upload_type.data == 'url':
+    if edit_form.upload_type.data == "url":
         uploaded_document = FileMapper.file_from_form(edit_form.data)
 
-    if edit_form.upload_type.data == 'file':
+    if edit_form.upload_type.data == "file":
         if edit_form.file.data:
             uploaded_document = storage.upload_file(
                 edit_form.file.data,
                 jockey_repository.storage_path,
-                title=edit_form.title.data
+                title=edit_form.title.data,
             )
         else:
             uploaded_document = FileMapper.file_from_form(edit_form.data)
 
         if not uploaded_document:
             flash("No se pudo modificar el archivo, inténtelo nuevamente", "danger")
-            return redirect(url_for("jockey_amazon_bp.edit_documents", jockey_id=jockey["id"]))
+            return redirect(
+                url_for("jockey_amazon_bp.edit_documents", jockey_id=jockey["id"])
+            )
 
     success = jockey_repository.update_document(
         jockey_id=jockey["id"],
@@ -380,8 +533,13 @@ def update_document(jockey: dict,
     )
 
     if success:
-        flash(f"El documento {edit_form.title.data} ha sido modificado correctamente", "success")
+        flash(
+            f"El documento {edit_form.title.data} ha sido modificado correctamente",
+            "success",
+        )
     else:
-        flash(f"El documento {edit_form.title.data} no ha podido ser modificado", "danger")
+        flash(
+            f"El documento {edit_form.title.data} no ha podido ser modificado", "danger"
+        )
 
     return redirect(url_for("jockey_amazon_bp.edit_documents", jockey_id=jockey["id"]))

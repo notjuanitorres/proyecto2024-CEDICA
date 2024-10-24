@@ -91,12 +91,14 @@ Usuario: {{ user.alias }}
                 Empleado asociado a {{ user.alias }}
                 {% if not employee %}
                     <span class="tag is-info is-medium ml-2">Sin informacion</span>
+                {% elif employee.is_deleted %}
+                    <span class="tag is-danger is-medium ml-2">Empleado archivado</span>
                 {% else %}
-                {% if employee.employment_information.is_active %}
-                <span class="tag is-success is-medium ml-2">Activo</span>
-                {% else %}
-                <span class="tag is-danger is-medium ml-2">Inactivo</span>
-                {% endif %}
+                    {% if employee.employment_information.is_active %}
+                        <span class="tag is-success is-medium ml-2">Activo</span>
+                    {% else %}
+                        <span class="tag is-danger is-medium ml-2">Inactivo</span>
+                    {% endif %}
                 {% endif %}
             </h2>
         </header>

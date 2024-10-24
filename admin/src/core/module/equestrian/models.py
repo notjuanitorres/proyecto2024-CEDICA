@@ -57,6 +57,7 @@ class Horse(db.Model):
     ja_type = db.Column(db.Enum(JAEnum), nullable=False)
     files = db.relationship("HorseFile", back_populates="owner", cascade="all, delete-orphan")
     trainers = db.relationship("HorseTrainers", back_populates="horse", cascade="all, delete-orphan")
+    work_assignments = db.relationship("WorkAssignment", back_populates="horse")
     is_archived = db.Column(db.Boolean, default=False)
 
     inserted_at = db.Column(db.DateTime, default=datetime.now)

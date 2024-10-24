@@ -1,9 +1,12 @@
 {% extends "layout.html" %}
 
+{% from "macros/flash_message.html" import render_flash_messages %}
+
 {% block title %}Jockeys - Actualizar Jockey{% endblock %}
 
+
 {% block main_content %}
-    <nav class="breadcrumb" aria-label="breadcrumbs">
+<nav class="breadcrumb" aria-label="breadcrumbs">
         <ul>
             <li>
                 <a href="{{ url_for('index_bp.home') }}">
@@ -16,24 +19,34 @@
             <li>
                 <a href="{{ url_for('jockey_amazon_bp.get_jockeys') }}">
                     <span class="icon is-small">
-                    <i class="fas fa-hat-cowboy" aria-hidden="true"></i>
+                        <i class="fas fa-hat-cowboy" aria-hidden="true"></i>
                     </span>
                     <span>Jinetes y Amazonas</span>
                 </a>
             </li>
             <li>
+                <a href="{{ url_for('jockey_amazon_bp.show_jockey', jockey_id=jockey.id) }}">
+                  <span class="icon is-small">
+                    <i class="fas fa-user" aria-hidden="true"></i>
+                  </span>
+                  <span>{{ jockey.general_information.first_name }} {{ jockey.general_information.last_name }}</span>
+                </a>
+            </li>
+            <li>
                 <a href="">
-        <span class="icon is-small">
-          <i class="fa-solid fa-pen-nib"></i>
-        </span>
+                    <span class="icon is-small">
+                        <i class="fa-solid fa-pen-nib"></i>
+                    </span>
                     <span>Actualizar Jockey</span>
                 </a>
             </li>
         </ul>
     </nav>
-
+    
     <div class="container">
-        <h4 class="title is-fullwidth has-text-centered">Editando a {{ jockey.first_name }} {{ jockey.last_name }}</h4>
+        <div class="py-2">{{ render_flash_messages(messages) }}</div>
+        <h1 class="title is-fullwidth has-text-centered mt-0">Editando el perfil de 
+            {{ jockey.general_information.first_name }} {{ jockey.general_information.last_name }}</h1>
         <div class="tabs is-toggle is-fullwidth is-toggle-rounded is-centered is-medium">
             <ul>
                 <li class="is-active">
@@ -41,121 +54,232 @@
                           <span class="icon is-small">
                               <i class="fa fa-info-circle" aria-hidden="true"></i>
                           </span>
-                        <span>Informacion General</span>
+                        <span>Información General</span>
                     </a>
                 </li>
                 <li>
-                    <a>
+                    <a href="{{ url_for("jockey_amazon_bp.edit_documents", jockey_id=jockey.id) }}">
                           <span class="icon is-small">
                               <i class="far fa-file-alt" aria-hidden="true"></i>
                           </span>
-                        <span>Documentacion Anexa</span>
+                        <span>Documentación Anexa</span>
                     </a>
                 </li>
             </ul>
         </div>
-
-        <section class="section pt-4">
-        <form method="POST" class="">
-            {{ form.hidden_tag() }}
-            <label class="label is-size-4">Datos del Jockey</label>
-            <div class="field">
-                <label class="label">{{ form.first_name.label }}</label>
-                <div class="control">
-                    {{ form.first_name(class="input", placeholder="Ingrese el nombre del jockey") }}
-                </div>
-                {% if form.first_name.errors %}
-                    <p class="help is-danger">{{ form.first_name.errors[0] }}</p>
-                {% endif %}
-            </div>
-
-            <div class="field">
-                <label class="label">{{ form.last_name.label }}</label>
-                <div class="control">
-                    {{ form.last_name(class="input", placeholder="Ingrese el apellido del jockey") }}
-                </div>
-                {% if form.last_name.errors %}
-                    <p class="help is-danger">{{ form.last_name.errors[0] }}</p>
-                {% endif %}
-            </div>
-
-            <div class="field">
-                <label class="label">{{ form.dni.label }}</label>
-                <div class="control">
-                    {{ form.dni(class="input", placeholder="Ingrese el DNI del jockey") }}
-                </div>
-                {% if form.dni.errors %}
-                    <p class="help is-danger">{{ form.dni.errors[0] }}</p>
-                {% endif %}
-            </div>
-
-            <div class="field">
-                <label class="label">{{ form.birth_date.label }}</label>
-                <div class="control">
-                    {{ form.birth_date(class="input", type="date") }}
-                </div>
-                {% if form.birth_date.errors %}
-                    <p class="help is-danger">{{ form.birth_date.errors[0] }}</p>
-                {% endif %}
-            </div>
-
-            <div class="field">
-                <label class="label">{{ form.address.label }}</label>
-                <div class="control">
-                    {{ form.address(class="input", placeholder="Ingrese la dirección del jockey") }}
-                </div>
-                {% if form.address.errors %}
-                    <p class="help is-danger">{{ form.address.errors[0] }}</p>
-                {% endif %}
-            </div>
-
-            <div class="field">
-                <label class="label">{{ form.phone.label }}</label>
-                <div class="control">
-                    {{ form.phone(class="input", placeholder="Ingrese el teléfono del jockey") }}
-                </div>
-                {% if form.phone.errors %}
-                    <p class="help is-danger">{{ form.phone.errors[0] }}</p>
-                {% endif %}
-            </div>
-
-            <div class="field">
-                <label class="label">{{ form.work_condition.label }}</label>
-                <div class="control">
-                    <div class="select">
-                        {{ form.work_condition() }}
-                    </div>
-                </div>
-            </div>
-
-            <div class="field">
-                <label class="label">{{ form.work_proposal.label }}</label>
-                <div class="control">
-                    <div class="select">
-                        {{ form.work_proposal() }}
-                    </div>
-                </div>
-            </div>
-
-            <div class="field">
-                <label class="label">{{ form.family_assignment.label }}</label>
-                <div class="control">
-                    <div class="select">
-                        {{ form.family_assignment() }}
-                    </div>
-                </div>
-            </div>
-
-            <div class="field">
-                <div class="control">
-                    <button class="button is-primary" type="submit">Guardar cambios</button>
-                </div>
-            </div>
-        </form>
     </div>
+
+    <section id="general-information" class="mt-5">
+        <div class="card">
+            <header class="card-header py-3">
+                <h2 class="card-header-title is-size-5">Información General</h2>
+                <button class="card-header-icon" aria-label="more options">
+                <span class="icon">
+                    <i class="fas fa-angle-down" aria-hidden="true"></i>
+                </span>
+                </button>
+            </header>
+            <div class="card-content" style="display: none;">
+                <div class="content">
+                    <form method="POST">
+                        {% include './jockey_amazon/forms/general_form.html' %}
+
+                        <div class="mt-5">{{ general_form.submit(class="button is-primary is-outlined is-fullwidth")}}</div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </section>
+
+    <section id="health-information" class="mt-5">
+        <div class="card">
+            <header class="card-header py-3">
+                <h2 class="card-header-title is-size-5">Información de Salud</h2>
+                <button class="card-header-icon" aria-label="more options">
+                <span class="icon">
+                    <i class="fas fa-angle-down" aria-hidden="true"></i>
+                </span>
+                </button>
+            </header>
+            <div class="card-content" style="display: none;">
+                <div class="content">
+                    <form method="POST">
+                        {% include './jockey_amazon/forms/health_form.html' %}
+                        <div class="mt-5">{{ health_form.submit(class="button is-primary is-outlined is-fullwidth")}}</div>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <section id="family-information" class="mt-5">
+        <div class="card">
+            <header class="card-header py-3">
+                <h2 class="card-header-title is-size-5">Información Familiar</h2>
+                <button class="card-header-icon" aria-label="more options">
+                <span class="icon">
+                    <i class="fas fa-angle-down" aria-hidden="true"></i>
+                </span>
+                </button>
+            </header>
+            <div class="card-content" style="display: none;">
+                <div class="content">
+                    <form method="POST">
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="school-information" class="mt-5">
+        <div class="card">
+            <header class="card-header py-3">
+                <h2 class="card-header-title is-size-5">Información Escolar</h2>
+                <button class="card-header-icon" aria-label="more options">
+                <span class="icon">
+                    <i class="fas fa-angle-down" aria-hidden="true"></i>
+                </span>
+                </button>
+            </header>
+            <div class="card-content" style="display: none;">
+                <div class="content">
+                    <form method="POST">
+                        {% include './jockey_amazon/forms/educational_form.html' %}
+                    <div class="mt-5">{{ education_form.submit(class="button is-primary is-outlined is-fullwidth")}}</div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </section>
+    <section id="work-assignments" class="mt-5">
+        <div class="card">
+            <header class="card-header py-3">
+                <h2 class="card-header-title is-size-5">Asignaciones de Trabajo</h2>
+                <button class="card-header-icon" aria-label="more options">
+                <span class="icon">
+                    <i class="fas fa-angle-down" aria-hidden="true"></i>
+                </span>
+                </button>
+            </header>
+            <div class="card-content" style="display: none;">
+                <div class="content">
+                    <form method="POST">
+                        {% include './jockey_amazon/forms/work_assignments_form.html' %}
+                        <div class="mt-5">{{ assignments_form.submit(class="button is-primary is-outlined is-fullwidth")}}</div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <a href="{{ url_for("jockey_amazon_bp.get_jockeys" )}}" class="button mt-2 is-fullwidth is-medium">Volver</a>
+
 {% endblock %}
 {% block extra_scripts %}
-    {{ super() }}
-    <script src="{{ url_for('static', filename='js/toggle-trainers.js') }}"></script>
+{{ super() }}
+<script src="{{ url_for('static', filename='js/toggle-search-bar.js') }}"></script>
+<script>
+    // Funcionalidad para mostrar/ocultar detalles de la discapacidad
+    const hasDisabilityCheckbox = document.querySelector('input[name="has_disability"]');
+    const disabilityDetails = document.getElementById('disability-details');
+
+    function toggleDisabilityDetails() {
+        if (hasDisabilityCheckbox.checked) {
+            disabilityDetails.style.display = 'block';
+        } else {
+            disabilityDetails.style.display = 'none';
+        }
+    }
+
+    hasDisabilityCheckbox.addEventListener('change', toggleDisabilityDetails);
+    toggleDisabilityDetails();  // Initial check
+
+  // Funcionalidad para mostrar/ocultar detalles de la curatela
+  const hasCuratorshipCheckbox = document.querySelector('input[name="has_curatorship"]');
+  const curatorshipDetails = document.getElementById('curatorship-details');
+
+  function toggleCuratorshipDetails() {
+      if (hasCuratorshipCheckbox.checked) {
+          curatorshipDetails.style.display = 'block';
+      } else {
+          curatorshipDetails.style.display = 'none';
+      }
+  }
+
+  hasCuratorshipCheckbox.addEventListener('change', toggleCuratorshipDetails);
+  toggleCuratorshipDetails();  // Initial check
+
+      // Funcionalidad para mostrar/ocultar detalles de la beca
+      const hasScholarshipCheckbox = document.querySelector('input[name="has_scholarship"]');
+    const scholarshipDetails = document.getElementById('scholarship-details');
+
+    function toggleScholarshipDetails() {
+        if (hasScholarshipCheckbox.checked) {
+            scholarshipDetails.style.display = 'block';
+        } else {
+            scholarshipDetails.style.display = 'none';
+        }
+    }
+    hasScholarshipCheckbox.addEventListener('change', toggleScholarshipDetails);
+      toggleScholarshipDetails();  // Initial check
+  
+      // Funcionalidad para agregar miembros de la familia
+      const addFamilyMemberButton = document.getElementById('add-family-member');
+    const familyMemberContainer = document.getElementById('family-members');
+    const secondFamilyMember = document.querySelector('.family-member[data-id="2"]');
+
+    addFamilyMemberButton.addEventListener('click', function () {
+      secondFamilyMember.style.display = 'block';
+      addFamilyMemberButton.style.display = 'none'; // Ocultar el botón después de agregar el segundo miembro
+    });
+
+    // Maneja el evento de eliminar un miembro de la familia
+    familyMemberContainer.addEventListener('click', function (event) {
+      if (event.target.classList.contains('remove-family-member')) {
+          const familyMember = event.target.closest('.family-member');
+          if (familyMember) {
+              familyMember.style.display = 'none'; // Ocultar en lugar de eliminar
+              
+              // Limpiar los campos
+              familyMember.querySelectorAll('input, select').forEach(input => {
+                  input.value = '';
+                  input.required = false
+              });
+
+              addFamilyMemberButton.style.display = 'block'; // Mostrar el botón de agregar nuevamente
+          }
+      }
+    });
+    // Funcionalidad para mostrar/ocultar detalles de la asignación familiar
+    const hasFamilyAssignmentCheckbox = document.querySelector('input[name="has_family_assignment"]');
+    const familyAssignmentDetails = document.getElementById('family-assignment-details');
+
+    function toggleFamilyAssignmentDetails() {
+        if (hasFamilyAssignmentCheckbox.checked) {
+            familyAssignmentDetails.style.display = 'block';
+        } else {
+            familyAssignmentDetails.style.display = 'none';
+        }
+    }
+
+    hasFamilyAssignmentCheckbox.addEventListener('change', toggleFamilyAssignmentDetails);
+    toggleFamilyAssignmentDetails();  // Initial check
+    // Funcionalidad para mostrar/ocultar detalles de la pensión
+    const hasPensionCheckbox = document.querySelector('input[name="has_pension"]');
+    const pensionDetails = document.getElementById('pension-details');
+
+    function togglePensionDetails() {
+        if (hasPensionCheckbox.checked) {
+            pensionDetails.style.display = 'block';
+        } else {
+            pensionDetails.style.display = 'none';
+        }
+    }
+
+    hasPensionCheckbox.addEventListener('change', togglePensionDetails);
+    togglePensionDetails();  // Initial check
+</script>
 {% endblock %}

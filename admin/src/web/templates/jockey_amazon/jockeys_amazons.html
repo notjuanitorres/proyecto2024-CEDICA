@@ -19,8 +19,27 @@
     </h2>
 {% endblock %}
 
+{% block tabs %}
+<div class="tabs is-medium is-toggle is-toggle-rounded is-centered">
+  <ul>
+    <li class="is-active">
+      <a href="{{ url_for('jockey_amazon_bp.get_jockeys')}}">
+        <span class="icon is-small"><i class="fa-solid fa-users"></i></span>
+        <span>Todos</span>
+      </a>
+    </li>
+    <li>
+      <a href="{{ url_for('jockey_amazon_bp.get_deleted_jockeys')}}">
+        <span class="icon is-small"><i class="fa-solid fa-box-archive"></i></span>
+        <span>J&A Archivados</span>
+      </a>
+    </li>
+  </ul>
+</div>
+{% endblock %}
+
 {% block create_button %}
-  <a class="button is-primary level-item" href="{{ url_for('jockey_amazon_bp.create_jockey')}}">
+  <a class="button is-primary level-item" href="{{ url_for('jockey_amazon_bp.create.init')}}">
     Agregar Jinete/Amazona
     <i class="fa-solid fa-hat-cowboy ml-2 is-size-5"></i>
   </a>
@@ -54,8 +73,8 @@
         to_left=true,
         endpoints={
           'show':'jockey_amazon_bp.show_jockey',
-          'edit': 'jockey_amazon_bp.edit_jockey',
-          'delete':''
+          'edit': 'jockey_amazon_bp.update.edit_jockey',
+          'archive':'jockey_amazon_bp.archive_jockey',
         },
         permission_to_show="jockey_amazon_show",
         permission_to_edit="jockey_amazon_update",
@@ -69,7 +88,7 @@
     <td><span class="is-hidden-tablet has-text-weight-bold">Apellido: </span>{{ jockey.last_name }}</td>
     <td><span class="is-hidden-tablet has-text-weight-bold">DNI: </span>{{ jockey.dni }}</td>
     <td><span class="is-hidden-tablet has-text-weight-bold">Fecha de Nacimiento: </span>{{ jockey.birth_date.strftime('%d-%m-%Y') }}</td>
-    <td><span class="is-hidden-tablet has-text-weight-bold">Teléfono: </span>{{ jockey.phone }}</td>
+    <td><span class="is-hidden-tablet has-text-weight-bold">Teléfono: </span>{{ jockey.country_code }} {{ jockey.area_code }} {{ jockey.phone }}</td>
     <td><span class="is-hidden-tablet has-text-weight-bold">Fecha de creación: </span>{{ jockey.inserted_at.strftime('%d-%m-%Y') }}</td>
     <td><span class="is-hidden-tablet has-text-weight-bold">Propuesta de Trabajo: </span>{{ jockey.work_assignment.proposal.value }}</td>
     <td class="is-hidden-tablet is-flex">
@@ -85,6 +104,13 @@
 {% endblock %}
 
 {% block table_footer %}
+    <th>Nombre</th>
+    <th>Apellido</th>
+    <th>DNI</th>
+    <th>Fecha de Nacimiento</th>
+    <th>Teléfono</th>
+    <th>Fecha de creación</th>
+    <th>Propuesta de trabajo</th>
 
 {% endblock %}
 
@@ -93,12 +119,13 @@
 {% endblock %}
 
 {% block delete_modal %}
-  {{
+  {{ 
     render_delete_modal(
-      endpoint="jockey_amazon_bp.delete_jockey",
-      title="Eliminar",
-      msg="¿Está seguro de que desea eliminar al jockey?",
-      msg_sub="Luego de confirmar, no se podrán revertir los cambios"
-    )
+      endpoint=url_for("jockey_amazon_bp.archive_jockey"),
+      title="Archivar",
+      msg="¿Está seguro de que desea archivar al Jinete/Amazona?",
+      msg_sub="",
+      delete_text="Archivar"
+  )
   }}
 {% endblock %}

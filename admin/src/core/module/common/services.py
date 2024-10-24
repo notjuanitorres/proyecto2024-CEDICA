@@ -81,6 +81,18 @@ class AbstractStorageServices(object):
         raise NotImplementedError
 
     @abstractmethod
+    def delete_batch(self, filenames: List[str]) -> bool:
+        """Deletes a batch of files from storage.
+
+        Args:
+            filenames (List[str]): The names of the files to delete.
+
+        Returns:
+            bool: True if successful, False otherwise.
+        """
+        raise NotImplementedError
+
+    @abstractmethod
     def presigned_download_url(self, filename: str) -> str | None:
         """Generates a presigned URL for downloading a file.
 
@@ -281,7 +293,7 @@ class StorageServices(AbstractStorageServices):
             print("No se pudo establecer conexion con minio. Error: ", e)
             return ""
 
-    def delete_file(self, filename: str) -> None:
+    def delete_file(self, filename: str) -> bool:
         """Deletes a file from storage.
 
         Args:
@@ -294,6 +306,25 @@ class StorageServices(AbstractStorageServices):
             self.storage.remove_object(
                 self.bucket_name, filename
             )
+            return True
+        except MaxRetryError as e:
+            print("No se pudo establecer conexion con minio. Error: ", e)
+            return False
+
+    def delete_batch(self, filenames: List[str]) -> bool:
+        """Deletes a batch of files from storage.
+
+        Args:
+            filenames (List[str]): The names of the files to delete.
+
+        Returns:
+            bool: True if deletion is successful, False otherwise.
+        """
+        try:
+            for filename in filenames:
+                self.storage.remove_object(
+                    self.bucket_name, filename
+                )
             return True
         except MaxRetryError as e:
             print("No se pudo establecer conexion con minio. Error: ", e)

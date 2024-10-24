@@ -1,8 +1,16 @@
-
 from enum import Enum as pyEnum
 
 
 class RoleEnum(pyEnum):
+    """
+    Enumeration for different user roles.
+
+    Attributes:
+        TECNICO (str): Technical role.
+        ECUESTRE (str): Equestrian role.
+        VOLUNTARIO (str): Volunteer role.
+        ADMINISTRACION (str): Administration role.
+    """
     TECNICO = "Técnico"
     ECUESTRE = "Ecuestre"
     VOLUNTARIO = "Voluntario"
@@ -10,6 +18,36 @@ class RoleEnum(pyEnum):
 
 
 class PermissionEnum(pyEnum):
+    """
+    Enumeration for different user permissions.
+
+    Attributes:
+        EQUIPO_INDEX (str): Permission to index equipment.
+        EQUIPO_NEW (str): Permission to create new equipment.
+        EQUIPO_UPDATE (str): Permission to update equipment.
+        EQUIPO_DESTROY (str): Permission to destroy equipment.
+        EQUIPO_SHOW (str): Permission to show equipment details.
+        PAGOS_INDEX (str): Permission to index payments.
+        PAGOS_NEW (str): Permission to create new payments.
+        PAGOS_UPDATE (str): Permission to update payments.
+        PAGOS_DESTROY (str): Permission to destroy payments.
+        PAGOS_SHOW (str): Permission to show payment details.
+        JYA_INDEX (str): Permission to index jockeys and amazons.
+        JYA_NEW (str): Permission to create new jockeys and amazons.
+        JYA_UPDATE (str): Permission to update jockeys and amazons.
+        JYA_DESTROY (str): Permission to destroy jockeys and amazons.
+        JYA_SHOW (str): Permission to show jockey and amazon details.
+        COBROS_INDEX (str): Permission to index charges.
+        COBROS_NEW (str): Permission to create new charges.
+        COBROS_UPDATE (str): Permission to update charges.
+        COBROS_DESTROY (str): Permission to destroy charges.
+        COBROS_SHOW (str): Permission to show charge details.
+        ECUSTRE_INDEX (str): Permission to index equestrian activities.
+        ECUSTRE_NEW (str): Permission to create new equestrian activities.
+        ECUSTRE_UPDATE (str): Permission to update equestrian activities.
+        ECUSTRE_DESTROY (str): Permission to destroy equestrian activities.
+        ECUSTRE_SHOW (str): Permission to show equestrian activity details.
+    """
     EQUIPO_INDEX = "equipo_index"
     EQUIPO_NEW = "equipo_new"
     EQUIPO_UPDATE = "equipo_update"
@@ -35,4 +73,3 @@ class PermissionEnum(pyEnum):
     ECUSTRE_UPDATE = "ecuestre_update"
     ECUSTRE_DESTROY = "ecuestre_destroy"
     ECUSTRE_SHOW = "ecuestre_show"
-

@@ -1,0 +1,89 @@
+{{ assignments_form.hidden_tag() }}
+<div id="work-assignments-info">
+  <!-- Scholarship info -->
+  <div id="scholarship-info">
+    <label class="label is-size-4">Información de Beca</label>
+    <div class="field">
+      <div class="control">
+        <label class="checkbox">
+          {{ assignments_form.has_scholarship.label(class="has-text-weight-bold is-size-5") }} 
+          {{ assignments_form.has_scholarship(class="ml-2", type="checkbox", style="transform: scale(1.5)") }}
+        </label>
+      </div>
+      {% if assignments_form.has_scholarship.errors %}
+      <p class="help is-danger">{{ assignments_form.has_scholarship.errors[0] }}</p>
+      {% endif %}
+    </div>
+
+    <div class="field" id="scholarship-details">
+      <div class="control">
+          <label class="label mt-2">Porcentaje de Beca
+        {{ assignments_form.scholarship_percentage(class="input", placeholder="Ingrese el porcentaje de beca") }}
+              </label>
+      </div>
+      {% if assignments_form.scholarship_percentage.errors %}
+      <p class="help is-danger">{{ assignments_form.scholarship_percentage.errors[0] }}</p>
+      {% endif %}
+
+      <div class="control">
+          <label class="label mt-2">Observaciones de Beca
+            {{ assignments_form.scholarship_observations(class="textarea", placeholder="Ingrese observaciones de la beca") }}
+          </label>
+      </div>
+      {% if assignments_form.scholarship_observations.errors %}
+      <p class="help is-danger">
+        {{ assignments_form.scholarship_observations.errors[0] }}
+      </p>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Professionals Information -->
+  <div id="professionals-info" class="mt-4">
+    <label class="label is-size-4">{{ assignments_form.professionals.label }}</label>
+    <div class="control">
+      {{ assignments_form.professionals(class="textarea", placeholder="Ingrese los profesionales que lo atienden") }}
+    </div>
+    {% if assignments_form.professionals.errors %}
+    <p class="help is-danger">{{ assignments_form.professionals.errors[0] }}</p>
+    {% endif %}
+  </div>
+
+  <div id="work-assignments-info" class="columns is-multiline is-2 mt-4">
+    <h3 class="label column is-full is-size-4">Asignaciones de Trabajo</h3>
+    <div class="field column is-full">
+      <label for="Dias asignados" class="label">Asistirá los dias:</label>
+      <div class="control is-flex is-gap-3 is-justify-content-space-evenly is-flex-wrap-wrap is-fullwidth pt-4">
+        {% for day_checkbox in assignments_form.work_assignments.form.days %}
+          <label class="checkbox">
+            {{ day_checkbox(class="checkbox mr-2", style="transform: scale(1.25);") }}
+            {{ day_checkbox.label(class="has-text-weight-semibold") }}
+          </label>
+        {% endfor %}
+        {% if assignments_form.work_assignments.form.days.errors  %}
+          <p class="help is-danger">{{ assignments_form.work_assignments.form.days.errors[0] }}</p>
+        {% endif %}
+      </div>
+    </div>
+    <div class="columns column is-full mb-3">
+      <div class="column is-third mb-0">
+        <label class="label">{{ assignments_form.work_assignments.proposal.label }}</label>
+        <div class="control">
+          <div class="select is-fullwidth">{{ assignments_form.work_assignments.proposal() }}</div>
+        </div>
+      </div>
+      <div class="field column is-third mb-0">
+        <label class="label">{{ assignments_form.work_assignments.condition.label }}</label>
+        <div class="control">
+          <div class="select is-fullwidth">{{ assignments_form.work_assignments.condition() }}</div>
+        </div>
+      </div>
+      <div class="field column is-third mb-0">
+        <label class="label">{{ assignments_form.work_assignments.sede.label }}</label>
+        <div class="control">
+          <div class="select is-fullwidth">{{ assignments_form.work_assignments.sede() }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -5,11 +5,26 @@ from src.core.module.user.validators import EmailExistence
 
 
 def email_existence(form, field):
+    """
+    Check if the email is assigned to another user.
+
+    Args:
+        form: The form object that includes the field.
+        field: The field object representing the email input.
+    """
     validator = EmailExistence(message="Email en uso")
     validator(form, field)
 
 
 class UserLoginForm(FlaskForm):
+    """
+    Form for user login.
+
+    Fields:
+        email (StringField): The email address of the user.
+        password (PasswordField): The password of the user.
+    """
+
     email = StringField(
         "Email",
         validators=[
@@ -30,6 +45,16 @@ class UserLoginForm(FlaskForm):
 
 
 class UserRegisterForm(FlaskForm):
+    """
+    Form for user registration.
+
+    Fields:
+        email (StringField): The email address of the user.
+        password (PasswordField): The password of the user.
+        confirm_password (PasswordField): The confirmation of the password.
+        alias (StringField): The alias or username of the user.
+    """
+
     current_email = None
 
     email = StringField(
