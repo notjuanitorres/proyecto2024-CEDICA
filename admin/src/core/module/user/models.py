@@ -1,8 +1,24 @@
 from src.core.database import db
 from datetime import datetime
 
-
 class User(db.Model):
+    """
+    Represents a user in the system.
+
+    Attributes:
+        id (int): The unique identifier for the user.
+        email (str): The email address of the user.
+        alias (str): The alias or username of the user.
+        password (str): The hashed password of the user.
+        enabled (bool): Indicates whether the user is enabled.
+        system_admin (bool): Indicates whether the user is a system administrator.
+        role_id (int): The ID of the role assigned to the user.
+        inserted_at (datetime): The timestamp when the user was created.
+        updated_at (datetime): The timestamp when the user was last updated.
+        role (Role): The role assigned to the user.
+        is_deleted (bool): Indicates whether the user is deleted.
+    """
+
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -19,9 +35,21 @@ class User(db.Model):
     is_deleted = db.Column(db.Boolean, nullable=False, default=False)
 
     def __repr__(self):
+        """
+        Return a string representation of the User object.
+
+        Returns:
+            str: A string representation of the User object.
+        """
         return f"<User(id={self.id}, username={self.alias}, email={self.email})>"
 
     def to_dict(self) -> dict:
+        """
+        Convert the User object to a dictionary.
+
+        Returns:
+            dict: A dictionary representation of the User object.
+        """
         user_dict = {
             "id": self.id,
             "email": self.email,
@@ -32,4 +60,3 @@ class User(db.Model):
             "is_deleted": self.is_deleted
         }
         return user_dict
-

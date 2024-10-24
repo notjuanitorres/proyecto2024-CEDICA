@@ -30,7 +30,12 @@ def init_wiring():
         - auth
         - employee
         - equestrian
+        - charges
+        - jockey_amazon
+        - create_jockey_amazon
+        - update_jockey_amazon
         - validators
+        - payment
         - auth_helper
 
     Returns:
