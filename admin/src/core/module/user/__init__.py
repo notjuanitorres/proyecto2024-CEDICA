@@ -1,5 +1,5 @@
 from .repositories import UserRepository, AbstractUserRepository
-from .forms import UserCreateForm, UserEditForm, UserSearchForm, AccountSearchForm, AccountSelectForm
+from .forms import UserCreateForm, UserEditForm, UserSearchForm, AccountSearchForm, AccountSelectForm, UserProfileForm
 from .mappers import UserMapper
 
 __all__ = [
@@ -10,5 +10,6 @@ __all__ = [
     "UserSearchForm",
     "AccountSearchForm",
     "AccountSelectForm",
-    "UserMapper"
+    "UserMapper",
+    "UserProfileForm",
 ]

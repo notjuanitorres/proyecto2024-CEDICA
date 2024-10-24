@@ -153,3 +153,49 @@ class AccountSelectForm(FlaskForm):
         self.selected_account.data = account_id
 
 
+
+class UserProfileForm(FlaskForm):
+    email = StringField(
+        "Correo",
+        validators=[
+            DataRequired(),
+            Email(message="Email inválido"),
+            Length(max=100),
+        ],
+    )
+    alias = StringField("Alias", validators=[DataRequired(), Length(min=3, max=15)])
+    profile_image = FileField('Cargar foto de perfil', 
+            validators=[FileSize(
+                max_size=max_file_size(size_in_mb=5),
+                message="El archivo es demasiado grande",
+            ),
+            FileAllowed(
+                upload_set=allowed_filetypes,
+                message=filetypes_message,
+            )] )
+    current_password = PasswordField(
+        "Contraseña actual",
+        validators=[
+            DataRequired(),
+            Length(
+                min=8, max=255, message="La contraseña debe tener más de 8 caracteres"
+            ),
+        ],
+    )
+    new_password = PasswordField(
+        "Nueva contraseña",
+        validators=[
+            Optional(),
+            Length(
+                min=8, max=255, message="La contraseña debe tener más de 8 caracteres"
+            ),
+        ],
+    )
+    confirm_password = PasswordField(
+        "Confirmar nueva contraseña",
+        validators=[
+            Optional(),
+            EqualTo("new_password", message="Las contraseñas deben coincidir"),
+        ],
+    )
+    submit = SubmitField("Guardar cambios")
