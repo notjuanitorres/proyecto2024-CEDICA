@@ -1,6 +1,8 @@
 from abc import abstractmethod
 from typing import List, Dict
-from src.core.module.common.repositories import apply_filters, apply_multiple_search_criteria, apply_filter_criteria
+
+from src.core.module.common import AbstractStorageServices
+from src.core.module.common.repositories import apply_filters
 from src.core.module.equestrian.models import Horse, HorseTrainers, HorseFile
 from src.core.database import db as database
 from src.core.module.employee.models import Employee
@@ -230,6 +232,21 @@ class AbstractEquestrianRepository:
         raise NotImplementedError
 
     @abstractmethod
+    def get_active_horses(self, page: int = 1, search: str = "", activity: str = "") -> bool:
+        """
+        Get a paginated list with the active horses.
+
+        Args:
+            page (int): Page requested.
+            search (str): A text for searching hose.
+            activity (str): Filter by activities assigned to the horse.
+
+        Returns:
+            bool: True if the removal was successful, False otherwise.
+        """
+        raise NotImplementedError
+
+    @abstractmethod
     def archive_horse(self, horse_id: int) -> bool:
         """
         Archive a horse.
@@ -354,12 +371,12 @@ class EquestrianRepository(AbstractEquestrianRepository):
         self.save()
         return True
 
-    def delete(self, horse_id: int):
+    def delete(self, horse_id: int,):
         """
         Delete a horse and its related data.
 
         Before deleting the horse we cascade delete every related data like HorseFiles and HorseTrainers.
-        In workassignments we set the horse_id to null.
+        We also delete the files stored in minio.
 
         Args:
             horse_id (int): The ID of the horse.
@@ -370,6 +387,16 @@ class EquestrianRepository(AbstractEquestrianRepository):
         horse = Horse.query.filter_by(id=horse_id)
         if not horse:
             return False
+
+        files = HorseFile.query.filter_by(horse_id=horse_id)
+        minio_path_files = [f.path for f in files if not f.is_link]
+        if minio_path_files:
+            from src.core.container import Container  # can't import outside due to circular import
+            success = Container().storage_services().delete_batch(minio_path_files)
+
+            if not success:
+                return False
+
         horse.delete()
         self.save()
         return True
@@ -548,6 +575,9 @@ class EquestrianRepository(AbstractEquestrianRepository):
         if not horse or horse.is_archived:
             return False
         horse.is_archived = True
+        work_assignments = horse.work_assignments
+        for work_assignment in work_assignments:
+            work_assignment.horse_id = None
         self.save()
         return True
 
@@ -571,16 +601,15 @@ class EquestrianRepository(AbstractEquestrianRepository):
     def get_active_horses(self, page: int = 1, search: str = "", activity: str = "") -> bool:
         per_page = 7
 
-        query = self.db.session.query(Horse).filter(Horse.is_deleted == False)
+        query = self.db.session.query(Horse).filter(Horse.is_archived == False)
 
+        search_query = {}
         if search:
             search_fields = ["name", "assigned_facility"]
-            query = apply_multiple_search_criteria(
-                Horse, query, search_query={"text": search, "fields": search_fields}
-        )
-        print(query.all())
+            search_query = {"text": search, "fields": search_fields}
         if activity:
-            search_query = { "filters": { "ja_type": activity }}
-            query = apply_filter_criteria(model=Horse, query=query, search_query=search_query)
+            search_query = {"filters": {"ja_type": activity}}
+
+        query = apply_filters(model=Horse, query=query, search_query=search_query)
         print(query.all())
         return query.paginate(page=page, per_page=per_page, error_out=False)
