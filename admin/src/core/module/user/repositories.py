@@ -147,8 +147,6 @@ class UserRepository(AbstractUserRepository):
             return False
         user.is_deleted = True
         user.enabled = False
-        if user.employee:
-            user.employee.user_id = None
         self.save()
         return True
     
@@ -157,6 +155,7 @@ class UserRepository(AbstractUserRepository):
         if not user or not user.is_deleted:
             return False
         user.is_deleted = False
+        user.enabled = True
         self.save()
         return True
 

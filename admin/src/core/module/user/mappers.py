@@ -2,6 +2,7 @@ from typing import Dict
 from src.core.bcrypt import bcrypt
 from .models import User
 
+
 class UserMapper:
     @classmethod
     def to_entity(self, user_data: Dict, is_creation: bool = True) -> User:
@@ -19,6 +20,7 @@ class UserMapper:
             role_id=user_data.get("role_id", None),
             is_deleted=user_data.get("is_deleted", False)
         )
+
     @classmethod
     def from_entity(self, user: User) -> "Dict":
         return {
@@ -32,4 +34,4 @@ class UserMapper:
             "updated_at": user.updated_at,
             "assigned_to": user.employee.id if user.employee else None,
             "is_deleted": user.is_deleted
-        }   
+        }

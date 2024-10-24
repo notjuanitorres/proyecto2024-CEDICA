@@ -68,10 +68,18 @@ def link_employee(
         Container.jockey_amazon_repository
     ],
 ):
+    jockey = jockeys.get_by_id(jockey_id)
+    if not jockey:
+        flash("No se ha encontrado al Jockey/Amazona solicitado", "warning")
+        return redirect(url_for("jockey_amazon_bp.get_jockeys"))
+
+    if jockey.is_deleted:
+        flash("No se pueden asignar empleados a un Jockey/Amazona archivado", "warning")
+        return redirect(url_for("jockey_amazon_bp.show_jockey", jockey_id=jockey_id))
+
     page = request.args.get("page", type=int, default=1)
     searched_employee = EmployeeMiniSearchForm(request.args)
     selected_employee = EmployeeSelectForm()
-    jockey = jockeys.get_by_id(jockey_id)
     employees = employee_repository.get_active_employees(job_positions, page=page)
     if request.method == "POST":
         if not (
@@ -117,7 +125,12 @@ def edit_jockey(
 ):
     jockey = Mapper.from_entity(jockeys.get_by_id(jockey_id))
     if not jockey:
+        flash("No se ha encontrado al Jockey/Amazona solicitado", "warning")
         return redirect(url_for("jockey_amazon_bp.get_jockeys"))
+
+    if jockey.get("is_deleted"):
+        flash("No se puede editar un Jockey/Amazona archivado", "warning")
+        return redirect(url_for("jockey_amazon_bp.show_jockey", jockey_id=jockey_id))
 
     general_form = GeneralInformationForm(
         data=jockey.get("general_information"), current_dni=jockey.get("general_information").get("dni")

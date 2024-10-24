@@ -35,7 +35,7 @@ class EmployeeFile(File):
     __mapper_args__ = {
         "polymorphic_identity": "employee",
     }
-    employee_id = db.Column(db.Integer, db.ForeignKey("employees.id"))
+    employee_id = db.Column(db.Integer, db.ForeignKey("employees.id", ondelete="CASCADE"))
     owner = db.relationship("Employee", back_populates="files")
 
 
