@@ -1,5 +1,5 @@
 from datetime import datetime
-from sqlalchemy.orm import column_property 
+from sqlalchemy.orm import column_property
 from src.core.database import db
 from src.core.module.common import AddressMixin, EmergencyContactMixin, PhoneMixin, File
 from src.core.module.employee.data import (

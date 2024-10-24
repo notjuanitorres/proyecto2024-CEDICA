@@ -69,10 +69,10 @@
 {% endblock %}
 
 {% block table_header %}
-  <th>ID</th>
+  <th></th>
+  <th>Habilitado</th>
   <th>Correo</th>
   <th>Alias</th>
-  <th>Habilitado</th>
   <th>Rol</th>
   <th>Admin</th>
   <th>Ingreso</th>
@@ -106,17 +106,16 @@
       }}
 {# There are no permissions related to users but since this page is only accessed by the sysadmin they'll always be able to see it #}
     </td>
-    <td><span class="is-hidden-tablet has-text-weight-bold">ID: </span>{{ user.id }}</td>
-    <td><span class="is-hidden-tablet has-text-weight-bold">Email: </span>{{ user.email }}</td>
-    <td><span class="is-hidden-tablet has-text-weight-bold">Alias: </span>{{ user.alias }}</td>
-    <td class="has-text-centered">
-      <p class="is-hidden-tablet has-text-weight-bold">Habilitado:</p>
+    <td class="px-4 is-flex-mobile has-text-centered">
+      <p class="negative-px-4 has-text-weight-bold mr-2 is-hidden-tablet">Habilitado:</p>
       {% if user.enabled %}
-        <span class="tag is-success">{{ user.enabled | natural_boolean }}</span>    
+        <span class="tag is-success has-text-centered is-fullwidth is-block">{{ user.enabled | natural_boolean }}</span>    
       {% else %}
-      <span class="tag is-warning">{{ user.enabled | natural_boolean }}</span>    
+        <span class="tag is-warning has-text-centered is-fullwidth is-block">{{ user.enabled | natural_boolean }}</span>    
       {% endif %}
     </td>
+    <td><span class="is-hidden-tablet has-text-weight-bold">Email: </span>{{ user.email }}</td>
+    <td><span class="is-hidden-tablet has-text-weight-bold">Alias: </span>{{ user.alias }}</td>
     <td><span class="is-hidden-tablet has-text-weight-bold">Rol: </span>{{ user.role_id | role }}</td>
     <td><span class="is-hidden-tablet has-text-weight-bold">Administrador del Sistema: </span>{{ user.system_admin | natural_boolean }}</td>
     <td><span class="is-hidden-tablet has-text-weight-bold">Creado: </span>{{ user.inserted_at | format_date }}</td>
@@ -135,10 +134,10 @@
 {% endblock %}
 
 {% block table_footer %}
-  <th>ID</th>
+  <th></th>
+  <th>Habilitado</th>
   <th>Correo</th>
   <th>Alias</th>
-  <th>Habilitado</th>
   <th>Rol</th>
   <th>Admin</th>
   <th>Ingreso</th>

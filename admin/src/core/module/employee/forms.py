@@ -260,18 +260,15 @@ class TrainerSelectForm(FlaskForm):
     def set_selected_account(self, account_id):
         self.selected_trainer.data = account_id
 
-
 class EmployeeSelectForm(FlaskForm):
-    selected_employee = HiddenField(
-        "Empleado seleccionado",
-        validators=[DataRequired("Se debe seleccionar un empleado"), IsNumber()],
+    selected_item = HiddenField(
+        validators=[DataRequired("Se debe seleccionar un miembro del equipo"), IsNumber()],
     )
     submit_employee = SubmitField("Asociar")
 
-    def set_selected_employee(self, account_id):
-        self.selected_employee.data = account_id
-
 
 class EmployeeMiniSearchForm(FlaskForm):
-    search_text = StringField(validators=[Length(message="Debe ingresar un texto", min=1, max=50)])
+    search_text = StringField(
+        "Miembro del equipo seleccionado",
+        validators=[Length(message="Debe ingresar un texto", min=1, max=50)])
     submit_search = SubmitField("Buscar")

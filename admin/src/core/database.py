@@ -1,4 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import text
 
 db = SQLAlchemy()
 
@@ -74,7 +75,9 @@ def reset(app):
 
     with app.app_context():
         print("Dropping the database... ")
-        db.drop_all()
+        db.session.execute(text("DROP SCHEMA public CASCADE;"))
+        db.session.execute(text("CREATE SCHEMA public;"))
+        db.session.commit()  # Commit the changes
         print("Recreating the database... ")
         db.create_all()
         print("Done!")

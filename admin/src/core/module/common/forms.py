@@ -55,13 +55,13 @@ class PhoneForm(FlaskForm):
         number (TelField): The phone number.
     """
     country_code = TelField(
-        "Codigo de pais", validators=[DataRequired(), Length(max=5)]
+        "Codigo de pais", validators=[DataRequired(), Length(max=3)]
     )
     area_code = TelField(
-        "Codigo de area", validators=[DataRequired(), Length(max=5), IsNumber()]
+        "Codigo de area", validators=[DataRequired(), Length(max=4), IsNumber()]
     )
     number = TelField(
-        "Numero", validators=[DataRequired(), Length(min=9, max=15), IsNumber()]
+        "Numero", validators=[DataRequired(), Length(min=6, max=15), IsNumber()]
     )
 
 
