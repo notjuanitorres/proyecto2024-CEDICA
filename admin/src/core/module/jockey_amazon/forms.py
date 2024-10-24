@@ -1,3 +1,11 @@
+"""
+forms.py
+
+This module defines various forms used in the jockey and amazon management system, including forms
+for creating, editing, and searching jockeys and amazons, as well as handling their documents.
+It leverages WTForms and Flask-WTF for form handling and validation.
+"""
+
 from typing import Dict
 from flask_wtf import FlaskForm
 from wtforms import (
@@ -38,11 +46,36 @@ from .validators import DniExistence
 
 
 def dni_existence(form, field):
+    """Check if the DNI already exists in another jockey or amazon.
+
+       Args:
+        form: The form object that includes the field.
+        field: The field object representing the DNI input.
+
+    The validator ensures unique DNI numbers across all jockeys and amazons in the system.
+    """
     validator = DniExistence(message="DNI en uso")
     validator(form, field)
 
 
 class GeneralInformationForm(FlaskForm):
+    """
+    Form for collecting and managing general information about a jockey or amazon.
+
+    This form handles basic personal information including identification, contact details,
+    and emergency contact information.
+
+    Fields:
+        id (HiddenField): The unique identifier for the jockey/amazon
+        first_name (StringField): First name of the jockey/amazon
+        last_name (StringField): Last name of the jockey/amazon
+        dni (StringField): National identification number
+        birth_date (DateField): Date of birth
+        birthplace (StringField): Place of birth
+        address (FormField): Nested form for address information
+        phone (FormField): Nested form for phone contact details
+        emergency_contact (FormField): Nested form for emergency contact information
+    """
     def __init__(self, *args, **kwargs):
         super(GeneralInformationForm, self).__init__(*args, **kwargs)
         self.current_dni = kwargs.pop("current_dni", None)
@@ -98,6 +131,21 @@ class GeneralInformationForm(FlaskForm):
 
 
 class FamilyInformationForm(FlaskForm):
+    """
+    Form for managing family-related information and benefits for a jockey or amazon.
+
+    This form collects information about family assignments, pensions, and family members.
+    It supports up to two family member entries and validates their information accordingly.
+
+    Fields:
+        has_family_assignment (BooleanField): Indicates if they receive family assignments
+        family_assignment_type (SelectField): Type of family assignment received
+        has_pension (BooleanField): Indicates if they receive a pension
+        pension_type (SelectField): Type of pension received
+        pension_details (StringField): Additional details about the pension
+        family_members (FieldList): List of family member form entries
+    """
+
     has_family_assignment = BooleanField("¿Percibe alguna Asignación Familiar?")
     family_assignment_type = SelectField(
         "Tipo de Asignación Familiar",
@@ -132,6 +180,23 @@ class FamilyInformationForm(FlaskForm):
 
 
 class HealthInformationForm(FlaskForm):
+    """
+    Form for managing health-related information and disability status.
+
+    This form handles information about disabilities, medical coverage, and curatorship
+    details for jockeys and amazons.
+
+    Fields:
+        has_disability (BooleanField): Indicates if they have a disability certificate
+        disability_diagnosis (SelectField): Diagnosis classification
+        disability_other (StringField): Other disability details if applicable
+        disability_type (SelectField): Type of disability
+        social_security (StringField): Healthcare provider information
+        social_security_number (StringField): Healthcare membership number
+        has_curatorship (BooleanField): Indicates if they have a legal guardian
+        curatorship_observations (TextAreaField): Additional curatorship details
+    """
+
     has_disability = BooleanField("¿Posee Certificado de Discapacidad?")
     disability_diagnosis = SelectField(
         "Diagnóstico",
@@ -180,6 +245,18 @@ class HealthInformationForm(FlaskForm):
 
 
 class SchoolInformationForm(FlaskForm):
+    """
+    Form for managing educational information for jockeys and amazons.
+
+    This form collects information about their current educational institution,
+    academic progress, and any relevant observations.
+
+    Fields:
+        school_institution (FormField): Nested form for school details
+        current_grade_year (StringField): Current academic grade or year
+        school_observations (TextAreaField): Additional observations about schooling
+    """
+
     school_institution = FormField(SchoolInstitutionForm)
     current_grade_year = StringField("Grado / Año Actual", validators=[
         Optional(),
@@ -213,6 +290,20 @@ class SchoolInformationForm(FlaskForm):
 
 
 class WorkAssignmentForm(FlaskForm):
+    """
+    Form for managing work assignments and scholarship information.
+
+    This form handles information about scholarships, professional support,
+    and specific work assignments within the organization.
+
+    Fields:
+        has_scholarship (BooleanField): Indicates if they receive a scholarship
+        scholarship_observations (TextAreaField): Additional scholarship details
+        scholarship_percentage (CustomFloatField): Scholarship coverage percentage
+        professionals (TextAreaField): Information about supporting professionals
+        work_assignments (FormField): Nested form for specific work assignments
+    """
+
     # Scholarship information
     has_scholarship = BooleanField("¿Está becado?")
     scholarship_observations = TextAreaField(
@@ -246,6 +337,19 @@ class WorkAssignmentForm(FlaskForm):
 
 
 class JockeyAmazonManagementForm(FlaskForm):
+    """
+    Base form for managing all aspects of a jockey or amazon's information.
+
+    This form combines all sub-forms into a comprehensive management interface,
+    including general, family, health, educational, and work-related information.
+
+    Fields:
+        general_information (FormField): Personal and contact information
+        family_information (FormField): Family-related details and benefits
+        health_information (FormField): Health and disability information
+        school_information (FormField): Educational details
+        organization_information (FormField): Work and scholarship information
+    """
     # General information
     general_information = FormField(GeneralInformationForm)
     # Family information
@@ -259,10 +363,26 @@ class JockeyAmazonManagementForm(FlaskForm):
 
 
 class JockeyAmazonCreateForm(JockeyAmazonManagementForm):
+    """
+    Form for creating a new jockey or amazon record.
+
+    Extends the management form to handle the specific requirements of creating
+    a new record in the system.
+    """
     pass
 
 
 class JockeyAmazonEditForm(JockeyAmazonManagementForm):
+    """
+    Form for editing an existing jockey or amazon record.
+
+    Extends the management form to handle the specific requirements of updating
+    an existing record, including validation against current data.
+
+    Additional attributes:
+        current_email: Stores the current email for validation purposes
+        current_dni: Stores the current DNI for validation purposes
+    """
     def __init__(self, *args, **kwargs):
         super(JockeyAmazonEditForm, self).__init__(*args, **kwargs)
         self.current_email = kwargs.pop("current_email", None)
@@ -270,6 +390,19 @@ class JockeyAmazonEditForm(JockeyAmazonManagementForm):
 
 
 class JockeyAmazonSearchForm(FlaskForm):
+    """
+    Form for searching jockey and amazon records.
+
+    Provides various search criteria and ordering options for finding specific records
+    in the system.
+
+    Fields:
+        search_by (SelectField): Field to search by (name, lastname, DNI, professionals)
+        search_text (StringField): Text to search for
+        order_by (SelectField): Field to order results by
+        order (SelectField): Sort order (ascending/descending)
+    """
+
     class Meta:
         csrf = False
 
@@ -302,6 +435,16 @@ class JockeyAmazonSearchForm(FlaskForm):
 
 
 class JockeyAmazonAddDocumentsForm(BaseManageDocumentsForm):
+    """
+    Form for adding documents to a jockey or amazon's record.
+
+    Extends the base documents form to include specific document tagging
+    for jockey/amazon-related files.
+
+    Fields:
+        tag (SelectField): Classification tag for the uploaded document
+    """
+
     tag = SelectField(
         "Tag",
         choices=[(e.name, e.value) for e in FileTagEnum],
@@ -315,6 +458,16 @@ class JockeyAmazonAddDocumentsForm(BaseManageDocumentsForm):
 
 
 class JockeyAmazonDocumentSearchForm(DocumentsSearchForm):
+    """
+    Form for searching documents associated with jockeys and amazons.
+
+    Extends the base document search form to include specific filtering
+    options for jockey/amazon document types.
+
+    Fields:
+        filter_tag (SelectField): Filter for specific document types
+    """
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.filter_tag.choices = [
@@ -323,6 +476,16 @@ class JockeyAmazonDocumentSearchForm(DocumentsSearchForm):
 
 
 class JockeyAmazonSelectForm(FlaskForm):
+    """
+    Form for selecting a specific jockey or amazon from a list.
+
+    Used when associating a jockey or amazon with other entities in the system.
+
+    Fields:
+        selected_jya (HiddenField): ID of the selected jockey/amazon
+        submit_jya (SubmitField): Button to confirm the selection
+    """
+
     selected_item = HiddenField(
         "Empleado seleccionado",
         validators=[DataRequired("Se debe seleccionar un empleado"), IsNumber()],
@@ -334,6 +497,16 @@ class JockeyAmazonSelectForm(FlaskForm):
 
 
 class JockeyAmazonMiniSearchForm(FlaskForm):
+    """
+    Form for quick search functionality of jockeys and amazons.
+
+    Provides a simplified search interface for finding jockeys and amazons
+    by basic criteria.
+
+    Fields:
+        search_text (StringField): Text to search for
+        submit_search (SubmitField): Button to submit the search
+    """
     search_text = StringField(
         validators=[Length(message="Debe ingresar un texto entre 1 y 50 caracteres", min=1, max=50)]
     )

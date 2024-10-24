@@ -26,8 +26,8 @@ def seed_all(app):
     """
     Seeds all the necessary data into the database.
 
-    This function runs the seeding process for accounts, employees, and the equestrian module,
-    committing changes to the database at appropriate points.
+    This function runs the seeding process for accounts, employees, the equestrian module,
+    payments, jockey amazons, and charges, committing changes to the database at appropriate points.
 
     Args:
         app (Flask): The Flask application instance used to get the application context.
@@ -290,7 +290,12 @@ def seed_horse_trainers():
     db.session.add_all(horse_trainers)
 
 def seed_payments():
-     payments = [
+    """
+    Seeds payment data in the database.
+
+    This function creates several payments with various attributes.
+    """
+    payments = [
         Payment(amount=100.0, payment_date=date(2023, 1, 15), payment_type=PaymentTypeEnum.HONORARIOS, description='Payment for services', beneficiary_id=1, is_archived=False),
         Payment(amount=200.0, payment_date=date(2023, 2, 20), payment_type=PaymentTypeEnum.PROOVEDOR, description='Payment for goods', is_archived=False),
         Payment(amount=150.0, payment_date=date(2023, 3, 10), payment_type=PaymentTypeEnum.HONORARIOS, description='Refund', beneficiary_id=3, is_archived=True),
@@ -308,11 +313,16 @@ def seed_payments():
         Payment(amount=1300.0, payment_date=date(2024, 3, 25), payment_type=PaymentTypeEnum.PROOVEDOR, description='Payment for domain', is_archived=True),
     ]
 
-     db.session.add_all(payments)
-     db.session.commit()
-     print("Seeding payments completed")
+    db.session.add_all(payments)
+    db.session.commit()
+    print("Seeding payments completed")
 
 def seed_jockey_amazons():
+    """
+    Seeds jockey and amazon data in the database.
+
+    This function creates several jockeys and amazons with various attributes, including school institutions, work assignments, and family members.
+    """
     print("Seeding jockey_amazons")
 
     jockey1 = JockeyAmazon(
@@ -529,6 +539,21 @@ def seed_jockey_amazons():
 
 
 def seed_charges():
+    """
+    Seed the database with initial charge data.
+
+    This function creates a list of Charge objects with predefined data
+    and inserts them into the database. Each Charge object includes details
+    such as the date of charge, amount, payment method, employee ID, jockey/amazon ID,
+    observations, and timestamps for insertion and update.
+
+    Example:
+        seed_charges()
+
+    Returns:
+        None
+    """
+        
     charges = [
         Charge(
             id=1,

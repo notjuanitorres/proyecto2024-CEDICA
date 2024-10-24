@@ -22,6 +22,17 @@ charges_bp = Blueprint(
 def search_charges(search: ChargeSearchForm,
                    need_archived: bool = False,
                    charges_repository: ACR = Provide[Container.charges_repository]):
+    """
+    Search for charges based on the provided search form and filters.
+
+    Args:
+        search (ChargeSearchForm): The form containing search criteria.
+        need_archived (bool): Whether to include archived charges in the search.
+        charges_repository (ACR): The repository for charge data.
+
+    Returns:
+        A paginated list of charges matching the search criteria.
+    """
     page = request.args.get("page", type=int)
     per_page = request.args.get("per_page", type=int)
     order_by = [("date_of_charge", "desc")]
@@ -54,7 +65,16 @@ def search_charges(search: ChargeSearchForm,
 @inject
 def search_jyas(search: JockeyAmazonMiniSearchForm,
                 jya_repository: AbstractJockeyAmazonRepository = Provide[Container.jockey_amazon_repository]):
+    """
+    Search for jockeys or amazons based on the provided search form.
 
+    Args:
+        search (JockeyAmazonMiniSearchForm): The form containing search criteria.
+        jya_repository (AbstractJockeyAmazonRepository): The repository for jockey and amazon data.
+
+    Returns:
+        A paginated list of jockeys or amazons matching the search criteria.
+    """
     page = request.args.get("page", type=int)
 
     jyas = []
@@ -70,7 +90,12 @@ def search_jyas(search: JockeyAmazonMiniSearchForm,
 @charges_bp.route("/")
 @check_user_permissions(permissions_required=["cobros_index"])
 def get_charges():
+    """
+    Display a list of charges.
 
+    Returns:
+        A rendered template displaying the list of charges and the search form.
+    """
     search = ChargeSearchForm(request.args)
 
     paginated_charges = search_charges(search=search, need_archived=False)
@@ -81,6 +106,12 @@ def get_charges():
 @charges_bp.route("/archivados", methods=["GET"])
 @check_user_permissions(permissions_required=["cobros_index"])
 def get_archived_charges():
+    """
+    Display a list of archived charges.
+
+    Returns:
+        A rendered template displaying the list of archived charges and the search form.
+    """
     search_form = ChargeSearchForm(request.args)
     paginated_charges = search_charges(search=search_form, need_archived=True)
     return render_template(
@@ -97,7 +128,18 @@ def show_charge(charge_id: int,
                 charges_repository: ACR = Provide[Container.charges_repository],
                 employees_repository: AbstractEmployeeRepository = Provide[Container.employee_repository],
                 jya_repository: AbstractJockeyAmazonRepository = Provide[Container.jockey_amazon_repository],):
+    """
+    Display the details of a specific charge.
 
+    Args:
+        charge_id (int): The ID of the charge to display.
+        charges_repository (ACR): The repository for charge data.
+        employees_repository (AbstractEmployeeRepository): The repository for employee data.
+        jya_repository (AbstractJockeyAmazonRepository): The repository for jockey and amazon data.
+
+    Returns:
+        A rendered template displaying the charge's details and associated employee and jockey/amazon information.
+    """
     charge = charges_repository.get_by_id(charge_id)
 
     if not charge:
@@ -119,6 +161,12 @@ def show_charge(charge_id: int,
 @charges_bp.route("/crear", methods=["GET", "POST"])
 @check_user_permissions(permissions_required=["cobros_new"])
 def create_charge():
+    """
+    Display the form to create a new charge and handle form submission.
+
+    Returns:
+        A rendered template displaying the charge creation form, or a redirect to the employee linking page if successful.
+    """
     create_form = ChargeCreateForm()
 
     if request.method == "POST":
@@ -129,6 +177,15 @@ def create_charge():
 
 @inject
 def add_charge(create_form: ChargeCreateForm):
+    """
+    Add a new charge to the system.
+
+    Args:
+        create_form (ChargeCreateForm): The form containing the new charge's information.
+
+    Returns:
+        A rendered template displaying the charge creation form if validation fails, or a redirect to the employee linking page if successful.
+    """
     if not create_form.validate_on_submit():
         return render_template("./charges/create_charge.html", form=create_form)
 
@@ -145,7 +202,17 @@ def edit_charge(charge_id: int,
                 charges_repository: ACR = Provide[Container.charges_repository],
                 employee_services: AbstractEmployeeRepository = Provide[Container.employee_repository],
                 ):
+    """
+    Display the form to edit an existing charge and handle form submission.
 
+    Args:
+        charge_id (int): The ID of the charge to edit.
+        charges_repository (ACR): The repository for charge data.
+        employee_services (AbstractEmployeeRepository): The repository for employee data.
+
+    Returns:
+        A rendered template displaying the charge edit form, or a redirect to the charge list page if the charge does not exist.
+    """
     charge = charges_repository.get_by_id(charge_id)
 
     if not charge:
@@ -165,6 +232,17 @@ def edit_charge(charge_id: int,
 @inject
 def update_charge(charge_id: int, edit_form: ChargeEditForm,
                   charges_repository: ACR = Provide[Container.charges_repository]):
+    """
+    Update an existing charge's information.
+
+    Args:
+        charge_id (int): The ID of the charge to update.
+        edit_form (ChargeEditForm): The form containing the updated charge information.
+        charges_repository (ACR): The repository for charge data.
+
+    Returns:
+        A rendered template displaying the charge edit form if validation fails, or a redirect to the charge detail page if successful.
+    """
     if not edit_form.validate_on_submit():
         return render_template("./charges/edit_charge.html", form=edit_form)
 
@@ -181,6 +259,15 @@ def update_charge(charge_id: int, edit_form: ChargeEditForm,
 @check_user_permissions(permissions_required=["cobros_destroy"])
 @inject
 def delete_charge(charges_repository: ACR = Provide[Container.charges_repository]):
+    """
+    Delete a charge.
+
+    Args:
+        charges_repository (ACR): The repository for charge data.
+
+    Returns:
+        A redirect to the charge list page.
+    """
     charge_id = request.form["item_id"]
     try:
         charge_id = int(charge_id)
@@ -202,6 +289,15 @@ def delete_charge(charges_repository: ACR = Provide[Container.charges_repository
 def archive_charge(
     charges_repository: ACR = Provide[Container.charges_repository],
 ):
+    """
+    Archive a charge.
+
+    Args:
+        charges_repository (ACR): The repository for charge data.
+
+    Returns:
+        A redirect to the charge detail page.
+    """
     charge_id = request.form["item_id"]
     archived = charges_repository.archive_charge(charge_id)
 
@@ -218,6 +314,15 @@ def archive_charge(
 def recover_charge(
     charges: ACR = Provide[Container.charges_repository],
 ):
+    """
+    Recover an archived charge.
+
+    Args:
+        charges (ACR): The repository for charge data.
+
+    Returns:
+        A redirect to the charge detail page.
+    """
     charge_id = request.form["charge_id"]
     recovered = charges.recover_charge(charge_id)
 
@@ -236,6 +341,17 @@ def change_employee(
         charges_repository: ACR = Provide[Container.charges_repository],
         employee_repository: AbstractEmployeeRepository = Provide[Container.employee_repository],
 ):
+    """
+    Change the employee associated with a charge.
+
+    Args:
+        charge_id (int): The ID of the charge.
+        charges_repository (ACR): The repository for charge data.
+        employee_repository (AbstractEmployeeRepository): The repository for employee data.
+
+    Returns:
+        A rendered template displaying the employee change form, or a redirect to the charge list page if the charge does not exist.
+    """
     page = request.args.get("page", type=int, default=1)
 
     search_employee = EmployeeMiniSearchForm(request.args)
@@ -273,7 +389,15 @@ def change_employee(
 def link_employee(
         employee_repository: AbstractEmployeeRepository = Provide[Container.employee_repository],
 ):
+    """
+    Link an employee to a charge.
 
+    Args:
+        employee_repository (AbstractEmployeeRepository): The repository for employee data.
+
+    Returns:
+        A rendered template displaying the employee linking form, or a redirect to the charge list page if the session does not contain charge data.
+    """
     if not session.get("charge"):
         flash(f"Esta pagina solo puede ser accedida al crear un cobro", "danger")
         return redirect(url_for("charges_bp.get_charges"))
@@ -313,7 +437,18 @@ def link_charge_employee(
         select_form,
         paginated_employees,
 ):
+    """
+    Link an employee to a charge.
 
+    Args:
+        charge: The charge data.
+        search_form: The form containing search criteria for employees.
+        select_form: The form for selecting an employee.
+        paginated_employees: The paginated list of employees.
+
+    Returns:
+        A rendered template displaying the employee linking form if validation fails, or a redirect to the jockey/amazon linking page if successful.
+    """
     if not (select_form.submit_employee.data and select_form.validate()):
         return render_template(
             "./charges/create_employee.html",
@@ -336,6 +471,12 @@ def link_charge_employee(
 @inject
 def link_jya(
 ):
+    """
+    Link a jockey or amazon to a charge.
+
+    Returns:
+        A rendered template displaying the jockey/amazon linking form, or a redirect to the charge list page if the session does not contain charge data.
+    """
     if not session.get("charge"):
         flash(f"Esta pagina solo puede ser accedida al crear un cobro", "danger")
         return redirect(url_for("charges_bp.get_charges"))
@@ -367,6 +508,19 @@ def link_charge_jya(
         paginated_jyas,
         charges_repository: ACR = Provide[Container.charges_repository],
 ):
+    """
+    Link a jockey or amazon to a charge.
+
+    Args:
+        charge: The charge data.
+        search_form: The form containing search criteria for jockeys or amazons.
+        select_form: The form for selecting a jockey or amazon.
+        paginated_jyas: The paginated list of jockeys or amazons.
+        charges_repository (ACR): The repository for charge data.
+
+    Returns:
+        A rendered template displaying the jockey/amazon linking form if validation fails, or a redirect to the charge detail page if successful.
+    """
     if not (select_form.submit_jya.data and select_form.validate()):
         return render_template(
             "./charges/create_jya.html",
@@ -396,6 +550,20 @@ def add_charge_employee(
         paginated_employees,
         charges_repository: ACR = Provide[Container.charges_repository],
 ):
+    """
+    Add an employee to a charge.
+
+    Args:
+        charge: The charge object to update.
+        search_form: The form used to search for employees.
+        select_form: The form used to select an employee.
+        paginated_employees: The paginated list of employees.
+        charges_repository (ACR): The repository for charge data.
+
+    Returns:
+        A rendered template displaying the update employee form if validation fails,
+        or a redirect to the charge detail page if successful.
+    """
     if not (select_form.submit_employee.data and select_form.validate()):
         return render_template(
             "./charges/update_employee.html",
@@ -428,6 +596,17 @@ def change_jya(
         charge_id: int,
         charges_repository: ACR = Provide[Container.charges_repository],
 ):
+    """
+    Change the jockey or amazon associated with a charge.
+
+    Args:
+        charge_id (int): The ID of the charge to update.
+        charges_repository (ACR): The repository for charge data.
+
+    Returns:
+        A rendered template displaying the update jockey/amazon form if validation fails,
+        or a redirect to the charge detail page if successful.
+    """
     charge = charges_repository.get_by_id(charge_id)
     if not charge:
         flash(f"El cobro con ID = {charge_id} no existe", "danger")
@@ -458,6 +637,20 @@ def add_charge_jya(
     paginated_jyas,
     charges_repository: ACR = Provide[Container.charges_repository],
 ):
+    """
+    Add a jockey or amazon to a charge.
+
+    Args:
+        charge: The charge object to update.
+        search_form: The form used to search for jockeys or amazons.
+        select_form: The form used to select a jockey or amazon.
+        paginated_jyas: The paginated list of jockeys or amazons.
+        charges_repository (ACR): The repository for charge data.
+
+    Returns:
+        A rendered template displaying the update jockey/amazon form if validation fails,
+        or a redirect to the charge detail page if successful.
+    """
     if not (select_form.submit_jya.data and select_form.validate()):
         return render_template(
             "./charges/update_jya.html",
@@ -488,6 +681,13 @@ def add_charge_jya(
 @inject
 def choose_debtor(
 ):
+    """
+    Choose a debtor for a charge.
+
+    Returns:
+        A rendered template displaying the choose debtor form if validation fails,
+        or a redirect to the charge detail page if successful.
+    """
     search_jya = JockeyAmazonMiniSearchForm(request.args)
     select_jya = JockeyAmazonSelectForm()
 
@@ -513,7 +713,20 @@ def toggle_debtor_status(
         jyas,
         jya_repository: AbstractJockeyAmazonRepository = Provide[Container.jockey_amazon_repository],
 ):
-    if not (select_form.submit_jya.data and select_form.validate()):
+    """
+    Toggle the debtor status of a jockey or amazon.
+
+    Args:
+        search_form (JockeyAmazonMiniSearchForm): The form used to search for jockeys or amazons.
+        select_form (JockeyAmazonSelectForm): The form used to select a jockey or amazon.
+        jyas: The list of jockeys or amazons.
+        jya_repository (AbstractJockeyAmazonRepository): The repository for jockey and amazon data.
+
+    Returns:
+        A rendered template displaying the choose debtor form if validation fails,
+        or a redirect to the charge detail page if successful.
+    """
+    if not (select_form.submit_item.data and select_form.validate()):
         return render_template(
             "./charges/choose_debtor.html",
             jyas=jyas,
@@ -521,7 +734,7 @@ def toggle_debtor_status(
             select_form=select_form,
         )
 
-    jya_id = select_form.selected_jya.data
+    jya_id = select_form.selected_item.data
     updated = jya_repository.toggle_debtor_status(jya_id)
 
     if not updated:

@@ -19,6 +19,15 @@ users_bp = Blueprint(
 @users_bp.before_request
 @inject
 def require_login_and_sys_admin(user_repository=Provide[Container.user_repository]):
+    """
+    Ensure the user is logged in and is a system administrator before processing the request.
+
+    Args:
+        user_repository (AbstractUserRepository): The repository for user data.
+
+    Returns:
+        A redirect to the login page if the user is not a system administrator.
+    """
     if not user_repository.is_sys_admin(session.get("user")):
         return redirect(url_for("auth_bp.login"))
 
@@ -29,6 +38,17 @@ def search_users(
     need_archive: bool,
     users: AbstractUserRepository = Provide[Container.user_repository],
 ):
+    """
+    Search for users based on the provided search form and filters.
+
+    Args:
+        search (UserSearchForm): The form containing search criteria.
+        need_archive (bool): Whether to include archived users in the search.
+        users (AbstractUserRepository): The repository for user data.
+
+    Returns:
+        A paginated list of users matching the search criteria.
+    """
     page = request.args.get("page", type=int, default=1)
     per_page = request.args.get("per_page", type=int, default=10)
     order_by = []
@@ -55,6 +75,12 @@ def search_users(
 
 @users_bp.route("/")
 def get_users():
+    """
+    Display a list of users.
+
+    Returns:
+        A rendered template displaying the list of users and the search form.
+    """
     search_form = UserSearchForm(request.args)
     paginated_users = search_users(search_form, need_archive=False)
     return render_template(
@@ -66,6 +92,12 @@ def get_users():
 
 @users_bp.route("/archivados/")
 def get_deleted_users():
+    """
+    Display a list of archived users.
+
+    Returns:
+        A rendered template displaying the list of archived users and the search form.
+    """
     search_form = UserSearchForm(request.args)
     paginated_users = search_users(search_form, need_archive=True)
     return render_template(
@@ -82,11 +114,22 @@ def show_user(
     user_repository: AbstractUserRepository = Provide[Container.user_repository],
     employees: AbstractEmployeeRepository = Provide[Container.employee_repository],
 ):
+    """
+    Display the details of a specific user.
+
+    Args:
+        user_id (int): The ID of the user to display.
+        user_repository (AbstractUserRepository): The repository for user data.
+        employees (AbstractEmployeeRepository): The repository for employee data.
+
+    Returns:
+        A rendered template displaying the user's details and associated employee information.
+    """
     user = user_repository.get_user(user_id)
     assigned_to = user.get("assigned_to")
     if not user:
         flash(f"El usuario con ID = {user_id} no existe", "danger")
-        return redirect(url_for("user_bp.get_users"))
+        return redirect(url_for("users_bp.get_users"))
     employee: dict | None = None
     if assigned_to:
         employee = employees.get_employee(assigned_to)
@@ -95,6 +138,12 @@ def show_user(
 
 @users_bp.route("/crear", methods=["GET", "POST"])
 def create_user():
+    """
+    Display the form to create a new user and handle form submission.
+
+    Returns:
+        A rendered template displaying the user creation form, or a redirect to the user detail page if successful.
+    """
     create_form = UserCreateForm()
 
     if request.method == "POST":
@@ -108,6 +157,16 @@ def add_user(
     create_form: UserCreateForm,
     user_repository: AbstractUserRepository = Provide[Container.user_repository],
 ):
+    """
+    Add a new user to the system.
+
+    Args:
+        create_form (UserCreateForm): The form containing the new user's information.
+        user_repository (AbstractUserRepository): The repository for user data.
+
+    Returns:
+        A rendered template displaying the user creation form if validation fails, or a redirect to the user detail page if successful.
+    """
     if not create_form.validate_on_submit():
         return render_template("create_user.html", form=create_form)
 
@@ -126,6 +185,16 @@ def edit_user(
     user_id: int,
     user_repository: AbstractUserRepository = Provide[Container.user_repository],
 ):
+    """
+    Display the form to edit an existing user and handle form submission.
+
+    Args:
+        user_id (int): The ID of the user to edit.
+        user_repository (AbstractUserRepository): The repository for user data.
+
+    Returns:
+        A rendered template displaying the user edit form, or a redirect to the user list page if the user does not exist or is a system administrator.
+    """
     user = user_repository.get_user(user_id)
 
     if not user or user.get("is_deleted"):
@@ -150,6 +219,17 @@ def update_user(
     edit_form: UserEditForm,
     user_repository: AbstractUserRepository = Provide[Container.user_repository],
 ):
+    """
+    Update an existing user's information.
+
+    Args:
+        user_id (int): The ID of the user to update.
+        edit_form (UserEditForm): The form containing the updated user information.
+        user_repository (AbstractUserRepository): The repository for user data.
+
+    Returns:
+        A rendered template displaying the user edit form if validation fails, or a redirect to the user detail page if successful.
+    """
     if not edit_form.validate_on_submit():
         return render_template("edit_user.html", form=edit_form)
 
@@ -171,6 +251,15 @@ def update_user(
 def archive_user(
     user_repository: AbstractUserRepository = Provide[Container.user_repository],
 ):
+    """
+    Archive a user.
+
+    Args:
+        user_repository (AbstractUserRepository): The repository for user data.
+
+    Returns:
+        A redirect to the user detail page.
+    """
     user_id = request.form["item_id"]
     archived = user_repository.archive(user_id)
 
@@ -186,6 +275,15 @@ def archive_user(
 def recover_user(
     user_repository: AbstractUserRepository = Provide[Container.user_repository],
 ):
+    """
+    Recover an archived user.
+
+    Args:
+        user_repository (AbstractUserRepository): The repository for user data.
+
+    Returns:
+        A redirect to the user detail page.
+    """
     user_id = request.form.get("user_id")
     recovered = user_repository.recover(user_id)
 
@@ -201,6 +299,15 @@ def recover_user(
 def delete_user(
     user_repository: AbstractUserRepository = Provide[Container.user_repository],
 ):
+    """
+    Delete a user.
+
+    Args:
+        user_repository (AbstractUserRepository): The repository for user data.
+
+    Returns:
+        A redirect to the user list page.
+    """
     user_id = request.form["item_id"]
     try:
         user_id = int(user_id)
@@ -223,6 +330,16 @@ def toggle_activation(
     user_id: int,
     user_repository: AbstractUserRepository = Provide[Container.user_repository],
 ):
+    """
+    Toggle the activation status of a user.
+
+    Args:
+        user_id (int): The ID of the user to toggle activation status.
+        user_repository (AbstractUserRepository): The repository for user data.
+
+    Returns:
+        A redirect to the previous page or the home page.
+    """
     toggled = user_repository.toggle_activation(user_id)
 
     if not toggled:
