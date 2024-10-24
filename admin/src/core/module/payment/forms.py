@@ -25,28 +25,28 @@ class PaymentForm(FlaskForm):
     amount = DecimalField(
         "Monto a pagar",
         validators=[
-            DataRequired(),
+            DataRequired(message="Debe ingresar un monto"),
         ],
         places=2,
     )
     date = DateField(
         "Fecha del pago",
         validators=[
-            DataRequired(),
+            DataRequired(message="Debe ingresar una fecha"),
         ],
         default=datetime.today,
     )
     description = StringField(
         "Descripción",
         validators=[
-            DataRequired(),
-            Length(max=100)
+            DataRequired(message="Debe ingresar una descripción"),
+            Length(max=100, message="La descripción no puede tener más de 100 caracteres"),
         ],
     )
     payment_type = SelectField(
         "Tipo de pago",
         choices=[(e.name, e.value) for e in types],
-        validators=[DataRequired()],
+        validators=[DataRequired(message="Debe seleccionar un tipo de pago")],
         validate_choice=True
     )
     beneficiary = StringField(

@@ -184,7 +184,11 @@ class BaseSearchForm(FlaskForm):
         validate_choice=True,
     )
 
-    search_text = StringField(validators=[Length(max=50)])
+    search_text = StringField(
+        validators=[
+            Length(max=50, message="El texto de búsqueda no puede exceder los 50 caracteres")
+        ]
+    )
 
     order_by = SelectField(
         choices=[],
