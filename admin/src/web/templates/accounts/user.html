@@ -1,4 +1,5 @@
 {% extends "base_show.html" %}
+{% from "macros/image_from_minio.html" import profile_image %}
 
 {% block title %}Usuario {{ user.alias }} - CEDICA{% endblock %}
 
@@ -42,13 +43,11 @@ Usuario: {{ user.alias }}
 {% endblock %}
 
 {% block card_content %}
-{% if user.profile_image_url%}
 <div class="is-flex is-justify-content-center">
         <figure class="image is-128x128 is-flex is-align-items-center">
-            <img src="{{ user.profile_image_url }}" alt="Profile Image" class="is-rounded">
+            {{ profile_image(user.id) }}
         </figure>
 </div>
-{% endif %}
     <ul>
         <li><strong>ID: </strong> {{ user.id }}</li>
         <li><strong>Correo: </strong>{{ user.email }}</li>

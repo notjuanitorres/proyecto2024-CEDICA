@@ -1,0 +1,79 @@
+{% extends "layout.html" %}
+{% from "macros/image_from_minio.html" import profile_image %}
+
+{% block title %} Usuarios - Editar Perfil {% endblock %}
+{% block main_content %}
+    <section class="section">
+        <div class="container">
+            <h1 class="title">Editar Perfil</h1>
+            <form method="POST" enctype="multipart/form-data">
+                {{ form.hidden_tag() }}
+                <div class="field">
+                    <label class="label">{{ form.email.label }}</label>
+                    <div class="control">
+                        {{ form.email(class="input", type="email", placeholder="Ingrese el correo") }}
+                    </div>
+                    {% if form.email.errors %}
+                        <p class="help is-danger">{{ form.email.errors[0] }}</p>
+                    {% endif %}
+                </div>
+
+                <div class="field">
+                    <label class="label">{{ form.alias.label }}</label>
+                    <div class="control">
+                        {{ form.alias(class="input", placeholder="Ingrese el alias") }}
+                    </div>
+                    {% if form.alias.errors %}
+                        <p class="help is-danger">{{ form.alias.errors[0] }}</p>
+                    {% endif %}
+                </div>
+
+                <div class="field">
+                    <label class="label">{{ form.profile_image.label }}</label>
+                    <div class="control">
+                        {{ form.profile_image(class="input", type="file") }}
+                    </div>
+                    {% if form.profile_image.errors %}
+                        <p class="help is-danger">{{ form.profile_image.errors[0] }}</p>
+                    {% endif %}
+                </div>
+
+                <div class="field">
+                    <label class="label">{{ form.current_password.label }}</label>
+                    <div class="control">
+                        {{ form.current_password(class="input", type="password", placeholder="Ingrese la contraseña actual") }}
+                    </div>
+                    {% if form.current_password.errors %}
+                        <p class="help is-danger">{{ form.current_password.errors[0] }}</p>
+                    {% endif %}
+                </div>
+
+                <div class="field">
+                    <label class="label">{{ form.new_password.label }}</label>
+                    <div class="control">
+                        {{ form.new_password(class="input", type="password", placeholder="Ingrese la nueva contraseña") }}
+                    </div>
+                    {% if form.new_password.errors %}
+                        <p class="help is-danger">{{ form.new_password.errors[0] }}</p>
+                    {% endif %}
+                </div>
+
+                <div class="field">
+                    <label class="label">{{ form.confirm_password.label }}</label>
+                    <div class="control">
+                        {{ form.confirm_password(class="input", type="password", placeholder="Confirme la nueva contraseña") }}
+                    </div>
+                    {% if form.confirm_password.errors %}
+                        <p class="help is-danger">{{ form.confirm_password.errors[0] }}</p>
+                    {% endif %}
+                </div>
+
+                <div class="field">
+                    <div class="control">
+                        <button class="button is-primary" type="submit">Guardar cambios</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </section>
+{% endblock %}

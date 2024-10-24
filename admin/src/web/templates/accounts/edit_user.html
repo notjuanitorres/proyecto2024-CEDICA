@@ -1,4 +1,5 @@
 {% extends "layout.html" %}
+{% from "macros/image_from_minio.html" import profile_image %}
 
 {% block title %} Usuarios - Editar usuario {% endblock %}
 
@@ -31,9 +32,7 @@
                             <div class="control">
                            
                             <figure class="image is-128x128 ">
-                                <img id="profile-image" src="{{ user.profile_image_url or '#' }}" alt="Imagen de perfil" class="is-rounded"
-                                style="display: {{ 'block' if user.profile_image_url else 'none' }};"
-                                >
+                                {{ profile_image(user.id) }}
                             </figure>
                             </div>
                         </div>
