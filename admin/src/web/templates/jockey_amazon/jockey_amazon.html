@@ -236,7 +236,7 @@
                             Sin asignar
                         {% endif %}
                     </li>
-                    <li><strong>Asistente de pista: </strong> 
+                    <li><strong>Asistente de pista: </strong>
                         {% if jockey_amazon.work_assignment.track_assistant %}
                             {{ jockey_amazon.work_assignment.track_assistant.name   }}
                             {{ jockey_amazon.work_assignment.track_assistant.lastname }}
@@ -335,6 +335,11 @@
                                 Sin asignar
                             </span>
                         {% endif %}
+                        {% if jockey_amazon.work_assignment.professor_or_therapist.is_deleted  %}
+                            <span class="tag is-danger ml-2">
+                                {{ jockey_amazon.work_assignment.professor_or_therapist.position.value }} archivado
+                            </span>
+                        {% endif %}
                     </h3>
                     {% if jockey_amazon.work_assignment.professor_or_therapist %}
                     <div class="box">
@@ -363,11 +368,16 @@
                         {% endif  %}
                     </div>
                     {% else %}
-                        {% if "jockey_amazon_update" in permissions or is_admin %}
-                        <a href="{{ url_for("jockey_amazon_bp.update.assign_professor_or_therapist", jockey_id=jockey_amazon.id ) }}" class="button is-fullwidth mt-3">
-                            Asignar Profesor o Terapeuta
-                        </a>
+                        {% if not jockey_amazon.is_deleted  %}
+                            {% if "jockey_amazon_update" in permissions or is_admin %}
+                                <a href="{{ url_for("jockey_amazon_bp.update.assign_professor_or_therapist", jockey_id=jockey_amazon.id ) }}" class="button is-fullwidth mt-3">
+                                    Asignar Profesor o Terapeuta
+                                </a>
+                            {% endif %}
+                        {% else %}
+                            <p class="has-text-grey has-text-centered mt-3">No se puede asociar un terapeuta a un jinete archivado</p>
                         {% endif %}
+
                     {% endif %}
                 </div>
                 <div id="conductor" class="cell mt-5 px-2">
@@ -379,6 +389,11 @@
                         {% if not jockey_amazon.work_assignment.conductor  %}
                             <span class="tag is-warning ml-2">
                                 Sin asignar
+                            </span>
+                        {% endif %}
+                        {% if jockey_amazon.work_assignment.conductor.is_deleted  %}
+                            <span class="tag is-danger ml-2">
+                                Conductor archivado
                             </span>
                         {% endif %}
                     </h3>
@@ -411,11 +426,15 @@
                         {% endif %}
                     </div>
                     {% else %}
-                        {% if "jockey_amazon_update" in permissions or is_admin %}
-                        <a href="{{ url_for("jockey_amazon_bp.update.assign_conductor", jockey_id=jockey_amazon.id ) }}" class="button is-fullwidth mt-3">
-                            Asignar Conductor
-                        </a>
-                        {% endif %}  
+                        {% if not jockey_amazon.is_deleted %}
+                            {% if "jockey_amazon_update" in permissions or is_admin %}
+                                <a href="{{ url_for("jockey_amazon_bp.update.assign_conductor", jockey_id=jockey_amazon.id ) }}" class="button is-fullwidth mt-3">
+                                    Asignar Conductor
+                                </a>
+                            {% endif %}
+                        {% else %}
+                            <p class="has-text-grey has-text-centered mt-3">No se puede asociar un conductor a un jinete archivado</p>
+                        {% endif %}
                     {% endif %}
                 </div>
             </div>
@@ -425,12 +444,17 @@
                         <span class="icon mr-2">
                             <i class="fa-solid fa-hat-cowboy-side"></i>
                         </span>
-                        Asistente de pista: 
+                        Asistente de pista
                         {% if not jockey_amazon.work_assignment.track_assistant  %}
                         <span class="tag is-warning ml-2">
                             Sin asignar
                         </span>
-                    {% endif %}
+                        {% endif %}
+                        {% if jockey_amazon.work_assignment.track_assistant.is_deleted %}
+                            <span class="tag is-danger ml-2">
+                                Asistente de pista archivado
+                            </span>
+                        {% endif %}
                     </h3>
                     {% if jockey_amazon.work_assignment.track_assistant %}
                     <div class="box">
@@ -461,9 +485,15 @@
                         {% endif %}
                     </div>
                     {% else %}
-                        <a href="{{ url_for("jockey_amazon_bp.update.assign_track_assistant", jockey_id=jockey_amazon.id ) }}" class="button is-fullwidth mt-3">
-                            Asignar Asistente de Pista
-                        </a>
+                        {% if not jockey_amazon.is_deleted %}
+                            {% if "jockey_amazon_update" in permissions or is_admin %}
+                                <a href="{{ url_for("jockey_amazon_bp.update.assign_track_assistant", jockey_id=jockey_amazon.id ) }}" class="button is-fullwidth mt-3">
+                                    Asignar Asistente de Pista
+                                </a>
+                            {% endif %}
+                        {% else %}
+                            <p class="has-text-grey has-text-centered mt-3">No se puede asociar un asistente de pista a un jinete archivado</p>
+                        {% endif %}
                     {% endif %}
                     
                 </div>
@@ -477,7 +507,12 @@
                         <span class="tag is-warning ml-2">
                             Sin asignar
                         </span>
-                    {% endif %}
+                        {% endif %}
+                        {% if jockey_amazon.work_assignment.horse.is_archived %}
+                            <span class="tag is-danger ml-2">
+                                Caballo archivado
+                            </span>
+                        {% endif %}
                     </h3>
                     {% if jockey_amazon.work_assignment.horse %}
                     <div class="box">
@@ -508,10 +543,14 @@
                         {% endif %}              
                     </div>
                     {% else %}
-                        {% if "jockey_amazon_update" in permissions or is_admin %}
-                        <a href="{{ url_for("jockey_amazon_bp.update.assign_horse", jockey_id=jockey_amazon.id ) }}" class="button is-fullwidth mt-3">
-                            Asignar Caballo
-                        </a>
+                        {% if not jockey_amazon.is_deleted %}
+                            {% if "jockey_amazon_update" in permissions or is_admin %}
+                                <a href="{{ url_for("jockey_amazon_bp.update.assign_horse", jockey_id=jockey_amazon.id ) }}" class="button is-fullwidth mt-3">
+                                    Asignar Caballo
+                                </a>
+                            {% endif %}
+                        {% else %}
+                            <p class="has-text-grey has-text-centered mt-3">No se puede asociar un caballo a un jinete archivado</p>
                         {% endif %}
                     {% endif %}
                 </div>
@@ -595,7 +634,7 @@
                 endpoint=url_for("jockey_amazon_bp.archive_jockey", jockey_amazon_id=jockey_amazon.id),
                 title="Archivar",
                 msg="¿Está seguro de que desea archivar este Jinete/Amazona?",
-                msg_sub="Luego de confirmar, no se podrán revertir los cambios",
+                msg_sub="",
                 delete_text="Archivar"
             )
         }}

@@ -12,6 +12,8 @@ from abc import abstractmethod
 from sqlalchemy import or_
 from flask_sqlalchemy import SQLAlchemy
 from flask_sqlalchemy.pagination import Pagination
+
+from src.core.module.user.models import User
 from src.core.database import db as database
 from src.core.module.common.repositories import (
     apply_filters,
@@ -101,12 +103,11 @@ class AbstractEmployeeRepository:
     @abstractmethod
     def get_employee(self, employee_id: int, documents: bool = True) -> Dict:
         """
-        Retrieve a paginated list of active employees filtered by position and search text.
+        Retrieve a single employee by ID with optional documents inclusion.
 
         Args:
-            job_positions: List of JobPositionEnum to filter by.
-            page: Page number to retrieve, defaults to 1.
-            search: Optional search text to filter by name, lastname, email, or DNI.
+            employee_id: ID of the employee to retrieve.
+            documents: Include associated documents if True.
 
         Returns:
             Pagination: SQLAlchemy pagination object with 7 items per page.
@@ -431,7 +432,8 @@ class EmployeeRepository(AbstractEmployeeRepository):
             return False
         employee.is_deleted = True
         employee.is_active = False
-        employee.user_id = None
+        if employee.user_id:
+            User.query.get(employee.user_id).enabled = False
         self.save()
         return True
 
@@ -442,15 +444,27 @@ class EmployeeRepository(AbstractEmployeeRepository):
         if not employee or not employee.is_deleted:
             return False
         employee.is_deleted = False
+        if employee.user_id:
+            User.query.get(employee.user_id).enabled = True
         self.save()
         return True
 
     def delete(self, employee_id):
-        """Permanently delete an employee record."""
+        """Permanently delete an employee record and its associated files."""
 
         employee = Employee.query.get(employee_id)
         if not employee:
             return False
+
+        files = EmployeeFile.query.filter_by(employee_id=employee_id)
+        minio_path_files = [f.path for f in files if not f.is_link]
+        if minio_path_files:
+            from src.core.container import Container  # can't import outside due to circular import
+            success = Container().storage_services().delete_batch(minio_path_files)
+
+            if not success:
+                return False
+
         self.db.session.delete(employee)
         self.save()
         return True

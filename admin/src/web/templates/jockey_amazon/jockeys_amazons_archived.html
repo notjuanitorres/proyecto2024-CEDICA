@@ -14,7 +14,9 @@
 {% endblock %}
 
 {% block inner_title %}
-  Jinetes y Amazonas
+    <h2 class="title is-size-3 has-text-centered">
+        Jinetes y Amazonas
+    </h2>
 {% endblock %}
 
 {% block tabs %}
@@ -48,7 +50,6 @@
 {% block clear_url %}{{ url_for("jockey_amazon_bp.get_deleted_jockeys") }}{% endblock %}
 
 {% block table_header %}
-  <th></th>
   <th>Nombre</th>
   <th>Apellido</th>
   <th>DNI</th>
@@ -73,7 +74,7 @@
         to_left=true,
         endpoints={
           'show':'jockey_amazon_bp.show_jockey',
-          'edit':'jockey_amazon_bp.update.edit_jockey',
+          'edit':'',
           'delete':'jockey_amazon_bp.delete_jockey'
         },
         permission_to_show="jockey_amazon_show",
@@ -104,7 +105,13 @@
 {% endblock %}
 
 {% block table_footer %}
-
+  <th>Nombre</th>
+  <th>Apellido</th>
+  <th>DNI</th>
+  <th>Fecha de Nacimiento</th>
+  <th>Teléfono</th>
+  <th>Fecha de creación</th>
+  <th>Propuesta de trabajo</th>
 {% endblock %}
 
 {% block bottom_pagination %}

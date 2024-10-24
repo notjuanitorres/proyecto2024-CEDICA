@@ -6,6 +6,7 @@ from src.core.database import db
 from src.core.module.common.repositories import apply_filters
 from src.core.module.employee.data import JobPositionEnum as Jobs
 
+
 class AbstractJockeyAmazonRepository(ABC):
     def __init__(self):
         self.storage_path = "jockeys_amazons/"
@@ -96,7 +97,6 @@ class AbstractJockeyAmazonRepository(ABC):
     def unassign_horse(self, jockey_id: int) -> bool:
         raise NotImplementedError
 
-
     @abstractmethod
     def toggle_debtor_status(self, jockey_id: int) -> bool:
         pass
@@ -169,6 +169,15 @@ class JockeyAmazonRepository(AbstractJockeyAmazonRepository):
         jockey = JockeyAmazon.query.filter_by(id=jockey_id)
         if not jockey:
             return False
+
+        files = JockeyAmazonFile.query.filter_by(jockey_amazon_id=jockey_id)
+        minio_path_files = [f.path for f in files if not f.is_link]
+        if minio_path_files:
+            from src.core.container import Container  # can't import outside due to circular import
+            success = Container().storage_services().delete_batch(minio_path_files)
+
+            if not success:
+                return False
         jockey.delete()
         self.save()
         return True

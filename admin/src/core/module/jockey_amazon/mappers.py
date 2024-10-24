@@ -35,6 +35,7 @@ class JockeyAmazonMapper:
             "id": jockey.id,
             "inserted_at": jockey.inserted_at,
             "updated_at": jockey.updated_at,
+            "is_deleted": jockey.is_deleted,
         }
         if jockey:
             jockey_dict["general_information"] = {
@@ -117,7 +118,6 @@ class JockeyAmazonMapper:
                     FamilyMemberMapper.from_entity(member) for member in jockey.family_members
                 ],
                 "work_assignment": WorkAssignmentMapper.from_entity(jockey.work_assignment),
-                "is_deleted": jockey.is_deleted
             }
             return jockey_dict
 

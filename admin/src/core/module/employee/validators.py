@@ -46,7 +46,7 @@ class EmailExistence(Validator):
     def __init__(self, current_email: str = None, message=None):
         self.current_email = current_email
         if not message:
-            message = "Email is used"
+            message = "Email en uso"
         self.message = message
 
     def __call__(self, form, email):
@@ -78,7 +78,7 @@ class DniExistence(Validator):
     def __init__(self, current_dni: str = None, message=None):
         self.current_dni = current_dni
         if not message:
-            message = "DNI is used"
+            message = "DNI en uso"
         self.message = message
 
     def __call__(self, form, dni):

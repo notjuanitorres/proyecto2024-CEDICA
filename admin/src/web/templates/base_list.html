@@ -119,8 +119,9 @@
         </div>
         <thead class="is-centered">
           <tr class="has-text-centered">
+            <td></td>
             {% block table_header %}{% endblock %}
-          <td></td>
+            <td></td>
           </tr>
         </thead>
         <tbody>
@@ -128,8 +129,9 @@
         </tbody>
         <tfoot class="is-centered">
           <tr class="has-text-centered">
-            {% block table_footer %}{% endblock %}
-          <td></td>
+            <td></td>
+                {% block table_footer %}{% endblock %}
+            <td></td>
           </tr>
         </tfoot>
       </table>

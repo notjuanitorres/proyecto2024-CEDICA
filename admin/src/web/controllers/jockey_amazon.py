@@ -24,6 +24,7 @@ jockey_amazon_bp = Blueprint(
 jockey_amazon_bp.register_blueprint(create_jockey_amazon_bp)
 jockey_amazon_bp.register_blueprint(update_jockey_amazon_bp)
 
+
 @inject
 def search_jockeys(
     search: JockeyAmazonSearchForm,
@@ -65,12 +66,12 @@ def get_jockeys():
         search_form=search,
     )
 
+
 @jockey_amazon_bp.route("/archivados", methods=["GET"])
 @check_user_permissions(permissions_required=["jockey_amazon_index"])
 def get_deleted_jockeys():
 
     search = JockeyAmazonSearchForm(request.args)
-
 
     paginated_jockeys_and_amazons = search_jockeys(
         search=search, need_archive=True
@@ -130,6 +131,7 @@ def recover_jockey(
     else:
         flash("El Jinete/Amazona ha sido recuperado correctamente", "success")
     return redirect(url_for("jockey_amazon_bp.show_jockey", jockey_id=jockey_amazon_id))
+
 
 @jockey_amazon_bp.route("/delete/", methods=["POST"])
 @inject

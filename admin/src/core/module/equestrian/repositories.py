@@ -215,22 +215,6 @@ class AbstractEquestrianRepository:
         """
         raise NotImplementedError
 
-    
-    @abstractmethod
-    def get_active_horses(self, page: int = 1, search: str = "", activity: str = "") -> bool:
-        """
-        Get a paginated list with the active horses.
-
-        Args:
-            page (int): Page requested.
-            search (str): A text for searching hose.
-            activity (str): Filter by activities assigned to the horse.
-
-        Returns:
-            bool: True if the removal was successful, False otherwise.
-        """
-        raise NotImplementedError
-
     @abstractmethod
     def get_active_horses(self, page: int = 1, search: str = "", activity: str = "") -> bool:
         """
@@ -611,5 +595,4 @@ class EquestrianRepository(AbstractEquestrianRepository):
             search_query = {"filters": {"ja_type": activity}}
 
         query = apply_filters(model=Horse, query=query, search_query=search_query)
-        print(query.all())
         return query.paginate(page=page, per_page=per_page, error_out=False)

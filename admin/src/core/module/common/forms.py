@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileSize, FileAllowed
-from wtforms import RadioField, SelectField, FileField, SubmitField
+from wtforms import RadioField, SelectField, FileField, SubmitField, FloatField
 from wtforms.validators import DataRequired, Length, Optional, URL
 from wtforms.fields import (
     IntegerField,
@@ -216,3 +216,25 @@ class DocumentsSearchForm(BaseSearchForm):
 
     filter_tag = SelectField(
         choices=[], validate_choice=True)
+
+
+class CustomFloatField(FloatField):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.message = 'Solo números enteros o decimales'
+
+    def process_formdata(self, valuelist):
+        """
+        Process data received over the wire from a form.
+
+        This will be called during form construction with data supplied
+        through the `formdata` argument.
+
+        :param valuelist: A list of strings to process.
+        """
+        if valuelist:
+            try:
+                self.data = float(valuelist[0])
+            except ValueError:
+                self.data = None
+                raise ValueError(self.message)

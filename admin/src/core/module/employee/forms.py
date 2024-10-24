@@ -66,6 +66,7 @@ def dni_existence(form, field):
         field: The field object representing the DNI input.
     """
     validator = DniExistence(message="DNI en uso")
+    validator = DniExistence(message="DNI en uso")
     validator(form, field)
 
 
@@ -195,7 +196,7 @@ class EmployeeCreateForm(EmployeeManagementForm):
         validators=[
             DataRequired(),
             Length(min=8, max=8),
-            IsNumber("Debe ser un numero de 8 digitos!"),
+            IsNumber("Debe ser un número de 8 digitos!"),
             dni_existence,
         ],
     )

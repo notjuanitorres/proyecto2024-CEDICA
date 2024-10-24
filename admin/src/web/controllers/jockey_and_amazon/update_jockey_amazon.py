@@ -50,7 +50,7 @@ def update_jockey(
     #     flash("No se ha podido actualizar al Jockey/Amazon", "warning")
     #     return render_template("./jockey_amazon/update_jockey_amazon.html")
 
-    flash("El Jockey/Amazon ha sido actualizado exitosamente ")
+    flash("El Jockey/Amazon ha sido actualizado éxitosamente ")
     return redirect(url_for("jockey_amazon_bp.show_jockey", jockey_id=jockey_id))
 
 
@@ -59,6 +59,7 @@ def link_employee(
     jockey_id: int,
     job_positions,
     template: str,
+    flash_message: str,
     page: int = 1,
     employee_repository: AbstractEmployeeRepository = Provide[
         Container.employee_repository
@@ -67,17 +68,25 @@ def link_employee(
         Container.jockey_amazon_repository
     ],
 ):
+    jockey = jockeys.get_by_id(jockey_id)
+    if not jockey:
+        flash("No se ha encontrado al Jockey/Amazona solicitado", "warning")
+        return redirect(url_for("jockey_amazon_bp.get_jockeys"))
+
+    if jockey.is_deleted:
+        flash("No se pueden asignar empleados a un Jockey/Amazona archivado", "warning")
+        return redirect(url_for("jockey_amazon_bp.show_jockey", jockey_id=jockey_id))
+
     page = request.args.get("page", type=int, default=1)
     searched_employee = EmployeeMiniSearchForm(request.args)
     selected_employee = EmployeeSelectForm()
-    jockey = jockeys.get_by_id(jockey_id)
     employees = employee_repository.get_active_employees(job_positions, page=page)
     if request.method == "POST":
         if not (
             selected_employee.submit_employee.data and selected_employee.validate()
         ):
             return render_template(
-                "/update/link_professor.html",
+                "./jockey_amazon/update/link/link_professor.html",
                 jockey_amazon=jockey,
                 employees=employees,
                 search_form=searched_employee,
@@ -87,7 +96,7 @@ def link_employee(
         employee_id = selected_employee.selected_item.data
         jockeys.assign_employee(jockey_id, employee_id, job_positions[0])
         flash(
-            "Se ha asociado correctamente al Jockey/Amazona con un Terapeuta/Profesor",
+            flash_message,
             "success",
         )
         return redirect(url_for("jockey_amazon_bp.show_jockey", jockey_id=jockey.id))
@@ -116,9 +125,16 @@ def edit_jockey(
 ):
     jockey = Mapper.from_entity(jockeys.get_by_id(jockey_id))
     if not jockey:
+        flash("No se ha encontrado al Jockey/Amazona solicitado", "warning")
         return redirect(url_for("jockey_amazon_bp.get_jockeys"))
 
-    general_form = GeneralInformationForm(data=jockey.get("general_information"))
+    if jockey.get("is_deleted"):
+        flash("No se puede editar un Jockey/Amazona archivado", "warning")
+        return redirect(url_for("jockey_amazon_bp.show_jockey", jockey_id=jockey_id))
+
+    general_form = GeneralInformationForm(
+        data=jockey.get("general_information"), current_dni=jockey.get("general_information").get("dni")
+    )
     health_form = HealthInformationForm(data=jockey.get("health_information"))
     education_form = SchoolInformationForm(data=jockey.get("school_information"))
     # family_form = FamilyInformationForm(data=jockey.get("family_information"))
@@ -128,22 +144,22 @@ def edit_jockey(
         if "general_submit" in request.form and general_form.validate():
             update = GeneralInformationForm.general_info_to_flat(general_form)
             if jockeys.update(jockey_id, update):
-                flash("Informacion general actualizada con exito", "success")
+                flash("Información general actualizada con éxito", "success")
 
         elif "health_submit" in request.form and health_form.validate():
             update = HealthInformationForm.health_info_to_flat(health_form)
             if jockeys.update(jockey_id, update):
-                flash("Informacion general actualizada con exito", "success")
+                flash("Información de salud actualizada con éxito", "success")
 
         elif "school_submit" in request.form and education_form.validate():
             update = SchoolInformationForm.school_info_to_flat(education_form)
             if jockeys.update_school_information(jockey_id, update):
-                flash("Informacion escolar actualizada con exito", "success")
+                flash("Información escolar actualizada con éxito", "success")
 
         elif "assignment_submit" in request.form and assignment_form.validate():
             update = WorkAssignmentForm.work_assignment_to_flat(assignment_form)
             if jockeys.update_assignments(jockey_id, update):
-                flash("Informacion general actualizada con exito", "success")
+                flash("Información de asignaciones de trabajo actualizada con éxito", "success")
 
         # elif family_form.submit.data and family_form.validate():
     #            # return update_jockey(forms=update_forms, jockey_id=jockey_id)
@@ -169,7 +185,8 @@ def assign_professor_or_therapist(jockey_id: int):
     job_positions = [Jobs.TERAPEUTA.name, Jobs.PROFESOR_EQUITACION.name]
     template = "./jockey_amazon/update/link/link_professor.html"
     return link_employee(
-        jockey_id=jockey_id, page=page, job_positions=job_positions, template=template
+        jockey_id=jockey_id, page=page, job_positions=job_positions,
+        template=template, flash_message="Se ha asociado correctamente al Jockey/Amazona con un Terapeuta/Profesor"
     )
 
 
@@ -203,7 +220,8 @@ def assign_track_assistant(jockey_id: int):
     template = "./jockey_amazon/update/link/link_assistant.html"
 
     return link_employee(
-        jockey_id=jockey_id, page=page, job_positions=job_positions, template=template
+        jockey_id=jockey_id, page=page, job_positions=job_positions,
+        template=template, flash_message="Se ha asociado correctamente al Jockey/Amazona con un auxiliar de pista"
     )
 
 
@@ -238,7 +256,8 @@ def assign_conductor(jockey_id: int):
     template = "./jockey_amazon/update/link/link_conductor.html"
 
     return link_employee(
-        jockey_id=jockey_id, page=page, job_positions=job_positions, template=template
+        jockey_id=jockey_id, page=page, job_positions=job_positions, template=template,
+        flash_message="Se ha asociado correctamente al Jockey/Amazona con un Conductor"
     )
 
 
@@ -294,7 +313,7 @@ def assign_horse(
         horse_id = selected_horse.selected_item.data
         jockeys.assign_horse(jockey_id, horse_id)
         flash(
-            "Se ha asociado correctamente al Jockey/Amazona con un Terapeuta/Profesor",
+            "Se ha asociado correctamente al Jockey/Amazona con un caballo",
             "success",
         )
         return redirect(url_for("jockey_amazon_bp.show_jockey", jockey_id=jockey.id))
@@ -330,7 +349,7 @@ def unlink_horse(
     jockey = jockeys.get_by_id(jockey_id)
     jockeys.unassign_horse(jockey_id)
     flash(
-        f"Se ha desasociado correctamente al Conductor de {jockey.first_name}",
+        f"Se ha desasociado correctamente al caballo de {jockey.first_name}",
         "warning",
     )
     return redirect(url_for("jockey_amazon_bp.show_jockey", jockey_id=jockey.id))
