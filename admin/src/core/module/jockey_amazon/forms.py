@@ -323,14 +323,14 @@ class JockeyAmazonDocumentSearchForm(DocumentsSearchForm):
 
 
 class JockeyAmazonSelectForm(FlaskForm):
-    selected_jya = HiddenField(
+    selected_item = HiddenField(
         "Empleado seleccionado",
         validators=[DataRequired("Se debe seleccionar un empleado"), IsNumber()],
     )
     submit_jya = SubmitField("Asociar")
 
     def set_selected_jya(self, account_id):
-        self.selected_jya.data = account_id
+        self.selected_item.data = account_id
 
 
 class JockeyAmazonMiniSearchForm(FlaskForm):

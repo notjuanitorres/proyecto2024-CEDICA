@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 from dependency_injector.wiring import inject, Provide
-from src.core.module.employee.forms import EmployeeSearchForm, EmployeeSelectForm
+from src.core.module.employee.forms import EmployeeSearchForm, EmployeeSelectForm, EmployeeMiniSearchForm
 from src.core.module.employee.repositories import AbstractEmployeeRepository as EmployeeRepository
 from src.core.module.payment.forms import PaymentForm, PaymentSearchForm, PaymentEditForm
 from src.core.container import Container
@@ -286,20 +286,22 @@ def select_employee(
     Returns:
         Response: The rendered template for selecting an employee (str).
     """
-    form = EmployeeSearchForm(request.args)
+    page = request.args.get("page", type=int, default=1)
+
+    search_employee = EmployeeMiniSearchForm(request.args)
     select_form = EmployeeSelectForm()
-    search_query = {}
-    if form.validate():
-        if form.search_text.data:
-            search_query["search_text"] = form.search_text.data
 
-    page = request.args.get("page", 1, type=int)
-    per_page = request.args.get("per_page", 10, type=int)
-
-    employees = employee_repository.get_page(page, per_page, search_query=search_query)
+    employees = []
+    if request.method == "GET":
+        if search_employee.validate():
+            employees = employee_repository.get_active_employees(
+                [], page=page, search=search_employee.search_text.data
+            )
+        else:
+            employees = employee_repository.get_active_employees([], page=page)
 
     if request.method == "POST" and select_form.validate_on_submit():
-        selected_employee_id = select_form.selected_employee.data
+        selected_employee_id = select_form.selected_item.data
         payment_data = session["payment"]
         session.pop("payment", None)
         payment_data["beneficiary_id"] = selected_employee_id
@@ -308,4 +310,5 @@ def select_employee(
         flash('Pago creado exitosamente', 'success')
         return redirect(url_for('payment_bp.show_payment', payment_id=pago_entity.id))
 
-    return render_template("payment/select_employee.html", form=form, select_form=select_form, employees=employees)
+    return render_template("payment/select_employee.html",
+                           search_form=search_employee, select_form=select_form, employees=employees)

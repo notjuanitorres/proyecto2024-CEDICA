@@ -1,29 +1,10 @@
-{% extends "layout.html" %}
+{% extends 'update_relationship.html' %}
 
-{% from "macros/pagination.html" import render_pagination %}
-{% from "macros/flash_message.html" import render_flash_messages %}
+{% block title %} Asoociar jinete {% endblock %}
 
-{% block extra_styles %}
-	{{ super() }}
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/components/pagination.css') }}">
-{% endblock %}
+{% block card_title %} Asociando un jinete al cobro {% endblock %}
 
-{% block title %} Cobros - CEDICA {% endblock %}
-
-{% block card_title %}Asociando un jinete {% endblock %}
-
-{% block main_content %}
-{{ render_flash_messages(messages) }}
-<nav class="breadcrumb" aria-label="breadcrumbs">
-  <ul>
-    <li>
-      <a href="{{ url_for('index_bp.home')}}">
-        <span class="icon is-small">
-          <i class="fas fa-home" aria-hidden="true"></i>
-        </span>
-        <span>Inicio</span>
-      </a>
-    </li>
+{% block actual_breadcrumb %}
     <li>
       <a href="{{ url_for('charges_bp.get_charges') }}">
         <span class="icon is-small">
@@ -50,128 +31,62 @@
         <span>Asociar jinete</span>
       </a>
     </li>
-  </ul>
-</nav>
-<section id="change-jya" class="panel">
-  <div class="container p-4">
-    <h1 class="title is-size-4">
-      Asociando un jinete
-    </h1>
-  </div>
-  <form id="search-jya" method="GET" class="panel-block is-gap-2">
-  {{ search_form.hidden_tag() }}
-    {{ search_form.csrf_token }}
-    <div class="field is-flex-grow-1">
-      <label for="filtrar" class="label">Buscar jinete</label>
-      <p class="control has-icons-left">
-        {{ search_form.search_text(class="input", placeholder="Buscar por nombre o email", id='filtrar') }}
-        <span class="icon is-left">
-          <i class="fas fa-search" aria-hidden="true"></i>
-        </span>
-      </p>
-      {% if search_form.search_text.errors %}
-      <p class="help is-danger">{{ search_form.search_text.errors[0] }}</p>
-      {% endif %}
-    </div>
-    <div class="field">
-      <label for="submit-search" class="is-invisible"> {{ search_form.submit_search.label }}</label>
-      <div class="control">
-          {{ search_form.submit_search(class="button is-flex-grow-1 is-link")}}
-      </div>
-    </div>
-  </form>
-  <div class="container p-5">
+{% endblock %}
+
+{% block search_label %}
+	Buscar jinete por Nombre, Apellido o DNI
+{% endblock %}
+
+{% block pagination %}
     {{ render_pagination(jyas, 'charges_bp.link_jya') }}
-  </div>
+{% endblock %}
+
+{% block subtitle_text %}Mostrando jinetes activos{% endblock %}
+
+{% block select_form %}
   <form method="POST" id="select-form" class="">
     {{ select_form.hidden_tag() }}
     {{ select_form.csrf_token }}
       {% if jyas.total %}
-        {% for jya in jyas %}
-          <a class="panel-block field mb-0" data-id="jya-{{ jya.id }}">
-            <div class="media">
-              <div class="media-left">
-                <i class="fas fa-user is-size-3" aria-hidden="true"></i>
-              </div>
-              <div class="media-content">
-                <div class="content">
-                  <p>
-                    <strong>{{ jya.first_name }} {{ jya.last_name }} </strong> <small>{{ jya.inserted_at | format_date }}</small>
-                    <br />
-                    Dni: {{ jya.dni }}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </a>
-        {% endfor %}
+            {% for jya in jyas %}
+                <a class="panel-block field mb-0" data-id="item-{{ jya.id }}">
+                  <div class="media">
+                    <div class="media-left">
+                      <i class="fa-solid fa-circle-user is-size-3" aria-hidden="true"></i>
+                    </div>
+                    <div class="media-content">
+                      <div class="content">
+                        <p>
+                          <strong>{{ jya.first_name }} {{ jya.last_name }} </strong>
+                          <br />
+                          <small>DNI:</small> {{ jya.dni }}
+                          <br>
+                          <small>Miembro desde: </small>
+                          <small>{{ jya.inserted_at | format_date}}</small>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </a>
+          {% else %}
+            <p class="has-text-centered py-2">Oops. Parece que no hay jinetes activos </p>
+          {% endfor %}
         {% else %}
             <div class="media-content is-flex is-justify-content-center is-align-items-center">
               <p class="has-text-centered">
-                No hay jinetes
+                Oops. Parece que no hay jinetes activos
               </p>
             </div>
         {% endif %}
     <div class="panel-block">
       <div class="columns is-mobile is-gapless" style="width: 100%;">
         <div class="column">
-          {{ select_form.submit_jya(class="button is-primary is-fullwidth", id="submit-jya", type="submit") }}
+          {{ select_form.submit_jya(class="button is-primary is-fullwidth", id="submit-employee", type="submit") }}
         </div>
         <div class="column is-1"></div>
       </div>
     </div>
   </form>
-</section>
+
 {% endblock %}
-{% block extra_scripts %}
-    {{ super() }}
-    <script>
-      document.addEventListener('DOMContentLoaded', function() {
-    const pagination = document.getElementById("pagination");
-    const selectForm = document.getElementById("select-form");
-    const jyaLinks = document.querySelectorAll('[data-id^="jya-"]');
-    const selectedJya = document.getElementById('selected_jya');
-    const submitButton = document.getElementById('submit-jya');
-    const isActive = "has-background-warning";
 
-    function selectJya(jyaId, clickedElement) {
-        selectedJya.value = jyaId;
-
-        if (pagination) {
-            pagination.classList.add("is-invisible");
-        }
-        jyaLinks.forEach(link => {
-            link.classList.remove(isActive);
-        });
-        clickedElement.classList.add(isActive);
-        submitButton.disabled = false;
-    }
-
-    function deselectJya() {
-        if (pagination) {
-            pagination.classList.remove("is-invisible");
-        }
-        selectedJya.value = '';
-        jyaLinks.forEach(link => {
-            link.classList.remove(isActive);
-        });
-        submitButton.disabled = true;
-    }
-
-    jyaLinks.forEach(link => {
-        link.addEventListener('click', function(event) {
-            event.preventDefault();
-            const jyaId = this.getAttribute('data-id').split('-')[1];
-
-            if (this.classList.contains(isActive)) {
-                deselectJya();
-            } else {
-                selectJya(jyaId, this);
-            }
-        });
-    });
-
-    submitButton.disabled = true;
-});
-    </script>
-{% endblock %}

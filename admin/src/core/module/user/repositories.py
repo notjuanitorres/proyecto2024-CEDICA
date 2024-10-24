@@ -27,7 +27,7 @@ class AbstractUserRepository:
         pass
 
     @abstractmethod
-    def get_active_users(self, page: int):
+    def get_active_users(self, page: int, search: str = ""):
         pass
 
     @abstractmethod

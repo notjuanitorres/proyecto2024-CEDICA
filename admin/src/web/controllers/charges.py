@@ -54,17 +54,17 @@ def search_charges(search: ChargeSearchForm,
 @inject
 def search_jyas(search: JockeyAmazonMiniSearchForm,
                 jya_repository: AbstractJockeyAmazonRepository = Provide[Container.jockey_amazon_repository]):
+
     page = request.args.get("page", type=int)
-    per_page = request.args.get("per_page", type=int)
-    search_query = {}
 
-    if request.method == "GET" and search.validate():
-        search_fields = ["name", "email"]
-        search_query = {"text": search.search_text.data, "fields": search_fields}
+    jyas = []
+    if request.method == "GET":
+        if search.validate():
+            jyas = jya_repository.get_active_jockeys(page=page, search=search.search_text.data)
+        else:
+            jyas = jya_repository.get_active_jockeys(page=page)
 
-    return jya_repository.get_page(
-        page=page, search_query=search_query, per_page=per_page
-    )
+    return jyas
 
 
 @charges_bp.route("/")
@@ -234,11 +234,9 @@ def recover_charge(
 def change_employee(
         charge_id: int,
         charges_repository: ACR = Provide[Container.charges_repository],
-        employees: AbstractEmployeeRepository = Provide[Container.employee_repository],
+        employee_repository: AbstractEmployeeRepository = Provide[Container.employee_repository],
 ):
     page = request.args.get("page", type=int, default=1)
-    per_page = request.args.get("per_page", type=int, default=10)
-    search_query = {}
 
     search_employee = EmployeeMiniSearchForm(request.args)
     select_employee = EmployeeSelectForm()
@@ -248,13 +246,14 @@ def change_employee(
         flash(f"El cobro con ID = {charge_id} no existe", "danger")
         return redirect(url_for("charges_bp.get_charges"))
 
-    if request.method == "GET" and search_employee.validate():
-        search_fields = ["name", "email"]
-        search_query = {"text": search_employee.search_text.data, "fields": search_fields}
-
-    employees = employees.get_page(
-        page=page, search_query=search_query, per_page=per_page
-    )
+    employees = []
+    if request.method == "GET":
+        if search_employee.validate():
+            employees = employee_repository.get_active_employees(
+                [], page=page, search=search_employee.search_text.data
+            )
+        else:
+            employees = employee_repository.get_active_employees([], page=page)
 
     if request.method == "POST":
         return add_charge_employee(charge, search_employee, select_employee, employees)
@@ -272,7 +271,7 @@ def change_employee(
 @check_user_permissions(permissions_required=["cobros_update"])
 @inject
 def link_employee(
-        employees: AbstractEmployeeRepository = Provide[Container.employee_repository],
+        employee_repository: AbstractEmployeeRepository = Provide[Container.employee_repository],
 ):
 
     if not session.get("charge"):
@@ -281,29 +280,29 @@ def link_employee(
 
     charge = Mapper.from_session(session.get("charge"))
     page = request.args.get("page", type=int, default=1)
-    per_page = request.args.get("per_page", type=int, default=10)
-    search_query = {}
 
-    search_jya = EmployeeMiniSearchForm(request.args)
-    select_jya = EmployeeSelectForm()
+    search_employee = EmployeeMiniSearchForm(request.args)
+    select_employee = EmployeeSelectForm()
 
-    if request.method == "GET" and search_jya.validate():
-        search_fields = ["name", "email"]
-        search_query = {"text": search_jya.search_text.data, "fields": search_fields}
-
-    employees = employees.get_page(
-        page=page, search_query=search_query, per_page=per_page
-    )
+    employees = []
+    if request.method == "GET":
+        print(search_employee.data)
+        if search_employee.validate():
+            employees = employee_repository.get_active_employees(
+                [], page=page, search=search_employee.search_text.data
+            )
+        else:
+            employees = employee_repository.get_active_employees([], page=page)
 
     if request.method == "POST":
-        return link_charge_employee(charge, search_jya, select_jya, employees)
+        return link_charge_employee(charge, search_employee, select_employee, employees)
 
     return render_template(
         "./charges/create_employee.html",
         charge=charge,
         employees=employees,
-        search_form=search_jya,
-        select_form=select_jya,
+        search_form=search_employee,
+        select_form=select_employee,
     )
 
 
@@ -324,7 +323,7 @@ def link_charge_employee(
             select_form=select_form,
         )
 
-    employee_id = select_form.selected_employee.data
+    employee_id = select_form.selected_item.data
 
     session["charge"]["employee_id"] = employee_id
 
@@ -377,7 +376,7 @@ def link_charge_jya(
             select_form=select_form,
         )
 
-    jya_id = select_form.selected_jya.data
+    jya_id = select_form.selected_item.data
 
     session["charge"]["jya_id"] = jya_id
 
@@ -469,7 +468,7 @@ def add_charge_jya(
         )
 
     charge_id = charge.get("id")
-    jya_id = select_form.selected_jya.data
+    jya_id = select_form.selected_item.data
 
     if charges_repository.update_charge(charge_id, {"jya_id": jya_id}):
         flash(
