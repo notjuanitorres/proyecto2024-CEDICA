@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, request, url_for, session, redirect, flash
 from dependency_injector.wiring import inject, Provide
+from core import bcrypt
 from src.core.module.common.services import AbstractStorageServices
 from src.core.module.user.forms import UserProfileForm
 from src.core.module.user.repositories import AbstractUserRepository
@@ -132,7 +133,7 @@ def edit_profile(
                 update_data["profile_image_url"] = profile_image_url["path"]
 
             if form.new_password.data:
-                update_data["password"] = form.new_password.data
+                update_data["password"]= bcrypt.generate_password_hash(form.new_password.data).decode('utf-8')
 
             user_repository.update(user_id=user_id, data=update_data)
 

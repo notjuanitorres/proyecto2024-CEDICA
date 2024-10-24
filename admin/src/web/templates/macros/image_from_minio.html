@@ -1,4 +1,4 @@
-{% macro profile_image(user_id, class="") %}
+{% macro profile_image(user_id, class="", id="") %}
     {% set profile_image_url = url_for('auth_bp.get_profile_photo', user_id=user_id) %}
-    <img src="{{ profile_image_url }}" alt="Profile Image" class="profile-image is-rounded {{ class }}" />
+    <img src="{{ profile_image_url }}" alt="Profile Image" class="profile-image is-rounded {{ class }}" id="{{id}}" />
 {% endmacro %}
