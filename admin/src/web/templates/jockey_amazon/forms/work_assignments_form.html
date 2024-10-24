@@ -16,17 +16,19 @@
     </div>
 
     <div class="field" id="scholarship-details">
-      <label class="label mt-2">Porcentaje de Beca</label>
       <div class="control">
+          <label class="label mt-2">Porcentaje de Beca
         {{ assignments_form.scholarship_percentage(class="input", placeholder="Ingrese el porcentaje de beca") }}
+              </label>
       </div>
       {% if assignments_form.scholarship_percentage.errors %}
       <p class="help is-danger">{{ assignments_form.scholarship_percentage.errors[0] }}</p>
       {% endif %}
 
-      <label class="label mt-2">Observaciones de Beca</label>
       <div class="control">
-        {{ assignments_form.scholarship_observations(class="textarea", placeholder="Ingrese observaciones de la beca") }}
+          <label class="label mt-2">Observaciones de Beca
+            {{ assignments_form.scholarship_observations(class="textarea", placeholder="Ingrese observaciones de la beca") }}
+          </label>
       </div>
       {% if assignments_form.scholarship_observations.errors %}
       <p class="help is-danger">

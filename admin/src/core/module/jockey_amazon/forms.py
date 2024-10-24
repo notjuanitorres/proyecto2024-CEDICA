@@ -18,7 +18,7 @@ from src.core.module.common.forms import (
     PhoneForm,
     EmergencyContactForm,
     DocumentsSearchForm,
-    BaseManageDocumentsForm,
+    BaseManageDocumentsForm, CustomFloatField,
 )
 from src.core.module.common.validators import IsNumber
 from src.core.module.jockey_amazon.data import (
@@ -36,20 +36,39 @@ from .extras.forms import (
 )
 from .validators import DniExistence
 
+
 def dni_existence(form, field):
     validator = DniExistence(message="DNI en uso")
     validator(form, field)
 
 
 class GeneralInformationForm(FlaskForm):
+    def __init__(self, *args, **kwargs):
+        super(GeneralInformationForm, self).__init__(*args, **kwargs)
+        self.current_dni = kwargs.pop("current_dni", None)
+        print(self.current_dni)
+
     id = HiddenField("id")
-    first_name = StringField("Nombre", validators=[DataRequired(), Length(max=100)])
-    last_name = StringField("Apellido", validators=[DataRequired(), Length(max=100)])
-    dni = StringField("DNI", validators=[DataRequired(), Length(min=8, max=8), dni_existence])
-    birth_date = DateField("Fecha de Nacimiento", validators=[DataRequired()])
-    birthplace = StringField(
-        "Lugar de Nacimiento", validators=[DataRequired(), Length(max=100)]
-    )
+    first_name = StringField("Nombre", validators=[
+        DataRequired(message="El nombre es requerido"),
+        Length(max=100, message="El nombre no puede superar los 100 caracteres")
+    ])
+    last_name = StringField("Apellido", validators=[
+        DataRequired(message="El apellido es requerido"),
+        Length(max=100, message="El apellido no puede superar los 100 caracteres")
+    ])
+    dni = StringField("DNI", validators=[
+        DataRequired(message="El DNI es requerido"),
+        Length(min=8, max=8, message="El DNI debe tener exactamente 8 caracteres"),
+        dni_existence
+    ])
+    birth_date = DateField("Fecha de Nacimiento", validators=[
+        DataRequired(message="La fecha de nacimiento es requerida")
+    ])
+    birthplace = StringField("Lugar de Nacimiento", validators=[
+        DataRequired(message="El lugar de nacimiento es requerido"),
+        Length(max=100, message="El lugar de nacimiento no puede superar los 100 caracteres")
+    ])
     address = FormField(AddressForm)
     phone = FormField(PhoneForm)
     emergency_contact = FormField(EmergencyContactForm)
@@ -91,9 +110,10 @@ class FamilyInformationForm(FlaskForm):
         choices=[(choice.name, choice.value) for choice in PensionEnum],
         validators=[Optional()],
     )
-    pension_details = StringField(
-        "Detalles de la Pensión", validators=[Optional(), Length(max=100)]
-    )
+    pension_details = StringField("Detalles de la Pensión", validators=[
+        Optional(),
+        Length(max=100, message="Los detalles de la pensión no pueden superar los 100 caracteres")
+    ])
     family_members = FieldList(FormField(FamilyMemberForm), min_entries=2, max_entries=2)
     submit = SubmitField("Actualizar Informacion Familiar", name="family_submit")
     
@@ -111,7 +131,6 @@ class FamilyInformationForm(FlaskForm):
             return False
 
 
-
 class HealthInformationForm(FlaskForm):
     has_disability = BooleanField("¿Posee Certificado de Discapacidad?")
     disability_diagnosis = SelectField(
@@ -119,20 +138,24 @@ class HealthInformationForm(FlaskForm):
         choices=enum_choices(DisabilityDiagnosisEnum),
         validators=[Optional()],
     )
-    disability_other = StringField(
-        "Otro diagnóstico", validators=[Optional(), Length(max=100)]
-    )
+    disability_other = StringField("Otro diagnóstico", validators=[
+        Optional(),
+        Length(max=100, message="El diagnóstico no puede superar los 100 caracteres")
+    ])
+
     disability_type = SelectField(
         "Tipo de Discapacidad",
         choices=enum_choices(DisabilityTypeEnum),
         validators=[Optional()],
     )
-    social_security = StringField(
-        "Obra Social del Alumno", validators=[Optional(), Length(max=100)]
-    )
-    social_security_number = StringField(
-        "Número de Afiliado", validators=[Optional(), Length(max=50)]
-    )
+    social_security = StringField("Obra Social del Alumno", validators=[
+        Optional(),
+        Length(max=100, message="La obra social no puede superar los 100 caracteres")
+    ])
+    social_security_number = StringField("Número de Afiliado", validators=[
+        Optional(),
+        Length(max=50, message="El número de afiliado no puede superar los 50 caracteres")
+    ])
     has_curatorship = BooleanField("¿Posee curatela?")
     curatorship_observations = TextAreaField(
         "Observaciones sobre la Curatela", validators=[Optional()]
@@ -158,9 +181,10 @@ class HealthInformationForm(FlaskForm):
 
 class SchoolInformationForm(FlaskForm):
     school_institution = FormField(SchoolInstitutionForm)
-    current_grade_year = StringField(
-        "Grado / Año Actual", validators=[Optional(), Length(max=50)]
-    )
+    current_grade_year = StringField("Grado / Año Actual", validators=[
+        Optional(),
+        Length(max=50, message="El grado/año no puede superar los 50 caracteres")
+    ])
     school_observations = TextAreaField(
         "Observaciones sobre la Institución Escolar", validators=[Optional()]
     )
@@ -194,7 +218,7 @@ class WorkAssignmentForm(FlaskForm):
     scholarship_observations = TextAreaField(
         "Observaciones sobre la Beca", validators=[Optional()]
     )
-    scholarship_percentage = FloatField("Porcentaje de Beca", validators=[Optional()])
+    scholarship_percentage = CustomFloatField("Porcentaje de Beca", validators=[Optional()])
     # Organization work
     professionals = TextAreaField(
         "Profesionales que lo atienden", validators=[Optional()]
@@ -233,8 +257,10 @@ class JockeyAmazonManagementForm(FlaskForm):
     # Work assignments information
     organization_information = FormField(WorkAssignmentForm)
 
+
 class JockeyAmazonCreateForm(JockeyAmazonManagementForm):
     pass
+
 
 class JockeyAmazonEditForm(JockeyAmazonManagementForm):
     def __init__(self, *args, **kwargs):
@@ -309,6 +335,6 @@ class JockeyAmazonSelectForm(FlaskForm):
 
 class JockeyAmazonMiniSearchForm(FlaskForm):
     search_text = StringField(
-        validators=[Length(message="Debe ingresar un texto", min=1, max=50)]
+        validators=[Length(message="Debe ingresar un texto entre 1 y 50 caracteres", min=1, max=50)]
     )
     submit_search = SubmitField("Buscar")

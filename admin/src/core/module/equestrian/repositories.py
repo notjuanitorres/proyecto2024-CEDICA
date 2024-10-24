@@ -213,7 +213,6 @@ class AbstractEquestrianRepository:
         """
         raise NotImplementedError
 
-    
     @abstractmethod
     def get_active_horses(self, page: int = 1, search: str = "", activity: str = "") -> bool:
         """
@@ -571,16 +570,14 @@ class EquestrianRepository(AbstractEquestrianRepository):
     def get_active_horses(self, page: int = 1, search: str = "", activity: str = "") -> bool:
         per_page = 7
 
-        query = self.db.session.query(Horse).filter(Horse.is_deleted == False)
+        query = self.db.session.query(Horse).filter(Horse.is_archived == False)
 
+        search_query = {}
         if search:
             search_fields = ["name", "assigned_facility"]
-            query = apply_multiple_search_criteria(
-                Horse, query, search_query={"text": search, "fields": search_fields}
-        )
-        print(query.all())
+            search_query = {"text": search, "fields": search_fields}
         if activity:
-            search_query = { "filters": { "ja_type": activity }}
-            query = apply_filter_criteria(model=Horse, query=query, search_query=search_query)
-        print(query.all())
+            search_query = {"filters": {"ja_type": activity}}
+
+        query = apply_filters(model=Horse, query=query, search_query=search_query, order_by=[])
         return query.paginate(page=page, per_page=per_page, error_out=False)

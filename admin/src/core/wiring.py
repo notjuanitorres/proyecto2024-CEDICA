@@ -1,5 +1,6 @@
 from src.web.helpers import auth as auth_helper
-from src.web.controllers import user, auth, employee, equestrian, index,payment, charges, jockey_amazon
+from src.web.controllers import user, auth, employee, equestrian, index, payment, charges, jockey_amazon
+from src.web.controllers.jockey_and_amazon import create_jockey_amazon, update_jockey_amazon
 from src.core.module.user import validators
 from .container import Container
 
