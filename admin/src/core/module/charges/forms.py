@@ -21,6 +21,7 @@ class ChargeSearchForm(FlaskForm):
     """
 
     class Meta:
+        """Metaclass to disable CSRF protection."""
         csrf = False
 
     search_by = SelectField(

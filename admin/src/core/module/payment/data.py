@@ -1,5 +1,10 @@
 from enum import Enum
+
+
 class PaymentTypeEnum(Enum):
-   HONORARIOS = 'HONORARIOS'
-   PROOVEDOR = 'PROOVEDOR'
-   GASTOS = 'GASTOS'
+    """
+    Enum for the different types of payments.
+    """
+    HONORARIOS = 'HONORARIOS'
+    PROOVEDOR = 'PROOVEDOR'
+    GASTOS = 'GASTOS'

@@ -1,5 +1,4 @@
 from datetime import datetime
-from random import choices
 from src.core.module.payment.data import PaymentTypeEnum as types
 from flask_wtf import FlaskForm
 from wtforms import StringField, SelectField, SubmitField, DateField, DecimalField, HiddenField
@@ -20,7 +19,9 @@ class PaymentForm(FlaskForm):
         submit (SubmitField): The submit button for the form.
     """
     def __init__(self, *args, **kwargs):
+        """Initialize the PaymentForm."""
         super(PaymentForm, self).__init__(*args, **kwargs)
+
     amount = DecimalField(
         "Monto a pagar",
         validators=[
@@ -74,6 +75,7 @@ class PaymentSearchForm(FlaskForm):
         submit_search (SubmitField): The submit button for the search form.
     """
     def __init__(self, *args, **kwargs):
+        """Initialize the PaymentSearchForm with choices for order_by and order fields."""
         super(PaymentSearchForm, self).__init__(*args, **kwargs)
         self.order_by.choices = [('payment_date', 'Fecha de Pago'), ('payment_type', 'Tipo de Pago')]
         self.order.choices = [('asc', 'Ascendente'), ('desc', 'Descendente')]
@@ -102,6 +104,7 @@ class PaymentSearchForm(FlaskForm):
 
     
 class PaymentEditForm(PaymentForm):
-
+    """Class for editing payments."""
     def __init__(self, *args, **kwargs):
+        """Initialize the PaymentEditForm."""
         super(PaymentEditForm, self).__init__(*args, **kwargs)

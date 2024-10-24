@@ -176,6 +176,7 @@ class BaseSearchForm(FlaskForm):
         submit_search (SubmitField): The submit button for the search.
     """
     class Meta:
+        """Metaclass disabling CSRF protection."""
         csrf = False
 
     search_by = SelectField(
@@ -220,6 +221,7 @@ class DocumentsSearchForm(BaseSearchForm):
 
 class CustomFloatField(FloatField):
     def __init__(self, *args, **kwargs):
+        """Initialize the field with a custom error message."""
         super().__init__(*args, **kwargs)
         self.message = 'Solo números enteros o decimales'
 

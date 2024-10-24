@@ -60,6 +60,5 @@ class Charge(db.Model):
     employee_id = db.Column(db.Integer, db.ForeignKey("employees.id"), nullable=False)
     employee = db.relationship("Employee", back_populates="charges", lazy="select")
 
-    # TODO: uncomment when JYA model is created
     jya_id = db.Column(db.Integer, db.ForeignKey("jockeys_amazons.id"), nullable=False)
     jya = db.relationship("JockeyAmazon", back_populates="charges", uselist=False)

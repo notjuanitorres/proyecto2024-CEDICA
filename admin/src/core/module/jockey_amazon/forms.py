@@ -77,6 +77,7 @@ class GeneralInformationForm(FlaskForm):
         emergency_contact (FormField): Nested form for emergency contact information
     """
     def __init__(self, *args, **kwargs):
+        """Initialize the form with the current DNI for validation purposes."""
         super(GeneralInformationForm, self).__init__(*args, **kwargs)
         self.current_dni = kwargs.pop("current_dni", None)
         print(self.current_dni)

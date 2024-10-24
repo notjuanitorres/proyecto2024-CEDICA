@@ -172,6 +172,14 @@ class HorseDocumentSearchForm(DocumentsSearchForm):
 
 
 class HorseAssignSearchForm(FlaskForm):
+    """
+    Form for searching horses to assign to a jockey.
+
+    Attributes:
+        search_text (StringField): The text to search for.
+        filter_activity (SelectField): The filter for activity type.
+        submit_search (SubmitField): The search button.
+    """
     search_text = StringField(
         "Buscar por nombre, email o dni"
     )
@@ -182,7 +190,15 @@ class HorseAssignSearchForm(FlaskForm):
     )
     submit_search = SubmitField("Buscar")
 
+
 class HorseAssignSelectForm(FlaskForm):
+    """
+    Form for selecting a horse from a list
+
+    Attributes:
+        selected_item (HiddenField): The selected horse id.
+        submit_horse (SubmitField): The button to submit the search.
+    """
     selected_item = HiddenField(
         "Caballo seleccionado",
         validators=[DataRequired("Se debe seleccionar un caballo"), IsNumber()],
