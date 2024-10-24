@@ -141,6 +141,20 @@ def delete_jockey(
     ],
 ):
     jockey_id = request.form["item_id"]
+    try:
+        jockey_id = int(jockey_id)
+    except ValueError:
+        flash("El ID del Jockey/Amazon no es válido", "danger")
+        return redirect(url_for("jockey_amazon_bp.get_jockeys"))
+
+    conflicts = jockey_repository.count_id_in_charges(jockey_id)
+    if conflicts:
+        flash(
+            f"El Jockey/Amazon no puede ser eliminado, ya que está asociado a {conflicts} cobros",
+            "danger",
+        )
+        return redirect(url_for("jockey_amazon_bp.show_jockey", jockey_id=jockey_id))
+
     deleted = jockey_repository.delete(jockey_id)
     if not deleted:
         flash(

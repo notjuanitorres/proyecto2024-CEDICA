@@ -421,6 +421,20 @@ def delete_employee(
     """
 
     employee_id = request.form["item_id"]
+    try:
+        employee_id = int(employee_id)
+    except ValueError:
+        flash("El ID del empleado no es valido", "danger")
+        return redirect(url_for("employee_bp.get_employees"))
+
+    conflicts = employee_repository.count_id_in_charges_and_payments(employee_id)
+    if conflicts:
+        flash(
+            f"El empleado no puede ser eliminado ya que está presente en {conflicts} pagos y/o cobros",
+            "danger",
+        )
+        return redirect(url_for("employee_bp.show_employee", employee_id=employee_id))
+
     deleted = employee_repository.delete(employee_id)
     if not deleted:
         flash("El empleado no ha podido ser eliminado, intentelo nuevamente", "danger")

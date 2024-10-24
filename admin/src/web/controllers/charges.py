@@ -182,11 +182,17 @@ def update_charge(charge_id: int, edit_form: ChargeEditForm,
 @inject
 def delete_charge(charges_repository: ACR = Provide[Container.charges_repository]):
     charge_id = request.form["item_id"]
-    deleted = charges_repository.delete_charge(int(charge_id))
+    try:
+        charge_id = int(charge_id)
+    except ValueError:
+        flash("El cobro solicitado no existe", "danger")
+        return redirect(url_for("charges_bp.get_charges"))
+
+    deleted = charges_repository.delete_charge(charge_id)
     if not deleted:
         flash("El cobro no ha podido ser eliminado, inténtelo nuevamente", "danger")
-
-    flash("El cobro ha sido eliminado correctamente", "success")
+    else:
+        flash("El cobro ha sido eliminado correctamente", "success")
     return redirect(url_for("charges_bp.get_charges"))
 
 
@@ -234,31 +240,31 @@ def change_employee(
     per_page = request.args.get("per_page", type=int, default=10)
     search_query = {}
 
-    search_jya = EmployeeMiniSearchForm(request.args)
-    select_jya = EmployeeSelectForm()
+    search_employee = EmployeeMiniSearchForm(request.args)
+    select_employee = EmployeeSelectForm()
 
     charge = charges_repository.get_by_id(charge_id)
     if not charge:
         flash(f"El cobro con ID = {charge_id} no existe", "danger")
         return redirect(url_for("charges_bp.get_charges"))
 
-    if request.method == "GET" and search_jya.validate():
+    if request.method == "GET" and search_employee.validate():
         search_fields = ["name", "email"]
-        search_query = {"text": search_jya.search_text.data, "fields": search_fields}
+        search_query = {"text": search_employee.search_text.data, "fields": search_fields}
 
     employees = employees.get_page(
         page=page, search_query=search_query, per_page=per_page
     )
 
     if request.method == "POST":
-        return add_charge_employee(charge, search_jya, select_jya, employees)
+        return add_charge_employee(charge, search_employee, select_employee, employees)
 
     return render_template(
         "./charges/update_employee.html",
         charge=charge,
         employees=employees,
-        search_form=search_jya,
-        select_form=select_jya,
+        search_form=search_employee,
+        select_form=select_employee,
     )
 
 
@@ -401,7 +407,7 @@ def add_charge_employee(
         )
 
     charge_id = charge.get("id")
-    employee_id = select_form.selected_employee.data
+    employee_id = select_form.selected_item.data
 
     if charges_repository.update_charge(charge_id, {"employee_id": employee_id}):
         flash(

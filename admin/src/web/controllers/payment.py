@@ -168,8 +168,18 @@ def delete_payment(
         Response: Redirect to the list of archived payments.
     """
     payment_id = request.form["item_id"]
-    payment_repository.delete(payment_id)
-    flash('Pago eliminado exitosamente', 'success')
+
+    try:
+        payment_id = int(payment_id)
+    except ValueError:
+        flash('El pago solicitado no existe', 'danger')
+        return redirect(url_for('payment_bp.get_payments'))
+
+    success = payment_repository.delete(payment_id)
+    if not success:
+        flash('El pago solicitado no existe', 'danger')
+    else:
+        flash('Pago eliminado exitosamente', 'success')
     return redirect(url_for('payment_bp.get_archived_payments'))
 
 

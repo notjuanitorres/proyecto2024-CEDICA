@@ -13,13 +13,17 @@ from sqlalchemy import or_
 from flask_sqlalchemy import SQLAlchemy
 from flask_sqlalchemy.pagination import Pagination
 
-from src.core.module.user.models import User
 from src.core.database import db as database
 from src.core.module.common.repositories import (
     apply_filters,
     apply_multiple_search_criteria,
 )
+from src.core.module.charges.models import Charge
+from src.core.module.payment.models import Payment
 from src.core.module.equestrian.models import HorseTrainers
+from src.core.module.user.models import User
+
+
 from src.core.module.employee.mappers import EmployeeMapper as Mapper
 from src.core.module.employee.models import Employee, EmployeeFile
 from src.core.module.employee.data import JobPositionEnum as PositionEnum
@@ -327,6 +331,19 @@ class AbstractEmployeeRepository:
         """
         raise NotImplementedError
 
+    @abstractmethod
+    def count_id_in_charges_and_payments(self, employee_id: int) -> int:
+        """
+        Count the number of times an employee ID is present in charges or payments.
+
+        Args:
+            employee_id: ID of the employee.
+
+        Returns:
+            int: Number of times the employee ID is present in other entities.
+        """
+        raise NotImplementedError
+
 
 class EmployeeRepository(AbstractEmployeeRepository):
     """
@@ -624,4 +641,12 @@ class EmployeeRepository(AbstractEmployeeRepository):
 
         return query.paginate(
             page=page, per_page=per_page, error_out=False, max_per_page=max_per_page
+        )
+
+    def count_id_in_charges_and_payments(self, employee_id: int) -> int:
+        """Count the number of times an employee ID is present in charges or payments."""
+
+        return (
+            Charge.query.filter_by(employee_id=employee_id).count()
+            + Payment.query.filter_by(beneficiary_id=employee_id).count()
         )

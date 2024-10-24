@@ -101,6 +101,18 @@ class AbstractJockeyAmazonRepository(ABC):
     def toggle_debtor_status(self, jockey_id: int) -> bool:
         pass
 
+    @abstractmethod
+    def count_id_in_charges(self, jockey_id: int) -> int:
+        """Count the number of charges that have the jockey_id
+
+        Args:
+            jockey_id (int): The jockey id
+
+        Returns:
+            int: The number of charges that have the jockey_id
+        """
+        pass
+
 
 class JockeyAmazonRepository(AbstractJockeyAmazonRepository):
     def __init__(self):
@@ -347,3 +359,8 @@ class JockeyAmazonRepository(AbstractJockeyAmazonRepository):
         jockey.work_assignment.horse_id = None
         self.save()
         return True
+
+    def count_id_in_charges(self, jockey_id: int) -> int:
+        from src.core.module.charges.models import Charge  # can't import outside due to circular import
+
+        return Charge.query.filter_by(jya_id=jockey_id).count()

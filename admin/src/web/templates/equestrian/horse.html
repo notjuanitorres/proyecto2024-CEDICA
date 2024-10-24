@@ -230,8 +230,9 @@
           endpoint=url_for("equestrian_bp.delete_horse", horse_id=horse.id),
           title="Eliminar",
           msg="¿Está seguro de que desea eliminar al caballo?",
-          msg_sub="Luego de confirmar, no se podrán revertir los cambios.
-       Todos los documentos asociados a este caballo serán eliminados."
+          msg_sub="Luego de confirmar, no se podrán revertir los cambios.",
+          related_entities_text="Todos los archivos asociados a este caballo serán eliminados
+          y todas las propuestas de trabajo con este caballo lo perderán."
         ) }}
     {% else %}
         {{ render_delete_modal(
