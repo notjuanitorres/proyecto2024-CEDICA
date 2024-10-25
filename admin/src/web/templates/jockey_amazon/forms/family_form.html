@@ -145,7 +145,7 @@
                 <div class="field column is-third">
                     <label class="label">{{ member.form.department.label }}</label>
                     <div class="control">
-                        {{ member.form.department(class="input family-input", data_validate="alphanumeric") }}
+                        {{ member.form.department(class="input family-input", data_validate="optional alphanumeric") }}
                         {% if member.form.department.errors %}
                             <p class="help is-danger">{{ member.form.department.errors[0] }}</p>
                         {% endif %}
