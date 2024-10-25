@@ -25,7 +25,7 @@ class User(db.Model):
     email = db.Column(db.String(100), nullable=False)
     alias = db.Column(db.String(100), nullable=False)
     password = db.Column(db.String(255), nullable=False)
-    enabled = db.Column(db.Boolean, default=True)
+    enabled = db.Column(db.Boolean, default=False)
     system_admin = db.Column(db.Boolean, default=False)
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
     inserted_at = db.Column(db.DateTime, default=datetime.now)
