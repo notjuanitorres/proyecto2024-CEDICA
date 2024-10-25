@@ -47,23 +47,26 @@ function setupFamilyForm() {
             }
         });
     }
-    addFamilyMemberButton.addEventListener('click', function () {
-        secondFamilyMember.dataset.visible = true
-        addFamilyMemberButton.style.display = 'none';
-        removeFamilyMemberButton.style.display = 'block'
-        secondFamilyMember.style.display = "block"
-        updateRequiredFields(secondFamilyMember)
-    });
+    if (addFamilyMemberButton) {
+        addFamilyMemberButton.addEventListener('click', function () {
+            secondFamilyMember.dataset.visible = true
+            addFamilyMemberButton.style.display = 'none';
+            removeFamilyMemberButton.style.display = 'block'
+            secondFamilyMember.style.display = "block"
+            updateRequiredFields(secondFamilyMember)
+        });
+    }
 
-
-    removeFamilyMemberButton.addEventListener('click', function (event) {
-        const familyMember = event.target.closest('.family-member');
-        if (familyMember) {
-            updateRequiredFields(familyMember)
-            addFamilyMemberButton.style.display = 'block';
-            secondFamilyMember.dataset.visible = false
-        }
-    });
+    if (removeFamilyMemberButton) {
+        removeFamilyMemberButton.addEventListener('click', function (event) {
+            const familyMember = event.target.closest('.family-member');
+            if (familyMember) {
+                addFamilyMemberButton.style.display = 'block';
+                secondFamilyMember.dataset.visible = false
+                updateRequiredFields(familyMember)
+            }
+        });
+    }
 
     familyMemberContainer.addEventListener('click', function (event) {
         if (event.target.classList.contains('remove-family-member')) {

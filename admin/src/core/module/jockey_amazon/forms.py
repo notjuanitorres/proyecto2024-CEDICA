@@ -176,6 +176,8 @@ class FamilyInformationForm(FlaskForm):
             return True
         if not second_member.validate():
             return False
+        
+        return True
 
 
 class HealthInformationForm(FlaskForm):

@@ -3,7 +3,7 @@
     {{ family_form.hidden_tag() }}
     <div id="family-pension-info">
         <div id="pension">
-            <h2 class="label is-size-5">Información de Asignación Familiar</h2>
+            <h2 class="title is-size-5">Información de Asignación Familiar</h2>
             <div class="field">
                 <div class="control">
                     <label class="checkbox">
@@ -55,11 +55,14 @@
     </div>
     
     <div id="family-members" class="pt-5">
-        <h2 class="title is-size-3">Miembros de la Familia</h2>
+        <h2 class="title is-size-5">Miembros de la Familia</h2>
         <div id="family-member-container" class="container">
             {% for member in family_form.family_members %}
             {{ member.hidden_tag() }}
-            <div data-id="{{ loop.index }}" class="family-member box container mb-4" data-visible="{% if loop.index > 1 %}false{% endif %}">
+            <div 
+                data-id="{{ loop.index }}" 
+                class="family-member box container mb-4" 
+                data-visible="{% if loop.index > 1 and family_members_number < 2 %}false{% else %}true{%endif%}">
                 <h3 class="title is-size-4 py-4">Miembro {{ loop.index }}</h2>
     
                 <h4 class="subtitle is-size-5">Información General</h4>
@@ -212,14 +215,15 @@
                         </div>
                     </div>
                 </div>
-                {% if loop.index > 1 %}
+                {% if loop.index > 1%}
                 <div class="field">
                     <div class="control">
                         <button
                             id="remove-family-member"
                             type="button"
-                            style="display: none;"
-                            class="button is-fullwidth is-outlined is-danger remove-family-member mt-4">
+                            class="button is-fullwidth is-outlined is-danger remove-family-member mt-4"
+                            {% if family_members_number < 2 %}style="display: none;"{% endif %}
+                            >
                             Eliminar
                         </button>
                     </div>
@@ -227,14 +231,16 @@
                 {% endif %}
             </div>
             {% endfor %}
-    
-            <div class="field pt-4">
-                <div class="control">
-                    <button id="add-family-member" type="button" class="button is-primary is-outlined is-fullwidth add-family-member">
-                        Agregar otro miembro
-                    </button>
+            {% if family_members_number < 2 %}                
+                <div class="field pt-4">
+                    <div class="control">
+                        <button id="add-family-member" type="button" class="button is-primary is-outlined is-fullwidth add-family-member">
+                            Agregar otro miembro
+                        </button>
+                    </div>
                 </div>
-            </div>
+            {% endif %}
         </div>
     </div>
 </section>
+
