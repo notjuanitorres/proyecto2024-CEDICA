@@ -365,7 +365,9 @@
                             </div>
                         </article>
                         {% if "jockey_amazon_update" in permissions or is_admin %}
-                            <a href="{{ url_for("jockey_amazon_bp.update.unlink_professor", jockey_id=jockey_amazon.id )}}" class="button is-fullwidth is-small">Quitar</a>
+                            <a href="{{ url_for("jockey_amazon_bp.update.unlink_professor", jockey_id=jockey_amazon.id )}}" class="button is-fullwidth mt-3">
+                                Quitar
+                            </a>
                         {% endif  %}
                     </div>
                     {% else %}
@@ -421,9 +423,9 @@
                             </div>
                         </article>
                         {% if "jockey_amazon_update" in permissions or is_admin %}
-                        <a href="{{ url_for("jockey_amazon_bp.update.unlink_conductor", jockey_id=jockey_amazon.id ) }}" class="button is-fullwidth mt-3">
-                            Quitar
-                        </a>
+                            <a href="{{ url_for("jockey_amazon_bp.update.unlink_conductor", jockey_id=jockey_amazon.id ) }}" class="button is-fullwidth mt-3">
+                                Quitar
+                            </a>
                         {% endif %}
                     </div>
                     {% else %}
@@ -538,9 +540,9 @@
                             </div>
                         </article>
                         {% if "jockey_amazon_update" in permissions or is_admin %}
-                        <a href="{{ url_for("jockey_amazon_bp.update.unlink_horse", jockey_id=jockey_amazon.id ) }}" class="button is-fullwidth mt-3">
-                            Quitar
-                        </a>      
+                            <a href="{{ url_for("jockey_amazon_bp.update.unlink_horse", jockey_id=jockey_amazon.id ) }}" class="button is-fullwidth mt-3">
+                                Quitar
+                            </a>      
                         {% endif %}              
                     </div>
                     {% else %}
