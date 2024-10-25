@@ -59,14 +59,15 @@
         {% for member in family_form.family_members %}
         {{ member.hidden_tag() }}
         <div data-id="{{ loop.index }}" class="family-member box container mb-4" data-visible="{% if loop.index > 1 %}false{% endif %}">
-            <h3 class="title is-size-4 py-4">Agregando miembro {{ loop.index }}</h2>
+            <h3 class="title is-size-4 py-4">Agregando miembro {{ loop.index }}</h3>
 
             <h4 class="subtitle is-size-5">Información General</h4>
             <div class="columns is-mobile is-1 mb-0 pb-0">
                 <div class="field column">
                     <label class="label">{{ member.relationship.label }}</label>
                     <div class="control">
-                        {{ member.form.relationship(class="input family-input") }}
+                        {{ member.form.relationship(class="input family-input",
+                         data_validate="letters") }}
                         {% if member.form.relationship.errors %}
                             <p class="help is-danger">{{ member.form.relationship.errors[0] }}</p>
                         {% endif %}
@@ -75,7 +76,8 @@
                 <div class="field column">
                     <label class="label">{{ member.form.dni.label }}</label>
                     <div class="control">
-                        {{ member.form.dni(class="input family-input") }}
+                        {{ member.form.dni(class="input family-input",
+                         data_validate=" dni") }}
                         {% if member.dni.errors %}
                             <p class="help is-danger">{{ member.form.dni.errors[0] }}</p>
                         {% endif %}
@@ -86,7 +88,8 @@
                 <div class="field column is-half">
                     <label class="label">{{ member.form.first_name.label }}</label>
                     <div class="control">
-                        {{ member.form.first_name(class="input family-input") }}
+                        {{ member.form.first_name(class="input family-input",
+                         data_validate=" letters") }}
                         {% if member.form.first_name.errors %}
                             <p class="help is-danger">{{ member.form.first_name.errors[0] }}</p>
                         {% endif %}
@@ -95,7 +98,8 @@
                 <div class="field column is-half">
                     <label class="label">{{ member.form.last_name.label }}</label>
                     <div class="control">
-                        {{ member.form.last_name(class="input family-input") }}
+                        {{ member.form.last_name(class="input family-input",
+                         data_validate=" letters") }}
                         {% if member.form.last_name.errors %}
                             <p class="help is-danger">{{ member.form.last_name.errors[0] }}</p>
                         {% endif %}
@@ -107,7 +111,8 @@
                 <div class="field column is-half">
                     <label class="label">{{ member.form.street.label }}</label>
                     <div class="control">
-                        {{ member.form.street(class="input family-input") }}
+                        {{ member.form.street(class="input family-input",
+                         data_validate=" alphanumeric") }}
                         {% if member.form.street.errors %}
                             <p class="help is-danger">{{ member.form.street.errors[0] }}</p>
                         {% endif %}
@@ -116,7 +121,8 @@
                 <div class="field column is-half">
                     <label class="label">{{ member.form.number.label }}</label>
                     <div class="control">
-                        {{ member.form.number(class="input family-input") }}
+                        {{ member.form.number(class="input family-input",
+                         data_validate="numbers") }}
                         {% if member.form.number.errors %}
                             <p class="help is-danger">{{ member.form.number.errors[0] }}</p>
                         {% endif %}
@@ -127,7 +133,8 @@
                 <div class="field column is-third">
                     <label class="label">{{ member.form.province.label }}</label>
                     <div class="control">
-                        {{ member.form.province(class="input family-input") }}
+                        {{ member.form.province(class="input family-input",
+                         data_validate="letters") }}
                         {% if member.form.province.errors %}
                             <p class="help is-danger">{{ member.form.province.errors[0] }}</p>
                         {% endif %}
@@ -136,7 +143,8 @@
                 <div class="field column is-third">
                     <label class="label">{{ member.form.locality.label }}</label>
                     <div class="control">
-                        {{ member.form.locality(class="input family-input") }}
+                        {{ member.form.locality(class="input family-input",
+                         data_validate="alphanumeric") }}
                         {% if member.form.locality.errors %}
                             <p class="help is-danger">{{ member.form.locality.errors[0] }}</p>
                         {% endif %}
@@ -145,7 +153,8 @@
                 <div class="field column is-third">
                     <label class="label">{{ member.form.department.label }}</label>
                     <div class="control">
-                        {{ member.form.department(class="input family-input") }}
+                        {{ member.form.department(class="input family-input",
+                         data_validate="alphanumeric") }}
                         {% if member.form.department.errors %}
                             <p class="help is-danger">{{ member.form.department.errors[0] }}</p>
                         {% endif %}
@@ -156,7 +165,8 @@
             <div class="field">
                 <label class="label">{{ member.form.email.label }}</label>
                 <div class="control">
-                    {{ member.form.email(class="input family-input") }}
+                    {{ member.form.email(class="input family-input",
+                     data_validate="email") }}
                     {% if member.form.email.errors %}
                         <p class="help is-danger">{{ member.form.email.errors[0] }}</p>
                     {% endif %}
@@ -166,7 +176,8 @@
                 <div class="field column">
                     <label class="label">{{ member.form.phone_country_code.label(class="is-size-7 has-text-semibold") }}</label>
                     <div class="control">
-                        {{ member.form.phone_country_code(class="input family-input") }}
+                        {{ member.form.phone_country_code(class="input family-input",
+                         data_validate="country_code") }}
                         {% if member.form.phone_country_code.errors %}
                             <p class="help is-danger">{{ member.form.phone_country_code.errors[0] }}</p>
                         {% endif %}
@@ -175,7 +186,8 @@
                 <div class="field column">
                     <label class="label">{{ member.form.phone_area_code.label(class="is-size-7 has-text-semibold") }}</label>
                     <div class="control">
-                        {{ member.form.phone_area_code(class="input family-input") }}
+                        {{ member.form.phone_area_code(class="input family-input",
+                         data_validate="area_code") }}
                         {% if member.form.phone_area_code.errors %}
                             <p class="help is-danger">{{ member.form.phone_area_code.errors[0] }}</p>
                         {% endif %}
@@ -184,7 +196,8 @@
                 <div class="field column is-half">
                     <label class="label">{{ member.form.phone_number.label(class="is-size-7 has-text-semibold") }} </label>
                     <div class="control">
-                        {{ member.form.phone_number(class="input family-input") }}
+                        {{ member.form.phone_number(class="input family-input",
+                         data_validate="phone") }}
                         {% if member.form.phone_number.errors %}
                             <p class="help is-danger">{{ member.form.phone_number.errors[0] }}</p>
                         {% endif %}
@@ -195,7 +208,9 @@
                 <div class="field column is-half">
                     <label class="label">{{ member.form.education_level.label }}</label>
                     <div class="control">
-                        <p class="select is-fullwidth">{{ member.form.education_level(class="is-fullwidth family-input") }}</p>
+                        <p class="select is-fullwidth">
+                            {{ member.form.education_level(class="is-fullwidth family-input") }}
+                        </p>
                         {% if member.form.education_level.errors %}
                             <p class="help is-danger">{{ member.form.education_level.errors[0] }}</p>
                         {% endif %}
@@ -204,7 +219,8 @@
                 <div class="field column is-half">
                     <label class="label">{{ member.form.occupation.label }}</label>
                     <div class="control">
-                        {{ member.form.occupation(class="input family-input") }}
+                        {{ member.form.occupation(class="input family-input",
+                         data_validate="letters") }}
                         {% if member.form.occupation.errors %}
                             <p class="help is-danger">{{ member.form.occupation.errors[0] }}</p>
                         {% endif %}
@@ -214,10 +230,10 @@
             {% if loop.index > 1 %}
             <div class="field">
                 <div class="control">
-                    <button 
-                        id="remove-family-member" 
+                    <button
+                        id="remove-family-member"
                         type="button"
-                        style="display: none;" 
+                        style="display: none;"
                         class="button is-fullwidth is-outlined is-danger remove-family-member mt-4">
                         Eliminar
                     </button>

@@ -21,6 +21,7 @@ create_jockey_amazon_bp = Blueprint(
     url_prefix="/crear",
 )
 
+
 @inject
 def add_jockey(
     create_form,

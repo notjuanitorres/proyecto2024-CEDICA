@@ -200,6 +200,7 @@ def edit_jockey(
                 flash("Información escolar actualizada con éxito", "success")
 
         elif "assignment_submit" in request.form and assignment_form.validate():
+            print(assignment_form.data)
             update = WorkAssignmentForm.work_assignment_to_flat(assignment_form)
             if jockeys.update_assignments(jockey_id, update):
                 flash("Información de asignaciones de trabajo actualizada con éxito", "success")

@@ -27,37 +27,38 @@
 {% endblock %}
 
 {% block extra_scripts %}
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    // Funcionalidad para mostrar/ocultar detalles de la discapacidad
-    const hasDisabilityCheckbox = document.querySelector('input[name="has_disability"]');
-    const disabilityDetails = document.getElementById('disability-details');
-  
-    function toggleDisabilityDetails() {
-        if (hasDisabilityCheckbox.checked) {
-            disabilityDetails.style.display = 'block';
-        } else {
-            disabilityDetails.style.display = 'none';
+    {{ super() }}
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        // Funcionalidad para mostrar/ocultar detalles de la discapacidad
+        const hasDisabilityCheckbox = document.querySelector('input[name="has_disability"]');
+        const disabilityDetails = document.getElementById('disability-details');
+
+        function toggleDisabilityDetails() {
+            if (hasDisabilityCheckbox.checked) {
+                disabilityDetails.style.display = 'block';
+            } else {
+                disabilityDetails.style.display = 'none';
+            }
         }
-    }
-  
-    hasDisabilityCheckbox.addEventListener('change', toggleDisabilityDetails);
-    toggleDisabilityDetails();  // Initial check
-  });  
-  // Funcionalidad para mostrar/ocultar detalles de la curatela
-  const hasCuratorshipCheckbox = document.querySelector('input[name="has_curatorship"]');
-  const curatorshipDetails = document.getElementById('curatorship-details');
 
-  function toggleCuratorshipDetails() {
-      if (hasCuratorshipCheckbox.checked) {
-          curatorshipDetails.style.display = 'block';
-      } else {
-          curatorshipDetails.style.display = 'none';
+        hasDisabilityCheckbox.addEventListener('change', toggleDisabilityDetails);
+        toggleDisabilityDetails();  // Initial check
+      });
+      // Funcionalidad para mostrar/ocultar detalles de la curatela
+      const hasCuratorshipCheckbox = document.querySelector('input[name="has_curatorship"]');
+      const curatorshipDetails = document.getElementById('curatorship-details');
+
+      function toggleCuratorshipDetails() {
+          if (hasCuratorshipCheckbox.checked) {
+              curatorshipDetails.style.display = 'block';
+          } else {
+              curatorshipDetails.style.display = 'none';
+          }
       }
-  }
 
-  hasCuratorshipCheckbox.addEventListener('change', toggleCuratorshipDetails);
-  toggleCuratorshipDetails();  // Initial check
+      hasCuratorshipCheckbox.addEventListener('change', toggleCuratorshipDetails);
+      toggleCuratorshipDetails();  // Initial check
 
-</script>
+    </script>
 {% endblock %}

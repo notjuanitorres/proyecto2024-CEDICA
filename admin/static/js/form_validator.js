@@ -13,10 +13,14 @@ const VALIDATION_PATTERNS = {
         message: 'Solo se permiten letras, números, espacios y guiones'
     },
     email: {
-        pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+        pattern: /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
         message: 'Ingrese un email válido'
     },
     phone: {
+        pattern: /^\d{6,15}$/,
+        message: 'El número debe tener entre 6 y 15 dígitos'
+    },
+    extended_phone: {
         pattern: /^[0-9\-\+\s\(\)]+$/,
         message: 'Ingrese un número de teléfono válido'
     },
@@ -25,8 +29,8 @@ const VALIDATION_PATTERNS = {
         message: 'Ingrese un número decimal válido'
     },
     dni: {
-        pattern: /^\d{8}$/,
-        message: 'El DNI debe tener exactamente 8 dígitos'
+        pattern: /^\d{7,8}$/,
+        message: 'El DNI debe tener 7 u 8 dígitos'
     },
     country_code: {
         pattern: /^\d{1,3}$/,
@@ -39,6 +43,22 @@ const VALIDATION_PATTERNS = {
     phone_number: {
         pattern: /^\d{6,}$/,
         message: 'El número de teléfono debe tener al menos 6 dígitos'
+    },
+    date: {
+        pattern: /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/(19|20)\d{2}$/,
+        message: 'Ingrese una fecha válida en formato DD/MM/YYYY'
+    },
+    title: {
+        pattern: /^.{0,100}$/,
+        message: 'El titulo no puede exceder los 100 caracteres'
+    },
+    url: {
+         pattern: /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/,
+         message: 'Ingrese una URL válida'
+    },
+    no:{
+        pattern: /^.*$/,
+        message: 'Este campo es válido siempre'
     }
 };
 
@@ -110,11 +130,14 @@ class FormValidator {
             }
         }
 
-        // Check date if it's a date input
+        // Check date format and past-date if specified
         if (input.type === 'date' && validations.includes('past-date')) {
-            const date = new Date(value);
+            const [year, month, day] = value.split('-');  // assuming ISO format YYYY-MM-DD from HTML date input
+            const inputDate = new Date(year, month - 1, day);  // create Date object
             const today = new Date();
-            if (date > today) {
+            today.setHours(0, 0, 0, 0);  // set today to start of day
+
+            if (inputDate > today) {
                 isValid = false;
                 errorMessage = 'La fecha no puede ser futura';
             }
@@ -143,10 +166,10 @@ class FormValidator {
     setInputStatus(input, isValid, message = '') {
         // Remove existing status classes
         input.classList.remove('is-success', 'is-danger');
-        
+
         // Add appropriate status class
         input.classList.add(isValid ? 'is-success' : 'is-danger');
-        
+
         // Find or create help text element
         let helpElement = input.parentElement.querySelector('.help');
         if (!helpElement && message) {
@@ -154,7 +177,7 @@ class FormValidator {
             helpElement.className = 'help';
             input.parentElement.appendChild(helpElement);
         }
-        
+
         // Update help text
         if (helpElement) {
             helpElement.textContent = message;
@@ -190,4 +213,3 @@ document.addEventListener('DOMContentLoaded', function() {
     const forms = document.querySelectorAll('form');
     forms.forEach(form => new FormValidator(form));
 });
-
