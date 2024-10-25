@@ -72,6 +72,13 @@ class AbstractUserRepository:
         pass
     @abstractmethod
     def get_profile_image_url(self, user_id: int) -> str | None:
+        """ 
+        Retrieve the profile image URL of a user.
+        Args:
+            user_id (int): The ID of the user.
+        Returns:
+            str | None: The profile image URL if exists, None otherwise.
+        """
         pass
     @abstractmethod
     def get_user(self, user_id: int) -> Dict | None:

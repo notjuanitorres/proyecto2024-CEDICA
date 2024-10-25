@@ -14,6 +14,7 @@ Exposed Components:
     - AccountSearchForm: The form for searching accounts.
     - AccountSelectForm: The form for selecting accounts.
     - UserMapper: The mapper for converting between user entities and data transfer objects (DTOs).
+    - UserProfileForm: The form for updating user profile information.
 """
 
 from .repositories import UserRepository, AbstractUserRepository

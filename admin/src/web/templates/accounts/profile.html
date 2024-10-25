@@ -30,7 +30,7 @@
                     <h2 class="subtitle">Informacion Personal</h2>
                     <p><strong>Email:</strong> {{ user.email }}</p>
                     <p><strong>Alias:</strong> {{ user.alias }}</p>
-                    <p><strong>usuario desde:</strong> {{ user.inserted_at.strftime('%B %d, %Y') }}</p>
+                    <p><strong>Usuario desde:</strong> {{ user.inserted_at.strftime('%B %d, %Y') }}</p>
                 </div>
                 <div class="box">
                     <a href="{{ url_for('auth_bp.edit_profile') }}" class="button is-link">Editar Perfil</a>

@@ -17,6 +17,8 @@ class User(db.Model):
         updated_at (datetime): The timestamp when the user was last updated.
         role (Role): The role assigned to the user.
         is_deleted (bool): Indicates whether the user is deleted.
+        profile_image_id (int): The ID of the user's profile image.
+        profile_image (ProfilePhoto): The user's profile image.
     """
 
     __tablename__ = 'users'

@@ -161,6 +161,19 @@ def edit_profile(
     user_repository: AbstractUserRepository = Provide[Container.user_repository],
     storage_service: AbstractStorageServices = Provide[Container.storage_services],
 ):
+    """
+    Display the profile edit form and handle profile update requests.
+
+    If the request method is POST, update the user's profile.
+    Otherwise, render the profile edit form.
+
+    Args:
+        user_repository (AbstractUserRepository): The user repository.
+        storage_service (AbstractStorageServices): The storage service.
+
+    Returns:
+        A rendered template for the profile edit form or a redirect to the profile view.
+    """
     user_id = session.get("user")
     user = user_repository.get_user(user_id)
     form = UserProfileForm(data=user)
