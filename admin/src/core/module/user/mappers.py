@@ -37,7 +37,7 @@ class UserMapper:
             email=user_data.get("email"),
             alias=user_data.get("alias"),
             password=hashed_password,
-            enabled=user_data.get("enabled", True),
+            enabled=user_data.get("enabled", False),
             system_admin=user_data.get("system_admin", False),
             role_id=user_data.get("role_id", None),
             is_deleted=user_data.get("is_deleted", False)

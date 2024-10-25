@@ -73,7 +73,7 @@
         <div class="card">
             <header class="card-header py-3">
                 <h2 class="card-header-title is-size-5">
-                    <p class="icon mr-2"><i class="fa-regular fa-clipboard is-size-4"></i></p>                    
+                    <p class="icon mr-2"><i class="fa-regular fa-clipboard is-size-4"></i></p>
                     Información General
                 </h2>
                 <button class="card-header-icon" aria-label="more options">
@@ -132,7 +132,7 @@
                 </span>
                 </button>
             </header>
-            <div 
+            <div
                 class="card-content" {% if not open_tab == "family_information" %} style="display: none;" {% endif %}>
                 <div class="content">
                     <form method="POST">
@@ -201,6 +201,8 @@
 <script src="{{ url_for('static', filename='js/jockey_amazon/family-form.js')}}"></script>
 <script src="{{ url_for('static', filename='js/jockey_amazon/health-form.js')}}"></script>
 <script src="{{ url_for('static', filename='js/jockey_amazon/work-assignment-form.js')}}"></script>
+<script src="{{ url_for('static', filename='js/form_validator.js') }}"></script>
+
 
 <script>
     // Toggle functionality for various form sections

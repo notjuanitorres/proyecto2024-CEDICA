@@ -62,16 +62,16 @@
 {% block clear_url %}{{ url_for("charges_bp.get_charges") }}{% endblock %}
 
 {% block aditional_filters %}
-    <div class="field">
-        <label class="label"> {{ search_form.filter_payment_method.label }} </label>
-        <div class="control">
-            <div class="select">
-                {{ search_form.filter_payment_method() }}
+    <div class="columns is-1">
+      <div class="field column">
+          <label class="label"> {{ search_form.filter_payment_method.label }} </label>
+          <div class="control">
+            <div class="select is-fullwidth">
+              {{ search_form.filter_payment_method() }}
             </div>
-        </div>
-    </div>
-
-    <div class="field">
+          </div>
+      </div>
+      <div class="field column">
         <label class="label"> {{ search_form.start_date.label }} </label>
         <div class="control">
                 {{ search_form.start_date(class="input", type="date") }}
@@ -79,16 +79,16 @@
         {% if search_form.start_date.errors %}
             <p class="help is-danger">{{ search_form.start_date.errors[0] }}</p>
         {% endif %}
-    </div>
-
-    <div class="field">
+      </div>
+      <div class="field column">
         <label class="label"> {{ search_form.finish_date.label }} </label>
         <div class="control">
-                {{ search_form.finish_date(class="input", type="date") }}
+          {{ search_form.finish_date(class="input", type="date") }}
         </div>
         {% if search_form.finish_date.errors %}
             <p class="help is-danger">{{ search_form.finish_date.errors[0] }}</p>
         {% endif %}
+      </div>
     </div>
 {% endblock %}
 

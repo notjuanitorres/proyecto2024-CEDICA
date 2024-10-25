@@ -137,7 +137,7 @@ class DayEnum(Enum):
     
     Each member corresponds to a day when activities can be scheduled.
     Includes a mapping dictionary for abbreviated day codes.
-    """   
+    """ 
 
     MONDAY = "Lunes"
     TUESDAY = "Martes"
@@ -146,16 +146,6 @@ class DayEnum(Enum):
     FRIDAY = "Viernes"
     SATURDAY = "Sábado"
     SUNDAY = "Domingo"
-
-
-DAYS_MAPPING = {
-    'M': DayEnum.MONDAY,
-    'O': DayEnum.TUESDAY,
-    'N': DayEnum.WEDNESDAY,
-    'D': DayEnum.THURSDAY,
-    'A': DayEnum.FRIDAY,
-    'Y': DayEnum.SATURDAY
-}
 
 
 class EducationLevelEnum(Enum):

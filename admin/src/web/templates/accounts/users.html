@@ -49,22 +49,23 @@
 {% block clear_url %}{{ url_for("users_bp.get_users") }}{% endblock %}
 
 {% block aditional_filters %}
-    <div class="field">
-        <label class="label">Rol</label>
-        <div class="control">
-            <div class="select">
-                {{ search_form.filter_role_id() }}
-            </div>
-        </div>
-    </div>
-
-    <div class="field">
-        <label class="label">Habilitado</label>
-        <div class="control">
-            <div class="select">
-                {{ search_form.filter_enabled() }}
-            </div>
-        </div>
+    <div class="columns is-mobile is-1">
+      <div class="field column">
+          <label class="label">Rol</label>
+          <div class="control">
+              <div class="select is-fullwidth">
+                  {{ search_form.filter_role_id() }}
+              </div>
+          </div>
+      </div>
+      <div class="field column">
+          <label class="label">Habilitado</label>
+          <div class="control">
+              <div class="select is-fullwidth">
+                  {{ search_form.filter_enabled() }}
+              </div>
+          </div>
+      </div>
     </div>
 {% endblock %}
 

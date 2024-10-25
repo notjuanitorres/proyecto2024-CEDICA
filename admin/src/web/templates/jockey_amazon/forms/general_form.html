@@ -8,7 +8,7 @@
       <div class="field">
         <label class="label">{{ general_form.first_name.label }}</label>
         <div class="control">
-          {{ general_form.first_name(class="input", placeholder="Ingrese el nombre") }}
+          {{ general_form.first_name(class="input", placeholder="Ingrese el nombre", data_validate="required letters") }}
         </div>
         {% if general_form.first_name.errors %}
         <p class="help is-danger">{{ general_form.first_name.errors[0] }}</p>
@@ -17,7 +17,7 @@
       <div class="field">
         <label class="label">{{ general_form.last_name.label }}</label>
         <div class="control">
-          {{ general_form.last_name(class="input", placeholder="Ingrese el apellido") }}
+          {{ general_form.last_name(class="input", placeholder="Ingrese el apellido", data_validate="required letters") }}
         </div>
         {% if general_form.last_name.errors %}
         <p class="help is-danger">{{ general_form.last_name.errors[0] }}</p>
@@ -27,15 +27,16 @@
     <div class="field pt-2">
       <label class="label">{{ general_form.birthplace.label }}</label>
       <div class="control">
-        {{ general_form.birthplace(class="input", placeholder="Ingrese el lugar de
-        nacimiento", required=true) }}
+        {{ general_form.birthplace(class="input", placeholder="Ingrese el lugar de nacimiento",
+         required=true, data_validate="required letters") }}
       </div>
     </div>
     <div class="field-body">
       <div class="field">
         <label class="label">{{ general_form.dni.label }}</label>
         <div class="control">
-          {{ general_form.dni(class="input", placeholder="Ingrese el DNI") }}
+          {{ general_form.dni(class="input", placeholder="Ingrese el DNI",
+           data_validate="required dni") }}
         </div>
         {% if general_form.dni.errors %}
         <p class="help is-danger">{{ general_form.dni.errors[0] }}</p>
@@ -44,7 +45,7 @@
       <div class="field">
         <label class="label">{{ general_form.birth_date.label }}</label>
         <div class="control">
-          {{ general_form.birth_date(class="input", type="date") }}
+          {{ general_form.birth_date(class="input", type="date", data_validate="required past-date") }}
         </div>
         {% if general_form.birth_date.errors %}
         <p class="help is-danger">{{ general_form.birth_date.errors[0] }}</p>
@@ -55,8 +56,7 @@
       <div class="field">
         <label class="label">{{ general_form.phone.country_code.label }}</label>
         <div class="control">
-          {{ general_form.phone.country_code(class="input", placeholder="Código de país")
-          }}
+          {{ general_form.phone.country_code(class="input", placeholder="Código de país", data_validate="required country_code") }}
         </div>
         {% if general_form.phone.country_code.errors %}
         <p class="help is-danger">{{ general_form.phone.country_code.errors[0] }}</p>
@@ -65,7 +65,7 @@
       <div class="field">
         <label class="label">{{ general_form.phone.area_code.label }}</label>
         <div class="control">
-          {{ general_form.phone.area_code(class="input", placeholder="Código de área") }}
+          {{ general_form.phone.area_code(class="input", placeholder="Código de área", data_validate="required area_code") }}
         </div>
         {% if general_form.phone.area_code.errors %}
         <p class="help is-danger">{{ general_form.phone.area_code.errors[0] }}</p>
@@ -74,7 +74,7 @@
       <div class="field">
         <label class="label">{{ general_form.phone.number.label }}</label>
         <div class="control">
-          {{ general_form.phone.number(class="input", placeholder="Número") }}
+          {{ general_form.phone.number(class="input", placeholder="Número", data_validate="required phone") }}
         </div>
         {% if general_form.phone.number.errors %}
         <p class="help is-danger">{{ general_form.phone.number.errors[0] }}</p>
@@ -91,8 +91,7 @@
         <div class="field">
           <label class="label">{{ general_form.address.province.label }}</label>
           <div class="control">
-            {{ general_form.address.province(class="input", placeholder="Ingrese la
-            provincia") }}
+            {{ general_form.address.province(class="input", placeholder="Ingrese la provincia", data_validate="required letters") }}
           </div>
           {% if general_form.address.province.errors %}
           <p class="help is-danger">{{ general_form.address.province.errors[0] }}</p>
@@ -101,8 +100,7 @@
         <div class="field">
           <label class="label">{{ general_form.address.locality.label }}</label>
           <div class="control">
-            {{ general_form.address.locality(class="input", placeholder="Ingrese la
-            localidad") }}
+            {{ general_form.address.locality(class="input", placeholder="Ingrese la localidad", data_validate="required letters") }}
           </div>
           {% if general_form.address.locality.errors %}
           <p class="help is-danger">{{ general_form.address.locality.errors[0] }}</p>
@@ -114,8 +112,7 @@
       <div class="field">
         <label class="label">{{ general_form.address.department.label }}</label>
         <div class="control">
-          {{ general_form.address.department(class="input", placeholder="Ingrese el
-          departamento") }}
+          {{ general_form.address.department(class="input", placeholder="Ingrese el departamento", data_validate="required alphanumeric") }}
         </div>
         {% if general_form.address.department.errors %}
         <p class="help is-danger">{{ general_form.address.department.errors[0] }}</p>
@@ -124,9 +121,8 @@
       <div class="field">
         <label class="label">{{ general_form.address.street.label }}</label>
         <div class="control">
-          {{ general_form.address.street(class="input", placeholder="Ingrese la calle")
-          }}
-        </div>
+          {{ general_form.address.street(class="input", placeholder="Ingrese la calle", data_validate="required alphanumeric") }}
+          </div>
         {% if general_form.address.street.errors %}
         <p class="help is-danger">{{ general_form.address.street.errors[0] }}</p>
         {% endif %}
@@ -134,8 +130,7 @@
       <div class="field">
         <label class="label">{{ general_form.address.number.label }}</label>
         <div class="control">
-          {{ general_form.address.number(class="input", placeholder="Ingrese el número")
-          }}
+          {{ general_form.address.number(class="input", placeholder="Ingrese el número", data_validate="required numbers") }}
         </div>
         {% if general_form.address.number.errors %}
         <p class="help is-danger">{{ general_form.address.number.errors[0] }}</p>
@@ -147,25 +142,18 @@
   <div id="emergency-contact">
     <h2 class="label is-size-4">Contacto de Emergencia</h2>
     <div class="field">
-      <label class="label"
-        >{{ general_form.emergency_contact.emergency_contact_name.label }}</label
-      >
+      <label class="label">{{ general_form.emergency_contact.emergency_contact_name.label }}</label>
       <div class="control">
         {{ general_form.emergency_contact.emergency_contact_name(class="input",
-        placeholder="Ingrese el nombre del contacto de emergencia", required=true)
-        }}
+         placeholder="Ingrese el nombre del contacto de emergencia", required=true, data_validate="required letters") }}
       </div>
     </div>
     <div class="field">
-      <label class="label"
-        >{{ general_form.emergency_contact.emergency_contact_phone.label }}</label
-      >
+      <label class="label">{{ general_form.emergency_contact.emergency_contact_phone.label }}</label>
       <div class="control">
         {{ general_form.emergency_contact.emergency_contact_phone(class="input",
-        placeholder="Ingrese el teléfono del contacto de emergencia",
-        required=true) }}
+         placeholder="Ingrese el teléfono del contacto de emergencia", required=true, data_validate="required extended_phone") }}
       </div>
     </div>
   </div>
 </div>
-

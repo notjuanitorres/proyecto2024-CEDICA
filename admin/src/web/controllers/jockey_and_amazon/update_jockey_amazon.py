@@ -183,6 +183,7 @@ def edit_jockey(
     education_form = SchoolInformationForm(data=jockey.get("school_information"))
     family_form = FamilyInformationForm(data=jockey.get("family_information"))
     assignment_form = WorkAssignmentForm(data=jockey.get("organization_work"))
+
     if request.method == "POST":
         if "general_submit" in request.form and general_form.validate():
             update = GeneralInformationForm.general_info_to_flat(general_form)
@@ -203,6 +204,7 @@ def edit_jockey(
                 flash("Información escolar actualizada con éxito", "success")
 
         elif "assignment_submit" in request.form and assignment_form.validate():
+            print(assignment_form.data)
             update = WorkAssignmentForm.work_assignment_to_flat(assignment_form)
             current_tab = "work_assignment_information"
             if jockeys.update_assignments(jockey_id, update):
