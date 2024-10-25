@@ -328,7 +328,7 @@ def add_document(
 
 
 @jockey_amazon_bp.route("/editar/<int:jockey_id>/documentos/", methods=["GET"])
-@check_user_permissions(permissions_required=["jya_update"])
+@check_user_permissions(permissions_required=["jya_show"])
 @inject
 def edit_documents(
     jockey_id: int,

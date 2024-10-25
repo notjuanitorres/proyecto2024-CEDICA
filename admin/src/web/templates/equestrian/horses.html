@@ -104,10 +104,10 @@
     <td><span class="is-hidden-tablet has-text-weight-bold">ID: </span>{{ horse.id }}</td>
     <td><span class="is-hidden-tablet has-text-weight-bold">Nombre: </span>{{ horse.name }}</td>
     <td><span class="is-hidden-tablet has-text-weight-bold">Raza: </span>{{ horse.breed }}</td>
-    <td><span class="is-hidden-tablet has-text-weight-bold">Fecha de Nacimiento: </span>{{ horse.birth_date | format_date }}</td>
+    <td><span class="is-hidden-tablet has-text-weight-bold">Fecha de Nacimiento: </span>{{ horse.birth_date | format_date('%d/%m/%Y') }}</td>
     <td><span class="is-hidden-tablet has-text-weight-bold">Pelaje: </span>{{ horse.coat }}</td>
     <td><span class="is-hidden-tablet has-text-weight-bold">Es Donación: </span>{{ horse.is_donation | natural_boolean }}</td>
-    <td><span class="is-hidden-tablet has-text-weight-bold">Fecha de Admisión: </span>{{ horse.admission_date | format_date }}</td>
+    <td><span class="is-hidden-tablet has-text-weight-bold">Fecha de Admisión: </span>{{ horse.admission_date | format_date('%d/%m/%Y') }}</td>
     <td><span class="is-hidden-tablet has-text-weight-bold">Sede Asignada: </span>{{ horse.assigned_facility }}</td>
     <td><span class="is-hidden-tablet has-text-weight-bold">Tipo de Actividad: </span>{{ horse.ja_type.value }}</td>
     <td><span class="is-hidden-tablet has-text-weight-bold">Sexo: </span>{{ horse.sex }}</td>

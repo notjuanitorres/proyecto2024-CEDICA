@@ -130,7 +130,7 @@
       }}
     </td>
     <td><span class="is-hidden-tablet has-text-weight-bold">ID: </span>{{ charge.id }}</td>
-    <td><span class="is-hidden-tablet has-text-weight-bold">Fecha de carga: </span>{{ charge.date_of_charge | format_date }}</td>
+    <td><span class="is-hidden-tablet has-text-weight-bold">Fecha de carga: </span>{{ charge.date_of_charge | format_date('%d/%m/%Y') }}</td>
     <td><span class="is-hidden-tablet has-text-weight-bold">Monto: </span>{{ charge.amount }}</td>
     <td><span class="is-hidden-tablet has-text-weight-bold">Método de Pago: </span>{{ charge.payment_method.value }}</td>
     <td><span class="is-hidden-tablet has-text-weight-bold">Empleado: </span>{{ charge.employee.name + " " + charge.employee.lastname }}</td>

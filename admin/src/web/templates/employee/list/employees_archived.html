@@ -1,6 +1,6 @@
 {% extends "base_list.html" %}
 
-{% block title %}Usuarios - CEDICA{% endblock %}
+{% block title %}Equipo - CEDICA{% endblock %}
 
 {% block breadcrumb_items %}
   <li>
@@ -109,7 +109,7 @@
       </span>
       {{ employee.start_date | format_date('%d/%m/%Y') }}
     </td>
-    <td><span class="is-hidden-tablet has-text-weight-bold">Eliminado: </span>{{ employee.updated_at }}
+    <td><span class="is-hidden-tablet has-text-weight-bold">Eliminado: </span>{{ employee.updated_at | format_date('%d/%m/%Y') }}
     <td class="is-hidden-tablet is-flex">
         <a href="{{ url_for('employee_bp.show_employee', employee_id=employee.id) }}"
            class="button  is-flex-grow-1 ">
