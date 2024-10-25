@@ -140,7 +140,7 @@
                 <div class="field">
                   <label class="label">{{ form.address.department.label }}</label>
                   <div class="control">
-                    {{ form.address.department(class="input", placeholder="Ingrese el departamento", data_validate="required alphanumeric") }}
+                    {{ form.address.department(class="input", placeholder="Ingrese el departamento", data_validate="optional alphanumeric") }}
                   </div>
                   {% if form.address.department.errors %}
                     <p class="help is-danger">{{ form.address.department.errors[0] }}</p>
@@ -252,7 +252,7 @@
               <div class="field">
                 <label class="label">{{ form.emergency_contact.emergency_contact_phone.label }}</label>
                 <div class="control">
-                    {{ form.emergency_contact.emergency_contact_phone(class="input", placeholder="Ingrese el nombre del contacto de emergencia", data_validate="required phone")}}
+                    {{ form.emergency_contact.emergency_contact_phone(class="input", placeholder="Ingrese el nombre del contacto de emergencia", data_validate="required extended_phone")}}
                 </div>
                 {% if form.address.number.errors %}
                 <p class="help is-danger">{{ form.emergency_contact.emergency_contact_phone.errors[0] }}</p>
