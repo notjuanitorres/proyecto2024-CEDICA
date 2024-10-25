@@ -1,8 +1,11 @@
 {% extends "layout.html" %}
 {% from "macros/image_from_minio.html" import profile_image %}
+{% from "macros/flash_message.html" import render_flash_messages %}
 
 {% block title %} User Profile {% endblock %}
 {% block main_content %}
+
+{{ render_flash_messages(messages) }}
 <section class="section">
     <div class="container">
         <h1 class="title is-size-3 has-text-centered">Perfil de usuario</h1>

@@ -255,7 +255,7 @@ def update_user(
             "profile_image_url": profile_image_url
         },
     )
-
+    flash("Perfil actualizado correctamente", "success")
     return redirect(url_for("users_bp.show_user", user_id=user_id))
 
 

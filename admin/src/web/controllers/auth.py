@@ -197,7 +197,6 @@ def edit_profile(
 
             if form.new_password.data:
                 update_data["password"]= bcrypt.generate_password_hash(form.new_password.data).decode('utf-8')
-
             user_repository.update(user_id=user_id, data=update_data)
             
             flash("Perfil actualizado correctamente", "success")
