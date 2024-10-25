@@ -21,6 +21,7 @@ class ChargeSearchForm(FlaskForm):
     """
 
     class Meta:
+        """Metaclass to disable CSRF protection."""
         csrf = False
 
     search_by = SelectField(
@@ -30,7 +31,11 @@ class ChargeSearchForm(FlaskForm):
         ],
         validate_choice=True,
     )
-    search_text = StringField(validators=[Length(max=50)])
+    search_text = StringField(
+        validators=[
+            Length(max=50, message="El texto de búsqueda no puede superar los 50 caracteres.")
+        ]
+    )
 
     filter_payment_method = SelectField(
         "Método de pago",
@@ -97,15 +102,33 @@ class ChargeManagementForm(FlaskForm):
         observations (StringField): Additional observations about the charge.
     """
 
-    amount = DecimalField("Monto abonado", places=2, validators=[DataRequired()])
-    date_of_charge = DateField("Fecha de pago", format='%Y-%m-%d', validators=[DataRequired()])
+    amount = DecimalField(
+        "Monto abonado",
+        places=2,
+        validators=[
+            DataRequired(message="El monto es obligatorio.")
+        ]
+    )
+    date_of_charge = DateField(
+        "Fecha de pago",
+        format='%Y-%m-%d',
+        validators=[
+            DataRequired(message="La fecha de pago es obligatoria.")
+        ]
+    )
     payment_method = SelectField(
         "Modo de pago",
         choices=[(p.name, p.value) for p in PaymentMethodEnum],
         validate_choice=True,
-        validators=[DataRequired()],
+        validators=[DataRequired(message="El modo de pago es obligatorio.")],
     )
-    observations = StringField("Observaciones", validators=[Length(max=255), DataRequired()])
+    observations = StringField(
+        "Observaciones",
+        validators=[
+            Length(max=255, message="Las observaciones no pueden superar los 255 caracteres"),
+            DataRequired(message="Las observaciones son obligatorias.")
+        ]
+    )
 
 
 class ChargeCreateForm(ChargeManagementForm):

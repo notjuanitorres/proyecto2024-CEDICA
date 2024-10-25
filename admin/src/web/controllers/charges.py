@@ -165,7 +165,8 @@ def create_charge():
     Display the form to create a new charge and handle form submission.
 
     Returns:
-        A rendered template displaying the charge creation form, or a redirect to the employee linking page if successful.
+        A rendered template displaying the charge creation form,
+         or a redirect to the employee linking page if successful.
     """
     create_form = ChargeCreateForm()
 
@@ -184,7 +185,8 @@ def add_charge(create_form: ChargeCreateForm):
         create_form (ChargeCreateForm): The form containing the new charge's information.
 
     Returns:
-        A rendered template displaying the charge creation form if validation fails, or a redirect to the employee linking page if successful.
+        A rendered template displaying the charge creation form if validation fails,
+         or a redirect to the employee linking page if successful.
     """
     if not create_form.validate_on_submit():
         return render_template("./charges/create_charge.html", form=create_form)
@@ -211,7 +213,8 @@ def edit_charge(charge_id: int,
         employee_services (AbstractEmployeeRepository): The repository for employee data.
 
     Returns:
-        A rendered template displaying the charge edit form, or a redirect to the charge list page if the charge does not exist.
+        A rendered template displaying the charge edit form,
+         or a redirect to the charge list page if the charge does not exist.
     """
     charge = charges_repository.get_by_id(charge_id)
 
@@ -241,7 +244,8 @@ def update_charge(charge_id: int, edit_form: ChargeEditForm,
         charges_repository (ACR): The repository for charge data.
 
     Returns:
-        A rendered template displaying the charge edit form if validation fails, or a redirect to the charge detail page if successful.
+        A rendered template displaying the charge edit form if validation fails,
+         or a redirect to the charge detail page if successful.
     """
     if not edit_form.validate_on_submit():
         return render_template("./charges/edit_charge.html", form=edit_form)
@@ -299,6 +303,12 @@ def archive_charge(
         A redirect to the charge detail page.
     """
     charge_id = request.form["item_id"]
+    try:
+        charge_id = int(charge_id)
+    except ValueError:
+        flash("El cobro solicitado no existe", "danger")
+        return redirect(url_for("charges_bp.get_charges"))
+
     archived = charges_repository.archive_charge(charge_id)
 
     if not archived:
@@ -324,6 +334,11 @@ def recover_charge(
         A redirect to the charge detail page.
     """
     charge_id = request.form["charge_id"]
+    try:
+        charge_id = int(charge_id)
+    except ValueError:
+        flash("El cobro solicitado no existe", "danger")
+        return redirect(url_for("charges_bp.get_charges"))
     recovered = charges.recover_charge(charge_id)
 
     if not recovered:
@@ -350,7 +365,8 @@ def change_employee(
         employee_repository (AbstractEmployeeRepository): The repository for employee data.
 
     Returns:
-        A rendered template displaying the employee change form, or a redirect to the charge list page if the charge does not exist.
+        A rendered template displaying the employee change form,
+         or a redirect to the charge list page if the charge does not exist.
     """
     page = request.args.get("page", type=int, default=1)
 
@@ -396,7 +412,8 @@ def link_employee(
         employee_repository (AbstractEmployeeRepository): The repository for employee data.
 
     Returns:
-        A rendered template displaying the employee linking form, or a redirect to the charge list page if the session does not contain charge data.
+        A rendered template displaying the employee linking form,
+         or a redirect to the charge list page if the session does not contain charge data.
     """
     if not session.get("charge"):
         flash(f"Esta pagina solo puede ser accedida al crear un cobro", "danger")
@@ -447,7 +464,8 @@ def link_charge_employee(
         paginated_employees: The paginated list of employees.
 
     Returns:
-        A rendered template displaying the employee linking form if validation fails, or a redirect to the jockey/amazon linking page if successful.
+        A rendered template displaying the employee linking form if validation fails,
+         or a redirect to the jockey/amazon linking page if successful.
     """
     if not (select_form.submit_employee.data and select_form.validate()):
         return render_template(
@@ -475,7 +493,8 @@ def link_jya(
     Link a jockey or amazon to a charge.
 
     Returns:
-        A rendered template displaying the jockey/amazon linking form, or a redirect to the charge list page if the session does not contain charge data.
+        A rendered template displaying the jockey/amazon linking form,
+         or a redirect to the charge list page if the session does not contain charge data.
     """
     if not session.get("charge"):
         flash(f"Esta pagina solo puede ser accedida al crear un cobro", "danger")
@@ -519,7 +538,8 @@ def link_charge_jya(
         charges_repository (ACR): The repository for charge data.
 
     Returns:
-        A rendered template displaying the jockey/amazon linking form if validation fails, or a redirect to the charge detail page if successful.
+        A rendered template displaying the jockey/amazon linking form if validation fails,
+         or a redirect to the charge detail page if successful.
     """
     if not (select_form.submit_jya.data and select_form.validate()):
         return render_template(
@@ -726,7 +746,7 @@ def toggle_debtor_status(
         A rendered template displaying the choose debtor form if validation fails,
         or a redirect to the charge detail page if successful.
     """
-    if not (select_form.submit_item.data and select_form.validate()):
+    if not (select_form.submit_jya.data and select_form.validate()):
         return render_template(
             "./charges/choose_debtor.html",
             jyas=jyas,

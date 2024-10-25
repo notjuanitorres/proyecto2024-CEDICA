@@ -4,6 +4,7 @@ from src.core.module.jockey_amazon.models import (
     FamilyMember, WorkAssignment,
 )
 
+
 class FamilyMemberMapper:
     """
     Mapper class for converting between FamilyMember entities and dictionary representations.
@@ -168,6 +169,7 @@ class WorkAssignmentMapper:
             track_assistant_id=data.get("track_assistant_id"),
             horse_id=data.get("horse_id"),
         )
+
 
 class SchoolInstitutionMapper:
     """

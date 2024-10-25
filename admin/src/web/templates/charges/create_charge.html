@@ -47,7 +47,7 @@
                 <div class="field">
                     <label class="label">{{ form.amount.label }}</label>
                     <div class="control">
-                        {{ form.amount(class="input", placeholder="Ingrese el monto del cobro") }}
+                        {{ form.amount(class="input", placeholder="Ingrese el monto del cobro", data_validate="required decimal") }}
                     </div>
                     {% if form.amount.errors %}
                         <p class="help is-danger">{{ form.amount.errors[0] }}</p>
@@ -57,7 +57,7 @@
                 <div class="field">
                     <label class="label">{{ form.date_of_charge.label }}</label>
                     <div class="control">
-                        {{ form.date_of_charge(class="input", type="date") }}
+                        {{ form.date_of_charge(class="input", type="date", data_validate="required past-date") }}
                     </div>
                     {% if form.date_of_charge.errors %}
                         <p class="help is-danger">{{ form.date_of_charge.errors[0] }}</p>
@@ -68,7 +68,7 @@
                     <label class="label">{{ form.payment_method.label }}</label>
                     <div class="control">
                         <div class="select">
-                            {{ form.payment_method() }}
+                            {{ form.payment_method(data_validate="required") }}
                         </div>
                     </div>
                     {% if form.payment_method.errors %}
@@ -79,7 +79,7 @@
                 <div class="field">
                     <label class="label">{{ form.observations.label }}</label>
                     <div class="control">
-                        {{ form.observations(class="textarea", placeholder="Ingrese observaciones sobre el cobro") }}
+                        {{ form.observations(class="textarea", placeholder="Ingrese observaciones sobre el cobro", data_validate="required letters") }}
                     </div>
                     {% if form.observations.errors %}
                         <p class="help is-danger">{{ form.observations.errors[0] }}</p>
@@ -99,4 +99,5 @@
 
 {% block extra_scripts %}
     {{ super() }}
+    <script src="{{ url_for('static', filename='js/form_validator.js') }}"></script>
 {% endblock %}

@@ -13,6 +13,13 @@ class FilesNumber(object):
     """
 
     def __init__(self, min=-1, max=-1, message=None):
+        """Initializes the validator.
+
+        Args:
+            min (int, optional): Minimum number of files allowed. Defaults to -1 (no limit).
+            max (int, optional): Maximum number of files allowed. Defaults to -1 (no limit).
+            message (str, optional): Custom error message. If not provided, a default message is used
+        """
         self.min = min
         self.max = max
         if not message:
@@ -47,6 +54,12 @@ class IsNumber(object):
     """
 
     def __init__(self, message=None) -> None:
+        """
+        Initializes the validator.
+
+        Args:
+            message (str, optional): Custom error message. If not provided, a default message is used.
+        """
         if not message:
             message = "Debe ser un numero"
         self.message = message
@@ -74,6 +87,12 @@ class IsValidName(object):
     """
 
     def __init__(self, message=None) -> None:
+        """
+        Initializes the validator.
+
+        Args:
+            message (str, optional): Custom error message. If not provided, a default message is used.
+        """
         if not message:
             message = "Debe ser un nombre válido"
         self.message = message
@@ -123,6 +142,12 @@ class IsValidDniNumber(object):
     """
 
     def __init__(self, message=None) -> None:
+        """
+        Initializes the validator.
+
+        Args:
+            message (str, optional): Custom error message. If not provided, a default message is used.
+        """
         if not message:
             message = "Debe ser un DNI válido"
         self.message = message

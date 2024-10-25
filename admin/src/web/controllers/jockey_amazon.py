@@ -63,6 +63,9 @@ def search_jockeys(
         search_query["text"] = search.search_text.data
         search_query["field"] = search.search_by.data
 
+        if search.filter_debtors.data:
+            search_query["filters"]["has_debts"] = search.filter_debtors.data
+
     paginated_jockeys = jockeys.get_page(
         page=page, per_page=per_page, order_by=order_by, search_query=search_query
     )

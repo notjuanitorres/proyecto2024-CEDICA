@@ -35,6 +35,14 @@ class MultipleCheckboxField(SelectMultipleField):
     option_widget = widgets.CheckboxInput()
 
     def validate(self, form, extra_validators=[]):
+        """Validate the form
+
+        Besides from nomal chehcks, it also ensures that at least one checkbox is selected
+
+        Args:
+            form: The form instance to validate
+            extra_validators: Additional validators to run
+        """
         if not super().validate(form, extra_validators):
             return False
         
@@ -80,6 +88,7 @@ class SchoolInstitutionForm(FlaskForm):
         csrf: CSRF protection disabled for this form
     """
     class Meta:
+        """Metaclass disabling CSRF protection."""
         csrf = False
 
     school_name = StringField(

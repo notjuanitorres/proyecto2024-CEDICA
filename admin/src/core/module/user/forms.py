@@ -85,13 +85,18 @@ class UserManagementForm(FlaskForm):
     email = StringField(
         "Correo",
         validators=[
-            DataRequired(),
+            DataRequired(message="Debe ingresar un correo"),
             Email(message="Email inválido"),
             email_existence,
-            Length(max=100),
+            Length(max=100, message="El correo debe tener menos de 100 caracteres"),
         ],
     )
-    alias = StringField("Alias", validators=[DataRequired(), Length(min=3, max=15), IsValidName()])
+    alias = StringField(
+        "Alias",
+        validators=[
+            DataRequired(message="Debe ingresar un alias"),
+            Length(min=3, max=15, message="El alias debe tener entre 3 y 15 caracteres"),
+            IsValidName()])
 
     system_admin = BooleanField("System Admin", default=False)
 
@@ -105,7 +110,7 @@ class UserCreateForm(UserManagementForm):
     password = PasswordField(
         "Contraseña",
         validators=[
-            DataRequired(),
+            DataRequired(message="Debe ingresar una contraseña"),
             Length(
                 min=8, max=255, message="La contraseña debe tener más de 8 caracteres"
             ),
@@ -115,7 +120,7 @@ class UserCreateForm(UserManagementForm):
     confirm_password = PasswordField(
         "Confirmar contraseña",
         validators=[
-            DataRequired(),
+            DataRequired(message="Debe confirmar la contraseña"),
             EqualTo("password", message="Las contraseñas deben coincidir"),
         ],
     )
