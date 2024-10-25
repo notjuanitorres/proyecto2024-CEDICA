@@ -58,7 +58,7 @@
                     </a>
                 </li>
                 <li>
-                    <a href="{{ url_for("jockey_amazon_bp.edit_documents", jockey_id=jockey.id) }}">
+                    <a href="{{ url_for("jockey_amazon_bp.edit_documents", jockey_id=jockey.id ) }}">
                           <span class="icon is-small">
                               <i class="far fa-file-alt" aria-hidden="true"></i>
                           </span>
@@ -72,14 +72,17 @@
     <section id="general-information" class="mt-5">
         <div class="card">
             <header class="card-header py-3">
-                <h2 class="card-header-title is-size-5">Información General</h2>
+                <h2 class="card-header-title is-size-5">
+                    <p class="icon mr-2"><i class="fa-regular fa-clipboard is-size-4"></i></p>                    
+                    Información General
+                </h2>
                 <button class="card-header-icon" aria-label="more options">
                 <span class="icon">
                     <i class="fas fa-angle-down" aria-hidden="true"></i>
                 </span>
                 </button>
             </header>
-            <div class="card-content" style="display: none;">
+            <div class="card-content" {% if not open_tab == "general_information" %} style="display: none;" {% endif %} >
                 <div class="content">
                     <form method="POST">
                         {% include './jockey_amazon/forms/general_form.html' %}
@@ -94,14 +97,17 @@
     <section id="health-information" class="mt-5">
         <div class="card">
             <header class="card-header py-3">
-                <h2 class="card-header-title is-size-5">Información de Salud</h2>
+                <h2 class="card-header-title is-size-5">
+                    <p class="icon mr-2"><i class="fa-solid fa-notes-medical"></i></p>
+                    Información de Salud
+                </h2>
                 <button class="card-header-icon" aria-label="more options">
                 <span class="icon">
                     <i class="fas fa-angle-down" aria-hidden="true"></i>
                 </span>
                 </button>
             </header>
-            <div class="card-content" style="display: none;">
+            <div class="card-content" {% if not open_tab == "health_information" %} style="display: none;" {% endif %} >
                 <div class="content">
                     <form method="POST">
                         {% include './jockey_amazon/forms/health_form.html' %}
@@ -116,17 +122,22 @@
     <section id="family-information" class="mt-5">
         <div class="card">
             <header class="card-header py-3">
-                <h2 class="card-header-title is-size-5">Información Familiar</h2>
+                <h2 class="card-header-title is-size-5">
+                    <p class="icon mr-2"><i class="fa-solid fa-people-roof"></i></p>
+                    Información Familiar
+                </h2>
                 <button class="card-header-icon" aria-label="more options">
                 <span class="icon">
                     <i class="fas fa-angle-down" aria-hidden="true"></i>
                 </span>
                 </button>
             </header>
-            <div class="card-content" style="display: none;">
+            <div 
+                class="card-content" {% if not open_tab == "family_information" %} style="display: none;" {% endif %}>
                 <div class="content">
                     <form method="POST">
-
+                        {% include './jockey_amazon/forms/family_form.html' %}
+                        <div class="mt-5">{{ family_form.submit(class="button is-primary is-fullwidth")}}</div>
                     </form>
                 </div>
             </div>
@@ -136,14 +147,17 @@
     <section id="school-information" class="mt-5">
         <div class="card">
             <header class="card-header py-3">
-                <h2 class="card-header-title is-size-5">Información Escolar</h2>
+                <h2 class="card-header-title is-size-5">
+                    <p class="icon mr-2"><i class="fa-solid fa-graduation-cap"></i></p>
+                    Información Escolar
+                </h2>
                 <button class="card-header-icon" aria-label="more options">
                 <span class="icon">
                     <i class="fas fa-angle-down" aria-hidden="true"></i>
                 </span>
                 </button>
             </header>
-            <div class="card-content" style="display: none;">
+            <div class="card-content" {% if not open_tab == "school_information" %} style="display: none;" {% endif %} >
                 <div class="content">
                     <form method="POST">
                         {% include './jockey_amazon/forms/educational_form.html' %}
@@ -157,14 +171,17 @@
     <section id="work-assignments" class="mt-5">
         <div class="card">
             <header class="card-header py-3">
-                <h2 class="card-header-title is-size-5">Asignaciones de Trabajo</h2>
+                <h2 class="card-header-title is-size-5">
+                    <p class="icon mr-2"><i class="fa-solid fa-briefcase"></i></p>
+                    Asignaciones de Trabajo
+                </h2>
                 <button class="card-header-icon" aria-label="more options">
                 <span class="icon">
                     <i class="fas fa-angle-down" aria-hidden="true"></i>
                 </span>
                 </button>
             </header>
-            <div class="card-content" style="display: none;">
+            <div class="card-content" {% if not open_tab == "work_assignment_information" %} style="display: none;" {% endif %} >
                 <div class="content">
                     <form method="POST">
                         {% include './jockey_amazon/forms/work_assignments_form.html' %}
@@ -181,105 +198,30 @@
 {% block extra_scripts %}
 {{ super() }}
 <script src="{{ url_for('static', filename='js/toggle-search-bar.js') }}"></script>
+<script src="{{ url_for('static', filename='js/jockey_amazon/family-form.js')}}"></script>
+<script src="{{ url_for('static', filename='js/jockey_amazon/health-form.js')}}"></script>
+<script src="{{ url_for('static', filename='js/jockey_amazon/work-assignment-form.js')}}"></script>
+
 <script>
-    // Funcionalidad para mostrar/ocultar detalles de la discapacidad
-    const hasDisabilityCheckbox = document.querySelector('input[name="has_disability"]');
-    const disabilityDetails = document.getElementById('disability-details');
+    // Toggle functionality for various form sections
+    function setupToggle(checkboxSelector, detailsSelector) {
+        const checkbox = document.querySelector(checkboxSelector);
+        const details = document.getElementById(detailsSelector);
 
-    function toggleDisabilityDetails() {
-        if (hasDisabilityCheckbox.checked) {
-            disabilityDetails.style.display = 'block';
-        } else {
-            disabilityDetails.style.display = 'none';
+        function toggleDetails() {
+            details.style.display = checkbox.checked ? 'block' : 'none';
+        }
+        if (checkbox) {
+            checkbox.addEventListener('change', toggleDetails);
+            toggleDetails(); // Initial check
         }
     }
 
-    hasDisabilityCheckbox.addEventListener('change', toggleDisabilityDetails);
-    toggleDisabilityDetails();  // Initial check
+    setupToggle('input[name="has_scholarship"]', 'scholarship-details');
+    setupToggle('input[name="has_disability"]', 'disability-details');
+    setupToggle('input[name="has_family_assignment"]', 'family-assignment-details');
+    setupToggle('input[name="has_curatorship"]', 'curatorship-details');
+    setupToggle('input[name="has_pension"]', 'pension-details');
 
-  // Funcionalidad para mostrar/ocultar detalles de la curatela
-  const hasCuratorshipCheckbox = document.querySelector('input[name="has_curatorship"]');
-  const curatorshipDetails = document.getElementById('curatorship-details');
-
-  function toggleCuratorshipDetails() {
-      if (hasCuratorshipCheckbox.checked) {
-          curatorshipDetails.style.display = 'block';
-      } else {
-          curatorshipDetails.style.display = 'none';
-      }
-  }
-
-  hasCuratorshipCheckbox.addEventListener('change', toggleCuratorshipDetails);
-  toggleCuratorshipDetails();  // Initial check
-
-      // Funcionalidad para mostrar/ocultar detalles de la beca
-      const hasScholarshipCheckbox = document.querySelector('input[name="has_scholarship"]');
-    const scholarshipDetails = document.getElementById('scholarship-details');
-
-    function toggleScholarshipDetails() {
-        if (hasScholarshipCheckbox.checked) {
-            scholarshipDetails.style.display = 'block';
-        } else {
-            scholarshipDetails.style.display = 'none';
-        }
-    }
-    hasScholarshipCheckbox.addEventListener('change', toggleScholarshipDetails);
-      toggleScholarshipDetails();  // Initial check
-  
-      // Funcionalidad para agregar miembros de la familia
-      const addFamilyMemberButton = document.getElementById('add-family-member');
-    const familyMemberContainer = document.getElementById('family-members');
-    const secondFamilyMember = document.querySelector('.family-member[data-id="2"]');
-
-    addFamilyMemberButton.addEventListener('click', function () {
-      secondFamilyMember.style.display = 'block';
-      addFamilyMemberButton.style.display = 'none'; // Ocultar el botón después de agregar el segundo miembro
-    });
-
-    // Maneja el evento de eliminar un miembro de la familia
-    familyMemberContainer.addEventListener('click', function (event) {
-      if (event.target.classList.contains('remove-family-member')) {
-          const familyMember = event.target.closest('.family-member');
-          if (familyMember) {
-              familyMember.style.display = 'none'; // Ocultar en lugar de eliminar
-              
-              // Limpiar los campos
-              familyMember.querySelectorAll('input, select').forEach(input => {
-                  input.value = '';
-                  input.required = false
-              });
-
-              addFamilyMemberButton.style.display = 'block'; // Mostrar el botón de agregar nuevamente
-          }
-      }
-    });
-    // Funcionalidad para mostrar/ocultar detalles de la asignación familiar
-    const hasFamilyAssignmentCheckbox = document.querySelector('input[name="has_family_assignment"]');
-    const familyAssignmentDetails = document.getElementById('family-assignment-details');
-
-    function toggleFamilyAssignmentDetails() {
-        if (hasFamilyAssignmentCheckbox.checked) {
-            familyAssignmentDetails.style.display = 'block';
-        } else {
-            familyAssignmentDetails.style.display = 'none';
-        }
-    }
-
-    hasFamilyAssignmentCheckbox.addEventListener('change', toggleFamilyAssignmentDetails);
-    toggleFamilyAssignmentDetails();  // Initial check
-    // Funcionalidad para mostrar/ocultar detalles de la pensión
-    const hasPensionCheckbox = document.querySelector('input[name="has_pension"]');
-    const pensionDetails = document.getElementById('pension-details');
-
-    function togglePensionDetails() {
-        if (hasPensionCheckbox.checked) {
-            pensionDetails.style.display = 'block';
-        } else {
-            pensionDetails.style.display = 'none';
-        }
-    }
-
-    hasPensionCheckbox.addEventListener('change', togglePensionDetails);
-    togglePensionDetails();  // Initial check
 </script>
 {% endblock %}

@@ -56,7 +56,7 @@ class FamilyMemberMapper:
             "phone_area_code": member.phone_area_code,
             "phone_number": member.phone_number,
             "email": member.email,
-            "education_level": member.education_level.value,
+            "education_level": member.education_level.name,
             "occupation": member.occupation,
         }
 
@@ -73,9 +73,8 @@ class FamilyMemberMapper:
             
         Note:
             Missing dictionary values will result in None values in the entity
-        """        
+        """
         return FamilyMember(
-            id=data.get("id"),
             relationship=data.get("relationship"),
             first_name=data.get("first_name"),
             last_name=data.get("last_name"),

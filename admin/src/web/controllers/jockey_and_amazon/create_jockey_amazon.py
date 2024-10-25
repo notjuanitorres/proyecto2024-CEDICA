@@ -119,17 +119,22 @@ def create_family_information():
             - GET: Renders the family information form.
             - POST: Validates the form and redirects to the next step (school information).
     """
-    family_information = FamilyInformationForm(second_member_optional=True)
+    family_information = FamilyInformationForm()
+    has_second_member = False
 
+    if family_information.submit.data:
+        has_second_member = family_information.family_members[1].data.get("is_optional") == "False"
     if family_information.validate_on_submit():
         session["create_ja"]["family_information"] = family_information.data
         return redirect(url_for("jockey_amazon_bp.create.create_school_information"))
-    
-    if request.method == "GET" or request.method == "POST":
+
+    if request.method in ["GET", "POST"]:
         return render_template(
             "create/family_information.html",
             family_form=family_information,
             EducationLevelEnum=EducationLevelEnum,
+            family_members_number=2 if has_second_member else 1,
+            is_edit=False
         )
 
 
