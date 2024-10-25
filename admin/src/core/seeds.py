@@ -50,6 +50,10 @@ seeding_config = {
         SeedEntity.EMPLOYEES: 31,
         SeedEntity.PAYMENTS: 15,
         SeedEntity.CHARGES: 15,
+    },
+    "chances": {
+        # 0, 25, 50, 75, 100
+        "creating_archived": 25,
     }
 }
 
@@ -220,6 +224,7 @@ def seed_employees(n: int):
     """
     print("Seeding employees")
     employees = []
+    creating_archived_chances = seeding_config.get("chances").get("creating_archived")
     for _ in range(n):
         employee = Employee(
             email=fake.email(),
@@ -240,7 +245,7 @@ def seed_employees(n: int):
             health_insurance=fake.company(),
             affiliate_number=fake.unique.random_number(digits=8),
             is_active=fake.random.choice([True, False]),
-            is_deleted=fake.boolean(chance_of_getting_true=25),
+            is_deleted=fake.boolean(chance_of_getting_true=creating_archived_chances),
             street=fake.street_name(),
             number=fake.building_number(),
             department=fake.random_element(
@@ -268,6 +273,7 @@ def seed_horses(n: int):
     This function creates several horses with various attributes and assigned facilities.
     """
     horses = []
+    creating_archived_chances = seeding_config.get("chances").get("creating_archived")
     print("Seeding horses")
     for _ in range(n):
         horse = Horse(
@@ -277,19 +283,18 @@ def seed_horses(n: int):
             breed=fake.random_element(
                 elements=["Arabian", "Thoroughbred", "Quarter Horse", "Appaloosa"]
             ),
-            coat=fake.random_element(elements=["Bay", "Chestnut", "Black", "Gray"]),
+            coat=fake.random_element(elements=["Bay", "Chestnut", "Black", "Gray", "White"]),
             is_donation=fake.random.choice([True, False]),
             admission_date=fake.date_between(start_date="-5y", end_date="today"),
             assigned_facility=fake.company(),
             ja_type=fake.random_element(elements=[e.name for e in JAEnum]),
-            is_archived=fake.boolean(chance_of_getting_true=25),
+            is_archived=fake.boolean(chance_of_getting_true=creating_archived_chances),
         )
-        horses.append(horse)  # Append each horse to the list
+        horses.append(horse)
 
     print("Commiting horses")
-    # Add horses to the session and commit
     db.session.bulk_save_objects(horses)
-    db.session.commit()  # Commit the transaction
+    db.session.commit()
 
 
 def seed_school_institutions(jockey):
@@ -380,13 +385,14 @@ def seed_jockeys_amazons(num_jockeys=10):
         has_scholarship = fake.boolean()
         has_disability = fake.boolean()
         has_curatorship = fake.boolean()
+        creating_archived_chances = seeding_config.get("chances").get("creating_archived")
         jockey = JockeyAmazon(
             first_name=fake.first_name(),
             last_name=fake.last_name(),
             dni=generate_unique_dni(),
             birth_date=fake.date_of_birth(),
             birthplace=fake.city(),
-            has_debts=fake.boolean(),
+            has_debts=fake.boolean(chance_of_getting_true=0),
             has_scholarship=has_scholarship,
             scholarship_percentage=fake.random.uniform(0, 100) if has_scholarship else None,
             scholarship_observations=fake.text(max_nb_chars=200) if has_scholarship else None,
@@ -416,7 +422,7 @@ def seed_jockeys_amazons(num_jockeys=10):
             country_code=fake.country_code(),
             area_code=fake.random_int(min=1, max=300),
             phone=fake.msisdn()[:10],
-            is_deleted=fake.boolean(chance_of_getting_true=25)
+            is_deleted=fake.boolean(chance_of_getting_true=creating_archived_chances)
         )
         db.session.add(jockey)
 
@@ -491,7 +497,7 @@ def seed_payments(num_entries=5):
     """
 
     payments = []
-
+    creating_archived_chances = seeding_config.get("chances").get("creating_archived")
     for _ in range(num_entries):
         payments.append(
             Payment(
@@ -503,9 +509,10 @@ def seed_payments(num_entries=5):
                     elements=[e.value for e in PaymentTypeEnum]
                 ),
                 description=fake.sentence(),
-                is_archived=fake.boolean(),
+                is_archived=fake.boolean(chance_of_getting_true=creating_archived_chances),
                 inserted_at=fake.date_time_this_year(),
                 updated_at=fake.date_time_this_year(),
+                beneficiary_id=fake.random_int(min=1, max=20),
             )
         )
 
