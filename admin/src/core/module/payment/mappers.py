@@ -32,6 +32,7 @@ class PaymentMapper:
             payment_type=data.get("payment_type"),
             description=data.get("description"),
             beneficiary_id=data.get("beneficiary_id"),
+            is_archived=data.get("is_archived", False),
         )
 
     @staticmethod
@@ -56,4 +57,5 @@ class PaymentMapper:
             "beneficiary_id": payment.beneficiary_id,
             "inserted_at": payment.inserted_at,
             "updated_at": payment.updated_at,
+            "is_archived": payment.is_archived
         }
