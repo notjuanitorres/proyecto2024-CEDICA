@@ -73,7 +73,7 @@ def search_jockeys(
 
 
 @jockey_amazon_bp.route("/", methods=["GET"])
-@check_user_permissions(permissions_required=["jockey_amazon_index"])
+@check_user_permissions(permissions_required=["jya_index"])
 @inject
 def get_jockeys():
     """
@@ -96,7 +96,7 @@ def get_jockeys():
 
 
 @jockey_amazon_bp.route("/archivados", methods=["GET"])
-@check_user_permissions(permissions_required=["jockey_amazon_index"])
+@check_user_permissions(permissions_required=["jya_index"])
 def get_deleted_jockeys():
     """
     Display a list of archived jockeys or amazons.
@@ -118,7 +118,7 @@ def get_deleted_jockeys():
 
 
 @jockey_amazon_bp.route("/<int:jockey_id>")
-@check_user_permissions(permissions_required=["jockey_amazon_show"])
+@check_user_permissions(permissions_required=["jya_show"])
 @inject
 def show_jockey(
     jockey_id: int,
@@ -144,7 +144,7 @@ def show_jockey(
 
 
 @jockey_amazon_bp.route("/archivar/", methods=["POST"])
-@check_user_permissions(permissions_required=["jockey_amazon_destroy"])
+@check_user_permissions(permissions_required=["jya_destroy"])
 @inject
 def archive_jockey(
     jockeys: AbstractJockeyAmazonRepository = Provide[Container.jockey_amazon_repository]
@@ -169,7 +169,7 @@ def archive_jockey(
 
 
 @jockey_amazon_bp.route("/recuperar/", methods=["POST"])
-@check_user_permissions(permissions_required=["jockey_amazon_destroy"])
+@check_user_permissions(permissions_required=["jya_destroy"])
 @inject
 def recover_jockey(
     jockeys: AbstractJockeyAmazonRepository = Provide[Container.jockey_amazon_repository]
@@ -239,7 +239,7 @@ def delete_jockey(
 @jockey_amazon_bp.route(
     "/editar/<int:jockey_id>/documentos/crear", methods=["GET", "POST"]
 )
-@check_user_permissions(permissions_required=["jockey_amazon_update"])
+@check_user_permissions(permissions_required=["jya_update"])
 @inject
 def create_document(
     jockey_id: int,
@@ -328,7 +328,7 @@ def add_document(
 
 
 @jockey_amazon_bp.route("/editar/<int:jockey_id>/documentos/", methods=["GET"])
-@check_user_permissions(permissions_required=["jockey_amazon_update"])
+@check_user_permissions(permissions_required=["jya_update"])
 @inject
 def edit_documents(
     jockey_id: int,
@@ -433,7 +433,7 @@ def delete_document(
     "/editar/<int:jockey_id>/documentos/editar/<int:document_id>",
     methods=["GET", "POST"],
 )
-@check_user_permissions(permissions_required=["jockey_amazon_update"])
+@check_user_permissions(permissions_required=["jya_update"])
 @inject
 def edit_document(
     jockey_id: int,

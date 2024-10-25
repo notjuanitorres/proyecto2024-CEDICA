@@ -52,7 +52,7 @@ def get_payments(
 
 
 @payment_bp.route("/crear", methods=["GET", "POST"])
-@check_user_permissions(permissions_required=['pagos_create'])
+@check_user_permissions(permissions_required=['pagos_new'])
 @inject
 def create_payment(
     payment_repository: PaymentRepository = Provide[Container.payment_repository],
@@ -270,7 +270,7 @@ def unarchive_payment(
 
 
 @payment_bp.route("/select_employee", methods=["GET", "POST"])
-@check_user_permissions(permissions_required=['pagos_create'])
+@check_user_permissions(permissions_required=['pagos_new'])
 @inject
 def select_employee(
     employee_repository: EmployeeRepository = Provide[Container.employee_repository],

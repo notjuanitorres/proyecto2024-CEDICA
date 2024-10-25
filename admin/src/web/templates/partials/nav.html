@@ -52,7 +52,7 @@
                         {% if "pagos_index" in permissions or is_admin %}
                             <a href="{{ url_for('payment_bp.get_payments') }}" class="navbar-item" aria-label="Pagos"> Pagos </a>
                         {% endif %}
-                        {% if "cobros_index" in pemissions or is_admin %}
+                        {% if "cobros_index" in permissions or is_admin %}
                             <a href="{{ url_for('charges_bp.get_charges') }}" class="navbar-item" aria-label="Cobros"> Cobros </a>
                         {% endif %}
                     {% endif %}

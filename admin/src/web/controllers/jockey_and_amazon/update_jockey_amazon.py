@@ -148,7 +148,7 @@ def link_employee(
 
 
 @update_jockey_amazon_bp.route("/<int:jockey_id>", methods=["GET", "POST"])
-@check_user_permissions(permissions_required=["jockey_amazon_update"])
+@check_user_permissions(permissions_required=["jya_update"])
 @inject
 def edit_jockey(
     jockey_id: int,
@@ -235,7 +235,7 @@ def edit_jockey(
 @update_jockey_amazon_bp.route(
     "/<int:jockey_id>/asignar-profesor", methods=["GET", "POST"]
 )
-@check_user_permissions(permissions_required=["jockey_amazon_update"])
+@check_user_permissions(permissions_required=["jya_update"])
 def assign_professor_or_therapist(jockey_id: int):
     """
     Assign a professor or therapist to a jockey or amazon.
@@ -258,7 +258,7 @@ def assign_professor_or_therapist(jockey_id: int):
 @update_jockey_amazon_bp.route(
     "/<int:jockey_id>/quitar-profesor-terapeuta", methods=["GET"]
 )
-@check_user_permissions(permissions_required=["jockey_amazon_update"])
+@check_user_permissions(permissions_required=["jya_update"])
 @inject
 def unlink_professor(
     jockey_id: int,
@@ -288,7 +288,7 @@ def unlink_professor(
 @update_jockey_amazon_bp.route(
     "/<int:jockey_id>/asignar-auxiliar-pista", methods=["GET", "POST"]
 )
-@check_user_permissions(permissions_required=["jockey_amazon_update"])
+@check_user_permissions(permissions_required=["jya_update"])
 def assign_track_assistant(jockey_id: int):
     """
     Assign a track assistant to a jockey or amazon.
@@ -313,7 +313,7 @@ def assign_track_assistant(jockey_id: int):
     "/<int:jockey_id>/quitar-asistente-pista",
     methods=["GET", "POST"],
 )
-@check_user_permissions(permissions_required=["jockey_amazon_update"])
+@check_user_permissions(permissions_required=["jya_update"])
 @inject
 def unlink_track_assistant(
     jockey_id: int,
@@ -343,7 +343,7 @@ def unlink_track_assistant(
 @update_jockey_amazon_bp.route(
     "/<int:jockey_id>/asignar-conductor", methods=["GET", "POST"]
 )
-@check_user_permissions(permissions_required=["jockey_amazon_update"])
+@check_user_permissions(permissions_required=["jya_update"])
 def assign_conductor(jockey_id: int):
     """
     Assign a conductor to a jockey or amazon.
@@ -368,7 +368,7 @@ def assign_conductor(jockey_id: int):
     "/<int:jockey_id>/quitar-conductor",
     methods=["GET", "POST"],
 )
-@check_user_permissions(permissions_required=["jockey_amazon_update"])
+@check_user_permissions(permissions_required=["jya_update"])
 @inject
 def unlink_conductor(
     jockey_id: int,
@@ -398,7 +398,7 @@ def unlink_conductor(
 @update_jockey_amazon_bp.route(
     "/<int:jockey_id>/asignar-caballo", methods=["GET", "POST"]
 )
-@check_user_permissions(permissions_required=["jockey_amazon_update"])
+@check_user_permissions(permissions_required=["jya_update"])
 @inject
 def assign_horse(
     jockey_id: int,
@@ -463,7 +463,7 @@ def assign_horse(
     "/<int:jockey_id>/quitar-caballo",
     methods=["GET", "POST"],
 )
-@check_user_permissions(permissions_required=["jockey_amazon_update"])
+@check_user_permissions(permissions_required=["jya_update"])
 @inject
 def unlink_horse(
     jockey_id: int,

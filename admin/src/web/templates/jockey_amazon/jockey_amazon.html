@@ -32,7 +32,7 @@
 <h2 class="title has-text-centered">Jockey Amazon: {{ jockey_amazon.first_name + " " + jockey_amazon.last_name }} </h2>
 <div class="buttons is-centered has-addons is-medium">
     {% if jockey_amazon.is_deleted %}
-        {% if "jockey_amazon_destroy" in permissions or is_admin %}
+        {% if "jya_destroy" in permissions or is_admin %}
             <button class="button is-danger modal-trigger is-medium" data-id="{{ jockey_amazon.id }}" data-target="jockey-delete-modal">
                 <span class="icon is-small">
                     <i class="fa fa-trash"></i>
@@ -51,7 +51,7 @@
             </form>
         {% endif %}
     {% else %}
-        {% if "jockey_amazon_destroy" in permissions or is_admin %}
+        {% if "jya_destroy" in permissions or is_admin %}
             <button class="button is-danger modal-trigger is-medium" data-id="{{ jockey_amazon.id }}" data-target="jockey-delete-modal">
                 <span class="icon is-small">
                     <i class="fa fa-archive"></i>
@@ -59,7 +59,7 @@
                 <span>Archivar</span>
             </button>
         {% endif %}
-        {% if "jockey_amazon_update" in permissions or is_admin %}
+        {% if "jya_update" in permissions or is_admin %}
             <button class="button is-link is-medium">
                 <a class="has-text-black" href="{{ url_for('jockey_amazon_bp.update.edit_jockey', jockey_id=jockey_amazon.id) }}">
                     <span class="icon is-small">
@@ -83,12 +83,13 @@
 </span>
 {% endblock %}
 
-{% block close_button %} 
+{% block close_button %}
 <button class="card-header-icon" aria-label="more options" id="toggle-search-button">
     <span class="icon">
     <i class="fas fa-angle-down" aria-hidden="true"></i>
     </span>
 </button>
+
 {% endblock %}
 
 {% block banner %}
