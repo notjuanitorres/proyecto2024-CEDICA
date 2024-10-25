@@ -12,7 +12,7 @@
                 <div class="field">
                     <label class="label">{{ form.name.label }}</label>
                     <div class="control">
-                        {{ form.name(class="input", placeholder="Ingrese el nombre del caballo") }}
+                        {{ form.name(class="input", placeholder="Ingrese el nombre del caballo", data_validate="required letters") }}
                     </div>
                     {% if form.name.errors %}
                         <p class="help is-danger">{{ form.name.errors[0] }}</p>
@@ -22,7 +22,7 @@
                 <div class="field">
                     <label class="label">{{ form.breed.label }}</label>
                     <div class="control">
-                        {{ form.breed(class="input", placeholder="Ingrese la raza del caballo") }}
+                        {{ form.breed(class="input", placeholder="Ingrese la raza del caballo", data_validate="required letters") }}
                     </div>
                     {% if form.breed.errors %}
                         <p class="help is-danger">{{ form.breed.errors[0] }}</p>
@@ -32,7 +32,7 @@
                 <div class="field">
                     <label class="label">{{ form.birth_date.label }}</label>
                     <div class="control">
-                        {{ form.birth_date(class="input", type="date") }}
+                        {{ form.birth_date(class="input", type="date", data_validate="required past-date") }}
                     </div>
                     {% if form.birth_date.errors %}
                         <p class="help is-danger">{{ form.birth_date.errors[0] }}</p>
@@ -42,7 +42,7 @@
                 <div class="field">
                     <label class="label">{{ form.coat.label }}</label>
                     <div class="control">
-                        {{ form.coat(class="input", placeholder="Ingrese el pelaje del caballo") }}
+                        {{ form.coat(class="input", placeholder="Ingrese el pelaje del caballo", data_validate="required letters") }}
                     </div>
                     {% if form.coat.errors %}
                         <p class="help is-danger">{{ form.coat.errors[0] }}</p>
@@ -53,7 +53,7 @@
                     <label class="label">{{ form.sex.label }}</label>
                     <div class="control">
                         <div class="select">
-                            {{ form.sex() }}
+                            {{ form.sex(data_validate="required") }}
                         </div>
                     </div>
                 </div>
@@ -69,7 +69,7 @@
                 <div class="field">
                     <label class="label">{{ form.admission_date.label }}</label>
                     <div class="control">
-                        {{ form.admission_date(class="input", type="date") }}
+                        {{ form.admission_date(class="input", type="date", data_validate="required past-date") }}
                     </div>
                     {% if form.admission_date.errors %}
                         <p class="help is-danger">{{ form.admission_date.errors[0] }}</p>
@@ -79,7 +79,7 @@
                 <div class="field">
                     <label class="label">{{ form.assigned_facility.label }}</label>
                     <div class="control">
-                        {{ form.assigned_facility(class="input", placeholder="Ingrese la sede asignada") }}
+                        {{ form.assigned_facility(class="input", placeholder="Ingrese la sede asignada", data_validate="required letters") }}
                     </div>
                     {% if form.assigned_facility.errors %}
                         <p class="help is-danger">{{ form.assigned_facility.errors[0] }}</p>
@@ -90,7 +90,7 @@
                     <label class="label">{{ form.ja_type.label }}</label>
                     <div class="control">
                         <div class="select">
-                            {{ form.ja_type() }}
+                            {{ form.ja_type(data_validate="required") }}
                         </div>
                     </div>
                 </div>
@@ -106,7 +106,7 @@
 {% endblock %}
 
 {% block extra_scripts %}
-	{{ super() }}
+    {{ super() }}
     <script src="{{ url_for('static', filename='js/toggle-search-bar.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/form_validator.js') }}"></script>
 {% endblock %}
-
