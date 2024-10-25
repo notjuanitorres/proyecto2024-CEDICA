@@ -66,7 +66,6 @@ def dni_existence(form, field):
         field: The field object representing the DNI input.
     """
     validator = DniExistence(message="DNI en uso")
-    validator = DniExistence(message="DNI en uso")
     validator(form, field)
 
 
@@ -79,24 +78,24 @@ class EmploymentInformationForm(FlaskForm):
     profession = SelectField(
         "Profesión",
         choices=[(e.name, e.value) for e in ProfessionsEnum],
-        validators=[DataRequired()],
+        validators=[DataRequired(message="Debe seleccionar una profesión")],
         validate_choice=True,
     )
     position = SelectField(
         "Posición laboral",
         choices=[(e.name, e.value) for e in PositionEnum],
-        validators=[DataRequired()],
+        validators=[DataRequired(message="Debe seleccionar una posición laboral")],
         validate_choice=True,
     )
     job_condition = SelectField(
         "Condición laboral",
         choices=[(e.name, e.value) for e in ConditionEnum],
-        validators=[DataRequired()],
+        validators=[DataRequired(message="Debe seleccionar una condición laboral")],
         validate_choice=True,
     )
     start_date = DateField(
         "Inicio de actividades",
-        validators=[DataRequired()],
+        validators=[DataRequired(message="Debe ingresar una fecha")],
         default=datetime.today,
     )
     end_date = DateField("Finalización de actividades", validators=[Optional()])
@@ -116,7 +115,6 @@ class EmployeeDocumentsForm(FlaskForm):
 
     dni = MultipleFileField(
         validators=[
-            # FileRequired(),
             FileSize(
                 max_size=max_file_size(size_in_mb=5),
                 message="El archivo es demasiado grande",
@@ -130,7 +128,6 @@ class EmployeeDocumentsForm(FlaskForm):
     )
     title = MultipleFileField(
         validators=[
-            # FileRequired(),
             FileSize(
                 max_size=max_file_size(size_in_mb=5),
                 message="El archivo es demasiado grande",
@@ -144,7 +141,6 @@ class EmployeeDocumentsForm(FlaskForm):
     )
     curriculum_vitae = FileField(
         validators=[
-            # FileRequired(),
             FileSize(
                 max_size=max_file_size(size_in_mb=5),
                 message="El archivo es demasiado grande",
@@ -158,8 +154,11 @@ class EmployeeDocumentsForm(FlaskForm):
 
 
 class EmployeeAddDocumentsForm(BaseManageDocumentsForm):
-    """Form to tag documents when adding additional files for an employee."""
+    """Form to tag documents when adding additional files for an employee.
 
+    Fields:
+        tag (SelectField): The tag to assign to the uploaded file.
+    """
     tag = SelectField(
         "Tag",
         choices=[(e.name, e.value) for e in FileTagEnum],
@@ -173,15 +172,38 @@ class EmployeeAddDocumentsForm(BaseManageDocumentsForm):
 
 
 class EmployeeManagementForm(FlaskForm):
-    """Form for creating a new employee, including validation of DNI and email."""
+    """Form for creating a new employee, including validation of DNI and email.
+
+    Fields:
+        name (StringField): The employee's first name.
+        lastname (StringField): The employee's last name.
+        address (FormField): The employee's address.
+        phone (FormField): The employee's phone number.
+        employment_information (FormField): The employee's employment information.
+        health_insurance (TextAreaField): The employee's health insurance.
+        affiliate_number (StringField): The employee's health insurance affiliate number.
+        emergency_contact (FormField): The employee's emergency contact information
+    """
 
     def __init__(self, *args, **kwargs):
         super(EmployeeManagementForm, self).__init__(*args, **kwargs)
         self.current_email = None
         self.current_dni = None
 
-    name = StringField("Nombre", validators=[DataRequired(), IsValidName()])
-    lastname = StringField("Apellido", validators=[DataRequired(), IsValidName()])
+    name = StringField(
+        "Nombre",
+        validators=[
+            DataRequired(message="Debe ingresar un nombre"),
+            IsValidName()
+        ]
+    )
+    lastname = StringField(
+        "Apellido",
+        validators=[
+            DataRequired(message="Debe ingresar un apellido"),
+            IsValidName()
+        ]
+    )
     address = FormField(AddressForm)
     phone = FormField(PhoneForm)
     employment_information = FormField(EmploymentInformationForm)
@@ -202,16 +224,16 @@ class EmployeeCreateForm(EmployeeManagementForm):
     dni = StringField(
         "DNI",
         validators=[
-            DataRequired(),
-            Length(min=8, max=8),
-            IsNumber("Debe ser un número de 8 digitos!"),
+            DataRequired(message="Debe ingresar un DNI"),
+            Length(min=8, max=8, message="Debe ser un número de 8 digitos!"),
+            IsNumber(message="Debe ser un número de 8 digitos!"),
             dni_existence,
         ],
     )
     email = StringField(
         "Email",
         validators=[
-            DataRequired(),
+            DataRequired(message="Debe ingresar un email"),
             Email(message="Email inválido"),
             Length(max=100),
             email_existence,
@@ -238,8 +260,8 @@ class EmployeeEditForm(EmployeeManagementForm):
     dni = StringField(
         "DNI",
         validators=[
-            DataRequired(),
-            Length(min=8, max=8),
+            DataRequired(message="Debe ingresar un DNI"),
+            Length(min=8, max=8, message="Debe ser un número de 8 digitos!"),
             IsNumber("Debe ser un numero de 8 digitos!"),
             dni_existence,
         ],
@@ -247,9 +269,9 @@ class EmployeeEditForm(EmployeeManagementForm):
     email = StringField(
         "Email",
         validators=[
-            DataRequired(),
+            DataRequired(message="Debe ingresar un email"),
             Email(message="Email inválido"),
-            Length(max=100),
+            Length(max=100, message="El email debe tener menos de 100 caracteres"),
             email_existence,
         ],
     )
@@ -325,7 +347,7 @@ class TrainerSearchForm(FlaskForm):
 
     search_text = StringField(
         "Buscar por nombre o email",
-        validators=[Length(message="Debe ingresar un texto", min=1, max=50)],
+        validators=[Length(message="El texto de búsqueda debe tener entre 1 y 50 caracteres", min=1, max=50)],
     )
     submit_search = SubmitField("Buscar")
 
@@ -379,6 +401,6 @@ class EmployeeMiniSearchForm(FlaskForm):
 
     search_text = StringField(
         "Miembro del equipo seleccionado",
-        validators=[Length(message="Debe ingresar un texto entre 1 y 50 caracteres", min=1, max=50)],
+        validators=[Length(message="El texto de búsqueda debe tener entre 1 y 50 caracteres", min=1, max=50)],
     )
     submit_search = SubmitField("Buscar")

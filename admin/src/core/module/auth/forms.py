@@ -28,9 +28,9 @@ class UserLoginForm(FlaskForm):
     email = StringField(
         "Email",
         validators=[
-            DataRequired(),
+            DataRequired(message="El email es obligatorio"),
             Email(message="Email inválido"),
-            Length(max=100)],
+            Length(max=100, message="El email debe tener menos de 100 caracteres"),],
     )
 
     password = PasswordField(
@@ -38,7 +38,7 @@ class UserLoginForm(FlaskForm):
         validators=[
             DataRequired(),
             Length(
-                min=8, max=255, message="La contraseña debe tener más de 8 caracteres"
+                min=8, max=255, message="La contraseña debe tener más de 8 caracteres y menos de 255"
             ),
         ],
     )
@@ -60,19 +60,19 @@ class UserRegisterForm(FlaskForm):
     email = StringField(
         "Email",
         validators=[
-            DataRequired(),
+            DataRequired("El email es obligatorio"),
             Email(message="Email inválido"),
             email_existence,
-            Length(max=100),
+            Length(max=100, message="El email debe tener menos de 100 caracteres"),
         ],
     )
 
     password = PasswordField(
         "Contraseña",
         validators=[
-            DataRequired(),
+            DataRequired(message="La contraseña es obligatoria"),
             Length(
-                min=8, max=255, message="La contraseña debe tener más de 8 caracteres"
+                min=8, max=255, message="La contraseña debe tener más de 8 caracteres y menos de 255"
             ),
         ],
     )
@@ -80,7 +80,7 @@ class UserRegisterForm(FlaskForm):
     confirm_password = PasswordField(
         "Confirmar contraseña",
         validators=[
-            DataRequired(),
+            DataRequired(message="La confirmación de la contraseña es obligatoria"),
             EqualTo("password", message="Las contraseñas deben coincidir"),
         ],
     )
@@ -88,7 +88,7 @@ class UserRegisterForm(FlaskForm):
     alias = StringField(
         "Alias",
         validators=[
-            DataRequired(),
-            Length(min=3, max=15)
+            DataRequired(message="El alias es obligatorio"),
+            Length(min=3, max=15, message="El alias debe tener entre 3 y 15 caracteres"),
         ]
     )

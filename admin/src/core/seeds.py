@@ -44,9 +44,9 @@ def seed_all(app):
         db.session.commit()
         seed_jockey_amazons()
         print("Commiting jockey_amazons module")
-        print("Seeding charges")
-        seed_charges()
-        print("Commiting charges")
+        # print("Seeding charges")
+        # seed_charges()
+        # print("Commiting charges")
         db.session.commit()
 
 
@@ -289,6 +289,7 @@ def seed_horse_trainers():
     ]
     db.session.add_all(horse_trainers)
 
+
 def seed_payments():
     """
     Seeds payment data in the database.
@@ -317,11 +318,13 @@ def seed_payments():
     db.session.commit()
     print("Seeding payments completed")
 
+
 def seed_jockey_amazons():
     """
     Seeds jockey and amazon data in the database.
 
-    This function creates several jockeys and amazons with various attributes, including school institutions, work assignments, and family members.
+    This function creates several jockeys and amazons with various attributes,
+     including school institutions, work assignments, and family members.
     """
     print("Seeding jockey_amazons")
 
@@ -478,7 +481,6 @@ def seed_jockey_amazons():
 
     db.session.add_all([work_assignment1, work_assignment2, work_assignment3])
 
-
     family_member1 = FamilyMember(
         relationship="Padre",
         first_name="Juan",
@@ -535,7 +537,6 @@ def seed_jockey_amazons():
     )
 
     db.session.add_all([family_member1, family_member2, family_member3])
-
 
 
 def seed_charges():

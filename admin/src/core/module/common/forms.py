@@ -176,6 +176,7 @@ class BaseSearchForm(FlaskForm):
         submit_search (SubmitField): The submit button for the search.
     """
     class Meta:
+        """Metaclass disabling CSRF protection."""
         csrf = False
 
     search_by = SelectField(
@@ -183,7 +184,11 @@ class BaseSearchForm(FlaskForm):
         validate_choice=True,
     )
 
-    search_text = StringField(validators=[Length(max=50)])
+    search_text = StringField(
+        validators=[
+            Length(max=50, message="El texto de búsqueda no puede exceder los 50 caracteres")
+        ]
+    )
 
     order_by = SelectField(
         choices=[],
@@ -220,6 +225,7 @@ class DocumentsSearchForm(BaseSearchForm):
 
 class CustomFloatField(FloatField):
     def __init__(self, *args, **kwargs):
+        """Initialize the field with a custom error message."""
         super().__init__(*args, **kwargs)
         self.message = 'Solo números enteros o decimales'
 

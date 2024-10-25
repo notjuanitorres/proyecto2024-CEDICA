@@ -1,5 +1,6 @@
 {% extends "layout.html" %} 
 
+{% from "macros/flash_message.html" import render_flash_messages %}
 {% from "macros/pagination.html" import render_pagination %}
 
 {% block extra_styles %}
@@ -28,6 +29,7 @@
 
 {% block tab_bar %}{% endblock %}
 
+{{ render_flash_messages(messages) }}
 <section id="link-container" class="panel">
   <div class="container p-4">
     <h1 class="title is-size-4">

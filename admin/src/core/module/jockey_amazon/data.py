@@ -19,6 +19,7 @@ Enumerations defined in this module:
 
 from enum import Enum
 
+
 class DisabilityDiagnosisEnum(Enum):
     """
     An enumeration representing various disability diagnoses.
@@ -155,6 +156,7 @@ DAYS_MAPPING = {
     'A': DayEnum.FRIDAY,
     'Y': DayEnum.SATURDAY
 }
+
 
 class EducationLevelEnum(Enum):
     """

@@ -38,6 +38,17 @@
 </div>
 {% endblock %}
 
+{% block aditional_filters %}
+  <div class="field">
+    <label class="label">{{ search_form.filter_debtors.label}}</label>
+    <div class="control">
+        <div class="select">
+            {{ search_form.filter_debtors() }}
+        </div>
+    </div>
+  </div>
+{% endblock %}
+
 {% block create_button %}
   <a class="button is-primary level-item" href="{{ url_for('jockey_amazon_bp.create.init')}}">
     Agregar Jinete/Amazona
@@ -56,6 +67,7 @@
   <th>Teléfono</th>
   <th>Fecha de creación</th>
   <th>Propuesta de trabajo</th>
+  <th>Tiene deudas</th>
 {% endblock %}
 
 {% block top_pagination %}
@@ -91,6 +103,8 @@
     <td><span class="is-hidden-tablet has-text-weight-bold">Teléfono: </span>{{ jockey.country_code }} {{ jockey.area_code }} {{ jockey.phone }}</td>
     <td><span class="is-hidden-tablet has-text-weight-bold">Fecha de creación: </span>{{ jockey.inserted_at.strftime('%d-%m-%Y') }}</td>
     <td><span class="is-hidden-tablet has-text-weight-bold">Propuesta de Trabajo: </span>{{ jockey.work_assignment.proposal.value }}</td>
+    <td><span class="is-hidden-tablet has-text-weight-bold">Es deudor: </span>{{ jockey.has_debts | natural_boolean }}</td>
+
     <td class="is-hidden-tablet is-flex">
       <a href="{{ url_for('jockey_amazon_bp.show_jockey', jockey_id=jockey.id)}}" class="button is-flex-grow-1 ">
         <span class="is-bold">
@@ -111,7 +125,7 @@
     <th>Teléfono</th>
     <th>Fecha de creación</th>
     <th>Propuesta de trabajo</th>
-
+    <th>Tiene deudas</th>
 {% endblock %}
 
 {% block bottom_pagination %}

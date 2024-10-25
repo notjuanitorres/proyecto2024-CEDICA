@@ -77,6 +77,7 @@ class GeneralInformationForm(FlaskForm):
         emergency_contact (FormField): Nested form for emergency contact information
     """
     def __init__(self, *args, **kwargs):
+        """Initialize the form with the current DNI for validation purposes."""
         super(GeneralInformationForm, self).__init__(*args, **kwargs)
         self.current_dni = kwargs.pop("current_dni", None)
         print(self.current_dni)
@@ -164,7 +165,7 @@ class FamilyInformationForm(FlaskForm):
     ])
     family_members = FieldList(FormField(FamilyMemberForm), min_entries=2, max_entries=2)
     submit = SubmitField("Actualizar Informacion Familiar", name="family_submit")
-    
+
     def validate(self, extra_validators=None):
         # Run default validation first
         super().validate(extra_validators)
@@ -399,6 +400,7 @@ class JockeyAmazonSearchForm(FlaskForm):
     Fields:
         search_by (SelectField): Field to search by (name, lastname, DNI, professionals)
         search_text (StringField): Text to search for
+        filter_debtors (BooleanField): Filter for jockeys/amazons with debts
         order_by (SelectField): Field to order results by
         order (SelectField): Sort order (ascending/descending)
     """
@@ -416,6 +418,12 @@ class JockeyAmazonSearchForm(FlaskForm):
         validate_choice=True,
     )
     search_text = StringField(validators=[Length(max=50)])
+
+    filter_debtors = SelectField(
+        "Deudores",
+        choices=[("", "Ver Todos"), ("True", "Con deuda"), ("False", "Sin deuda"),],
+        validate_choice=True,
+    )
     order_by = SelectField(
         choices=[
             ("inserted_at", "Fecha de creación"),
