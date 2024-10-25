@@ -128,7 +128,7 @@ class WorkAssignmentMapper:
         """
         work_assignment = {}
         if assignment:
-            dict = {
+            work_assignment = {
                 "id": assignment.id,
                 "proposal": assignment.proposal.name,
                 "condition": assignment.condition.name,
