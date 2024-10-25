@@ -46,7 +46,7 @@
           <div class="control">
               {{ education_form.school_institution.department(class="input",
                placeholder="Ingrese el departamento de la institución escolar",
-                data_validate="required alphanumeric") }}
+                data_validate="optional alphanumeric") }}
           </div>
           {% if education_form.school_institution.department.errors %}
               <p class="help is-danger">{{ education_form.school_institution.department.errors[0] }}</p>
