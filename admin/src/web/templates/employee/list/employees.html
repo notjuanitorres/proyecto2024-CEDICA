@@ -39,10 +39,12 @@
 {% endblock %}
 
 {% block create_button %}
+  {% if equipo_new in permissions or is_admin %}
     <a class="button is-primary level-item" href="{{ url_for("employee_bp.create_employee") }}">
         Agregar miembro
         <i class="fa-solid fa-user-plus ml-2 is-size-5"></i>
     </a>
+  {% endif %}
 {% endblock %}
 
 
@@ -50,21 +52,23 @@
 {% block clear_url %}{{ url_for("employee_bp.get_employees") }}{% endblock %}
 
 {% block aditional_filters %}
-    <div class="field">
+  <div class="columns is-mobile is-1">
+    <div class="field column">
       <label class="label">{{ search_form.filter_job_position.label}}</label>
       <div class="control">
-        <div class="select">
+        <div class="select is-fullwidth">
           {{ search_form.filter_job_position }}
         </div>
       </div>
     </div>
-    <div class="field">
+    <div class="field column">
       <label class="label">Estado</label>
       <div class="control">
-          <div class="select">
+          <div class="select is-fullwidth">
               {{ search_form.filter_is_active() }}
-          </div>
+        </div>
       </div>
+    </div>
   </div>
 {% endblock %}
 

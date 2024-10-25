@@ -49,7 +49,7 @@ def add_jockey(
 
 
 @create_jockey_amazon_bp.route("/", methods=["GET"])
-@check_user_permissions(permissions_required=["jockey_amazon_new"])
+@check_user_permissions(permissions_required=["jya_new"])
 @inject
 def init():
     """
@@ -70,6 +70,7 @@ def init():
 
 # Step one: General Information
 @create_jockey_amazon_bp.route("/informacion-general", methods=["GET", "POST"])
+@check_user_permissions(permissions_required=["jya_new"])
 def create_general_information():
     """
     Handles the submission of the general information form (step one).
@@ -91,6 +92,7 @@ def create_general_information():
 # Step two: Health Information
 @create_jockey_amazon_bp.route("/informacion-salud", methods=["GET", "POST"])
 @check_creation_in_process("create_ja")
+@check_user_permissions(permissions_required=["jya_new"])
 def create_health_information():
     """
     Handles the submission of the health information form (step two).
@@ -111,6 +113,7 @@ def create_health_information():
 
 # Step three: Family Information
 @create_jockey_amazon_bp.route("/informacion-familia", methods=["GET", "POST"])
+@check_user_permissions(permissions_required=["jya_new"])
 def create_family_information():
     """
     Handles the submission of the family information form (step three).
@@ -142,6 +145,7 @@ def create_family_information():
 # Step four: School Information
 @create_jockey_amazon_bp.route("/informacion-escuela", methods=["GET", "POST"])
 @check_creation_in_process("create_ja")
+@check_user_permissions(permissions_required=["jya_new"])
 def create_school_information():
     """
     Handles the submission of the school information form (step four).
@@ -162,6 +166,7 @@ def create_school_information():
 
 # Step five: Work Assignment
 @create_jockey_amazon_bp.route('/asignacion-trabajo', methods=['GET', 'POST'])
+@check_user_permissions(permissions_required=["jya_new"])
 @check_creation_in_process("create_ja")
 def create_work_assignment():
     """

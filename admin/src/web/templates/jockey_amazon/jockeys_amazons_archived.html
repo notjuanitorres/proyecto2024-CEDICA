@@ -49,12 +49,6 @@
   </div>
 {% endblock %}
 
-{% block create_button %}
-  <a class="button is-primary level-item" href="{{ url_for('jockey_amazon_bp.create.init')}}">
-    Agregar Jinete/Amazona
-    <i class="fa-solid fa-hat-cowboy ml-2 is-size-5"></i>
-  </a>
-{% endblock %}
 
 {% block form_action %}{{ url_for("jockey_amazon_bp.get_deleted_jockeys") }}{% endblock %}
 {% block clear_url %}{{ url_for("jockey_amazon_bp.get_deleted_jockeys") }}{% endblock %}
@@ -88,9 +82,9 @@
           'edit':'',
           'delete':'jockey_amazon_bp.delete_jockey'
         },
-        permission_to_show="jockey_amazon_show",
-        permission_to_edit="jockey_amazon_update",
-        permission_to_delete="jockey_amazon_destroy",
+        permission_to_show="jya_show",
+        permission_to_edit="jya_update",
+        permission_to_delete="jya_destroy",
         user_permissions=permissions,
         is_admin=is_admin
         )

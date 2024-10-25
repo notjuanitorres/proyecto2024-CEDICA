@@ -81,6 +81,14 @@
             <div class="card-content" id="toggle-search">
                 <div class="content">
                     <form action="{{ url_for(request.endpoint) }}" method="get">
+                        <div class="field">
+                            <label class="label" for="tipo-de-pago">{{ form.payment_type.label }}</label>
+                            <div class="control">
+                                <div class="select is-fullwidth">
+                                    {{ form.payment_type(id='tipo-de-pago') }}
+                                </div>
+                            </div>
+                        </div>
                         <div class="is-flex is-flex-direction-row is-flex-wrap-wrap is-gap-1">
                             {{ form.hidden_tag() }}
                             <div class="field is-flex-grow-1">
@@ -94,44 +102,35 @@
                                 <div class="control">
                                     {{ form.end_date(class="input", id='end_date') }}
                                 </div>
-                            </div>
-                        
-                        <div class="field">
-                            <label class="label" for="tipo-de-pago">{{ form.payment_type.label }}</label>
+                            </div>  
+                        </div>
+                        <div class="columns is-1 is-mobile">
+                            <div class="field column">
+                            <label class="label" for="ordenar-por">{{ form.order_by.label }}</label>
                             <div class="control">
-                                <div class="select">
-                                    {{ form.payment_type(id='tipo-de-pago') }}
+                                <div class="select is-fullwidth">
+                                    {{ form.order_by(id='ordenar-por') }}
                                 </div>
                             </div>
+                            </div>
+                            <div class="field column is-half">
+                            <label class="label" for="orden">{{ form.order.label }}</label>
+                            <div class="control">
+                                <div class="select is-fullwidth">
+                                    {{ form.order(id='orden') }}
+                                </div>
+                            </div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="grid is-flex-tablet is-row-gap-0 is-column-gap-1 pt-3" >
-                        <div class="field">
-                          <label class="label" for="ordenar-por">{{ form.order_by.label }}</label>
-                          <div class="control">
-                              <div class="select">
-                                  {{ form.order_by(id='ordenar-por') }}
-                              </div>
-                          </div>
-                        </div>
-                        <div class="field">
-                          <label class="label" for="orden">{{ form.order.label }}</label>
-                          <div class="control">
-                              <div class="select">
-                                  {{ form.order(id='orden') }}
-                              </div>
-                          </div>
-                        </div>
-                      </div>
-                    <div class="field card-footer">
-                        <div class="control card-footer-item">
-                          <a href="{{ url_for(request.endpoint) }}">
-                            Limpiar
-                          </a>
-                        </div>
-                        <div class="control card-footer-item">
-                          {{ form.submit_search(class="button is-flex-grow-1 is-link")}}
-                        </div>
+                        <div class="field card-footer">
+                            <div class="control card-footer-item">
+                            <a href="{{ url_for(request.endpoint) }}">
+                                Limpiar
+                            </a>
+                            </div>
+                            <div class="control card-footer-item">
+                            {{ form.submit_search(class="button is-flex-grow-1 is-link")}}
+                            </div>
                       </div>
                     </form>
                 </div>
@@ -172,9 +171,9 @@
                         'edit': 'payment_bp.edit_payment',
                         action: endpoint
                         },
-                        permission_to_show="payments_show",
-                        permission_to_edit="payments_update",
-                        permission_to_delete="payments_destroy",
+                        permission_to_show="pagos_show",
+                        permission_to_edit="pagos_update",
+                        permission_to_delete="pagos_destroy",
                         user_permissions=permissions,
                         is_admin=is_admin
                         )
