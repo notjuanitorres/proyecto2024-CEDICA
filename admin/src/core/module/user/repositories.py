@@ -396,7 +396,7 @@ class UserRepository(AbstractUserRepository):
         self.save()
         return True
 
-    def toggle_activation(self, user_id: int) -> bool:
+    def toggle_activation(self, user_id: int) -> bool | None:
         """
         Toggle the activation status of a user.
 
@@ -404,11 +404,17 @@ class UserRepository(AbstractUserRepository):
             user_id (int): The ID of the user to toggle activation status.
 
         Returns:
-            bool: True if the activation status was toggled successfully, False otherwise.
+            bool: True if the activation status was toggled successfully,
+             False if the user is admin and null if the user_id was not valid.
         """
+
+        user = self.get_by_id(user_id)
+        if not user:
+            return None
+
         if self.is_sys_admin(user_id):
             return False
-        user = self.get_by_id(user_id)
+
         user.enabled = not user.enabled
         self.save()
         return True

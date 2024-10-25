@@ -365,7 +365,7 @@ def delete_horse(equestrian_repository: AbstractEquestrianRepository = Provide[C
 
 
 @equestrian_bp.route("/editar/<int:horse_id>/documentos/", methods=["GET"])
-@check_user_permissions(permissions_required=["ecuestre_update"])
+@check_user_permissions(permissions_required=["ecuestre_show"])
 @inject
 def edit_documents(
         horse_id: int,

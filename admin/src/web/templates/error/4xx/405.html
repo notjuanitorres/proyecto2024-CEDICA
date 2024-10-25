@@ -1,0 +1,8 @@
+{% extends "error.html" %}
+
+{% block error_type %}405{% endblock %}
+
+{% block error_content %}
+    <h2 class="title is-size-3">Oops. Método no permitido</h2>
+    <p class="subtitle is-5 py-4">El método de solicitud que estás utilizando no está permitido para esta ruta.</p>
+{% endblock %}

@@ -50,7 +50,7 @@
 {% endblock %}
 
 {% block create_button %}
-  {% if jya_new in permissions or is_admin %}
+  {% if "jya_new" in permissions or is_admin %}
     <a class="button is-primary level-item" href="{{ url_for('jockey_amazon_bp.create.init')}}">
       Agregar Jinete/Amazona
       <i class="fa-solid fa-hat-cowboy ml-2 is-size-5"></i>

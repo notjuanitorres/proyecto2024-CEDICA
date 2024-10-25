@@ -5,6 +5,7 @@
 {# Variables used in base_document_list #}
 {% set entity_has_documents = files %}
 {% set current_url = url_for('equestrian_bp.edit_documents', horse_id=horse.id) %}
+{% set permission_to_update_docs = 'ecuestre_update'%}
 
 {% block title %} Caballos - Actualizar documentos {% endblock %}
 
@@ -40,7 +41,7 @@
         <h4 class="title is-fullwidth has-text-centered">Actualizando a {{ horse.name }}</h4>
         <div class="tabs is-toggle is-fullwidth is-toggle-rounded is-centered is-medium">
             <ul>
-                {% if not horse.is_archived %}
+                {% if not horse.is_archived and ('ecuestre_update' in permissions or is_admin) %}
                     <li >
                         <a href="{{ url_for('equestrian_bp.edit_horse', horse_id=horse.id) }}">
                               <span class="icon is-small">

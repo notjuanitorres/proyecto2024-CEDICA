@@ -1,46 +1,40 @@
-from dataclasses import dataclass
-from flask import render_template
+from flask import Blueprint, render_template
 
 
-@dataclass
-class Error:
-    """
-        Data class representing an error.
-
-        Attributes:
-            code (int): The HTTP status code of the error.
-            name (str): The name of the error.
-            description (str): The description of the error.
-        """
-    code: int
-    name: str
-    description: str
+errors_bp = Blueprint("errors", __name__, template_folder="../templates/error/")
 
 
-def handle_error(e):
-    """
-        Handle HTTP errors and render an error template.
+@errors_bp.app_errorhandler(400)
+def bad_request_error(error):
+    return render_template("4xx/400.html", error=error), 400
 
-        Args:
-            e (HTTPException): The HTTP exception.
 
-        Returns:
-            Response: The rendered error template and the HTTP status code.
-        """
-    error_map = {
-        400: (
-            "Solicitud incorrecta",
-            "La solicitud no se pudo entender por el servidor debido a una sintaxis mal formada."),
-        401: ("No autorizado", "No tiene autorización para acceder a este recurso."),
-        403: ("Prohibido", "No tiene permiso para acceder a este recurso."),
-        404: ("No encontrado", "La URL solicitada no se encuentra en el servidor."),
-        405: ("Método no permitido", "El método no está permitido para la URL solicitada."),
-        500: ("Error interno del servidor",
-              "El servidor encontró una condición inesperada que le impidió completar la solicitud.")
-    }
+@errors_bp.app_errorhandler(401)
+def unauthorized_error(error):
+    return render_template("4xx/401.html", error=error), 401
 
-    code = e.code if e.code in error_map else 500
-    name, description = error_map.get(code, ("Error desconocido", "Ocurrió un error inesperado."))
 
-    error = Error(code, name, description)
-    return render_template("error/error.html", error=error), code
+@errors_bp.app_errorhandler(403)
+def forbidden_error(error):
+    return render_template("4xx/403.html", error=error), 403
+
+
+@errors_bp.app_errorhandler(404)
+def not_found_error(error):
+    return render_template("4xx/404.html", error=error), 404
+
+
+@errors_bp.app_errorhandler(405)
+def method_not_allowed_error(error):
+    return render_template("4xx/405.html", error=error), 405
+
+
+@errors_bp.app_errorhandler(500)
+def internal_error(error):
+    return render_template("5xx/500.html", error=error), 500
+
+
+@errors_bp.app_errorhandler(502)
+def bad_gateway_error(error):
+    return render_template("5xx/502.html", error=error), 502
+
