@@ -1,26 +1,14 @@
-{% extends "layout.html" %} 
+{% extends 'update_relationship.html' %}
 
-{% from "macros/pagination.html" import render_pagination %}
-
-{% block extra_styles %}
-	{{ super() }}
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/components/pagination.css') }}">
-{% endblock %}
 {% block title %} Miembro {{ employee.name + " " + employee.lastname }} - CEDICA {% endblock %} 
 
 {% block card_title %}Asociandole una cuenta a: {{ employee.name + " " + employee.lastname }}{% endblock %} 
 
-{% block main_content %}
-<nav class="breadcrumb" aria-label="breadcrumbs">
-  <ul>
-    <li>
-      <a href="{{ url_for('index_bp.home')}}">
-        <span class="icon is-small">
-          <i class="fas fa-home" aria-hidden="true"></i>
-        </span>
-        <span>Inicio</span>
-      </a>
-    </li>
+{% block search_label %}
+          Buscar empleado por Alias o email
+{% endblock %}
+
+{% block actual_breadcrumb %}
     <li>
       <a href="{{ url_for('employee_bp.get_employees') }}">
         <span class="icon is-small">
@@ -47,49 +35,23 @@
         <span>Asociar cuenta</span>
       </a>
     </li>
-  </ul>
-</nav>
+{% endblock %}
 
-<section id="link-account" class="panel">
-  <div class="container p-4">
-    <h1 class="title is-size-4">
-      Asociandole una cuenta a {{ employee.name + " " + employee.lastname }}
-    </h1>
-  </div>
-  <form id="search-account" method="GET" class="panel-block is-gap-2">
-    <div class="field is-flex-grow-1">
-      <label for="filtrar" class="label">Buscar cuenta</label>
-      <p class="control has-icons-left">
-        {{ search_form.search_text(class="input", placeholder="Buscar por alias o email", id='filtrar') }}
-        <span class="icon is-left">
-          <i class="fas fa-search" aria-hidden="true"></i>
-        </span>
-      </p>
-      {% if search_form.search_text.errors %}
-      <p class="help is-danger">{{ search_form.search_text.errors[0] }}</p>
-      {% endif %}
-    </div>
-    <div class="field">
-      <label for="submit-search" class="is-invisible"> {{ search_form.submit_search.label }}</label>
-      <div class="control">
-          {{ search_form.submit_search(class="button is-flex-grow-1 is-link")}}
-      </div>
-    </div>
-  </form>
-  <div class="container p-4">
-    <h3 class="subtitle">Mostrando cuentas activas y sin empleados asociados</h3>
-    {{ render_pagination(accounts, 'employee_bp.link_account', {"employee_id":employee.id}) }}
-  </div>
+{% block subtitle_text %} Mostrando usuarios activos y sin empleados asignados {% endblock %}
+
+{% block pagination %}
+	{{ render_pagination(accounts, 'employee_bp.link_account', {"employee_id":employee.id}) }}
+{% endblock %}
+
+{% block select_form %}
   <form method="POST" id="select-form" class="">
     {{ select_form.hidden_tag() }}
+    {{ select_form.csrf_token }}
     {% for account in accounts %}
-      <a class="panel-block field mb-0" data-id="account-{{ account.id }}">
+      <a class="panel-block field mb-0" data-id="item-{{ account.id }}">
         <div class="media">
           <div class="media-left">
             <i class="fa-solid fa-circle-user is-size-3" aria-hidden="true"></i>
-            <!-- <figure class="image is-24x24">
-              <img src="https://bulma.io/assets/images/placeholders/128x128.png" alt="Image" />
-            </figure> -->
           </div>
           <div class="media-content">
             <div class="content">
@@ -104,57 +66,7 @@
       </a>
   {% endfor %}
     <div class="panel-block">
-      {{ select_form.submit_account(class="button is-primary is-fullwidth", id="submit-account", type="submit")}}
+      {{ select_form.submit_item(class="button is-primary is-fullwidth", id="submit-item", type="submit")}}
     </div>
   </form>
-
-</section>
-{% endblock %}
-{% block extra_scripts %}
-    {{ super() }}
-    <script>
-      document.addEventListener('DOMContentLoaded', function() {
-          const pagination = document.getElementById("pagination")
-          const selectForm = document.getElementById("select-form");
-          const accountLinks = document.querySelectorAll('[data-id^="account-"]');
-          const selectedAccount = document.getElementById('selected_account');
-          const submitButton = document.getElementById('submit-account');
-          const isActive = "has-background-warning"
-
-          function selectAccount(accountId, clickedElement) {  
-              selectedAccount.value = accountId;
-
-              pagination.classList.add("is-invisible")
-              accountLinks.forEach(link => {
-                  link.classList.remove(isActive);
-              });
-              clickedElement.classList.add(isActive);
-              submitButton.disabled = false;
-          }
-
-          function deselectAccount() {
-              pagination.classList.remove("is-invisible")
-              selectedAccount.value = null;
-              accountLinks.forEach(link => {
-                  link.classList.remove(isActive);
-              });
-              submitButton.disabled = true;
-          }
-
-          accountLinks.forEach(link => {
-              link.addEventListener('click', function(event) {
-                  event.preventDefault();
-                  const accountId = this.getAttribute('data-id').split('-')[1];
-                  
-                  if (this.classList.contains(isActive)) {
-                      deselectAccount();
-                  } else {
-                      selectAccount(accountId, this);
-                  }
-              });
-          });
-
-          submitButton.disabled = true;
-      });
-    </script>
 {% endblock %}

@@ -26,8 +26,8 @@ def seed_all(app):
     """
     Seeds all the necessary data into the database.
 
-    This function runs the seeding process for accounts, employees, and the equestrian module,
-    committing changes to the database at appropriate points.
+    This function runs the seeding process for accounts, employees, the equestrian module,
+    payments, jockey amazons, and charges, committing changes to the database at appropriate points.
 
     Args:
         app (Flask): The Flask application instance used to get the application context.
@@ -44,9 +44,9 @@ def seed_all(app):
         db.session.commit()
         seed_jockey_amazons()
         print("Commiting jockey_amazons module")
-        print("Seeding charges")
-        seed_charges()
-        print("Commiting charges")
+        # print("Seeding charges")
+        # seed_charges()
+        # print("Commiting charges")
         db.session.commit()
 
 
@@ -289,8 +289,14 @@ def seed_horse_trainers():
     ]
     db.session.add_all(horse_trainers)
 
+
 def seed_payments():
-     payments = [
+    """
+    Seeds payment data in the database.
+
+    This function creates several payments with various attributes.
+    """
+    payments = [
         Payment(amount=100.0, payment_date=date(2023, 1, 15), payment_type=PaymentTypeEnum.HONORARIOS, description='Payment for services', beneficiary_id=1, is_archived=False),
         Payment(amount=200.0, payment_date=date(2023, 2, 20), payment_type=PaymentTypeEnum.PROOVEDOR, description='Payment for goods', is_archived=False),
         Payment(amount=150.0, payment_date=date(2023, 3, 10), payment_type=PaymentTypeEnum.HONORARIOS, description='Refund', beneficiary_id=3, is_archived=True),
@@ -308,132 +314,19 @@ def seed_payments():
         Payment(amount=1300.0, payment_date=date(2024, 3, 25), payment_type=PaymentTypeEnum.PROOVEDOR, description='Payment for domain', is_archived=True),
     ]
 
-     db.session.add_all(payments)
-     db.session.commit()
-     print("Seeding payments completed")
+    db.session.add_all(payments)
+    db.session.commit()
+    print("Seeding payments completed")
+
 
 def seed_jockey_amazons():
+    """
+    Seeds jockey and amazon data in the database.
+
+    This function creates several jockeys and amazons with various attributes,
+     including school institutions, work assignments, and family members.
+    """
     print("Seeding jockey_amazons")
-
-    school1 = SchoolInstitution(
-        name="Escuela Primaria N°1",
-        street="Calle Falsa",
-        number=123,
-        department="Departamento 1",
-        locality="Localidad 1",
-        province="Provincia 1",
-        phone_country_code="54",
-        phone_area_code="11",
-        phone_number="12345678"
-    )
-    school2 = SchoolInstitution(
-        name="Escuela Secundaria N°2",
-        street="Otra Calle",
-        number=456,
-        department="Departamento 2",
-        locality="Localidad 2",
-        province="Provincia 2",
-        phone_country_code="54",
-        phone_area_code="11",
-        phone_number="87654321"
-    )
-    school3 = SchoolInstitution(
-        name="Escuela Secundaria N°3",
-        street="Av. Siempreviva",
-        number=742,
-        department="Departamento Central",
-        locality="Springfield",
-        province="Provincia 3",
-        phone_country_code="54",
-        phone_area_code="351",
-        phone_number="1231234"
-    )
-    db.session.add_all([school1, school2, school3])
-
-    family_member1 = FamilyMember(
-        relationship="Padre",
-        first_name="Juan",
-        last_name="Pérez",
-        dni="12345678",
-        street="Calle Falsa",
-        number=123,
-        department="Departamento 1",
-        locality="Localidad 1",
-        province="Provincia 1",
-        phone_country_code="54",
-        phone_area_code="11",
-        phone_number="12345678",
-        email="juan.perez@example.com",
-        education_level=EducationLevelEnum.SECONDARY,
-        occupation="Empleado"
-    )
-    family_member2 = FamilyMember(
-        relationship="Madre",
-        first_name="Laura",
-        last_name="Gómez",
-        dni="23456789",
-        street="Otra Calle",
-        number=456,
-        department="Departamento 2",
-        locality="Localidad 2",
-        province="Provincia 2",
-        phone_country_code="54",
-        phone_area_code="11",
-        phone_number="87654321",
-        email="laura.gomez@example.com",
-        education_level=EducationLevelEnum.TERTIARY,
-        occupation="Médico"
-    )
-    family_member3 = FamilyMember(
-        relationship="Madre",
-        first_name="Ana",
-        last_name="Romero",
-        dni="34567890",
-        street="Calle Los Álamos",
-        number=321,
-        department="Departamento Norte",
-        locality="Springfield",
-        province="Provincia 3",
-        phone_country_code="54",
-        phone_area_code="351",
-        phone_number="5675678",
-        email="ana.romero@example.com",
-        education_level=EducationLevelEnum.TERTIARY,
-        occupation="Docente"
-    )
-    db.session.add_all([family_member1, family_member2, family_member3])
-
-    work_assignment1 = WorkAssignment(
-        proposal=WorkProposalEnum.HIPOTHERAPY,
-        condition=WorkConditionEnum.REGULAR,
-        sede=SedeEnum.CASJ,
-        days=[DayEnum.MONDAY, DayEnum.WEDNESDAY, DayEnum.FRIDAY],
-        professor_or_therapist_id=3,
-        conductor_id=3,
-        track_assistant_id=3,
-        horse_id=3
-    )
-    work_assignment2 = WorkAssignment(
-        proposal=WorkProposalEnum.ADAPTED_EQUESTRIAN_SPORTS,
-        condition=WorkConditionEnum.REGULAR,
-        sede=SedeEnum.HLP,
-        days=[DayEnum.TUESDAY, DayEnum.THURSDAY],
-        professor_or_therapist_id=4,
-        conductor_id=4,
-        track_assistant_id=4,
-        horse_id=4
-    )
-    work_assignment3 = WorkAssignment(
-        proposal=WorkProposalEnum.RECREATIONAL_ACTIVITIES,
-        condition=WorkConditionEnum.REGULAR,
-        sede=SedeEnum.OTHER,
-        days=[DayEnum.TUESDAY, DayEnum.THURSDAY],
-        professor_or_therapist_id=5,
-        conductor_id=6,
-        track_assistant_id=7,
-        horse_id=6
-    )
-    db.session.add_all([work_assignment1, work_assignment2, work_assignment3])
 
     jockey1 = JockeyAmazon(
         first_name="María",
@@ -456,12 +349,9 @@ def seed_jockey_amazons():
         social_security_number="123456789",
         has_curatorship=False,
         curatorship_observations=None,
-        school_institution=school1,
         current_grade_year="5to Año",
         school_observations="Observaciones escolares",
         professionals="Profesionales involucrados",
-        family_members=[family_member1],
-        work_assignment=work_assignment1
     )
 
     jockey2 = JockeyAmazon(
@@ -485,12 +375,9 @@ def seed_jockey_amazons():
         social_security_number="987654321",
         has_curatorship=True,
         curatorship_observations="Curador: Juan Pérez",
-        school_institution=school2,
         current_grade_year="2do Año",
         school_observations="Observaciones escolares de José",
         professionals="Profesional 1, Profesional 2",
-        family_members=[family_member2],
-        work_assignment=work_assignment2
     )
 
     jockey3 = JockeyAmazon(
@@ -514,18 +401,160 @@ def seed_jockey_amazons():
         social_security_number="456789012",
         has_curatorship=False,
         curatorship_observations=None,
-        school_institution=school3,
         current_grade_year="4to Año",
         school_observations="Alumno destacada en actividades extracurriculares",
         professionals="Psicopedagoga, Fonoaudióloga",
-        family_members=[family_member3],
-        work_assignment=work_assignment3
     )
 
-    db.session.add_all([jockey1, jockey2, jockey3])
+    school1 = SchoolInstitution(
+        name="Escuela Primaria N°1",
+        street="Calle Falsa",
+        number=123,
+        department="Departamento 1",
+        locality="Localidad 1",
+        province="Provincia 1",
+        phone_country_code="54",
+        phone_area_code="11",
+        phone_number="12345678",
+        jockey_amazon=jockey1
+    )
+    school2 = SchoolInstitution(
+        name="Escuela Secundaria N°2",
+        street="Otra Calle",
+        number=456,
+        department="Departamento 2",
+        locality="Localidad 2",
+        province="Provincia 2",
+        phone_country_code="54",
+        phone_area_code="11",
+        phone_number="87654321",
+        jockey_amazon=jockey2
+    )
+    school3 = SchoolInstitution(
+        name="Escuela Secundaria N°3",
+        street="Av. Siempreviva",
+        number=742,
+        department="Departamento Central",
+        locality="Springfield",
+        province="Provincia 3",
+        phone_country_code="54",
+        phone_area_code="351",
+        phone_number="1231234",
+        jockey_amazon=jockey3
+    )
+    
+    db.session.add_all([jockey1, jockey2, jockey3, school1, school2, school3])
+
+    work_assignment1 = WorkAssignment(
+        proposal=WorkProposalEnum.HIPOTHERAPY,
+        condition=WorkConditionEnum.REGULAR,
+        sede=SedeEnum.CASJ,
+        days=[DayEnum.MONDAY, DayEnum.WEDNESDAY, DayEnum.FRIDAY],
+        professor_or_therapist_id=3,
+        conductor_id=3,
+        track_assistant_id=3,
+        horse_id=3,
+        jockey_amazon=jockey1
+    )
+    work_assignment2 = WorkAssignment(
+        proposal=WorkProposalEnum.ADAPTED_EQUESTRIAN_SPORTS,
+        condition=WorkConditionEnum.REGULAR,
+        sede=SedeEnum.HLP,
+        days=[DayEnum.TUESDAY, DayEnum.THURSDAY],
+        professor_or_therapist_id=4,
+        conductor_id=4,
+        track_assistant_id=4,
+        horse_id=4,
+        jockey_amazon=jockey2
+    )
+    work_assignment3 = WorkAssignment(
+        proposal=WorkProposalEnum.RECREATIONAL_ACTIVITIES,
+        condition=WorkConditionEnum.REGULAR,
+        sede=SedeEnum.OTHER,
+        days=[DayEnum.TUESDAY, DayEnum.THURSDAY],
+        professor_or_therapist_id=5,
+        conductor_id=6,
+        track_assistant_id=7,
+        horse_id=6,
+        jockey_amazon=jockey3
+    )
+
+    db.session.add_all([work_assignment1, work_assignment2, work_assignment3])
+
+    family_member1 = FamilyMember(
+        relationship="Padre",
+        first_name="Juan",
+        last_name="Pérez",
+        dni="12345678",
+        street="Calle Falsa",
+        number=123,
+        department="Departamento 1",
+        locality="Localidad 1",
+        province="Provincia 1",
+        phone_country_code="54",
+        phone_area_code="11",
+        phone_number="12345678",
+        email="juan.perez@example.com",
+        education_level=EducationLevelEnum.SECONDARY,
+        occupation="Empleado",
+        jockey_amazon=jockey1
+    )
+    family_member2 = FamilyMember(
+        relationship="Madre",
+        first_name="Laura",
+        last_name="Gómez",
+        dni="23456789",
+        street="Otra Calle",
+        number=456,
+        department="Departamento 2",
+        locality="Localidad 2",
+        province="Provincia 2",
+        phone_country_code="54",
+        phone_area_code="11",
+        phone_number="87654321",
+        email="laura.gomez@example.com",
+        education_level=EducationLevelEnum.TERTIARY,
+        occupation="Médico",
+        jockey_amazon=jockey2
+    )
+    family_member3 = FamilyMember(
+        relationship="Madre",
+        first_name="Ana",
+        last_name="Romero",
+        dni="34567890",
+        street="Calle Los Álamos",
+        number=321,
+        department="Departamento Norte",
+        locality="Springfield",
+        province="Provincia 3",
+        phone_country_code="54",
+        phone_area_code="351",
+        phone_number="5675678",
+        email="ana.romero@example.com",
+        education_level=EducationLevelEnum.TERTIARY,
+        occupation="Docente",
+        jockey_amazon=jockey3
+    )
+
+    db.session.add_all([family_member1, family_member2, family_member3])
 
 
 def seed_charges():
+    """
+    Seed the database with initial charge data.
+
+    This function creates a list of Charge objects with predefined data
+    and inserts them into the database. Each Charge object includes details
+    such as the date of charge, amount, payment method, employee ID, jockey/amazon ID,
+    observations, and timestamps for insertion and update.
+
+    Example:
+        seed_charges()
+
+    Returns:
+        None
+    """
+        
     charges = [
         Charge(
             id=1,

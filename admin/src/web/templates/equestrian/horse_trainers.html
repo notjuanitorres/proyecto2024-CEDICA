@@ -100,6 +100,7 @@
     <th>Profesión</th>
     <th>Posición</th>
     <th>Activo</th>
+    <th>Archivado</th>
     <th>Desvincular</th>
 {% endblock %}
 
@@ -112,23 +113,43 @@
     {% for employee in trainers %}
         <tr class="">
             <td class="is-hidden-mobile">
-                {{ render_actions_menu(
-                field="employee_id",
-                value=employee.id,
-                to_left=true,
-                endpoints={
-                  'show':'employee_bp.show_employee',
-                  'edit': 'employee_bp.edit_employee',
-                  'delete':''
-                },
-                permission_to_show="equipo_show",
-                permission_to_edit="equipo_update",
-                permission_to_delete="ecuestre_update",
-                user_permissions=permissions,
-                is_admin=is_admin,
-                delete_text="Desvincular"
-                        )
-                }}
+                {% if not employee.is_deleted %}
+                    {{ render_actions_menu(
+                    field="employee_id",
+                    value=employee.id,
+                    to_left=true,
+                    endpoints={
+                      'show':'employee_bp.show_employee',
+                      'edit': 'employee_bp.edit_employee',
+                      'delete':''
+                    },
+                    permission_to_show="equipo_show",
+                    permission_to_edit="equipo_update",
+                    permission_to_delete="ecuestre_update",
+                    user_permissions=permissions,
+                    is_admin=is_admin,
+                    delete_text="Desvincular"
+                            )
+                    }}
+                {% else %}
+                    {{ render_actions_menu(
+                    field="employee_id",
+                    value=employee.id,
+                    to_left=true,
+                    endpoints={
+                      'show':'employee_bp.show_employee',
+                      'edit': '',
+                      'delete':''
+                    },
+                    permission_to_show="equipo_show",
+                    permission_to_edit="equipo_update",
+                    permission_to_delete="ecuestre_update",
+                    user_permissions=permissions,
+                    is_admin=is_admin,
+                    delete_text="Desvincular"
+                            )
+                    }}
+                {% endif %}
             </td>
             <td><span class="is-hidden-tablet has-text-weight-bold">Nombre: </span>{{ employee.name }}</td>
             <td><span class="is-hidden-tablet has-text-weight-bold">Apellido: </span>{{ employee.lastname }}</td>
@@ -138,6 +159,9 @@
             <td><span class="is-hidden-tablet has-text-weight-bold">Posición: </span>{{ employee.position.value }}</td>
             <td><span
                     class="is-hidden-tablet has-text-weight-bold">Activo: </span>{{ employee.active | natural_boolean }}
+            </td>
+            <td><span
+                    class="is-hidden-tablet has-text-weight-bold">Archivado: </span>{{ employee.is_deleted | natural_boolean }}
             </td>
             <td><span class="is-hidden-mobile has-text-weight-bold"></span>
             <button class="is-hidden-mobile has-text-danger" data-id="{{ employee.id }}" data-target="user-delete-modal">
@@ -166,7 +190,14 @@
 {% endblock %}
 
 {% block table_footer %}
-
+    <th>Nombre</th>
+    <th>Apellido</th>
+    <th>Email</th>
+    <th>Profesión</th>
+    <th>Posición</th>
+    <th>Activo</th>
+    <th>Archivado</th>
+    <th>Desvincular</th>
 {% endblock %}
 
 {% block bottom_pagination %}

@@ -349,7 +349,13 @@ def delete_horse(equestrian_repository: AbstractEquestrianRepository = Provide[C
         Response: Redirect to the list of horses.
     """
     horse_id = request.form["item_id"]
-    deleted = equestrian_repository.delete(int(horse_id))
+    try:
+        horse_id = int(horse_id)
+    except ValueError:
+        flash("El caballo solicitado no existe", "danger")
+        return redirect(url_for("equestrian_bp.get_horses"))
+
+    deleted = equestrian_repository.delete(horse_id)
     if not deleted:
         flash("El caballo no ha podido ser eliminado, inténtelo nuevamente", "danger")
     else:

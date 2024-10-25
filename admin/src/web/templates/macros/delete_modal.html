@@ -1,4 +1,5 @@
-{% macro render_delete_modal(endpoint, title, msg, msg_sub, field='user', delete_text="Eliminar") %}
+{% macro render_delete_modal(endpoint, title, msg, msg_sub,
+related_entities_text="", field='user', delete_text="Eliminar") %}
   <div class="modal" id="{{ field }}-delete-modal">
     <div class="modal-background"></div>
     <div class="modal-card">
@@ -9,6 +10,7 @@
       <section class="modal-card-body">
         <p>{{ msg }}</p>
         <p class="has-text-danger mt-4 is-bold">{{ msg_sub }}</p>
+        {% if related_entities_text %}<p class="has-text-danger mt-4 is-bold">{{ related_entities_text }}</p> {% endif %}
       </section>
       <footer class="modal-card-foot">
         <div class="buttons">

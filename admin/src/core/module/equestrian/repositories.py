@@ -555,6 +555,7 @@ class EquestrianRepository(AbstractEquestrianRepository):
         return True
 
     def archive_horse(self, horse_id) -> bool:
+        """Archive a horse."""
         horse = Horse.query.get(horse_id)
         if not horse or horse.is_archived:
             return False
@@ -566,6 +567,7 @@ class EquestrianRepository(AbstractEquestrianRepository):
         return True
 
     def recover_horse(self, horse_id) -> bool:
+        """Recover an archived horse."""
         horse = Horse.query.get(horse_id)
         if not horse or not horse.is_archived:
             return False
@@ -583,6 +585,7 @@ class EquestrianRepository(AbstractEquestrianRepository):
         return Horse.query.all()
 
     def get_active_horses(self, page: int = 1, search: str = "", activity: str = "") -> bool:
+        """Get a paginated list with the active horses."""
         per_page = 7
 
         query = self.db.session.query(Horse).filter(Horse.is_archived == False)
@@ -594,6 +597,5 @@ class EquestrianRepository(AbstractEquestrianRepository):
         if activity:
             search_query = {"filters": {"ja_type": activity}}
 
-        query = apply_filters(model=Horse, query=query, search_query=search_query)
-        print(query.all())
+        query = apply_filters(model=Horse, query=query, search_query=search_query, order_by=[])
         return query.paginate(page=page, per_page=per_page, error_out=False)

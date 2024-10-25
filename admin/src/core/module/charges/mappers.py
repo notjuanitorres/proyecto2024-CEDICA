@@ -3,8 +3,21 @@ from src.core.module.charges.models import Charge
 
 
 class ChargeMapper:
+    """
+    A mapper class for converting between Charge entities and data transfer objects (DTOs).
+    """
+
     @classmethod
     def from_entity(cls, charge: Charge) -> Dict:
+        """
+        Convert a Charge entity to a dictionary.
+
+        Args:
+            charge (Charge): The Charge entity to convert.
+
+        Returns:
+            Dict: A dictionary representation of the Charge entity.
+        """
         return {
             "id": charge.id,
             "amount": charge.amount,
@@ -19,7 +32,16 @@ class ChargeMapper:
         }
 
     @classmethod
-    def to_entity(cls, data: Dict) -> "Charge":
+    def to_entity(cls, data: Dict) -> Charge:
+        """
+        Convert a dictionary to a Charge entity.
+
+        Args:
+            data (Dict): The dictionary containing charge data.
+
+        Returns:
+            Charge: The Charge entity created from the provided data.
+        """
         return Charge(
             amount=data.get("amount"),
             observations=data.get("observations"),
@@ -32,6 +54,15 @@ class ChargeMapper:
 
     @classmethod
     def from_form(cls, data: Dict) -> Dict:
+        """
+        Convert form data to a dictionary suitable for creating or updating a Charge entity.
+
+        Args:
+            data (Dict): The form data.
+
+        Returns:
+            Dict: A dictionary representation of the form data.
+        """
         return {
             "amount": data.get("amount"),
             "observations": data.get("observations"),
@@ -43,6 +74,15 @@ class ChargeMapper:
 
     @classmethod
     def to_form(cls, data: Dict) -> Dict:
+        """
+        Convert a dictionary to a form data representation.
+
+        Args:
+            data (Dict): The dictionary containing charge data.
+
+        Returns:
+            Dict: A dictionary representation of the charge data suitable for form population.
+        """
         return {
             "amount": data.get("amount"),
             "observations": data.get("observations"),
@@ -53,7 +93,16 @@ class ChargeMapper:
         }
 
     @classmethod
-    def from_session(cls, data: Dict):
+    def from_session(cls, data: Dict) -> Dict:
+        """
+        Convert session data to a dictionary suitable for creating or updating a Charge entity.
+
+        Args:
+            data (Dict): The session data.
+
+        Returns:
+            Dict: A dictionary representation of the session data.
+        """
         return {
             "amount": data.get("amount"),
             "observations": data.get("observations"),
@@ -64,7 +113,16 @@ class ChargeMapper:
         }
 
     @classmethod
-    def to_session(cls, data: Dict):
+    def to_session(cls, data: Dict) -> Dict:
+        """
+        Convert a dictionary to a session data representation.
+
+        Args:
+            data (Dict): The dictionary containing charge data.
+
+        Returns:
+            Dict: A dictionary representation of the charge data suitable for session storage.
+        """
         return {
             "amount": data.get("amount"),
             "observations": data.get("observations"),

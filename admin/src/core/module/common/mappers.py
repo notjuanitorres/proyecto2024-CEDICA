@@ -2,6 +2,18 @@ from typing import Dict
 
 
 class FileMapper:
+    """
+    A class that provides methods for mapping file data between different
+    formats, such as dictionaries and form data. This class is used to
+    transform file data into a form-friendly format and vice versa.
+
+    Methods:
+        to_form(file: Dict) -> Dict:
+            Converts a file dictionary to a form-friendly dictionary.
+
+        file_from_form(data: Dict) -> dict:
+            Transforms edit form data into a dictionary for updating a file.
+    """
     @classmethod
     def to_form(cls, file: Dict) -> Dict:
         """

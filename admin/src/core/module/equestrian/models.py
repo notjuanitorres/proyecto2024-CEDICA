@@ -1,3 +1,16 @@
+"""
+models.py
+
+This module contains the models for the equestrian module.
+
+Models:
+- JAEnum: Enumeration for different types of J&A activities.
+- Horse: Represents a horse in the equestrian center.
+- HorseTrainers: Represents the relationship between a horse and its trainers.
+- FileTagEnum: Enumeration for different types of horse files.
+- HorseFile: Represents a file related to a horse.
+"""
+
 from src.core.module.common.models import File
 from src.core.database import db
 from datetime import datetime
@@ -65,6 +78,16 @@ class Horse(db.Model):
 
 
 class HorseTrainers(db.Model):
+    """
+    Model representing the relationship between a horse and its trainers.
+
+    Attributes:
+        id (int): The unique identifier of the relationship.
+        id_horse (int): The unique identifier of the horse.
+        id_employee (int): The unique identifier of the employee.
+        horse (Horse): The horse related to the relationship.
+        employee (Employee): The employee related to the relationship.
+    """
     __tablename__ = 'horse_trainers'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -76,6 +99,16 @@ class HorseTrainers(db.Model):
 
 
 class FileTagEnum(pyEnum):
+    """
+    Enumeration for different types of horse files.
+
+    Attributes:
+        FICHA_GENERAL (str): Ficha general del caballo.
+        PLANIFICACION_ENTRENAMIENTO (str): Planificación de Entrenamiento.
+        INFORME_EVOLUCION (str): Informe de Evolución.
+        CARGA_IMAGENES (str): Carga de Imágenes.
+        REGISTRO_VETERINARIO (str): Registro veterinario.
+    """
     FICHA_GENERAL = "Ficha general del caballo"
     PLANIFICACION_ENTRENAMIENTO = "Planificación de Entrenamiento"
     INFORME_EVOLUCION = "Informe de Evolución"
@@ -84,6 +117,13 @@ class FileTagEnum(pyEnum):
 
 
 class HorseFile(File):
+    """
+    Model representing a file related to a horse.
+
+    Attributes:
+        horse_id (int): The unique identifier of the horse.
+        owner (Horse): The horse related to the file.
+    """
     __mapper_args__ = {
         "polymorphic_identity": "horse",
     }

@@ -1,0 +1,137 @@
+{% extends "layout.html" %} 
+
+{% from "macros/flash_message.html" import render_flash_messages %}
+{% from "macros/pagination.html" import render_pagination %}
+
+{% block extra_styles %}
+	{{ super() }}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/components/pagination.css') }}">
+{% endblock %}
+
+{% block title %} {% endblock %}
+
+
+{% block main_content %}
+<nav class="breadcrumb" aria-label="breadcrumbs">
+  <ul>
+    <li>
+      <a href="{{ url_for('index_bp.home')}}">
+        <span class="icon is-small">
+          <i class="fas fa-home" aria-hidden="true"></i>
+        </span>
+        <span>Inicio</span>
+      </a>
+    </li>
+     {% block actual_breadcrumb %}
+     {% endblock %}
+  </ul>
+</nav>
+
+{% block tab_bar %}{% endblock %}
+
+{{ render_flash_messages(messages) }}
+<section id="link-container" class="panel">
+  <div class="container p-4">
+    <h1 class="title is-size-4">
+      {% block card_title %}
+      {% endblock %}
+    </h1>
+  </div>
+  <form id="search" method="GET" class="panel-block">
+    {{ search_form.hidden_tag() }}
+    <div class="columns is-multiline is-gapless is-flex-grow-1">
+      {% block extra_filter %} {% endblock %}
+      <div class="column {% block search_size %}is-12{% endblock %}">
+        <div class="field pl-4">
+          <label for="filtrar" class="label">
+          {% block search_label %}
+          Buscar empleado por Nombre, Email o DNI
+          {% endblock %}
+          </label>
+          <p class="control has-icons-left">
+            {{ search_form.search_text(class="input", placeholder="Buscar") }}
+            <span class="icon is-left">
+              <i class="fas fa-search" aria-hidden="true"></i>
+            </span>
+          </p>
+          {% if search_form.search_text.errors %}
+          <p class="help is-danger">{{ search_form.search_text.errors[0] }}</p>
+          {% endif %}
+        </div>
+      </div>
+      <div class="column is-6">
+        <div class="field">
+          <label for="clear-search" class="is-invisible"> Limpiar </label>
+          <div class="control">
+            <div class="block"></div>
+            {%block clear_search %}{% endblock %}
+          </div>
+        </div>
+      </div>
+      <div class="column is-">
+        <div class="field">
+          <label for="submit-search" class="is-invisible"> {{ search_form.submit_search.label }}</label>
+          <div class="control pl-2 pt-3">
+              {{ search_form.submit_search(class="button is-link is-fullwidth")}}
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+  <div class="container p-4">
+    <h3 class="subtitle">{% block subtitle_text %} Mostrando empleados activos {% endblock %}</h3>
+    {% block pagination %} {% endblock %}
+  </div> 
+  {% block select_form %}
+  {% endblock %}
+
+</section>
+{% endblock %}
+{% block extra_scripts %}
+    {{ super() }}
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+          const pagination = document.getElementById("pagination")
+          const selectForm = document.getElementById("select-form");
+          const itemLinks = document.querySelectorAll('[data-id^="item-"]');
+          const selectedItem = document.getElementById('selected_item');
+          const submitButton = document.getElementById('submit-item');
+          const isActive = "has-background-warning"
+
+          function selectItem(itemId, clickedElement) {  
+              selectedItem.value = itemId;
+
+              pagination.classList.add("is-invisible")
+              itemLinks.forEach(link => {
+                  link.classList.remove(isActive);
+              });
+              clickedElement.classList.add(isActive);
+              submitButton.disabled = false;
+          }
+
+          function deselectItem() {
+              pagination.classList.remove("is-invisible")
+              selectedItem.value = null;
+              accountLinks.forEach(link => {
+                  link.classList.remove(isActive);
+              });
+              submitButton.disabled = true;
+          }
+
+          itemLinks.forEach(link => {
+              link.addEventListener('click', function(event) {
+                  event.preventDefault();
+                  const itemId = this.getAttribute('data-id').split('-')[1];
+                  
+                  if (this.classList.contains(isActive)) {
+                      deselectItem();
+                  } else {
+                      selectItem(itemId, this);
+                  }
+              });
+          });
+
+          submitButton.disabled = true;
+      });
+    </script>
+{% endblock %}

@@ -34,6 +34,17 @@ def search_employees(
     need_archive: bool,
     employees: AbstractEmployeeRepository = Provide[Container.employee_repository],
 ):
+    """
+    Helper function to search employees.
+
+    Args:
+        search (EmployeeSearchForm): The form for searching employees.
+        need_archived (bool): Indicates if the search should include archived employees.
+        equestrian_repository (AbstractEmployeeRepository): The employee repository.
+
+    Returns:
+        Pagination: The paginated list of employees.
+    """
     page = request.args.get("page", type=int, default=1)
     per_page = request.args.get("per_page", type=int, default=10)
     order_by = []
@@ -61,6 +72,15 @@ def search_employees(
 @employee_bp.route("/", methods=["GET"])
 @check_user_permissions(permissions_required=["equipo_index"])
 def get_employees():
+    """
+    Retrieve and display a paginated list of active employees.
+
+    Returns:
+        rendered template: The employees.html template with:
+            - paginated employee list
+            - employment information
+            - search form
+    """
     search_form = EmployeeSearchForm(request.args)
 
     paginated_employees = search_employees(search=search_form, need_archive=False)
@@ -76,6 +96,15 @@ def get_employees():
 @employee_bp.route("/archivados", methods=["GET"])
 @check_user_permissions(permissions_required=["equipo_index"])
 def get_deleted_employees():
+    """
+    Retrieve and display a paginated list of archived employees.
+
+    Returns:
+        rendered template: The employees_archived.html template with:
+            - paginated archived employee list
+            - employment information
+            - search form
+    """
     search_form = EmployeeSearchForm(request.args)
     paginated_employees = search_employees(search=search_form, need_archive=True)
     return render_template(
@@ -89,6 +118,13 @@ def get_deleted_employees():
 @employee_bp.route("/crear", methods=["GET", "POST"])
 @check_user_permissions(permissions_required=["equipo_new"])
 def create_employee():
+    """
+    Handle the creation of a new employee.
+
+    Returns:
+        GET: rendered template: The create_employee.html template with the creation form
+        POST: redirect: To the document creation page for the new employee
+    """
     create_form = EmployeeCreateForm()
 
     if request.method == "POST":
@@ -102,6 +138,13 @@ def add_employee(
     create_form,
     employees: AbstractEmployeeRepository = Provide[Container.employee_repository],
 ):
+    """
+    Process the employee creation form and add a new employee to the system.
+
+    Returns:
+        - A redirect to the document creation page on success
+        - The rendered create_employee template on validation failure
+    """
     if not create_form.validate_on_submit():
         return render_template("./employee/create/create_employee.html", form=create_form)
 
@@ -124,7 +167,17 @@ def create_document(
     employee_id: int,
     employees: AbstractEmployeeRepository = Provide[Container.employee_repository],
 ):
+    """
+    Handle document creation for a specific employee.
 
+    Args:
+        employee_id (int): The ID of the employee to add documents for
+        employees (AbstractEmployeeRepository): Repository for employee operations
+
+    Returns:
+        - A redirect to employees list if employee doesn't exist
+        - The rendered create_document template with form and employee data
+    """
     employee = employees.get_employee(employee_id, documents=False)
     if not employee:
         flash(f"El empleado con ID = {employee_id} no existe", "danger")
@@ -146,7 +199,19 @@ def add_document(
     employees: AbstractEmployeeRepository = Provide[Container.employee_repository],
     storage: AbstractStorageServices = Provide[Container.storage_services],
 ):
+    """
+    Process the document creation form and add a new document to an employee's profile.
 
+    Args:
+        employee (dict): The employee's information
+        create_form (EmployeeAddDocumentsForm): The validated form containing document data
+        employees (AbstractEmployeeRepository): Repository for employee operations
+        storage (AbstractStorageServices): Service for handling file storage
+
+    Returns:
+        - A redirect to document creation page on success
+        - The rendered create_document template on validation failure
+    """
     if not create_form.validate_on_submit():
         return render_template(
             "./employee/create/create_document.html", form=create_form, employee=employee
@@ -189,6 +254,19 @@ def show_employee(
     employees: AbstractEmployeeRepository = Provide[Container.employee_repository],
     accounts: AbstractUserRepository = Provide[Container.user_repository],
 ):
+    """
+    Display detailed information about a specific employee.
+
+    Args:
+        employee_id (int): The ID of the employee to display
+        employees (AbstractEmployeeRepository): Repository for employee operations
+        accounts (AbstractUserRepository): Repository for user account operations
+    
+    Returns:
+        - A redirect to employees list if employee doesn't exist
+        - The rendered employee template with employee and account data
+    """
+
     employee = employees.get_employee(employee_id=employee_id)
     employee_account = accounts.get_user(employee.get("user_id"))
     if not employee:
@@ -204,9 +282,21 @@ def edit_employee(
     employee_id: int,
     employees: AbstractEmployeeRepository = Provide[Container.employee_repository],
 ):
+    """
+    Handle employee information updates.
+
+    Args:
+        employee_id (int): The ID of the employee to edit
+        employees (AbstractEmployeeRepository): Repository for employee operations
+
+    Returns:
+        - A redirect to employees list if employee doesn't exist
+        - A redirect to employee view if employee is archived
+        - The rendered update_employee template with form and employee data
+    """
     employee = employees.get_employee(employee_id)
     if not employee:
-        flash(f"El empleado solicitado no existe", "danger")
+        flash("El empleado solicitado no existe", "danger")
         return redirect(url_for("employee_bp.get_employees"))
 
     if employee.get("is_deleted"):
@@ -234,6 +324,19 @@ def update_employee(
     update_form,
     employees: AbstractEmployeeRepository = Provide[Container.employee_repository],
 ):
+    """
+    Process the employee update form and save changes to the employee's information.
+
+    Args:
+        employee_id (int): The ID of the employee to update
+        update_form (EmployeeEditForm): The validated form containing updated employee data
+        employees (AbstractEmployeeRepository): Repository for employee operations
+
+    Returns:
+        - A redirect to employee view page on success
+        - The rendered update_employee template on validation failure
+    """
+
     employee = employees.get_employee(employee_id)
     if not update_form.validate_on_submit():
         return render_template(
@@ -254,6 +357,15 @@ def update_employee(
 def archive_employee(
     employees: AbstractEmployeeRepository = Provide[Container.employee_repository],
 ):
+    """
+    Archive an employee record.
+
+    Args:
+        employees (AbstractEmployeeRepository): Repository for employee operations
+
+    Returns:
+        Response: A redirect to the employee view page with success/failure message
+    """
     employee_id = request.form["item_id"]
     archived = employees.archive(employee_id)
 
@@ -270,6 +382,15 @@ def archive_employee(
 def recover_employee(
     employees: AbstractEmployeeRepository = Provide[Container.employee_repository],
 ):
+    """
+    Recover an archived employee record.
+
+    Args:
+        employees (AbstractEmployeeRepository): Repository for employee operations
+
+    Returns:
+        Response: A redirect to the employee view page with success/failure message
+    """
 
     employee_id = request.form["employee_id"]
     recovered = employees.recover(employee_id)
@@ -289,7 +410,31 @@ def delete_employee(
         Container.employee_repository
     ],
 ):
+    """
+    Permanently delete an employee record.
+
+    Args:
+        employee_repository (AbstractEmployeeRepository): Repository for employee operations
+
+    Returns:
+        Response: A redirect to the employees list with success/failure message
+    """
+
     employee_id = request.form["item_id"]
+    try:
+        employee_id = int(employee_id)
+    except ValueError:
+        flash("El ID del empleado no es valido", "danger")
+        return redirect(url_for("employee_bp.get_employees"))
+
+    conflicts = employee_repository.count_id_in_charges_and_payments(employee_id)
+    if conflicts:
+        flash(
+            f"El empleado no puede ser eliminado ya que está presente en {conflicts} pagos y/o cobros",
+            "danger",
+        )
+        return redirect(url_for("employee_bp.show_employee", employee_id=employee_id))
+
     deleted = employee_repository.delete(employee_id)
     if not deleted:
         flash("El empleado no ha podido ser eliminado, intentelo nuevamente", "danger")
@@ -308,19 +453,42 @@ def link_account(
     employees: AbstractEmployeeRepository = Provide[Container.employee_repository],
     users: AbstractUserRepository = Provide[Container.user_repository],
 ):
-    page = request.args.get("page", type=int, default=1)
-    search_account = AccountSearchForm()
-    select_account = AccountSelectForm()
+    """
+    Handle linking a user account to an employee profile.
+
+    This endpoint supports both GET and POST methods:
+    - GET: Display the account selection form
+    - POST: Process the account linking
+
+    Args:
+        employee_id (int): The ID of the employee to link an account to
+        page (int): The current page number for pagination
+        employees (AbstractEmployeeRepository): Repository for employee operations
+        users (AbstractUserRepository): Repository for user account operations
+
+    Returns:
+        - employee data
+        - paginated accounts list
+        - search and selection forms
+    """
     employee = employees.get_employee(employee_id)
-    accounts = users.get_active_users(page=page)
+    if not employee:
+        flash(f"El empleado solicitado no existe", "danger")
+        return redirect(url_for("employee_bp.get_employees"))
 
-    if request.method == "POST":
-        return set_employee_account(employee, search_account, select_account, accounts)
+    page = request.args.get("page", type=int, default=1)
+    search_account = AccountSearchForm(request.args)
+    select_account = AccountSelectForm()
 
-    if search_account.submit_search.data and search_account.validate():
+    if request.method == "GET" and search_account.validate():
         accounts = users.get_active_users(
             page=page, search=search_account.search_text.data
         )
+    else:
+        accounts = users.get_active_users(page=page)
+
+    if request.method == "POST":
+        return set_employee_account(employee, search_account, select_account, accounts)
 
     return render_template(
         "./employee/update/update_account.html",
@@ -339,7 +507,21 @@ def set_employee_account(
     active_accounts,
     employees: AbstractEmployeeRepository = Provide[Container.employee_repository],
 ):
-    if not (select_form.submit_account.data and select_form.validate()):
+    """
+    Process the account linking form and associate a user account with an employee.
+
+    Args:
+        employee (dict): The employee's information
+        search_form (AccountSearchForm): Form for searching accounts
+        select_form (AccountSelectForm): Form for selecting an account
+        active_accounts (list): List of active user accounts
+        employees (AbstractEmployeeRepository): Repository for employee operations
+
+    Returns:
+        - A redirect to employee view page on success
+        - The rendered update_account template on validation failure
+    """
+    if not (select_form.submit_item.data and select_form.validate()):
         return render_template(
             "./employee/update/update_account.html",
             employee=employee,
@@ -348,7 +530,7 @@ def set_employee_account(
             select_form=select_form,
         )
     employee_id = employee.get("id")
-    account_id = select_form.selected_account.data
+    account_id = select_form.selected_item.data
 
     employees.link_account(employee_id, account_id)
 
@@ -366,6 +548,17 @@ def unlink_account(
     employee_id: int,
     employees: AbstractEmployeeRepository = Provide[Container.employee_repository],
 ):
+    """
+    Remove the association between an employee and their user account.
+
+    Args:
+        employee_id (int): The ID of the employee to unlink
+        employees (AbstractEmployeeRepository): Repository for employee operations
+
+    Returns:
+        Response: A redirect to the employee view page with success message
+    """
+
     employee = employees.get_employee(employee_id)
     employees.link_account(employee_id, None)
 
@@ -385,6 +578,20 @@ def edit_documents(
         Container.employee_repository
     ],
 ):
+    """
+    Display and manage documents associated with an employee.
+
+    Args:
+        employee_id (int): The ID of the employee whose documents to edit
+        employee_repository (AbstractEmployeeRepository): Repository for employee operations
+
+    Returns:
+        - A redirect to employees list if employee doesn't exist
+        - The rendered update_documents template with:
+            - employee data
+            - paginated files list
+            - document forms
+    """
     page = request.args.get("page", type=int)
     per_page = request.args.get("per_page", type=int)
 
@@ -441,6 +648,23 @@ def update_documents(
     ],
     storage: AbstractStorageServices = Provide[Container.storage_services],
 ):
+    """
+    Process document updates for an employee.
+
+    Args:
+        add_form (EmployeeAddDocumentsForm): Form for adding new documents
+        search_form (EmployeeDocumentSearchForm): Form for searching documents
+        employee (dict): The employee's information
+        documents (list): List of employee's documents
+        paginated_files: Pagination object for documents
+        employee_repository (AbstractEmployeeRepository): Repository for employee operations
+        storage (AbstractStorageServices): Service for handling file storage
+
+    Returns:
+        - A redirect to documents edit page on success
+        - The rendered update_documents template on validation failure
+    """
+
     if not add_form.validate_on_submit():
         return render_template(
             "./employee/update/update_documents.html",
@@ -491,6 +715,18 @@ def delete_document(
     employees: AbstractEmployeeRepository = Provide[Container.employee_repository],
     storage: AbstractStorageServices = Provide[Container.storage_services],
 ):
+    """
+    Delete a document associated with an employee.
+
+    Args:
+        employee_id (int): The ID of the employee whose document to delete
+        employees (AbstractEmployeeRepository): Repository for employee operations
+        storage (AbstractStorageServices): Service for handling file storage
+
+    Returns:
+        Response: A redirect to the documents edit page with success/failure message
+    """
+
     document_id = int(request.form["item_id"])
     document = employees.get_document(employee_id, document_id)
 
@@ -520,6 +756,17 @@ def toggle_activation(
     employees: AbstractEmployeeRepository = Provide[Container.employee_repository],
     users: AbstractUserRepository = Provide[Container.user_repository],
 ):
+    """
+    Toggle the active status of an employee and their associated user account.
+
+    Args:
+        employee_id (int): The ID of the employee to toggle
+        employees (AbstractEmployeeRepository): Repository for employee operations
+        users (AbstractUserRepository): Repository for user account operations
+
+    Returns:
+        Response: A redirect to the previous page or home with success message
+    """
     employee = employees.get_employee(employee_id)
     account = employee.get("user_id")
     is_active = employees.toggled_activation(employee_id)
@@ -545,6 +792,22 @@ def edit_document(
         Container.employee_repository
     ],
 ):
+    """
+    Handle editing of a specific document.
+
+    This endpoint supports both GET and POST methods:
+    - GET: Display the document edit form
+    - POST: Process the document update
+
+    Args:
+        employee_id (int): The ID of the employee whose document to edit
+        document_id (int): The ID of the document to edit
+        employee_repository (AbstractEmployeeRepository): Repository for employee operations
+    Returns:
+        - A redirect if employee or document doesn't exist
+        - The rendered edit_document template with form and data
+    """
+
     employee = employee_repository.get_employee(
         employee_id=employee_id, documents=False
     )
@@ -579,7 +842,21 @@ def update_document(
     ],
     storage: AbstractStorageServices = Provide[Container.storage_services],
 ):
+    """
+    Process document edit form and update the document.
 
+    Args:
+        employee (dict): The employee's information
+        document (dict): The current document information
+        edit_form (EmployeeAddDocumentsForm): The validated form containing updated document data
+        employee_repository (AbstractEmployeeRepository): Repository for employee operations
+        storage (AbstractStorageServices): Service for handling file storage
+
+    Returns:
+        Union[Response, str]: Either:
+            - A redirect to documents edit page on success
+            - The rendered edit_document template on validation failure
+    """
     if not (
         edit_form.is_submitted()
         and edit_form.validate(is_file_already_uploaded=not document.get("is_link"))

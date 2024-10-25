@@ -133,7 +133,9 @@
       endpoint=url_for("employee_bp.delete_employee"),
       title="Eliminar",
       msg="¿Está seguro de que desea eliminar al miembro del equipo?",
-      msg_sub="Luego de confirmar, no se podrán revertir los cambios"
+      msg_sub="Luego de confirmar, no se podrán revertir los cambios.",
+      related_entities_text="Todos los archivos asociados a este miembro del equipo serán eliminados
+        y todas las propuestas de trabajo con este empleado lo perderán."
     )
   }}
 {% endblock %}

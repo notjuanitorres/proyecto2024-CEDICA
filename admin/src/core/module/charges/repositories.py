@@ -9,8 +9,24 @@ from .mappers import ChargeMapper as Mapper
 
 
 class AbstractChargeRepository:
+    """
+    Abstract base class for charge repositories.
+
+    This class defines the interface for charge repositories, including methods
+    for adding, retrieving, updating, archiving, deleting, and recovering charges.
+    """
+
     @abstractmethod
     def add_charge(self, charge: Charge) -> Dict:
+        """
+        Add a new charge to the repository.
+
+        Args:
+            charge (Charge): The charge to add.
+
+        Returns:
+            Dict: The added charge as a dictionary.
+        """
         pass
 
     @abstractmethod
@@ -21,34 +37,111 @@ class AbstractChargeRepository:
             search_query: Dict = None,
             order_by: list = None,
     ):
+        """
+        Retrieve a paginated list of charges.
+
+        Args:
+            page (int): The page number to retrieve.
+            per_page (int): The number of charges per page.
+            search_query (Dict, optional): The search query to filter charges.
+            order_by (list, optional): The order by criteria.
+
+        Returns:
+            A paginated list of charges.
+        """
         pass
 
     @abstractmethod
     def get_by_id(self, charge_id: int) -> Dict | None:
+        """
+        Retrieve a charge by its ID.
+
+        Args:
+            charge_id (int): The ID of the charge to retrieve.
+
+        Returns:
+            Dict | None: The charge data as a dictionary, or None if the charge does not exist.
+        """
         pass
 
     @abstractmethod
     def update_charge(self, charge_id: int, data: Dict) -> bool:
+        """
+        Update a charge's information.
+
+        Args:
+            charge_id (int): The ID of the charge to update.
+            data (Dict): The updated charge data.
+
+        Returns:
+            bool: True if the charge was updated successfully, False otherwise.
+        """
         pass
 
     @abstractmethod
     def delete_charge(self, charge_id: int) -> bool:
+        """
+        Delete a charge.
+
+        Args:
+            charge_id (int): The ID of the charge to delete.
+
+        Returns:
+            bool: True if the charge was deleted successfully, False otherwise.
+        """
         pass
 
     @abstractmethod
     def archive_charge(self, charge_id) -> bool:
+        """
+        Archive a charge.
+
+        Args:
+            charge_id (int): The ID of the charge to archive.
+
+        Returns:
+            bool: True if the charge was archived successfully, False otherwise.
+        """
         raise NotImplementedError
 
     @abstractmethod
     def recover_charge(self, charge_id) -> bool:
+        """
+        Recover an archived charge.
+
+        Args:
+            charge_id (int): The ID of the charge to recover.
+
+        Returns:
+            bool: True if the charge was recovered successfully, False otherwise.
+        """
         raise NotImplementedError
 
 
 class ChargeRepository(AbstractChargeRepository):
+    """
+    Concrete implementation of the AbstractChargeRepository.
+
+    This class provides methods for adding, retrieving, updating, archiving, deleting,
+    and recovering charges.
+    """
+
     def __init__(self):
+        """
+        Initialize the ChargeRepository.
+        """
         self.db = database
 
     def add_charge(self, charge: Charge):
+        """
+        Add a new charge to the repository.
+
+        Args:
+            charge (Charge): The charge to add.
+
+        Returns:
+            Dict: The added charge as a dictionary.
+        """
         self.db.session.add(charge)
         self.db.session.flush()
         self.save()
@@ -61,6 +154,18 @@ class ChargeRepository(AbstractChargeRepository):
             search_query: Dict = None,
             order_by: List = None,
     ):
+        """
+        Retrieve a paginated list of charges.
+
+        Args:
+            page (int): The page number to retrieve.
+            per_page (int): The number of charges per page.
+            search_query (Dict, optional): The search query to filter charges.
+            order_by (List, optional): The order by criteria.
+
+        Returns:
+            A paginated list of charges.
+        """
         max_per_page = 100
 
         query = Charge.query
@@ -90,13 +195,41 @@ class ChargeRepository(AbstractChargeRepository):
         )
 
     def __get_by_id(self, charge_id: int):
+        """
+        Retrieve a charge by its ID.
+
+        Args:
+            charge_id (int): The ID of the charge to retrieve.
+
+        Returns:
+            Charge: The charge entity.
+        """
         return Charge.query.get(charge_id)
 
     def get_by_id(self, charge_id: int) -> Dict | None:
+        """
+        Retrieve a charge by its ID.
+
+        Args:
+            charge_id (int): The ID of the charge to retrieve.
+
+        Returns:
+            Dict | None: The charge data as a dictionary, or None if the charge does not exist.
+        """
         charge = self.db.session.query(Charge).filter(Charge.id == charge_id).first()
         return Mapper.from_entity(charge) if charge else None
 
     def update_charge(self, charge_id: int, data: Dict) -> bool:
+        """
+        Update a charge's information.
+
+        Args:
+            charge_id (int): The ID of the charge to update.
+            data (Dict): The updated charge data.
+
+        Returns:
+            bool: True if the charge was updated successfully, False otherwise.
+        """
         charge = Charge.query.filter_by(id=charge_id)
         if not charge:
             return False
@@ -105,6 +238,15 @@ class ChargeRepository(AbstractChargeRepository):
         return True
 
     def delete_charge(self, charge_id: int) -> bool:
+        """
+        Delete a charge.
+
+        Args:
+            charge_id (int): The ID of the charge to delete.
+
+        Returns:
+            bool: True if the charge was deleted successfully, False otherwise.
+        """
         charge = self.__get_by_id(charge_id)
         if not charge:
             return False
@@ -113,6 +255,15 @@ class ChargeRepository(AbstractChargeRepository):
         return True
 
     def archive_charge(self, charge_id) -> bool:
+        """
+        Archive a charge.
+
+        Args:
+            charge_id (int): The ID of the charge to archive.
+
+        Returns:
+            bool: True if the charge was archived successfully, False otherwise.
+        """
         charge = Charge.query.get(charge_id)
         if not charge or charge.is_archived:
             return False
@@ -120,7 +271,16 @@ class ChargeRepository(AbstractChargeRepository):
         self.save()
         return True
 
-    def recover_charge(self, charge_id):
+    def recover_charge(self, charge_id) -> bool:
+        """
+        Recover an archived charge.
+
+        Args:
+            charge_id (int): The ID of the charge to recover.
+
+        Returns:
+            bool: True if the charge was recovered successfully, False otherwise.
+        """
         charge = Charge.query.get(charge_id)
         if not charge or not charge.is_archived:
             return False
@@ -129,4 +289,10 @@ class ChargeRepository(AbstractChargeRepository):
         return True
 
     def save(self):
+        """
+        Commit the current transaction to the database.
+
+        Returns:
+            None
+        """
         self.db.session.commit()

@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileSize, FileAllowed
-from wtforms import RadioField, SelectField, FileField, SubmitField
+from wtforms import RadioField, SelectField, FileField, SubmitField, FloatField
 from wtforms.validators import DataRequired, Length, Optional, URL
 from wtforms.fields import (
     IntegerField,
@@ -38,11 +38,40 @@ class AddressForm(FlaskForm):
         locality (StringField): The locality name.
         province (StringField): The province name.
     """
-    street = StringField("Calle", validators=[DataRequired(), Length(max=50)])
-    number = IntegerField("Numero", validators=[DataRequired()])
-    department = StringField("Departamento", validators=[Optional(), Length(max=50)])
-    locality = StringField("Localidad", validators=[DataRequired(), Length(max=50)])
-    province = StringField("Provincia", validators=[DataRequired(), Length(max=50)])
+    street = StringField(
+        "Calle",
+        validators=[
+            DataRequired(message="Debe proporcionar una calle"),
+            Length(max=50, message="La calle no puede exceder los 50 caracteres")
+        ]
+    )
+    number = IntegerField(
+        "Numero",
+        validators=[
+            DataRequired(message="Debe proporcionar un número de calle"),
+        ]
+    )
+    department = StringField(
+        "Departamento",
+        validators=[
+            Optional(),
+            Length(max=50, message="El departamento no puede exceder los 50 caracteres")
+        ]
+    )
+    locality = StringField(
+        "Localidad",
+        validators=[
+            DataRequired(),
+            Length(max=50, message="La localidad no puede exceder los 50 caracteres")
+        ]
+    )
+    province = StringField(
+        "Provincia",
+        validators=[
+            DataRequired(message="Debe proporcionar una provincia"),
+            Length(max=50, message="La provincia no puede exceder los 50 caracteres")
+        ]
+    )
 
 
 class PhoneForm(FlaskForm):
@@ -55,13 +84,25 @@ class PhoneForm(FlaskForm):
         number (TelField): The phone number.
     """
     country_code = TelField(
-        "Codigo de pais", validators=[DataRequired(), Length(max=5)]
+        "Codigo de pais", validators=[
+            DataRequired(message="Debe proporcionar un código de país"),
+            Length(max=3, message="El código de país no puede exceder los 3 caracteres"),]
     )
     area_code = TelField(
-        "Codigo de area", validators=[DataRequired(), Length(max=5), IsNumber()]
+        "Codigo de area",
+        validators=[
+            DataRequired(message="Debe proporcionar un código de área"),
+            Length(max=4, message="El código de área no puede exceder los 4 caracteres"),
+            IsNumber()
+        ]
     )
     number = TelField(
-        "Numero", validators=[DataRequired(), Length(min=9, max=15), IsNumber()]
+        "Numero",
+        validators=[
+            DataRequired(message="Debe proporcionar un número de teléfono"),
+            Length(min=6, max=15, message="El número de teléfono debe tener entre 6 y 15 caracteres"),
+            IsNumber()
+        ]
     )
 
 
@@ -74,10 +115,15 @@ class EmergencyContactForm(FlaskForm):
         emergency_contact_phone (TelField): The phone number of the emergency contact.
     """
     emergency_contact_name = StringField(
-        "Nombre contacto de emergencia", validators=[DataRequired(), Length(max=50)]
+        "Nombre contacto de emergencia",
+        validators=[
+            DataRequired(message="Debe proporcionar un nombre"),
+            Length(max=50, message="El nombre no puede exceder los 50 caracteres"),
+        ]
     )
     emergency_contact_phone = TelField(
-        "Telefono contacto de emergencia", validators=[DataRequired()]
+        "Telefono contacto de emergencia",
+        validators=[DataRequired(message="Debe proporcionar un número de teléfono")],
     )
 
 
@@ -176,6 +222,7 @@ class BaseSearchForm(FlaskForm):
         submit_search (SubmitField): The submit button for the search.
     """
     class Meta:
+        """Metaclass disabling CSRF protection."""
         csrf = False
 
     search_by = SelectField(
@@ -183,7 +230,11 @@ class BaseSearchForm(FlaskForm):
         validate_choice=True,
     )
 
-    search_text = StringField(validators=[Length(max=50)])
+    search_text = StringField(
+        validators=[
+            Length(max=50, message="El texto de búsqueda no puede exceder los 50 caracteres")
+        ]
+    )
 
     order_by = SelectField(
         choices=[],
@@ -216,3 +267,26 @@ class DocumentsSearchForm(BaseSearchForm):
 
     filter_tag = SelectField(
         choices=[], validate_choice=True)
+
+
+class CustomFloatField(FloatField):
+    def __init__(self, *args, **kwargs):
+        """Initialize the field with a custom error message."""
+        super().__init__(*args, **kwargs)
+        self.message = 'Solo números enteros o decimales'
+
+    def process_formdata(self, valuelist):
+        """
+        Process data received over the wire from a form.
+
+        This will be called during form construction with data supplied
+        through the `formdata` argument.
+
+        :param valuelist: A list of strings to process.
+        """
+        if valuelist:
+            try:
+                self.data = float(valuelist[0])
+            except ValueError:
+                self.data = None
+                raise ValueError(self.message)

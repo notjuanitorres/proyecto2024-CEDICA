@@ -117,21 +117,21 @@
         <div class="container p-5">
           {% block top_pagination %}{% endblock %}
         </div>
-        <thead>
-          <tr>
-          <td></td>
+        <thead class="is-centered">
+          <tr class="has-text-centered">
+            <td></td>
             {% block table_header %}{% endblock %}
-          <td></td>
+            <td></td>
           </tr>
         </thead>
         <tbody>
           {% block table_body %}{% endblock %}
         </tbody>
-        <tfoot>
-          <tr>
-          <td></td>
-            {% block table_footer %}{% endblock %}
-          <td></td>
+        <tfoot class="is-centered">
+          <tr class="has-text-centered">
+            <td></td>
+                {% block table_footer %}{% endblock %}
+            <td></td>
           </tr>
         </tfoot>
       </table>

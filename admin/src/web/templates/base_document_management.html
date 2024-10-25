@@ -54,7 +54,9 @@
                         <div class="field">
                             <label class="label">{{ form.title.label }}</label>
                             <div class="control">
-                                {{ form.title(class="input", placeholder="Ingrese el título del documento") }}
+                                {{ form.title(class="input",
+                                 placeholder="Ingrese el título del documento",
+                                        data_validate="required title") }}
                             </div>
                             {% if form.title.errors %}
                             <p class="help is-danger">{{ form.title.errors[0] }}</p>
@@ -68,7 +70,9 @@
                         <div class="field">
                             <label class="label">{{ form.url.label }}</label>
                             <div class="control">
-                                {{ form.url(class="input", placeholder="Ingrese la url del documento") }}
+                                {{ form.url(class="input",
+                                 placeholder="Ingrese la url del documento",
+                                 data_validate="required url") }}
                             </div>
                             {% if form.url.errors %}
                             <p class="help is-danger">{{ form.url.errors[0] }}</p>
@@ -117,8 +121,6 @@
                         </div>
                     </div>
 
-
-
                     <div class="column is-full">
                         <div class="field">
                             <div class="control grid">
@@ -141,4 +143,5 @@
     {{ super() }}
     <script src="{{ url_for('static', filename='js/file-input.js') }}"></script>
     <script src="{{ url_for('static', filename='js/upload_type.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/form_validator.js') }}"></script>
 {% endblock %}

@@ -1,5 +1,20 @@
+"""
+models.py
+
+This module defines the SQLAlchemy models for managing employee records 
+and associated file storage within the application. It includes the 
+Employee and EmployeeFile classes, which represent the data structure 
+for employees and their related documents.
+
+Models:
+- EmployeeFile: Represents files associated with employees, using it with 
+  polymorphic behavior for different file types in the Files table.
+- Employee: Represents an employee's personal and employment information, 
+  including contact details, employment conditions, and associated files.
+"""
+
 from datetime import datetime
-from sqlalchemy.orm import column_property 
+from sqlalchemy.orm import column_property
 from src.core.database import db
 from src.core.module.common import AddressMixin, EmergencyContactMixin, PhoneMixin, File
 from src.core.module.employee.data import (
@@ -10,14 +25,29 @@ from src.core.module.employee.data import (
 
 
 class EmployeeFile(File):
+    """
+    Represents a file associated with an employee.
+
+    This class extends the File class as a polymorphic child
+    and includes a foreign key reference  to the Employee model, 
+    enabling the association of multiple files with a single employee.
+    """
     __mapper_args__ = {
         "polymorphic_identity": "employee",
     }
-    employee_id = db.Column(db.Integer, db.ForeignKey("employees.id"))
+    employee_id = db.Column(db.Integer, db.ForeignKey("employees.id", ondelete="CASCADE"))
     owner = db.relationship("Employee", back_populates="files")
 
 
 class Employee(db.Model, AddressMixin, PhoneMixin, EmergencyContactMixin):
+    """
+    Represents an employee's personal and employment information.
+
+    This class contains details such as the employee's name, contact 
+    information, job position, employment condition, and associated files. 
+    It also implements mixins for address, phone, and emergency contact 
+    details.
+    """
     __tablename__ = "employees"
 
     id = db.Column(db.Integer, primary_key=True)

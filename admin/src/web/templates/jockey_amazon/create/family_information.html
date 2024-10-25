@@ -1,0 +1,31 @@
+{% extends "create_jockey_amazon.html" %}
+
+{% block title %} Informacion de Familia - Creando JyA {% endblock %}
+
+{% block step_name %}
+  Informacion de Familia
+{% endblock %}
+
+{% block step_number %}2{% endblock %}>
+
+{% block step_form %}
+  {% include 'jockey_amazon/forms/family_form.html' %} 
+{% endblock %}
+
+{% block prev_button %}
+  <a class="button is-primary is-medium is-outlined is-fullwidth" disabled>
+    <span class="icon mr-1"><i class="fa-solid fa-arrow-left"></i></span>
+    Volver
+  </a>
+{% endblock %}
+
+{% block next_button %}
+    {{ family_form.submit(value="Siguiente", class="button is-primary is-medium is-fullwidth") }}
+{% endblock %}
+
+{% block extra_scripts %}
+{{ super() }}
+<script src="{{ url_for('static', filename="js/jockey_amazon/family-form.js")}}"></script>
+{% endblock %}
+
+

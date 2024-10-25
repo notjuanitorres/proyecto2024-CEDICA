@@ -6,7 +6,15 @@ load_dotenv()
 
 
 class Config(object):
-    """BASE CONFIGURATION"""
+    """BASE CONFIGURATION
+
+    Attributes:
+        SECRET_KEY: str
+        TESTING: bool
+        DEBUG: bool
+        SESSION_TYPE: str
+        SEED_ON_STARTUP: bool
+    """
 
     SECRET_KEY = "mysecretkey"
     TESTING = False
@@ -16,7 +24,17 @@ class Config(object):
 
 
 class ProductionConfig(Config):
-    """PRODUCTION CONFIGURATION"""
+    """PRODUCTION CONFIGURATION
+
+    Attributes:
+        MINIO_SERVER: str
+        MINIO_ACCESS_KEY: str
+        MINIO_SECRET_KEY: str
+        MINIO_SECURE: bool
+        SQLALCHEMY_DATABASE_URI: str
+        SQLALCHEMY_ENGINE_OPTIONS: Dict
+        SEED_ON_STARTUP: bool
+    """
 
     MINIO_SERVER = environ.get("MINIO_SERVER")
     MINIO_ACCESS_KEY = environ.get("MINIO_ACCESS_KEY")
@@ -32,7 +50,15 @@ class ProductionConfig(Config):
 
 
 class DevelopmentConfig(Config):
-    """DEVELOPMENT CONFIGURATION"""
+    """DEVELOPMENT CONFIGURATION
+
+    Attributes:
+        MINIO_SERVER: str
+        MINIO_ACCESS_KEY: str
+        MINIO_SECRET_KEY: str
+        MINIO_SECURE: bool
+        SQLALCHEMY_DATABASE_URI: str
+    """
 
     MINIO_SERVER = os.getenv("MINIO_SERVER_DEVELOPMENT")
     MINIO_ACCESS_KEY = os.getenv("MINIO_ACCESS_KEY_DEVELOPMENT")

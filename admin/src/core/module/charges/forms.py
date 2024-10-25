@@ -6,7 +6,22 @@ from src.core.module.charges.models import PaymentMethodEnum
 
 
 class ChargeSearchForm(FlaskForm):
+    """
+    Form for searching charges based on various criteria, including name, payment method, and date range.
+
+    Fields:
+        search_by (SelectField): Criteria to search by (e.g., name, lastname).
+        search_text (StringField): The text input for searching charges.
+        filter_payment_method (SelectField): Filter by payment method.
+        start_date (DateField): The start date for the search range.
+        finish_date (DateField): The end date for the search range.
+        order_by (SelectField): Criteria to order the search results.
+        order (SelectField): Order direction (ascendente or descendente).
+        submit_search (SubmitField): The button to submit the search.
+    """
+
     class Meta:
+        """Metaclass to disable CSRF protection."""
         csrf = False
 
     search_by = SelectField(
@@ -16,13 +31,17 @@ class ChargeSearchForm(FlaskForm):
         ],
         validate_choice=True,
     )
-    search_text = StringField(validators=[Length(max=50)])
+    search_text = StringField(
+        validators=[
+            Length(max=50, message="El texto de búsqueda no puede superar los 50 caracteres.")
+        ]
+    )
 
-    filter_payment_method = (
-        SelectField("Método de pago",
-                    choices=[("", "Ver Todas")] + [(p.name, p.value) for p in PaymentMethodEnum],
-                    validate_choice=True,
-                    ))
+    filter_payment_method = SelectField(
+        "Método de pago",
+        choices=[("", "Ver Todas")] + [(p.name, p.value) for p in PaymentMethodEnum],
+        validate_choice=True,
+    )
 
     start_date = DateField("Fecha de inicio", format='%Y-%m-%d')
     finish_date = DateField("Fecha de fin", format='%Y-%m-%d')
@@ -39,8 +58,16 @@ class ChargeSearchForm(FlaskForm):
     )
     submit_search = SubmitField("Buscar")
 
-    # Custom validation function (redefine built-in)
     def validate(self, **kwargs):
+        """
+        Custom validation function to ensure valid date range selection.
+
+        Args:
+            **kwargs: Arbitrary keyword arguments.
+
+        Returns:
+            bool: True if validation passes, False otherwise.
+        """
         # Don't validate if no search is submitted
         if not self.start_date.data and not self.finish_date.data:
             return True
@@ -65,21 +92,58 @@ class ChargeSearchForm(FlaskForm):
 
 
 class ChargeManagementForm(FlaskForm):
-    amount = DecimalField("Monto abonado", places=2, validators=[DataRequired()])
-    date_of_charge = DateField("Fecha de pago", format='%Y-%m-%d', validators=[DataRequired()])
-    payment_method = SelectField("Modo de pago",
-                                 choices=[(p.name, p.value) for p in PaymentMethodEnum],
-                                 validate_choice=True,
-                                 validators=[DataRequired()],
-                                 )
+    """
+    Form for managing charge information, including amount, date of charge, payment method, and observations.
 
-    observations = StringField("Observaciones", validators=[Length(max=255), DataRequired()])
+    Fields:
+        amount (DecimalField): The amount of the charge.
+        date_of_charge (DateField): The date of the charge.
+        payment_method (SelectField): The payment method used for the charge.
+        observations (StringField): Additional observations about the charge.
+    """
+
+    amount = DecimalField(
+        "Monto abonado",
+        places=2,
+        validators=[
+            DataRequired(message="El monto es obligatorio.")
+        ]
+    )
+    date_of_charge = DateField(
+        "Fecha de pago",
+        format='%Y-%m-%d',
+        validators=[
+            DataRequired(message="La fecha de pago es obligatoria.")
+        ]
+    )
+    payment_method = SelectField(
+        "Modo de pago",
+        choices=[(p.name, p.value) for p in PaymentMethodEnum],
+        validate_choice=True,
+        validators=[DataRequired(message="El modo de pago es obligatorio.")],
+    )
+    observations = StringField(
+        "Observaciones",
+        validators=[
+            Length(max=255, message="Las observaciones no pueden superar los 255 caracteres"),
+            DataRequired(message="Las observaciones son obligatorias.")
+        ]
+    )
 
 
 class ChargeCreateForm(ChargeManagementForm):
+    """
+    Form for creating a new charge.
+
+    Inherits all fields from ChargeManagementForm.
+    """
     pass
 
 
 class ChargeEditForm(ChargeManagementForm):
-    pass
+    """
+    Form for editing an existing charge.
 
+    Inherits all fields from ChargeManagementForm.
+    """
+    pass

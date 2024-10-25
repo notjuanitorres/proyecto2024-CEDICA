@@ -4,12 +4,13 @@ from wtforms.fields import (
     BooleanField,
     SelectField,
     DateField,
+    SubmitField,
+    HiddenField
 )
 from wtforms.validators import DataRequired, Length
-
+from src.core.module.common.validators import IsNumber
 from src.core.module.common import IsValidName
-from src.core.module.common.forms import BaseSearchForm, DocumentsSearchForm
-from src.core.module.common.forms import BaseManageDocumentsForm
+from src.core.module.common.forms import BaseSearchForm, BaseManageDocumentsForm, DocumentsSearchForm
 from src.core.module.equestrian.models import JAEnum, FileTagEnum
 
 
@@ -50,8 +51,8 @@ class HorseManagementForm(FlaskForm):
     name = StringField(
         "Nombre",
         validators=[
-            DataRequired(),
-            Length(max=100),
+            DataRequired(message="Debe ingresar un nombre"),
+            Length(max=100, message="El nombre no puede tener más de 100 caracteres"),
             IsValidName(),
         ],
     )
@@ -59,15 +60,15 @@ class HorseManagementForm(FlaskForm):
     breed = StringField(
         "Raza",
         validators=[
-            DataRequired(),
-            Length(max=100),
+            DataRequired(message="Debe ingresar una raza"),
+            Length(max=100, message="La raza no puede tener más de 100 caracteres"),
         ],
     )
 
     birth_date = DateField(
         "Fecha de nacimiento",
         validators=[
-            DataRequired(),
+            DataRequired(message="Debe ingresar una fecha de nacimiento"),
         ],
     )
 
@@ -75,7 +76,7 @@ class HorseManagementForm(FlaskForm):
         "Sexo",
         choices=[("M", "Macho"), ("H", "Hembra")],
         validators=[
-            DataRequired(),
+            DataRequired(message="Debe seleccionar un sexo"),
         ],
         validate_choice=True,
     )
@@ -83,8 +84,8 @@ class HorseManagementForm(FlaskForm):
     coat = StringField(
         "Pelaje",
         validators=[
-            DataRequired(),
-            Length(max=100),
+            DataRequired(message="Debe ingresar un pelaje"),
+            Length(max=100, message="El pelaje no puede tener más de 100 caracteres"),
         ],
     )
 
@@ -93,15 +94,15 @@ class HorseManagementForm(FlaskForm):
     admission_date = DateField(
         "Fecha de ingreso",
         validators=[
-            DataRequired(),
+            DataRequired(message="Debe ingresar una fecha de ingreso"),
         ],
     )
 
     assigned_facility = StringField(
         "Facilidad asignada",
         validators=[
-            DataRequired(),
-            Length(max=100),
+            DataRequired(message="Debe ingresar una facilidad asignada"),
+            Length(max=100, message="La facilidad asignada no puede tener más de 100 caracteres"),
         ],
     )
 
@@ -109,7 +110,7 @@ class HorseManagementForm(FlaskForm):
         "Tipo de J&A asignado",
         choices=[(jtype.name, jtype.value) for jtype in JAEnum],
         validators=[
-            DataRequired(),
+            DataRequired(message="Debe seleccionar un tipo de J&A"),
         ],
         validate_choice=True,
     )
@@ -168,3 +169,38 @@ class HorseDocumentSearchForm(DocumentsSearchForm):
         self.filter_tag.choices = [
             ("", "Ver Todos"),
         ] + [(e.name, e.value) for e in FileTagEnum]
+
+
+class HorseAssignSearchForm(FlaskForm):
+    """
+    Form for searching horses to assign to a jockey.
+
+    Attributes:
+        search_text (StringField): The text to search for.
+        filter_activity (SelectField): The filter for activity type.
+        submit_search (SubmitField): The search button.
+    """
+    search_text = StringField(
+        "Buscar por nombre, email o dni"
+    )
+    filter_activity = SelectField(
+        "Actividad Asignada",
+        choices=[("", "Ver Todos")] + [(jtype.name, jtype.value) for jtype in JAEnum],
+        validate_choice=True,
+    )
+    submit_search = SubmitField("Buscar")
+
+
+class HorseAssignSelectForm(FlaskForm):
+    """
+    Form for selecting a horse from a list
+
+    Attributes:
+        selected_item (HiddenField): The selected horse id.
+        submit_horse (SubmitField): The button to submit the search.
+    """
+    selected_item = HiddenField(
+        "Caballo seleccionado",
+        validators=[DataRequired("Se debe seleccionar un caballo"), IsNumber()],
+    )
+    submit_horse = SubmitField("Asociar")

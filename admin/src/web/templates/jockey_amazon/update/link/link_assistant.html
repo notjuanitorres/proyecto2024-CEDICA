@@ -1,0 +1,79 @@
+{% extends 'update_relationship.html' %}
+
+{% block card_title %}Asignándole un Asistente de Pista a: {{ jockey_amazon.first_name + " " + jockey_amazon.last_name }}{% endblock %} 
+
+{% block actual_breadcrumb %}
+    <li>
+      <a href="{{ url_for('jockey_amazon_bp.show_jockey', jockey_id=jockey_amazon.id) }}">
+        <span class="icon is-small">
+          <i class="fas fa-users" aria-hidden="true"></i>
+        </span>
+        <span>Jinetes y Amazonas</span>
+      </a>
+    </li>
+    <li>
+      <a
+        href="{{ url_for('jockey_amazon_bp.show_jockey', jockey_id=jockey_amazon.id) }}"
+      >
+        <span class="icon is-small">
+          <i class="fas fa-user" aria-hidden="true"></i>
+        </span>
+        <span>{{ jockey_amazon.first_name }} {{ jockey_amazon.last_name }}</span>
+      </a>
+    </li>
+    <li>
+      <a href="{{ url_for('jockey_amazon_bp.update.assign_track_assistant', jockey_id=jockey_amazon.id) }}">
+        <span class="icon is-small">
+          <i class="fa-solid fa-hat-cowboy-side mr-2"></i>
+        </span>
+        <span>Asociar Auxiliar de Pista</span>
+      </a>
+    </li>
+{% endblock %}
+
+
+{% block pagination %}
+  {{ render_pagination(employees, 'jockey_amazon_bp.update.assign_track_assistant', {"jockey_id":jockey_amazon.id}) }}
+{% endblock %}
+
+
+{% block select_form %}
+<form method="POST" id="select-form" class="">
+  {{ select_form.hidden_tag() }}
+  {% for employee in employees %}
+    <a class="panel-block field mb-0" data-id="item-{{ employee.id }}">
+      <div class="media">
+        <div class="media-left">
+          <i class="fa-solid fa-circle-user is-size-3" aria-hidden="true"></i>
+        </div>
+        <div class="media-content">
+          <div class="content">
+            <p>
+              <strong>{{ employee.name }} {{ employee.lastname }} </strong> 
+              <span class="tag is-info ml-2">{{ employee.position.value }}</span>
+
+              <br />
+              <small>Email: </small>{{ employee.email }} 
+              <br>
+              <small>DNI:</small> {{ employee.dni }} 
+              <br>
+              <small>Miembro desde: </small>
+              <small>{{ employee.inserted_at | format_date}}</small>
+            </p>
+          </div>
+        </div>
+      </div>
+    </a>
+  {% else %}
+  <p class="has-text-centered py-2">Oops. Parece que no hay miembros activos en el equipo que sean Asistentes de Pista</p>
+  {% endfor %}
+  <div class="panel-block">
+    {% if employees.items %}
+      {{ select_form.submit_employee(class="button is-primary is-fullwidth", id="submit-item", type="submit")}}
+    {% else %}
+      <a href="{{ url_for("jockey_amazon_bp.show_jockey", jockey_id=jockey_amazon.id )}}" class="button is-fullwidth">Volver</a>
+    {% endif %}
+    </div>
+</form>
+
+{% endblock %}

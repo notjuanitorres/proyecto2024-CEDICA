@@ -1,4 +1,4 @@
-from sqlalchemy import or_
+from sqlalchemy import or_ 
 
 
 def apply_filters(model, query, search_query, order_by):
@@ -112,4 +112,8 @@ def apply_filter_criteria(model, query, search_query):
                 continue
             model_field = getattr(model, field)
             query = query.filter(model_field == value)
+            if isinstance(value, (list, tuple)):
+                query = query.filter(model_field.in_(value))
+            else:
+                query = query.filter(model_field == value)
     return query

@@ -1,0 +1,302 @@
+<!-- Family and Pension Information -->
+{{ family_form.hidden_tag() }}
+<div id="family-pension-info">
+    <div id="pension">
+        <h2 class="label is-size-5">Información de Asignación Familiar</h2>
+        <div class="field">
+            <div class="control">
+                <label class="checkbox">
+                    {{ family_form.has_family_assignment.label(class="has-text-weight-bold is-size-5") }}
+                    {{ family_form.has_family_assignment(class="ml-2", type="checkbox", style="transform: scale(1.5)") }}
+                </label>
+            </div>
+            {% if family_form.has_family_assignment.errors %}
+            <p class="help is-danger">{{ family_form.has_family_assignment.errors[0] }}</p>
+            {% endif %}
+        </div>
+        <div class="field" id="family-assignment-details" style="display: none">
+            <label class="label">Tipo de Asignación Familiar</label>
+            <div class="control">
+                {{ family_form.family_assignment_type(class="textarea", placeholder="Ingrese el tipo de asignación familiar") }}
+            </div>
+            {% if family_form.family_assignment_type.errors %}
+            <p class="help is-danger">{{ family_form.family_assignment_type.errors[0] }}</p>
+            {% endif %}
+        </div>
+        <div class="field">
+            <div class="control">
+                <label class="checkbox">
+                    {{ family_form.has_pension.label(class="has-text-weight-bold is-size-5") }}
+                    {{ family_form.has_pension(class="ml-2", type="checkbox", style="transform: scale(1.5)") }}
+                </label>
+            </div>
+            {% if family_form.has_pension.errors %}
+            <p class="help is-danger">{{ family_form.has_pension.errors[0] }}</p>
+            {% endif %}
+        </div>
+        <div class="field" id="pension-details" style="display: none">
+            <label class="label">Tipo de Pensión</label>
+            <div class="control">
+                {{ family_form.pension_type(class="input", placeholder="Ingrese el tipo de pensión") }}
+            </div>
+            {% if family_form.pension_type.errors %}
+            <p class="help is-danger">{{ family_form.pension_type.errors[0] }}</p>
+            {% endif %}
+            <label class="label">Detalles de Pensión</label>
+            <div class="control">
+                {{ family_form.pension_details(class="textarea", placeholder="Ingrese detalles de la pensión") }}
+            </div>
+            {% if family_form.pension_details.errors %}
+            <p class="help is-danger">{{ family_form.pension_details.errors[0] }}</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div id="family-members" class="pt-5">
+    <h2 class="title is-size-3">Miembros de la Familia</h2>
+    <div id="family-member-container" class="container">
+        {% for member in family_form.family_members %}
+        {{ member.hidden_tag() }}
+        <div data-id="{{ loop.index }}" class="family-member box container mb-4" data-visible="{% if loop.index > 1 %}false{% endif %}">
+            <h3 class="title is-size-4 py-4">Agregando miembro {{ loop.index }}</h3>
+
+            <h4 class="subtitle is-size-5">Información General</h4>
+            <div class="columns is-mobile is-1 mb-0 pb-0">
+                <div class="field column">
+                    <label class="label">{{ member.relationship.label }}</label>
+                    <div class="control">
+                        {{ member.form.relationship(class="input family-input", data_validate="letters") }}
+                        {% if member.form.relationship.errors %}
+                            <p class="help is-danger">{{ member.form.relationship.errors[0] }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="field column">
+                    <label class="label">{{ member.form.dni.label }}</label>
+                    <div class="control">
+                        {{ member.form.dni(class="input family-input", data_validate="dni") }}
+                        {% if member.dni.errors %}
+                            <p class="help is-danger">{{ member.form.dni.errors[0] }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="columns is-1">
+                <div class="field column is-half">
+                    <label class="label">{{ member.form.first_name.label }}</label>
+                    <div class="control">
+                        {{ member.form.first_name(class="input family-input", data_validate="letters") }}
+                        {% if member.form.first_name.errors %}
+                            <p class="help is-danger">{{ member.form.first_name.errors[0] }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="field column is-half">
+                    <label class="label">{{ member.form.last_name.label }}</label>
+                    <div class="control">
+                        {{ member.form.last_name(class="input family-input", data_validate="letters") }}
+                        {% if member.form.last_name.errors %}
+                            <p class="help is-danger">{{ member.form.last_name.errors[0] }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <h4 class="subtitle is-size-5">Dirección</h4>
+            <div class="columns is-1 is-mobile mb-0 pb-0">
+                <div class="field column is-half">
+                    <label class="label">{{ member.form.street.label }}</label>
+                    <div class="control">
+                        {{ member.form.street(class="input family-input", data_validate="alphanumeric") }}
+                        {% if member.form.street.errors %}
+                            <p class="help is-danger">{{ member.form.street.errors[0] }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="field column is-half">
+                    <label class="label">{{ member.form.number.label }}</label>
+                    <div class="control">
+                        {{ member.form.number(class="input family-input", data_validate="numbers") }}
+                        {% if member.form.number.errors %}
+                            <p class="help is-danger">{{ member.form.number.errors[0] }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="columns is-1">
+                <div class="field column is-third">
+                    <label class="label">{{ member.form.province.label }}</label>
+                    <div class="control">
+                        {{ member.form.province(class="input family-input", data_validate="letters") }}
+                        {% if member.form.province.errors %}
+                            <p class="help is-danger">{{ member.form.province.errors[0] }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="field column is-third">
+                    <label class="label">{{ member.form.locality.label }}</label>
+                    <div class="control">
+                        {{ member.form.locality(class="input family-input", data_validate="alphanumeric") }}
+                        {% if member.form.locality.errors %}
+                            <p class="help is-danger">{{ member.form.locality.errors[0] }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="field column is-third">
+                    <label class="label">{{ member.form.department.label }}</label>
+                    <div class="control">
+                        {{ member.form.department(class="input family-input", data_validate="alphanumeric") }}
+                        {% if member.form.department.errors %}
+                            <p class="help is-danger">{{ member.form.department.errors[0] }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <h4 class="subtitle is-size-5">Información de Contacto</h4>
+            <div class="field">
+                <label class="label">{{ member.form.email.label }}</label>
+                <div class="control">
+                    {{ member.form.email(class="input family-input", data_validate="email") }}
+                    {% if member.form.email.errors %}
+                        <p class="help is-danger">{{ member.form.email.errors[0] }}</p>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="columns is-mobile is-gapless">
+                <div class="field column">
+                    <label class="label">{{ member.form.phone_country_code.label(class="is-size-7 has-text-semibold") }}</label>
+                    <div class="control">
+                        {{ member.form.phone_country_code(class="input family-input", data_validate="country_code") }}
+                        {% if member.form.phone_country_code.errors %}
+                            <p class="help is-danger">{{ member.form.phone_country_code.errors[0] }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="field column">
+                    <label class="label">{{ member.form.phone_area_code.label(class="is-size-7 has-text-semibold") }}</label>
+                    <div class="control">
+                        {{ member.form.phone_area_code(class="input family-input", data_validate="area_code") }}
+                        {% if member.form.phone_area_code.errors %}
+                            <p class="help is-danger">{{ member.form.phone_area_code.errors[0] }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="field column is-half">
+                    <label class="label">{{ member.form.phone_number.label(class="is-size-7 has-text-semibold") }} </label>
+                    <div class="control">
+                        {{ member.form.phone_number(class="input family-input", data_validate="phone") }}
+                        {% if member.form.phone_number.errors %}
+                            <p class="help is-danger">{{ member.form.phone_number.errors[0] }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="columns is-1 is-mobile">
+                <div class="field column is-half">
+                    <label class="label">{{ member.form.education_level.label }}</label>
+                    <div class="control">
+                        <p class="select is-fullwidth">{{ member.form.education_level(class="is-fullwidth family-input") }}</p>
+                        {% if member.form.education_level.errors %}
+                            <p class="help is-danger">{{ member.form.education_level.errors[0] }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="field column is-half">
+                    <label class="label">{{ member.form.occupation.label }}</label>
+                    <div class="control">
+                        {{ member.form.occupation(class="input family-input") }}
+                        {% if member.form.occupation.errors %}
+                            <p class="help is-danger">{{ member.form.occupation.errors[0] }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% if loop.index > 1 %}
+            <div class="field">
+                <div class="control">
+                    <button
+                        id="remove-family-member"
+                        type="button"
+                        style="display: none;"
+                        class="button is-fullwidth is-outlined is-danger remove-family-member mt-4">
+                        Eliminar
+                    </button>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+
+        <div class="field pt-4">
+            <div class="control">
+                <button id="add-family-member" type="button" class="button is-primary is-outlined is-fullwidth add-family-member">
+                    Agregar otro miembro
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        // Family member functionality
+        const addFamilyMemberButton = document.getElementById('add-family-member');
+        const removeFamilyMemberButton = document.getElementById('remove-family-member');
+        const familyMemberContainer = document.getElementById('family-member-container');
+        const secondFamilyMember = document.querySelector('.family-member[data-id="2"]');
+        const is_optional = document.querySelector('#family_members-1-is_optional')
+        function updateRequiredFields() {
+            const fields = secondFamilyMember.querySelectorAll('.family-input');
+            const isVisible = secondFamilyMember.dataset.visible === 'true';
+            if (isVisible) {
+                is_optional.value = "False"
+                secondFamilyMember.style.display = 'block'
+            }else {
+                secondFamilyMember.style.display = "none"
+                is_optional.value = "True"
+            }
+            fields.forEach(field => {
+                if (isVisible) {
+                    field.setAttribute('required', 'required');
+                    field.style.display = 'block';
+                } else {
+                    field.removeAttribute('required');
+                    field.style.display = 'none';
+                }
+            });
+        }
+        addFamilyMemberButton.addEventListener('click', function () {
+            secondFamilyMember.dataset.visible = true
+            addFamilyMemberButton.style.display = 'none';
+            removeFamilyMemberButton.style.display = 'block'
+            secondFamilyMember.style.display = "block"
+            updateRequiredFields(secondFamilyMember)
+        });
+
+
+        removeFamilyMemberButton.addEventListener('click', function (event) {
+            const familyMember = event.target.closest('.family-member');
+            if (familyMember) {
+                updateRequiredFields(familyMember)
+                addFamilyMemberButton.style.display = 'block';
+                secondFamilyMember.dataset.visible = false
+            }
+        });
+
+        familyMemberContainer.addEventListener('click', function (event) {
+            if (event.target.classList.contains('remove-family-member')) {
+                const familyMember = event.target.closest('.family-member');
+                if (familyMember) {
+                    familyMember.style.display = 'none';
+                    familyMember.querySelectorAll('input, select').forEach(input => {
+                        input.value = '';
+                        input.required = false;
+                    });
+                }
+            }
+        });
+        updateRequiredFields()
+    })
+
+</script>
+
