@@ -179,6 +179,33 @@ class FamilyInformationForm(FlaskForm):
         
         return True
 
+    def family_info_to_flat(self):
+        """
+        Converts the nested form data into a flat dictionary structure.
+        
+        Returns:
+            dict: A flat dictionary containing all form fields with properly prefixed keys.
+            Format:
+            {
+                'has_family_assignment': bool,
+                'family_assignment_type': str,
+                'has_pension': bool,
+                'pension_type': str,
+                'pension_details': str,
+                'family_members: list[Dict]
+            }
+        """
+        
+        flat_data = {
+            'has_family_assignment': self.has_family_assignment.data,
+            'family_assignment_type': self.family_assignment_type.data if self.has_family_assignment.data else None,
+            'has_pension': self.has_pension.data,
+            'pension_type': self.pension_type.data if self.has_pension.data else None,
+            'pension_details': self.pension_details.data if self.has_pension.data else None,
+            'family_members': [member for member in self.family_members.data]
+        }
+        return flat_data
+
 
 class HealthInformationForm(FlaskForm):
     """

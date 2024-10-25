@@ -222,7 +222,7 @@
                             id="remove-family-member"
                             type="button"
                             class="button is-fullwidth is-outlined is-danger remove-family-member mt-4"
-                            {% if family_members_number < 2 %}style="display: none;"{% endif %}
+                            {% if is_edit or family_members_number < 2 %}style="display: none;"{% endif %}
                             >
                             Eliminar
                         </button>
@@ -231,15 +231,18 @@
                 {% endif %}
             </div>
             {% endfor %}
-            {% if family_members_number < 2 %}                
-                <div class="field pt-4">
-                    <div class="control">
-                        <button id="add-family-member" type="button" class="button is-primary is-outlined is-fullwidth add-family-member">
-                            Agregar otro miembro
-                        </button>
-                    </div>
+            <div class="field pt-4">
+                <div class="control">
+                    <button 
+                        id="add-family-member" 
+                        type="button" 
+                        class="button is-primary is-outlined is-fullwidth add-family-member"
+                        {% if is_edit or family_members_number > 1 %}style="display: none;"{% endif %}
+                        >
+                        Agregar otro miembro
+                    </button>
                 </div>
-            {% endif %}
+            </div>
         </div>
     </div>
 </section>

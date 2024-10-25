@@ -225,8 +225,6 @@ class JockeyAmazonMapper:
         assignments = data.get("work_assignment_information", {})
 
         jockey = JockeyAmazon(
-            id=data.get("id"),
-
             # General Information
             first_name=general.get("first_name"),
             last_name=general.get("last_name"),

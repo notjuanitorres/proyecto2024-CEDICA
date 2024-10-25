@@ -133,7 +133,8 @@ def create_family_information():
             "create/family_information.html",
             family_form=family_information,
             EducationLevelEnum=EducationLevelEnum,
-            family_members_number=2 if has_second_member else 1
+            family_members_number=2 if has_second_member else 1,
+            is_edit=False
         )
 
 
