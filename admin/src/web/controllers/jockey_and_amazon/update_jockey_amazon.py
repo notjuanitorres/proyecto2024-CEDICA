@@ -183,6 +183,7 @@ def edit_jockey(
     education_form = SchoolInformationForm(data=jockey.get("school_information"))
     family_form = FamilyInformationForm(data=jockey.get("family_information"))
     assignment_form = WorkAssignmentForm(data=jockey.get("organization_work"))
+
     if request.method == "POST":
         if "general_submit" in request.form and general_form.validate():
             update = GeneralInformationForm.general_info_to_flat(general_form)
