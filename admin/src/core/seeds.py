@@ -1,3 +1,6 @@
+import random
+from enum import Enum
+from faker import Faker
 from src.core.module.charges.models import Charge, PaymentMethodEnum
 from src.core.database import db
 from src.core.module.user.models import User
@@ -7,19 +10,60 @@ from src.core.module.employee.models import Employee
 from src.core.module.payment.models import Payment
 from src.core.module.payment.data import PaymentTypeEnum
 from src.core.module.employee.data import (
-    JobPositionEnum as PositionEnum,
-    JobConditionEnum as ConditionEnum,
+    JobPositionEnum,
+    JobConditionEnum,
     ProfessionsEnum,
 )
-from src.core.module.employee.data import JobPositionEnum, JobConditionEnum, ProfessionsEnum
 from src.core.bcrypt import bcrypt
-from src.core.module.equestrian.models import Horse, JAEnum, HorseTrainers
+from src.core.module.equestrian.models import Horse, JAEnum
 from src.core.module.jockey_amazon.models import (
-    JockeyAmazon, SchoolInstitution, FamilyMember, WorkAssignment,
-    DisabilityDiagnosisEnum, DisabilityTypeEnum, FamilyAssignmentEnum, PensionEnum,
-    WorkProposalEnum, WorkConditionEnum, SedeEnum, DayEnum, EducationLevelEnum
+    JockeyAmazon,
+    SchoolInstitution,
+    FamilyMember,
+    WorkAssignment,
 )
-from datetime import date
+from src.core.module.jockey_amazon.data import (
+    DisabilityDiagnosisEnum,
+    DisabilityTypeEnum,
+    FamilyAssignmentEnum,
+    PensionEnum,
+    WorkProposalEnum,
+    WorkConditionEnum,
+    SedeEnum,
+    DayEnum,
+    EducationLevelEnum,
+)
+
+class SeedEntity(Enum):
+    """Represents the standarized entities names to be seeded
+    """
+    HORSES = "horses"
+    JOCKEYS = "jockeys"
+    EMPLOYEES = "employees"
+    PAYMENTS = "payments"
+    CHARGES = "charges"
+
+seeding_config = {
+    "counts": {
+        SeedEntity.HORSES: 31,
+        SeedEntity.JOCKEYS: 31,
+        SeedEntity.EMPLOYEES: 31,
+        SeedEntity.PAYMENTS: 15,
+        SeedEntity.CHARGES: 15,
+    }
+}
+
+
+fake: Faker = Faker("es-AR")
+generated_dnis = set()
+
+
+def generate_unique_dni():
+    while True:
+        dni = str(random.randint(10000000, 99999999))
+        if dni not in generated_dnis:
+            generated_dnis.add(dni)
+            return dni
 
 
 def seed_all(app):
@@ -32,34 +76,15 @@ def seed_all(app):
     Args:
         app (Flask): The Flask application instance used to get the application context.
     """
+
     with app.app_context():
         seed_accounts()
-        seed_employees()
-        print("Commiting employees and accounts")
-        db.session.commit()  # employees need to be commited before adding horse_trainers
-        seed_equestrian_module()
-        print("Commiting equestrian module")
-        seed_payments()
-        print("Commiting payments")
+        seed_employees(seeding_config["counts"][SeedEntity.EMPLOYEES])
+        seed_horses(seeding_config["counts"][SeedEntity.HORSES])
+        seed_jockeys_amazons(seeding_config["counts"][SeedEntity.JOCKEYS])
+        seed_payments(seeding_config["counts"][SeedEntity.PAYMENTS])
+        seed_charges(seeding_config["counts"][SeedEntity.CHARGES])
         db.session.commit()
-        seed_jockey_amazons()
-        print("Commiting jockey_amazons module")
-        # print("Seeding charges")
-        # seed_charges()
-        # print("Commiting charges")
-        db.session.commit()
-
-
-def seed_equestrian_module():
-    """
-    Seeds data related to the equestrian module.
-
-    This includes horses and horse trainers.
-    """
-    print("Seeding horses")
-    seed_horses()
-    print("Seeding HorseTrainers")
-    seed_horse_trainers()
 
 
 def seed_accounts():
@@ -84,9 +109,7 @@ def seed_roles():
 
     Roles are added based on the `RoleEnum` enumeration.
     """
-    roles = [
-        Role(name=role.value) for role in RoleEnum
-    ]
+    roles = [Role(name=role.value) for role in RoleEnum]
 
     db.session.add_all(roles)
 
@@ -97,9 +120,7 @@ def seed_permissions():
 
     Permissions are added based on the `PermissionEnum` enumeration.
     """
-    permissions = [
-        Permission(name=permission.value) for permission in PermissionEnum
-    ]
+    permissions = [Permission(name=permission.value) for permission in PermissionEnum]
 
     db.session.add_all(permissions)
 
@@ -160,435 +181,333 @@ def seed_users():
         return bcrypt.generate_password_hash(password).decode("utf-8")
 
     users = [
-        User(email=email, alias=alias, password=encrypt(password), role_id=role_id, system_admin=system_admin)
+        User(
+            email=email,
+            alias=alias,
+            password=encrypt(password),
+            role_id=role_id,
+            system_admin=system_admin,
+        )
         for email, alias, password, role_id, system_admin in [
-            ("tecnica@gmail.com", "falso1", "Tecnica123", 1, False),
-            ("ecuestre@gmail.com", "falso2", "Ecuestre123", 2, False),
-            ("voluntariado@gmail.com", "falso3", "Voluntariado123", 3, False),
-            ("administracion@gmail.com", "falso3", "Administracion123", 4, False),
-            ("sysadmin@gmail.com", "sysadmin", "Sysadmin123", None, True),
+            ("tecnica@gmail.com", "Tecnica", "Tecnica123", 1, False),
+            ("ecuestre@gmail.com", "Ecuestre", "Ecuestre123", 2, False),
+            ("voluntariado@gmail.com", "Voluntario/a", "Voluntariado123", 3, False),
+            (
+                "administracion@gmail.com",
+                "Administrador",
+                "Administracion123",
+                4,
+                False,
+            ),
+            (
+                "sysadmin@gmail.com",
+                "Administrador del Sistema",
+                "Sysadmin123",
+                None,
+                True,
+            ),
         ]
     ]
 
     db.session.add_all(users)
 
 
-def seed_employees():
+def seed_employees(n: int):
     """
     Seeds employees in the database.
 
     This function creates several employees with different professions, positions, and conditions.
     """
     print("Seeding employees")
-    employees = [
-        Employee(
-            email=email,
-            phone=phone,
-            name=name,
-            lastname=lastname,
-            dni=dni,
-            profession=profession,
-            position=position,
-            health_insurance=health_insurance,
-            affiliate_number=affiliate_number,
-            job_condition=job_condition,
-            user_id=user_id
+    employees = []
+    for _ in range(n):
+        employee = Employee(
+            email=fake.email(),
+            name=fake.first_name(),
+            lastname=fake.last_name(),
+            dni=generate_unique_dni(),
+            profession=fake.random_element(elements=[e.name for e in ProfessionsEnum]),
+            position=fake.random_element(elements=[e.name for e in JobPositionEnum]),
+            job_condition=fake.random_element(
+                elements=[e.name for e in JobConditionEnum]
+            ),
+            start_date=fake.date_between(start_date="-5y", end_date="today"),
+            end_date=(
+                fake.date_between(start_date="today", end_date="+5y")
+                if fake.random.choice([True, False])
+                else None
+            ),
+            health_insurance=fake.company(),
+            affiliate_number=fake.unique.random_number(digits=8),
+            is_active=fake.random.choice([True, False]),
+            is_deleted=fake.boolean(chance_of_getting_true=25),
+            street=fake.street_name(),
+            number=fake.building_number(),
+            department=fake.random_element(
+                elements=[None, fake.word()]
+            ),  # Optional field
+            locality=fake.city(),
+            province=fake.province(),
+            country_code=fake.country_code(),
+            area_code=fake.random_int(min=1, max=300),
+            phone=fake.msisdn()[:10],
+            emergency_contact_name=fake.name(),
+            emergency_contact_phone=fake.phone_number(),
         )
-        for
-        email, phone, name, lastname, dni, profession, position,
-        health_insurance, affiliate_number, job_condition, user_id
-        in [
-            ("juan.perez@gmail.com", "123456789", "Juan", "Pérez", 12345678, ProfessionsEnum.PSICOLOGO,
-             JobPositionEnum.TERAPEUTA, "Seguro Salud S.A.", 9876543, JobConditionEnum.VOLUNTARIO, 1),
+        employees.append(employee)
 
-            ("maria.garcia@gmail.com", "987654321", "María", "García", 23456789, ProfessionsEnum.MEDICO,
-             JobPositionEnum.ADMINISTRATIVO, "Salud y Vida", 8765432, JobConditionEnum.VOLUNTARIO, 2),
-
-            ("luis.martinez@gmail.com", "456789123", "Luis", "Martínez", 34567890, ProfessionsEnum.KINESIOLOGO,
-             JobPositionEnum.TERAPEUTA, "Vida y Salud", 7654321, JobConditionEnum.PERSONAL_RENTADO, None),
-
-            ("carla.lopez@gmail.com", "321654987", "Carla", "López", 45678901, ProfessionsEnum.DOCENTE,
-             JobPositionEnum.DOCENTE_CAPACITACION, "Seguro Médico", 6543210, JobConditionEnum.VOLUNTARIO, None),
-
-            ("jose.fernandez@gmail.com", "654987321", "José", "Fernández", 56789012, ProfessionsEnum.PSICOPEDAGOGO,
-             JobPositionEnum.TERAPEUTA, "Salud Integral", 5432109, JobConditionEnum.VOLUNTARIO, None),
-
-            ("sofia.gonzalez@gmail.com", "789321654", "Sofía", "González", 67890123, ProfessionsEnum.FONOAUDIOLOGO,
-             JobPositionEnum.ADMINISTRATIVO, "Medicina Prepagada", 4321098, JobConditionEnum.VOLUNTARIO, None),
-
-            ("pedro.sanchez@gmail.com", "159753468", "Pedro", "Sánchez", 78901234,
-             ProfessionsEnum.TERAPISTA_OCUPACIONAL,
-                JobPositionEnum.TERAPEUTA, "Plan de Salud", 3210987, JobConditionEnum.VOLUNTARIO, None),
-
-            ("laura.morales@gmail.com", "753159486", "Laura", "Morales", 89012345, ProfessionsEnum.VETERINARIO,
-             JobPositionEnum.VETERINARIO, "Seguro Veterinario", 2109876, JobConditionEnum.VOLUNTARIO, None),
-
-            ("francisco.castro@gmail.com", "159258753", "Francisco", "Castro", 90123456, ProfessionsEnum.PSICOLOGO,
-             JobPositionEnum.TERAPEUTA, "Salud y Bienestar", 1098765, JobConditionEnum.VOLUNTARIO, None),
-
-            ("valentina.ramirez@gmail.com", "951753864", "Valentina", "Ramírez", 12345679, ProfessionsEnum.MEDICO,
-             JobPositionEnum.ADMINISTRATIVO, "Seguros Médicos", 987650, JobConditionEnum.PERSONAL_RENTADO, None),
-
-            ("mateo.gonzalez@gmail.com", "761753864", "Mateo", "Gonzalez", 987654, ProfessionsEnum.VETERINARIO,
-             JobPositionEnum.ENTRENADOR_CABALLOS, "Seguros Médicos", 987650, JobConditionEnum.PERSONAL_RENTADO, None),
-
-            ("ivan.pineda@gmail.com", "481753864", "Ivan", "Pineda", 987654321, ProfessionsEnum.VETERINARIO,
-             JobPositionEnum.CONDUCTOR, "Seguros Médicos", 987650, JobConditionEnum.PERSONAL_RENTADO, None),
-        ]
-    ]
-
-    # Add employees to the session and commit
-    db.session.add_all(employees)
+    print("Commiting employees")
+    db.session.bulk_save_objects(employees)
+    db.session.commit()
 
 
-def seed_horses():
+def seed_horses(n: int):
     """
     Seeds horse data in the database.
 
     This function creates several horses with various attributes and assigned facilities.
     """
-    horse_data = [
-        ("Caballito blanco", date(2015, 5, 14), "M", "Thoroughbred", "Bay", False,
-         date(2020, 8, 20), "Equestrian Center A", JAEnum.RECREATIONAL_ACTIVITIES),
+    horses = []
+    print("Seeding horses")
+    for _ in range(n):
+        horse = Horse(
+            name=fake.language_name(),
+            birth_date=fake.date_of_birth(minimum_age=1, maximum_age=30),
+            sex=fake.random_element(elements=["M", "F"]),
+            breed=fake.random_element(
+                elements=["Arabian", "Thoroughbred", "Quarter Horse", "Appaloosa"]
+            ),
+            coat=fake.random_element(elements=["Bay", "Chestnut", "Black", "Gray"]),
+            is_donation=fake.random.choice([True, False]),
+            admission_date=fake.date_between(start_date="-5y", end_date="today"),
+            assigned_facility=fake.company(),
+            ja_type=fake.random_element(elements=[e.name for e in JAEnum]),
+            is_archived=fake.boolean(chance_of_getting_true=25),
+        )
+        horses.append(horse)  # Append each horse to the list
 
-        ("Bella", date(2013, 7, 2), "F", "Arabian", "Grey", True,
-         date(2021, 4, 10), "Equestrian Center B", JAEnum.HIPOTHERAPY),
-
-        ("Spirit", date(2017, 3, 11), "M", "Morgan", "Chestnut", False,
-         date(2022, 2, 5), "Therapeutic Riding School", JAEnum.THERAPEUTIC_RIDING),
-
-        ("Star", date(2014, 11, 30), "F", "Quarter Horse", "Palomino", False,
-         date(2019, 9, 15), "Equestrian Center C", JAEnum.ADAPTED_SPORTS),
-
-        ("Shadow", date(2016, 10, 18), "M", "Appaloosa", "Leopard", True,
-         date(2023, 1, 7), "Equestrian Center A", JAEnum.RIDING),
-
-        ("Rocinante", date(2018, 1, 15), "M", "Andalusian", "Grey", False,
-         date(2024, 3, 25), "Equestrian Center B", JAEnum.RECREATIONAL_ACTIVITIES),
-    ]
-
-    horses = [Horse(name=name, birth_date=birth_date, sex=sex, breed=breed, coat=coat, is_donation=is_donation,
-                    admission_date=admission_date, assigned_facility=assigned_facility, ja_type=ja_type) for
-              name, birth_date, sex, breed, coat, is_donation, admission_date, assigned_facility, ja_type in horse_data]
-
-    db.session.add_all(horses)
+    print("Commiting horses")
+    # Add horses to the session and commit
+    db.session.bulk_save_objects(horses)
+    db.session.commit()  # Commit the transaction
 
 
-def seed_horse_trainers():
+def seed_school_institutions(jockey):
+    """Create fake school institutions for a given jockey."""
+    school = SchoolInstitution(
+        name=fake.company(),
+        street=fake.street_name(),
+        number=fake.building_number(),
+        locality=fake.city(),
+        province=fake.province(),
+        phone_country_code=fake.random_int(min=1, max=300),
+        phone_area_code=fake.random_int(min=1, max=300),
+        phone_number=fake.phone_number()[:15],
+        jockey_amazon_id=jockey.id,
+    )
+    db.session.add(school)
+
+
+def seed_work_assignment(jockey: JockeyAmazon):
     """
-    Seeds horse trainer data in the database.
+    Seeds work assignments in the database.
 
-    This function assigns horse trainers to horses.
+    This function creates several work assignments with various attributes.
     """
-    horse_trainers = [
-        HorseTrainers(id_horse=1, id_employee=11),
-        HorseTrainers(id_horse=2, id_employee=12),
-        HorseTrainers(id_horse=3, id_employee=11),
-        HorseTrainers(id_horse=4, id_employee=11),
-        HorseTrainers(id_horse=4, id_employee=12),
-    ]
-    db.session.add_all(horse_trainers)
 
-
-def seed_payments():
-    """
-    Seeds payment data in the database.
-
-    This function creates several payments with various attributes.
-    """
-    payments = [
-        Payment(amount=100.0, payment_date=date(2023, 1, 15), payment_type=PaymentTypeEnum.HONORARIOS, description='Payment for services', beneficiary_id=1, is_archived=False),
-        Payment(amount=200.0, payment_date=date(2023, 2, 20), payment_type=PaymentTypeEnum.PROOVEDOR, description='Payment for goods', is_archived=False),
-        Payment(amount=150.0, payment_date=date(2023, 3, 10), payment_type=PaymentTypeEnum.HONORARIOS, description='Refund', beneficiary_id=3, is_archived=True),
-        Payment(amount=250.0, payment_date=date(2023, 4, 5), payment_type=PaymentTypeEnum.GASTOS, description='Payment for subscription', is_archived=False),
-        Payment(amount=300.0, payment_date=date(2023, 5, 25), payment_type=PaymentTypeEnum.HONORARIOS, description='Payment for membership', beneficiary_id=5, is_archived=False),
-        Payment(amount=400.0, payment_date=date(2023, 6, 15), payment_type=PaymentTypeEnum.PROOVEDOR, description='Payment for consultancy', is_archived=True),
-        Payment(amount=500.0, payment_date=date(2023, 7, 20), payment_type=PaymentTypeEnum.GASTOS, description='Payment for equipment', is_archived=False),
-        Payment(amount=600.0, payment_date=date(2023, 8, 10), payment_type=PaymentTypeEnum.HONORARIOS, description='Payment for training', beneficiary_id=3, is_archived=False),
-        Payment(amount=700.0, payment_date=date(2023, 9, 5), payment_type=PaymentTypeEnum.PROOVEDOR, description='Payment for software', is_archived=True),
-        Payment(amount=800.0, payment_date=date(2023, 10, 25), payment_type=PaymentTypeEnum.GASTOS, description='Payment for hardware', is_archived=False),
-        Payment(amount=900.0, payment_date=date(2023, 11, 15), payment_type=PaymentTypeEnum.HONORARIOS, description='Payment for maintenance', beneficiary_id=1, is_archived=False),
-        Payment(amount=1000.0, payment_date=date(2023, 12, 20), payment_type=PaymentTypeEnum.PROOVEDOR, description='Payment for license', is_archived=True),
-        Payment(amount=1100.0, payment_date=date(2024, 1, 10), payment_type=PaymentTypeEnum.GASTOS, description='Payment for support', is_archived=False),
-        Payment(amount=1200.0, payment_date=date(2024, 2, 5), payment_type=PaymentTypeEnum.HONORARIOS, description='Payment for hosting', beneficiary_id=4, is_archived=False),
-        Payment(amount=1300.0, payment_date=date(2024, 3, 25), payment_type=PaymentTypeEnum.PROOVEDOR, description='Payment for domain', is_archived=True),
-    ]
-
-    db.session.add_all(payments)
+    work_assignment = WorkAssignment(
+        proposal=fake.random_element(elements=[e.name for e in WorkProposalEnum]),
+        condition=fake.random_element(elements=[e.name for e in WorkConditionEnum]),
+        sede=fake.random_element(elements=[e.name for e in SedeEnum]),
+        days=fake.random_elements(
+            elements=[e.name for e in DayEnum],
+            unique=True,
+            length=fake.random_int(min=1, max=7),
+        ),
+        jockey_amazon=jockey,
+    )
+    # Add work assignments to the session and commit
+    db.session.add(work_assignment)
     db.session.commit()
-    print("Seeding payments completed")
 
 
-def seed_jockey_amazons():
+def seed_family_members(jockey: JockeyAmazon):
     """
-    Seeds jockey and amazon data in the database.
+    Seeds family members in the database.
 
-    This function creates several jockeys and amazons with various attributes,
-     including school institutions, work assignments, and family members.
+    This function creates several family members with various attributes.
     """
-    print("Seeding jockey_amazons")
+    family_members = []
+    family_members_number = random.randint(1, 2)
+    for _ in range(family_members_number):
+        family_member = FamilyMember(
+            relationship=fake.random_element(
+                elements=["Madre", "Padre", "Madre", "Hermano/a", "Esposa/o", "Tutor"]
+            ),
+            first_name=fake.first_name(),
+            last_name=fake.last_name(),
+            dni=fake.unique.random_number(digits=8),
+            street=fake.street_name(),
+            number=fake.building_number(),
+            department=fake.random_element(
+                elements=[None, fake.word()]
+            ),  # Optional field
+            locality=fake.municipality(),
+            province=fake.province(),
+            phone_country_code=fake.random_int(min=1, max=99),
+            phone_area_code=fake.random_int(min=1, max=300),
+            phone_number=fake.msisdn()[:10],
+            email=fake.email(),
+            education_level=fake.random_element(
+                elements=[e.name for e in EducationLevelEnum]
+            ),
+            occupation=fake.random_element(
+                elements=["Profesor", "Ingeniero", "Desempleado", "Artista", "Abogado"]
+            ),
+            jockey_amazon_id=jockey.id,
+        )
+        family_members.append(family_member)
 
-    jockey1 = JockeyAmazon(
-        first_name="María",
-        last_name="González",
-        dni="87654321",
-        birth_date=date(1996, 5, 15),
-        birthplace="Ciudad 1",
-        has_scholarship=True,
-        scholarship_observations="Observaciones de beca",
-        has_disability=True,
-        disability_diagnosis=DisabilityDiagnosisEnum.AUTISM_SPECTRUM_DISORDER,
-        disability_other=None,
-        disability_type=DisabilityTypeEnum.MENTAL,
-        has_family_assignment=True,
-        family_assignment_type=FamilyAssignmentEnum.UNIVERSAL_WITH_DISABLED_CHILD,
-        has_pension=True,
-        pension_type=PensionEnum.NATIONAL,
-        pension_details="Detalles de la pensión",
-        social_security="Obra Social 1",
-        social_security_number="123456789",
-        has_curatorship=False,
-        curatorship_observations=None,
-        current_grade_year="5to Año",
-        school_observations="Observaciones escolares",
-        professionals="Profesionales involucrados",
-    )
-
-    jockey2 = JockeyAmazon(
-        first_name="José",
-        last_name="López",
-        dni="98765432",
-        birth_date=date(1998, 8, 22),
-        birthplace="Ciudad 2",
-        has_scholarship=False,
-        scholarship_observations=None,
-        has_disability=True,
-        disability_diagnosis=DisabilityDiagnosisEnum.INTELLECTUAL_DISABILITY,
-        disability_other=None,
-        disability_type=DisabilityTypeEnum.MENTAL,
-        has_family_assignment=False,
-        family_assignment_type=None,
-        has_pension=False,
-        pension_type=None,
-        pension_details=None,
-        social_security="Obra Social 2",
-        social_security_number="987654321",
-        has_curatorship=True,
-        curatorship_observations="Curador: Juan Pérez",
-        current_grade_year="2do Año",
-        school_observations="Observaciones escolares de José",
-        professionals="Profesional 1, Profesional 2",
-    )
-
-    jockey3 = JockeyAmazon(
-        first_name="Emilia",
-        last_name="Romero",
-        dni="45678901",
-        birth_date=date(2000, 12, 10),
-        birthplace="Springfield",
-        has_scholarship=True,
-        scholarship_observations="Beca completa por excelencia académica",
-        has_disability=False,
-        disability_diagnosis=None,
-        disability_other=None,
-        disability_type=None,
-        has_family_assignment=True,
-        family_assignment_type=FamilyAssignmentEnum.UNIVERSAL_WITH_CHILD,
-        has_pension=False,
-        pension_type=None,
-        pension_details=None,
-        social_security="Obra Social 3",
-        social_security_number="456789012",
-        has_curatorship=False,
-        curatorship_observations=None,
-        current_grade_year="4to Año",
-        school_observations="Alumno destacada en actividades extracurriculares",
-        professionals="Psicopedagoga, Fonoaudióloga",
-    )
-
-    school1 = SchoolInstitution(
-        name="Escuela Primaria N°1",
-        street="Calle Falsa",
-        number=123,
-        department="Departamento 1",
-        locality="Localidad 1",
-        province="Provincia 1",
-        phone_country_code="54",
-        phone_area_code="11",
-        phone_number="12345678",
-        jockey_amazon=jockey1
-    )
-    school2 = SchoolInstitution(
-        name="Escuela Secundaria N°2",
-        street="Otra Calle",
-        number=456,
-        department="Departamento 2",
-        locality="Localidad 2",
-        province="Provincia 2",
-        phone_country_code="54",
-        phone_area_code="11",
-        phone_number="87654321",
-        jockey_amazon=jockey2
-    )
-    school3 = SchoolInstitution(
-        name="Escuela Secundaria N°3",
-        street="Av. Siempreviva",
-        number=742,
-        department="Departamento Central",
-        locality="Springfield",
-        province="Provincia 3",
-        phone_country_code="54",
-        phone_area_code="351",
-        phone_number="1231234",
-        jockey_amazon=jockey3
-    )
-    
-    db.session.add_all([jockey1, jockey2, jockey3, school1, school2, school3])
-
-    work_assignment1 = WorkAssignment(
-        proposal=WorkProposalEnum.HIPOTHERAPY,
-        condition=WorkConditionEnum.REGULAR,
-        sede=SedeEnum.CASJ,
-        days=[DayEnum.MONDAY, DayEnum.WEDNESDAY, DayEnum.FRIDAY],
-        professor_or_therapist_id=3,
-        conductor_id=3,
-        track_assistant_id=3,
-        horse_id=3,
-        jockey_amazon=jockey1
-    )
-    work_assignment2 = WorkAssignment(
-        proposal=WorkProposalEnum.ADAPTED_EQUESTRIAN_SPORTS,
-        condition=WorkConditionEnum.REGULAR,
-        sede=SedeEnum.HLP,
-        days=[DayEnum.TUESDAY, DayEnum.THURSDAY],
-        professor_or_therapist_id=4,
-        conductor_id=4,
-        track_assistant_id=4,
-        horse_id=4,
-        jockey_amazon=jockey2
-    )
-    work_assignment3 = WorkAssignment(
-        proposal=WorkProposalEnum.RECREATIONAL_ACTIVITIES,
-        condition=WorkConditionEnum.REGULAR,
-        sede=SedeEnum.OTHER,
-        days=[DayEnum.TUESDAY, DayEnum.THURSDAY],
-        professor_or_therapist_id=5,
-        conductor_id=6,
-        track_assistant_id=7,
-        horse_id=6,
-        jockey_amazon=jockey3
-    )
-
-    db.session.add_all([work_assignment1, work_assignment2, work_assignment3])
-
-    family_member1 = FamilyMember(
-        relationship="Padre",
-        first_name="Juan",
-        last_name="Pérez",
-        dni="12345678",
-        street="Calle Falsa",
-        number=123,
-        department="Departamento 1",
-        locality="Localidad 1",
-        province="Provincia 1",
-        phone_country_code="54",
-        phone_area_code="11",
-        phone_number="12345678",
-        email="juan.perez@example.com",
-        education_level=EducationLevelEnum.SECONDARY,
-        occupation="Empleado",
-        jockey_amazon=jockey1
-    )
-    family_member2 = FamilyMember(
-        relationship="Madre",
-        first_name="Laura",
-        last_name="Gómez",
-        dni="23456789",
-        street="Otra Calle",
-        number=456,
-        department="Departamento 2",
-        locality="Localidad 2",
-        province="Provincia 2",
-        phone_country_code="54",
-        phone_area_code="11",
-        phone_number="87654321",
-        email="laura.gomez@example.com",
-        education_level=EducationLevelEnum.TERTIARY,
-        occupation="Médico",
-        jockey_amazon=jockey2
-    )
-    family_member3 = FamilyMember(
-        relationship="Madre",
-        first_name="Ana",
-        last_name="Romero",
-        dni="34567890",
-        street="Calle Los Álamos",
-        number=321,
-        department="Departamento Norte",
-        locality="Springfield",
-        province="Provincia 3",
-        phone_country_code="54",
-        phone_area_code="351",
-        phone_number="5675678",
-        email="ana.romero@example.com",
-        education_level=EducationLevelEnum.TERTIARY,
-        occupation="Docente",
-        jockey_amazon=jockey3
-    )
-
-    db.session.add_all([family_member1, family_member2, family_member3])
+    # Add family members to the session and commit
+    db.session.bulk_save_objects(family_members)
+    db.session.commit()
 
 
-def seed_charges():
+def seed_jockeys_amazons(num_jockeys=10):
+    """Seed a specified number of JockeyAmazon instances."""
+    print("Seeding jockeys and amazons")
+    for _ in range(num_jockeys):
+        has_scholarship = fake.boolean()
+        has_disability = fake.boolean()
+        has_curatorship = fake.boolean()
+        jockey = JockeyAmazon(
+            first_name=fake.first_name(),
+            last_name=fake.last_name(),
+            dni=generate_unique_dni(),
+            birth_date=fake.date_of_birth(),
+            birthplace=fake.city(),
+            has_debts=fake.boolean(),
+            has_scholarship=has_scholarship,
+            scholarship_percentage=fake.random.uniform(0, 100) if has_scholarship else None,
+            scholarship_observations=fake.text(max_nb_chars=200) if has_scholarship else None,
+            has_disability=has_disability,
+            disability_diagnosis=fake.random_element(elements=[e.name for e in DisabilityDiagnosisEnum]) if has_disability else None,
+            disability_other=fake.sentence() if has_disability and fake.boolean() else None,
+            disability_type=fake.random_element(elements=[e.name for e in DisabilityTypeEnum]) if has_disability else None,
+            has_curatorship=has_curatorship,
+            curatorship_observations=fake.text(max_nb_chars=200) if has_curatorship else None, 
+            school_institution=None,
+            current_grade_year=fake.word(),
+            school_observations=fake.text(max_nb_chars=50),
+            has_family_assignment=fake.boolean(),
+            family_assignment_type=fake.random_element(elements=[e.name for e in FamilyAssignmentEnum]),
+            has_pension=fake.boolean(),
+            pension_type=fake.random_element(elements=[e.name for e in PensionEnum]),
+            pension_details=fake.sentence() if fake.boolean() else None,
+            social_security=fake.company_suffix(),
+            social_security_number=fake.msisdn()[:10],
+            street=fake.street_name(),
+            number=fake.building_number(),
+            department=fake.word(),
+            locality=fake.municipality(),
+            province=fake.province(),
+            emergency_contact_name=fake.name(),
+            emergency_contact_phone=fake.phone_number()[:15],
+            country_code=fake.country_code(),
+            area_code=fake.random_int(min=1, max=300),
+            phone=fake.msisdn()[:10],
+            is_deleted=fake.boolean(chance_of_getting_true=25)
+        )
+        db.session.add(jockey)
+
+    print("Committing jockeys and amazons")
+    db.session.commit()
+    print("Seeding jockeys and amazons related entities")
+    # Seed related data
+    for jockey in db.session.query(JockeyAmazon).all():
+        seed_school_institutions(jockey)
+        seed_family_members(jockey)
+        seed_work_assignment(jockey)
+
+    print("Commiting...")
+    # Commit all changes to the database
+    db.session.commit()
+
+
+def seed_charges(num_entries=3):
     """
     Seed the database with initial charge data.
 
-    This function creates a list of Charge objects with predefined data
-    and inserts them into the database. Each Charge object includes details
-    such as the date of charge, amount, payment method, employee ID, jockey/amazon ID,
+    This function creates a specified number of Charge objects with predefined data
+    generated using Faker and inserts them into the database. Each Charge object includes
+    details such as the date of charge, amount, payment method, employee ID, jockey/amazon ID,
     observations, and timestamps for insertion and update.
 
     Example:
-        seed_charges()
+        seed_charges(num_entries=5)
 
     Returns:
         None
     """
-        
-    charges = [
-        Charge(
-            id=1,
-            date_of_charge=date(2023, 1, 1),
-            amount=100.0,
-            payment_method=PaymentMethodEnum.CREDIT_CARD,
-            employee_id=1,
-            jya_id=1,
-            observations="First charge",
-            inserted_at=date(2023, 1, 1),
-            updated_at=date(2023, 1, 1)
-        ),
-        Charge(
-            id=2,
-            date_of_charge=date(2023, 2, 1),
-            amount=200.0,
-            payment_method=PaymentMethodEnum.CASH,
-            employee_id=2,
-            jya_id=1,
-            observations="Second charge",
-            inserted_at=date(2023, 2, 1),
-            updated_at=date(2023, 2, 1)
-        ),
-        Charge(
-            id=3,
-            date_of_charge=date(2023, 3, 1),
-            amount=150.0,
-            payment_method=PaymentMethodEnum.DEBIT_CARD,
-            employee_id=3,
-            jya_id=2,
-            observations="Third charge",
-            inserted_at=date(2023, 3, 1),
-            updated_at=date(2023, 3, 1)
-        ),
-    ]
 
-    db.session.add_all(charges)
+    charges = []
+
+    for _ in range(num_entries):
+        charges.append(
+            Charge(
+                date_of_charge=fake.date_between(start_date="-1y", end_date="today"),
+                amount=round(
+                    fake.pyfloat(left_digits=3, right_digits=2, positive=True), 2
+                ),
+                payment_method=fake.random_element(
+                    elements=[e.name for e in PaymentMethodEnum]
+                ),
+                employee_id=fake.random_int(min=1, max=20),
+                jya_id=fake.random_int(min=1, max=20),
+                observations=fake.sentence(),
+                inserted_at=fake.date_time_this_year(),
+                updated_at=fake.date_time_this_year(),
+            )
+        )
+
+    db.session.bulk_save_objects(charges)
+    db.session.commit()
+
+
+def seed_payments(num_entries=5):
+    """
+    Seed the database with initial payment data.
+
+    This function creates a specified number of Payment objects with predefined data
+    generated using Faker and inserts them into the database. Each Payment object includes
+    details such as the amount, payment date, payment type, description, beneficiary ID,
+    and timestamps for insertion and update.
+
+    Example:
+        seed_payments(num_entries=10)
+
+    Returns:
+        None
+    """
+
+    payments = []
+
+    for _ in range(num_entries):
+        payments.append(
+            Payment(
+                amount=round(
+                    fake.pyfloat(left_digits=3, right_digits=2, positive=True), 2
+                ),
+                payment_date=fake.date_between(start_date="-1y", end_date="today"),
+                payment_type=fake.random_element(
+                    elements=[e.value for e in PaymentTypeEnum]
+                ),
+                description=fake.sentence(),
+                is_archived=fake.boolean(),
+                inserted_at=fake.date_time_this_year(),
+                updated_at=fake.date_time_this_year(),
+            )
+        )
+
+    db.session.bulk_save_objects(payments)
+    db.session.commit()
