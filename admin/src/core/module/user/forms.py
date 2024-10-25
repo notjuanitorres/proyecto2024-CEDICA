@@ -7,7 +7,9 @@ It leverages WTForms and Flask-WTF for form handling and validation.
 """
 
 from flask_wtf import FlaskForm
+from flask_wtf.file import FileAllowed, FileSize, FileRequired
 from wtforms import (
+    FileField,
     StringField,
     PasswordField,
     BooleanField,
@@ -34,6 +36,15 @@ def email_existence(form, field):
     validator = EmailExistence(message="Email en uso")
     validator(form, field)
 
+def max_file_size(size_in_mb: int):
+    BYTES_PER_MB = 1024 * 1024
+
+    size_in_bytes = size_in_mb * BYTES_PER_MB
+    return size_in_bytes
+
+allowed_filetypes = ["pdf", "jpg", "jpeg", "png", "webp"]
+formatted_filetypes = ", ".join(f".{ext}" for ext in allowed_filetypes[:-1]) + f" y .{allowed_filetypes[-1]}"
+filetypes_message = f"Formato no reconocido. Formato válido: {formatted_filetypes}"
 
 class UserManagementForm(FlaskForm):
     """
@@ -133,6 +144,17 @@ class UserEditForm(UserManagementForm):
     Form for editing an existing user, including the current email field.
     """
 
+    profile_image = FileField('Cargar foto de perfil', 
+            validators=[FileSize(
+                max_size=max_file_size(size_in_mb=5),
+                message="El archivo es demasiado grande",
+            ),
+            FileAllowed(
+                upload_set=allowed_filetypes,
+                message=filetypes_message,
+            )] )
+   
+
     def __init__(self, *args, **kwargs):
         """
         Initialize the UserEditForm.
@@ -211,10 +233,58 @@ class AccountSelectForm(FlaskForm):
     submit_item = SubmitField("Asociar")
 
     def set_selected_account(self, account_id):
-        """
+         """
         Set the selected account ID.
 
         Args:
             account_id: The ID of the selected account.
         """
-        self.selected_item.data = account_id
+         self.selected_item.data = account_id
+
+
+
+class UserProfileForm(FlaskForm):
+    email = StringField(
+        "Correo",
+        validators=[
+            DataRequired(),
+            Email(message="Email inválido"),
+            Length(max=100),
+        ],
+    )
+    alias = StringField("Alias", validators=[DataRequired(), Length(min=3, max=15)])
+    profile_image = FileField('Cargar foto de perfil', 
+            validators=[FileSize(
+                max_size=max_file_size(size_in_mb=5),
+                message="El archivo es demasiado grande",
+            ),
+            FileAllowed(
+                upload_set=allowed_filetypes,
+                message=filetypes_message,
+            )] )
+    current_password = PasswordField(
+        "Contraseña actual",
+        validators=[
+            DataRequired(),
+            Length(
+                min=8, max=255, message="La contraseña debe tener más de 8 caracteres"
+            ),
+        ],
+    )
+    new_password = PasswordField(
+        "Nueva contraseña",
+        validators=[
+            Optional(),
+            Length(
+                min=8, max=255, message="La contraseña debe tener más de 8 caracteres"
+            ),
+        ],
+    )
+    confirm_password = PasswordField(
+        "Confirmar nueva contraseña",
+        validators=[
+            Optional(),
+            EqualTo("new_password", message="Las contraseñas deben coincidir"),
+        ],
+    )
+    submit = SubmitField("Guardar cambios")

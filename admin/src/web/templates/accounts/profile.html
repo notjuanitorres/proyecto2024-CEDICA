@@ -1,0 +1,42 @@
+{% extends "layout.html" %}
+{% from "macros/image_from_minio.html" import profile_image %}
+
+{% block title %} User Profile {% endblock %}
+{% block main_content %}
+<section class="section">
+    <div class="container">
+        <h1 class="title is-size-3 has-text-centered">Perfil de usuario</h1>
+        <div class="columns is-centered">
+            <div class="column is-half">
+                <div class="box">
+                    <article class="media is-flex is-align-items-center">
+                        <div class="media-left">
+                            <figure class="image is-128x128 is-flex is-align-items-center">
+                                {{ profile_image(user_id) }}
+                            </figure>
+                        </div>
+                        <div class="media-content">
+                            <div class="content">
+                                <p>
+                                    <strong>{{ user.alias }}</strong> <small>{{ user.email }}</small>
+                                    <br>
+                                    <strong>Usuario desde:</strong> {{ user.inserted_at.strftime('%B %d, %Y') }}
+                                </p>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+                <div class="box">
+                    <h2 class="subtitle">Informacion Personal</h2>
+                    <p><strong>Email:</strong> {{ user.email }}</p>
+                    <p><strong>Alias:</strong> {{ user.alias }}</p>
+                    <p><strong>Usuario desde:</strong> {{ user.inserted_at.strftime('%B %d, %Y') }}</p>
+                </div>
+                <div class="box">
+                    <a href="{{ url_for('auth_bp.edit_profile') }}" class="button is-link">Editar Perfil</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

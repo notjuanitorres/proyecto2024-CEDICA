@@ -102,6 +102,14 @@ class EmploymentInformationForm(FlaskForm):
     is_active = BooleanField("Activo en la organización", default=True)
 
 
+def max_file_size(size_in_mb: int):
+    BYTES_PER_MB = 1024 * 1024
+
+    size_in_bytes = size_in_mb * BYTES_PER_MB
+
+    return size_in_bytes
+
+
 class EmployeeDocumentsForm(FlaskForm):
     """Form for managing employee related documents such as DNI, title, and curriculum vitae."""
 
