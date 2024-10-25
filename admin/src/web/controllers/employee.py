@@ -570,7 +570,7 @@ def unlink_account(
 
 
 @employee_bp.route("/editar/<int:employee_id>/documentos/", methods=["GET"])
-@check_user_permissions(permissions_required=["employee_update"])
+@check_user_permissions(permissions_required=["equipo_update"])
 @inject
 def edit_documents(
     employee_id: int,
