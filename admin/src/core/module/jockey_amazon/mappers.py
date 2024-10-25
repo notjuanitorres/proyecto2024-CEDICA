@@ -38,10 +38,10 @@ from .extras.mappers import (
 class JockeyAmazonMapper:
     """
     Mapper class for transforming JockeyAmazon entities to and from dictionary representations.
-    
+
     This class provides methods to convert JockeyAmazon entities to dictionaries and vice versa,
     as well as utilities for handling file-related operations.
-    
+
     Class Methods:
         create_file(document_type, file_information): Creates a JockeyAmazonFile instance
         create_files(files): Creates multiple JockeyAmazonFile instances
@@ -86,8 +86,6 @@ class JockeyAmazonMapper:
             list[JockeyAmazonFile]: List of created file instances
         """
 
-        pass
-
         created_files = []
         for doc_type, files_info in files:
             for file_info in files_info:
@@ -114,7 +112,7 @@ class JockeyAmazonMapper:
         """
         if not jockey:
             return {}
-        
+
         jockey_dict = {
             "id": jockey.id,
             "inserted_at": jockey.inserted_at,
@@ -141,8 +139,8 @@ class JockeyAmazonMapper:
             "phone": {
                 "country_code": jockey.country_code,
                 "area_code": jockey.area_code,
-                "number": jockey.phone,   
-            }
+                "number": jockey.phone,
+            },
         }
         jockey_dict["health_information"] = {
             "has_disability": jockey.has_disability,
@@ -163,9 +161,7 @@ class JockeyAmazonMapper:
         jockey_dict["family_information"] = {
             "has_family_assignment": jockey.has_family_assignment,
             "has_pension": jockey.has_pension,
-            "pension_type": (
-                jockey.pension_type.name if jockey.pension_type else None
-            ),
+            "pension_type": (jockey.pension_type.name if jockey.pension_type else None),
             "pension_details": jockey.pension_details,
             "family_assignment_type": (
                 jockey.family_assignment_type.value
@@ -175,7 +171,7 @@ class JockeyAmazonMapper:
             "family_members": [
                 FamilyMemberMapper.from_entity(member)
                 for member in jockey.family_members
-            ]
+            ],
         }
         jockey_dict["organization_work"] = {
             "professionals": jockey.professionals,
@@ -187,11 +183,12 @@ class JockeyAmazonMapper:
             ),
         }
         jockey_dict["school_information"] = {
-            "school_institution": SchoolInstitutionMapper.from_entity(jockey.school_institution),
+            "school_institution": SchoolInstitutionMapper.from_entity(
+                jockey.school_institution
+            ),
             "current_grade_year": jockey.current_grade_year,
             "school_observations": jockey.school_observations,
             "professionals": jockey.professionals,
-
             "emergency_contact": {
                 "emergency_contact_name": jockey.emergency_contact_name,
                 "emergency_contact_phone": jockey.emergency_contact_phone,
@@ -239,10 +236,13 @@ class JockeyAmazonMapper:
             department=general.get("address", {}).get("department"),
             locality=general.get("address", {}).get("locality"),
             province=general.get("address", {}).get("province"),
-            emergency_contact_name=general.get("emergency_contact", {}).get("emergency_contact_name"),
-            emergency_contact_phone=general.get("emergency_contact", {}).get("emergency_contact_phone"),
-
-            # Health Information 
+            emergency_contact_name=general.get("emergency_contact", {}).get(
+                "emergency_contact_name"
+            ),
+            emergency_contact_phone=general.get("emergency_contact", {}).get(
+                "emergency_contact_phone"
+            ),
+            # Health Information
             has_disability=health.get("has_disability"),
             disability_diagnosis=health.get("disability_diagnosis"),
             disability_other=health.get("disability_other"),
@@ -251,32 +251,32 @@ class JockeyAmazonMapper:
             social_security_number=health.get("social_security_number"),
             has_curatorship=health.get("has_curatorship"),
             curatorship_observations=health.get("curatorship_observations"),
-
             # School Information
-            school_institution=SchoolInstitutionMapper.to_entity(school.get("school_institution", {})),
+            school_institution=SchoolInstitutionMapper.to_entity(
+                school.get("school_institution", {})
+            ),
             current_grade_year=school.get("current_grade_year"),
             school_observations=school.get("school_observations"),
-
             # Family Information
             has_family_assignment=family.get("has_family_assignment"),
             family_assignment_type=family.get("family_assignment_type"),
-
             # Work Assignments Information
             professionals=assignments.get("professionals"),
-            work_assignment=WorkAssignmentMapper.to_entity(assignments.get("work_assignments")),
+            work_assignment=WorkAssignmentMapper.to_entity(
+                assignments.get("work_assignments")
+            ),
             has_scholarship=assignments.get("has_scholarship"),
             scholarship_observations=assignments.get("scholarship_observations"),
             scholarship_percentage=assignments.get("scholarship_percentage"),
-
             # Timestamps
             inserted_at=data.get("inserted_at"),
             updated_at=data.get("updated_at"),
         )
-        
+
         for member in family.get("family_members", []):
             if member:
                 is_optional = member.get("is_optional")
-                has_been_filled = is_optional.lower() == 'false'
+                has_been_filled = is_optional.lower() == "false"
                 if has_been_filled:
                     family_member = FamilyMemberMapper.to_entity(member)
                     jockey.family_members.append(family_member)

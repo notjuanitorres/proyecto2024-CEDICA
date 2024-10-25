@@ -126,21 +126,20 @@ class WorkAssignmentMapper:
             Returns empty dictionary if assignment is None
             Enum values are converted to their string representations
         """
-
-        dict = {}
+        work_assignment = {}
         if assignment:
-            dict = {
+            work_assignment = {
                 "id": assignment.id,
                 "proposal": assignment.proposal.name,
                 "condition": assignment.condition.name,
                 "sede": assignment.sede.name,
-                "days": [day.value for day in assignment.days],
+                "days": [day.name for day in assignment.days],
                 "professor_or_therapist_id": assignment.professor_or_therapist_id,
                 "conductor_id": assignment.conductor_id,
                 "track_assistant_id": assignment.track_assistant_id,
                 "horse_id": assignment.horse_id,
             }
-        return dict
+        return work_assignment
 
     @classmethod
     def to_entity(cls, data: Dict) -> WorkAssignment:

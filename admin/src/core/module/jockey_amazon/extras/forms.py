@@ -273,6 +273,7 @@ class FamilyMemberForm(FlaskForm):
             Length(max=100, message="La ocupación no puede superar los 100 caracteres")
         ]
     )
+
     def to_dict(self):
         return {
             'relationship': self.relationship.data,

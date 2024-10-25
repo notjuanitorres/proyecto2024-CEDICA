@@ -74,10 +74,7 @@ def reset(app):
     from .module.jockey_amazon.models import JockeyAmazon, FamilyMember, WorkAssignment, SchoolInstitution
 
     with app.app_context():
-        print("Dropping the database... ")
-        db.session.execute(text("DROP SCHEMA public CASCADE;"))
-        db.session.execute(text("CREATE SCHEMA public;"))
-        db.session.commit()  # Commit the changes
+        db.drop_all()
         print("Recreating the database... ")
         db.create_all()
         print("Done!")

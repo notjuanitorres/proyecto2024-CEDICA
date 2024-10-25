@@ -35,9 +35,20 @@
 {% endblock %}
 
 {% block card_actions %}
+{% if payment.is_archived %}
     <button class="card-footer-item has-text-danger modal-trigger" data-id="{{ payment.id }}" data-target="user-delete-modal">
         Eliminar
     </button>
+    <form class="card-footer-item" action="{{ url_for('payment_bp.unarchive_payment', payment_id=payment.id) }}" method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="payment_id" value="{{ payment.id }}">
+        <button type="submit" class="has-text-primary">Recuperar</button>
+    </form>
+{% else %}
+<button class="card-footer-item has-text-danger modal-trigger" data-id="{{ payment.id }}" data-target="user-delete-modal">
+    Archivar
+</button>
+{% endif %}
     <a href="{{ url_for('payment_bp.edit_payment', payment_id=payment.id) }}" class="card-footer-item has-text-warning">Editar</a>
 {% endblock %}
 
@@ -100,10 +111,19 @@
 {% endblock %}
 
 {% block modal %}
-    {{ render_delete_modal(
-        endpoint="payment_bp.delete_payment",
-        title="Eliminar",
-        msg="¿Está seguro de que desea eliminar el pago?",
-        msg_sub="Luego de confirmar, no se podrán revertir los cambios"
-    ) }}
+{% if payment.is_archived %}
+{{ render_delete_modal(
+    url_for("payment_bp.delete_payment", payment_id=payment.id),
+    title="Eliminar",
+    msg="¿Está seguro de que desea eliminar el pago?",
+    msg_sub="Luego de aceptar, los cambios no se pueden revertir"
+)}}   
+{% else %}
+{{ render_delete_modal(
+    url_for("payment_bp.archive_payment", payment_id=payment.id),
+    title="Archivar",
+    msg="¿Está seguro de que desea archivar el pago?",
+    delete_text="Archivar"
+)}}  
+{% endif %}
 {% endblock %}

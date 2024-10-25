@@ -19,7 +19,7 @@ from typing import Dict, List, Optional
 from flask_sqlalchemy.pagination import Pagination
 
 from src.core.database import db
-from src.core.module.jockey_amazon.data import DAYS_MAPPING, EducationLevelEnum
+from src.core.module.jockey_amazon.data import EducationLevelEnum
 from src.core.module.jockey_amazon.models import JockeyAmazon, JockeyAmazonFile, FamilyMember
 from src.core.module.common.repositories import apply_filters, apply_multiple_search_criteria
 from src.core.module.employee.data import JobPositionEnum as Jobs
@@ -692,7 +692,6 @@ class JockeyAmazonRepository(AbstractJockeyAmazonRepository):
             existing_member = FamilyMember.query.get(member_data.get("id"))
             if existing_member:
                 print(existing_member.education_level.name)
-                print(member_data.get("education_level"))
                 existing_member.relationship = member_data.get('relationship', existing_member.relationship)
                 existing_member.first_name = member_data.get('first_name', existing_member.first_name)
                 existing_member.last_name = member_data.get('last_name', existing_member.last_name)
@@ -737,10 +736,7 @@ class JockeyAmazonRepository(AbstractJockeyAmazonRepository):
         jockey.scholarship_percentage = data.get("scholarship_percentage")
         self.db.session.add(assignment)
         self.db.session.add(jockey)
-        days_abbreviations = assignment_data.get("days", [])
-        assignment.days = [
-            DAYS_MAPPING[abbr] for abbr in days_abbreviations if abbr in DAYS_MAPPING
-        ]
+        assignment.days = assignment_data.get("days", [])
         self.save()
         return True
 
