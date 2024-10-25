@@ -64,7 +64,6 @@
   <th>Apellido</th>
   <th>DNI</th>
   <th>Fecha de Nacimiento</th>
-  <th>Teléfono</th>
   <th>Fecha de creación</th>
   <th>Propuesta de trabajo</th>
   <th>Tiene deudas</th>
@@ -100,7 +99,6 @@
     <td><span class="is-hidden-tablet has-text-weight-bold">Apellido: </span>{{ jockey.last_name }}</td>
     <td><span class="is-hidden-tablet has-text-weight-bold">DNI: </span>{{ jockey.dni }}</td>
     <td><span class="is-hidden-tablet has-text-weight-bold">Fecha de Nacimiento: </span>{{ jockey.birth_date.strftime('%d-%m-%Y') }}</td>
-    <td><span class="is-hidden-tablet has-text-weight-bold">Teléfono: </span>{{ jockey.country_code }} {{ jockey.area_code }} {{ jockey.phone }}</td>
     <td><span class="is-hidden-tablet has-text-weight-bold">Fecha de creación: </span>{{ jockey.inserted_at.strftime('%d-%m-%Y') }}</td>
     <td><span class="is-hidden-tablet has-text-weight-bold">Propuesta de Trabajo: </span>{{ jockey.work_assignment.proposal.value }}</td>
     <td><span class="is-hidden-tablet has-text-weight-bold">Es deudor: </span>{{ jockey.has_debts | natural_boolean }}</td>
@@ -122,7 +120,6 @@
     <th>Apellido</th>
     <th>DNI</th>
     <th>Fecha de Nacimiento</th>
-    <th>Teléfono</th>
     <th>Fecha de creación</th>
     <th>Propuesta de trabajo</th>
     <th>Tiene deudas</th>
