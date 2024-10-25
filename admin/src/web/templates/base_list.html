@@ -54,42 +54,41 @@
             <div class="card-content" id="toggle-search">
               <div class="content">
                 <form class="form" method="GET" action="{% block form_action %}{{ url_for(request.endpoint) }}{% endblock %}">
-                  <div class="is-flex is-flex-direction-row is-flex-wrap-wrap is-gap-1">
-                    <div class="field">
-                      <label class="label">Buscar</label>
-                      <div class="control">
-                          <div class="select">
-                              {{ search_form.search_by() }}
-                          </div>
-                      </div>
-                    </div>
-                    {% block aditional_filters %}{% endblock %}
-                    <div class="field is-flex-grow-1">
-                      <label for="filtrar" class="label is-invisible-tablet">Buscar </label>
-                      <p class="control has-icons-left">
-                        {{ search_form.search_text(class="input", placeholder="Buscar", id="filtrar") }}
-                        <span class="icon is-left">
-                          <i class="fas fa-search" aria-hidden="true"></i>
-                        </span>
-                      </p>
-                      {% if search_form.search_text.errors %}
-                      <p class="help is-danger">{{ search_form.search_text.errors[0] }}</p>
-                      {% endif %}
+                  <div class="field">
+                    <label class="label">Buscar</label>
+                    <div class="control">
+                        <div class="select is-fullwidth">
+                            {{ search_form.search_by() }}
+                        </div>
                     </div>
                   </div>
-                  <div class="grid is-flex-tablet is-row-gap-0 is-column-gap-1 pt-3" >
-                    <div class="field">
+                  <div class="mb-3">
+                    {% block aditional_filters %}{% endblock %}
+                  </div>
+                  <div class="field">
+                    <p class="control has-icons-left">
+                      {{ search_form.search_text(class="input", placeholder="Buscar", id="filtrar") }}
+                      <span class="icon is-left">
+                        <i class="fas fa-search" aria-hidden="true"></i>
+                      </span>
+                    </p>
+                    {% if search_form.search_text.errors %}
+                    <p class="help is-danger">{{ search_form.search_text.errors[0] }}</p>
+                    {% endif %}
+                  </div>
+                  <div class="columns is-mobile is-1" >
+                    <div class="field column is-half">
                       <label class="label">Ordenar por</label>
                       <div class="control">
-                          <div class="select">
+                          <div class="select is-fullwidth">
                               {{ search_form.order_by() }}
                           </div>
                       </div>
                     </div>
-                    <div class="field">
+                    <div class="field column">
                       <label class="label">En orden</label>
                       <div class="control">
-                          <div class="select">
+                          <div class="select is-fullwidth">
                               {{ search_form.order() }}
                           </div>
                       </div>
