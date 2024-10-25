@@ -42,10 +42,6 @@ def create_app(env="development", static_folder="../../static"):
     register_filters(app)
     init_wiring()
 
-    error_codes = [400, 401, 403, 404, 405, 500]
-    for code in error_codes:
-        app.register_error_handler(code, error.handle_error)
-
     app.context_processor(inject_session_data)
 
     if app.config["SEED_ON_STARTUP"]:
