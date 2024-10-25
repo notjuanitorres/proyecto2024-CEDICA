@@ -7,7 +7,7 @@ from src.web.helpers.auth import check_user_permissions
 from src.core.container import Container
 from src.core.module.equestrian.forms import (
     HorseCreateForm,
-    HorseEditForm, 
+    HorseEditForm,
     HorseSearchForm,
     HorseAddDocumentsForm,
     HorseDocumentSearchForm
@@ -47,12 +47,12 @@ def search_horses(search: HorseSearchForm,
 
     if search.submit_search.data and search.validate():
         order_by = [(search.order_by.data, search.order.data)]
-        search_query = {
+        search_query.update({
             "text": search.search_text.data,
             "field": search.search_by.data,
-        }
+        })
         if search.filter_ja_type.data:
-            search_query["filters"] = {"ja_type": search.filter_ja_type.data}
+            search_query["filters"]["ja_type"] = search.filter_ja_type.data
 
     return equestrian_repository.get_page(
         page=page, per_page=per_page, order_by=order_by, search_query=search_query
