@@ -28,5 +28,6 @@
 
 
 {% block extra_scripts %}
+{{ super() }}
 <script src="{{ url_for('static', filename="js/jockey_amazon/work-assignment-form.js")}}"></script>
 {% endblock %}

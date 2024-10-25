@@ -24,6 +24,7 @@
 {% endblock %}
 
 {% block extra_scripts %}
+{{ super() }}
 <script src="{{ url_for('static', filename="js/jockey_amazon/family-form.js")}}"></script>
 {% endblock %}
 
