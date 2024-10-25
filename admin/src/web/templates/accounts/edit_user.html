@@ -7,7 +7,7 @@
     <section class="section">
         <div class="container">
             <h1 class="title">Editar usuario</h1>
-            <form method="POST" enctype="multipart/form-data">
+            <form method="POST" enctype="multipart/form-data" id="edit-user-form">
                 {{ form.hidden_tag() }}
                 <div class="is-flex-direction-row is-flex is-justify-content-space-around ">
 
@@ -41,7 +41,7 @@
                 <div class="field">
                     <label class="label">{{ form.email.label }}</label>
                     <div class="control">
-                        {{ form.email(class="input", type="email", placeholder="Inrese el correo") }}
+                        {{ form.email(class="input", type="email", placeholder="Ingrese el correo", data_validate="required email") }}
                     </div>
                     {% if form.email.errors %}
                         <p class="help is-danger">{{ form.email.errors[0] }}</p>
@@ -51,7 +51,7 @@
                 <div class="field">
                     <label class="label">{{ form.alias.label }}</label>
                     <div class="control">
-                        {{ form.alias(class="input", placeholder="Ingrese el alias") }}
+                        {{ form.alias(class="input", placeholder="Ingrese el alias", data_validate="required alphanumeric") }}
                     </div>
                     {% if form.alias.errors %}
                         <p class="help is-danger">{{ form.alias.errors[0] }}</p>
@@ -62,7 +62,7 @@
                     <label class="label">{{ form.role_id.label }}</label>
                     <div class="control">
                         <div class="select">
-                            {{ form.role_id() }}
+                            {{ form.role_id(data_validate="required") }}
                         </div>
                     </div>
                 </div>
@@ -70,7 +70,7 @@
                 <div class="field">
                     <div class="control">
                         <label class="checkbox">
-                            {{ form.system_admin() }} {{ form.system_admin.label }}
+                            {{ form.system_admin(data_validate="optional") }} {{ form.system_admin.label }}
                         </label>
                     </div>
                 </div>
@@ -88,4 +88,11 @@
 {% block extra_scripts %}
    {{ super() }}
     <script src="{{ url_for('static', filename='js/preview-image.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/form_validator.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('edit-user-form');
+            new FormValidator(form);
+        });
+    </script>
 {% endblock %}

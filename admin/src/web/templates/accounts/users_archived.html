@@ -88,6 +88,7 @@
         to_left=true,
         endpoints={
           'show':'users_bp.show_user',
+          'delete':'users_bp.delete_user',
         },
         permission_to_show="users_show",
         permission_to_edit="users_update",
@@ -109,8 +110,8 @@
       {% endif %}
     </td>
     <td><span class="is-hidden-tablet has-text-weight-bold">Rol: </span>{{ user.role_id | role }}</td>
-    <td><span class="is-hidden-tablet has-text-weight-bold">Creado: </span>{{ user.inserted_at | format_date }}</td>
-    <td><span class="is-hidden-tablet has-text-weight-bold">Eliminado: </span>{{ user.updated_at | format_date }}</td>
+    <td><span class="is-hidden-tablet has-text-weight-bold">Creado: </span>{{ user.inserted_at | format_date('%d/%m/%Y') }}</td>
+    <td><span class="is-hidden-tablet has-text-weight-bold">Eliminado: </span>{{ user.updated_at | format_date('%d/%m/%Y') }}</td>
     
     <td class="is-hidden-tablet is-flex">
       <a href="{{ url_for('users_bp.show_user', user_id=user.id)}}" class="button is-flex-grow-1 ">

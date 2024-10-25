@@ -118,8 +118,8 @@
     <td><span class="is-hidden-tablet has-text-weight-bold">Alias: </span>{{ user.alias }}</td>
     <td><span class="is-hidden-tablet has-text-weight-bold">Rol: </span>{{ user.role_id | role }}</td>
     <td><span class="is-hidden-tablet has-text-weight-bold">Administrador del Sistema: </span>{{ user.system_admin | natural_boolean }}</td>
-    <td><span class="is-hidden-tablet has-text-weight-bold">Creado: </span>{{ user.inserted_at | format_date }}</td>
-    <td><span class="is-hidden-tablet has-text-weight-bold">Actualizado: </span>{{ user.updated_at | format_date }}</td>
+    <td><span class="is-hidden-tablet has-text-weight-bold">Creado: </span>{{ user.inserted_at | format_date('%d/%m/%Y') }}</td>
+    <td><span class="is-hidden-tablet has-text-weight-bold">Actualizado: </span>{{ user.updated_at | format_date('%d/%m/%Y') }}</td>
     
     <td class="is-hidden-tablet is-flex">
       <a href="{{ url_for('users_bp.show_user', user_id=user.id)}}" class="button is-flex-grow-1 ">

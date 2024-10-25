@@ -6,6 +6,8 @@
 {% set is_entity_deleted = employee.is_deleted %}
 {% set current_url = url_for('employee_bp.edit_documents', employee_id=employee.id) %}
 {% set entity_has_documents = files %}
+{% set permission_to_update_docs = 'equipo_update'%}
+
 {% block title %} Equipo - Actualizar documentos {% endblock %}
 
 {% block breadcrumb_items %}
@@ -40,7 +42,7 @@
     <h1 class="title is-fullwidth has-text-centered">Actualizando a {{ employee.name + " " + employee.lastname }}</h1>
     <div class="tabs is-toggle is-fullwidth is-toggle-rounded is-centered is-medium">
       <ul>
-          {% if not employee.is_deleted %}
+          {% if not employee.is_deleted and ('equipo_update' in permissions or is_admin) %}
             <li>
               <a href="{{ url_for('employee_bp.edit_employee', employee_id=employee.id) }}">
                 <span class="icon is-small">

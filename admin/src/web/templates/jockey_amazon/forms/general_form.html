@@ -112,7 +112,7 @@
       <div class="field">
         <label class="label">{{ general_form.address.department.label }}</label>
         <div class="control">
-          {{ general_form.address.department(class="input", placeholder="Ingrese el departamento", data_validate="required alphanumeric") }}
+          {{ general_form.address.department(class="input", placeholder="Ingrese el departamento", data_validate="optional alphanumeric") }}
         </div>
         {% if general_form.address.department.errors %}
         <p class="help is-danger">{{ general_form.address.department.errors[0] }}</p>

@@ -1,0 +1,16 @@
+{% extends "error.html" %}
+
+{% block error_type %}401{% endblock %}
+
+{% block error_content %}
+    <h2 class="title is-size-3">Oops. No autorizado</h2>
+    <p class="subtitle is-5 py-4">Necesitas autenticarte para acceder a esta página.</p>
+{% endblock %}
+{% block cta_button %}
+<a href="{{ url_for('auth_bp.login') }}" class="button bg-gradient is-info is-fullwidth">
+  <span class="icon">
+      <i class="fas fa-user is-size"></i>
+  </span>
+  <span>Iniciar Sesión</span>
+</a>
+{% endblock %}

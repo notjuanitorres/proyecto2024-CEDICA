@@ -5,6 +5,7 @@
 {# Variables used in base_document_list #}
 {% set entity_has_documents = files %}
 {% set current_url = url_for('jockey_amazon_bp.edit_documents', jockey_id=jockey.id) %}
+{% set permission_to_update_docs = 'jya_update'%}
 
 {% block title %} Jockeys - Actualizar documentos {% endblock %}
 
@@ -40,6 +41,7 @@
         <h1 class="title is-fullwidth has-text-centered mt-0">Editando el perfil de {{ jockey.first_name }} {{ jockey.last_name }}</h1>
         <div class="tabs is-toggle is-fullwidth is-toggle-rounded is-centered is-medium">
             <ul>
+                {% if not jockey.is_deleted and ('jya_update' in permissions or is_admin) %}
                 <li >
                     <a href="{{ url_for('jockey_amazon_bp.update.edit_jockey', jockey_id=jockey.id) }}">
                           <span class="icon is-small">
@@ -48,6 +50,7 @@
                         <span>Información General</span>
                     </a>
                 </li>
+                {% endif %}
                 <li class="is-active">
                     <a href="{{ url_for("jockey_amazon_bp.edit_documents",  jockey_id=jockey.id ) }}">
                           <span class="icon is-small">

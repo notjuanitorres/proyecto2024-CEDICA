@@ -86,7 +86,7 @@ def get_users():
     search_form = UserSearchForm(request.args)
     paginated_users = search_users(search_form, need_archive=False)
     return render_template(
-        "users.html",
+        "./accounts/users.html",
         users=paginated_users,
         search_form=search_form,
     )
@@ -103,7 +103,7 @@ def get_deleted_users():
     search_form = UserSearchForm(request.args)
     paginated_users = search_users(search_form, need_archive=True)
     return render_template(
-        "users_archived.html",
+        "./accounts/users_archived.html",
         users=paginated_users,
         search_form=search_form,
     )
@@ -135,7 +135,7 @@ def show_user(
     employee: dict | None = None
     if assigned_to:
         employee = employees.get_employee(assigned_to)
-    return render_template("user.html", user=user, employee=employee)
+    return render_template("./accounts/user.html", user=user, employee=employee)
 
 
 @users_bp.route("/crear", methods=["GET", "POST"])
@@ -151,7 +151,7 @@ def create_user():
     if request.method == "POST":
         return add_user(create_form=create_form)
 
-    return render_template("create_user.html", form=create_form)
+    return render_template("./accounts/create_user.html", form=create_form)
 
 
 @inject
@@ -167,10 +167,11 @@ def add_user(
         user_repository (AbstractUserRepository): The repository for user data.
 
     Returns:
-        A rendered template displaying the user creation form if validation fails, or a redirect to the user detail page if successful.
+        A rendered template displaying the user creation form if validation fails,
+         or a redirect to the user detail page if successful.
     """
     if not create_form.validate_on_submit():
-        return render_template("create_user.html", form=create_form)
+        return render_template("./accounts/create_user.html", form=create_form)
 
     user = user_repository.add(UserMapper.to_entity(create_form.data, is_creation=True))
 
@@ -195,11 +196,12 @@ def edit_user(
         user_repository (AbstractUserRepository): The repository for user data.
 
     Returns:
-        A rendered template displaying the user edit form, or a redirect to the user list page if the user does not exist or is a system administrator.
+        A rendered template displaying the user edit form,
+         or a redirect to the user list page if the user does not exist or is a system administrator.
     """
     user = user_repository.get_user(user_id)
     if not user or user.get("is_deleted"):
-        flash("El usuario no existe")
+        flash("El usuario no existe o esta archivado", "warning")
         return redirect(url_for("users_bp.get_users"))
 
     if user.get("system_admin"):
@@ -211,7 +213,7 @@ def edit_user(
     if request.method in ["POST", "PUT"]:
         edit_form.profile_image.data = request.files["profile_image"]
         return update_user(user_id=user_id, edit_form=edit_form)
-    return render_template("edit_user.html", form=edit_form, user=user)
+    return render_template("./accounts/edit_user.html", form=edit_form, user=user)
 
 
 @inject
@@ -230,10 +232,15 @@ def update_user(
         user_repository (AbstractUserRepository): The repository for user data.
 
     Returns:
-        A rendered template displaying the user edit form if validation fails, or a redirect to the user detail page if successful.
+        A rendered template displaying the user edit form if validation fails,
+         or a redirect to the user detail page if successful.
     """
+    user = user_repository.get_user(user_id)
+    if not user:
+        flash("El usuario no existe", "warning")
+        return redirect(url_for("users_bp.get_users"))
     if not edit_form.validate_on_submit():
-        return render_template("edit_user.html", form=edit_form)
+        return render_template("./accounts/edit_user.html", form=edit_form, user=user)
 
     profile_image_url = None
     if edit_form.profile_image.data:
@@ -255,7 +262,8 @@ def update_user(
             "profile_image_url": profile_image_url
         },
     )
-    flash("Perfil actualizado correctamente", "success")
+
+    flash("Usuario actualizado correctamente", "success")
     return redirect(url_for("users_bp.show_user", user_id=user_id))
 
 
@@ -274,12 +282,17 @@ def archive_user(
         A redirect to the user detail page.
     """
     user_id = request.form["item_id"]
-    archived = user_repository.archive(user_id)
+    try:
+        user_id = int(user_id)
+    except ValueError:
+        flash("El usuario solicitado no existe", "warning")
+        return redirect(url_for("users_bp.get_users"))
 
+    archived = user_repository.archive(user_id)
     if not archived:
         flash("El usuario no existe o no puede ser archivado", "warning")
-
-    flash("El usuario ha sido archivado correctamente", "success")
+    else:
+        flash("El usuario ha sido archivado correctamente", "success")
     return redirect(url_for("users_bp.show_user", user_id=user_id))
 
 
@@ -297,13 +310,18 @@ def recover_user(
     Returns:
         A redirect to the user detail page.
     """
-    user_id = request.form.get("user_id")
-    recovered = user_repository.recover(user_id)
+    user_id = request.form["item_id"]
+    try:
+        user_id = int(user_id)
+    except ValueError:
+        flash("El usuario solicitado no existe", "warning")
+        return redirect(url_for("users_bp.get_users"))
 
+    recovered = user_repository.recover(user_id)
     if not recovered:
         flash("El usuario no existe o no puede ser recuperado", "warning")
-
-    flash("El usuario ha sido recuperado correctamente", "success")
+    else:
+        flash("El usuario ha sido recuperado correctamente", "success")
     return redirect(url_for("users_bp.show_user", user_id=user_id))
 
 
@@ -331,7 +349,7 @@ def delete_user(
     deleted = user_repository.delete(user_id)
 
     if not deleted:
-        flash("El usuario no ha podido ser eliminado, intentelo nuevamente", "danger")
+        flash("El usuario no ha podido ser eliminado, inténtelo nuevamente", "danger")
     else:
         flash("El usuario ha sido eliminado correctamente", "success")
     return redirect(url_for("users_bp.get_users", archive=True))
@@ -354,10 +372,11 @@ def toggle_activation(
         A redirect to the previous page or the home page.
     """
     toggled = user_repository.toggle_activation(user_id)
-
-    if not toggled:
+    if toggled is None:
+        flash("El usuario solicitado no existe", "warning")
+    elif not toggled:
         flash("No se puede desactivar a un administrador del sistema", "danger")
     else:
-        flash("La operacion fue un exito", "success")
+        flash("La operación fue un exito", "success")
 
     return redirect(request.referrer or url_for("index_bp.home"))

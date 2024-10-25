@@ -34,6 +34,7 @@
       {% block inner_title %}
       {% endblock %}
     </section>
+    {% if permission_to_update_docs in permissions or is_admin %}
       <div class="column is-full">
         <div class="field">
           <div class="control">
@@ -46,7 +47,7 @@
           </div>
         </div>
       </div>
-
+    {% endif %}
     {% block filter_form %}
           <div class="card">
             <header class="card-header">
@@ -163,14 +164,16 @@
                           </div>
                         </div>
                         <div class="field has-addons">
-                          <div class="control">
-                            <button class="button is-danger hover modal-trigger" data-id="{{ file.id }}" data-target="user-delete-modal">
-                              <span class="icon mr-1">
-                                <i class="fa-solid fa-trash"></i>
-                              </span>
-                              Eliminar
-                            </button>
-                          </div>
+                            {% if permission_to_update_docs in permissions or is_admin%}
+                              <div class="control">
+                                <button class="button is-danger hover modal-trigger" data-id="{{ file.id }}" data-target="user-delete-modal">
+                                  <span class="icon mr-1">
+                                    <i class="fa-solid fa-trash"></i>
+                                  </span>
+                                  Eliminar
+                                </button>
+                              </div>
+                            {% endif %}
                           <div class="control">
                               <a href="{{ url_for('index_bp.download_url', path=file.path) if not file.is_link else '#' }}"
                                  class="button is-link {{ '' if not file.is_link else 'is-disabled' }}"
@@ -181,15 +184,17 @@
                                 Descargar
                               </a>
                             </div>
-                          <div class="control">
-                            <a href="{{ current_url }}/editar/{{ file.id }}"
-                               class="button is-primary">
-                              <span class="icon mr-1">
-                                <i class="fa-solid fa-pen-nib"></i>
-                              </span>
-                              Editar
-                            </a>
-                          </div>
+                            {% if permission_to_update_docs in permissions or is_admin%}
+                              <div class="control">
+                                <a href="{{ current_url }}/editar/{{ file.id }}"
+                                   class="button is-primary">
+                                  <span class="icon mr-1">
+                                    <i class="fa-solid fa-pen-nib"></i>
+                                  </span>
+                                  Editar
+                                </a>
+                              </div>
+                            {% endif %}
                         </div>
                       </article>
                     </div>

@@ -1,6 +1,6 @@
 {% extends "base_list.html" %}
 
-{% block title %}Usuarios - CEDICA{% endblock %}
+{% block title %}Equipo - CEDICA{% endblock %}
 
 {% block breadcrumb_items %}
   <li>
@@ -42,10 +42,10 @@
 {% block clear_url %}{{ url_for("employee_bp.get_deleted_employees") }}{% endblock %}
 
 {% block aditional_filters %}
-  <div class="field">
+  <div class="field pb-3">
     <label class="label">{{ search_form.filter_job_position.label}}</label>
     <div class="control">
-      <div class="select">
+      <div class="select is-fullwidth">
         {{ search_form.filter_job_position }}
       </div>
     </div>
@@ -109,7 +109,7 @@
       </span>
       {{ employee.start_date | format_date('%d/%m/%Y') }}
     </td>
-    <td><span class="is-hidden-tablet has-text-weight-bold">Eliminado: </span>{{ employee.updated_at }}
+    <td><span class="is-hidden-tablet has-text-weight-bold">Eliminado: </span>{{ employee.updated_at | format_date('%d/%m/%Y') }}
     <td class="is-hidden-tablet is-flex">
         <a href="{{ url_for('employee_bp.show_employee', employee_id=employee.id) }}"
            class="button  is-flex-grow-1 ">

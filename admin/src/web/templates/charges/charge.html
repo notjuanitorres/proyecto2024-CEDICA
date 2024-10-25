@@ -36,7 +36,7 @@
         <div id="basic-info" class="cell">
             <h3>Información del cobro</h3>
             <ul>
-                <li><strong>Fecha de cobro: </strong>{{ charge.date_of_charge | format_date }}</li>
+                <li><strong>Fecha de cobro: </strong>{{ charge.date_of_charge | format_date('%d/%m/%Y') }}</li>
                 <li><strong>Monto: </strong> {{ charge.amount }}</li>
                 <li><strong>Método de pago: </strong>{{ charge.payment_method}}</li>
                 <li><strong>Observaciones: </strong>{{ charge.observations or 'N/A' }}</li>
@@ -117,7 +117,7 @@
                         <div class="content">
                             <p>
                                 <strong class="is-size-5">{{ employee.name }} {{ employee.lastname }}</strong>
-                                <small>{{ employee.inserted_at | format_date }}</small>
+                                <small>Es miembro desde: {{ employee.inserted_at | format_date('%d/%m/%Y') }}</small>
                                 <br />
                                 {{ employee.email }}
                                 <br />
@@ -128,18 +128,30 @@
             </div>
         </div>
         <footer class="card-footer">
-            <a href="{{ url_for('employee_bp.show_employee', employee_id=employee.id) }}" class="card-footer-item has-text-link">Ver</a>
-            <a href="{{ url_for( "charges_bp.change_employee", charge_id=charge.id ) }}" class="card-footer-item has-text-warning">Cambiar</a>
+          {% if "equipo_show" in permissions or is_admin %}
+            <a href="{{ url_for('employee_bp.show_employee', employee_id=employee.id) }}"
+               class="card-footer-item has-text-link">Ver</a>
+          {% endif %}
+          {% if "cobros_update" in permissions or is_admin %}
+            <a href="{{ url_for( "charges_bp.change_employee", charge_id=charge.id ) }}"
+               class="card-footer-item has-text-warning">Cambiar</a>
+          {% endif %}
+          {% if not "cobros_update" in permissions and not "equipo_show" in permissions and not is_admin %}
+            <a class="card-footer-item py-4"></a>
+          {% endif %}
         </footer>
         {% else %}
-        <div class="card-content">
-            <div class="content">
-                <p>No existe un empleado asociado a este cobro</p>
+            <div class="card-content">
+                <div class="content">
+                    <p>No existe un empleado asociado a este cobro</p>
+                </div>
             </div>
-        </div>
-        <footer class="card-footer">
-            <a href="{{ url_for( "charges_bp.change_employee", charge_id=charge.id ) }}" class="card-footer-item has-text-link">Asociar empleado</a>
-        </footer>
+            <footer class="card-footer">
+                {% if "cobros_update" in permissions or is_admin %}
+                <a href="{{ url_for( "charges_bp.change_employee", charge_id=charge.id ) }}" class="card-footer-item has-text-link">Asociar empleado</a>
+                <a class="card-footer-item py-4"></a>
+                {% endif %}
+            </footer>
         {% endif %}
     </div>
 
@@ -171,7 +183,7 @@
                         <div class="content">
                             <p>
                                 <strong class="is-size-5">{{ jya.first_name }} {{ jya.last_name }}</strong>
-                                <small>{{ jya.inserted_at | format_date }}</small>
+                                <small>Es miembro desde: {{ jya.inserted_at | format_date('%d/%m/%Y') }}</small>
                                 <br />
                                 Dni: {{ jya.dni }}
                                 <br />
@@ -183,18 +195,27 @@
         </div>
 
         <footer class="card-footer">
-          <a href="{{ url_for('jockey_amazon_bp.show_jockey', jockey_id=jya.id) }}" class="card-footer-item has-text-link">Ver</a>
+          {% if "jya_show" in permissions or is_admin %}
+            <a href="{{ url_for('jockey_amazon_bp.show_jockey', jockey_id=jya.id) }}" class="card-footer-item has-text-link">Ver</a>
+          {% endif %}
+          {% if "cobros_update" in permissions or is_admin %}
           <a href="{{ url_for('charges_bp.change_jya', charge_id=charge.id) }}" class="card-footer-item has-text-warning">Cambiar</a>
+          {% endif %}
+          {% if not "cobros_update" in permissions and not "jya_show" in permissions and not is_admin %}
+            <a class="card-footer-item py-4"></a>
+          {% endif %}
         </footer>
         {% else %}
-        <div class="card-content">
-            <div class="content">
+            <div class="card-footer">
                 <p>No existe un jinete asociado a este cobro</p>
             </div>
-        </div>
-        <footer class="card-footer">
-            <a href="{{ url_for( "charges_bp.change_jya", charge_id=charge.id ) }}" class="card-footer-item has-text-link">Asociar jinete</a>
-        </footer>
+            <footer class="card-footer mb-6">
+                {% if "cobros_update" in permissions or is_admin %}
+                    <a href="{{ url_for( "charges_bp.change_jya", charge_id=charge.id ) }}" class="card-footer-item has-text-link">Asociar jinete</a>
+                {% else %}
+                  <a class="card-footer-item py-4"></a>
+                {% endif %}
+            </footer>
         {% endif %}
     </div>
 

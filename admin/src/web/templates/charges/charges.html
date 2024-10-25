@@ -49,12 +49,14 @@
       </a>
     </div>
   {% endif %}
+  {% if "cobros_new" in permissions or is_admin %}
   <div class="column {% if 'cobros_update' not in permissions and not is_admin %}is-full{% else %}is-half{% endif %}">
     <a class="button is-primary is-fullwidth" href="{{ url_for('charges_bp.create_charge')}}">
       Agregar cobro
       <i class="fas fa-receipt ml-2 is-size-5"></i>
     </a>
   </div>
+  {% endif %}
 </div>
 {% endblock %}
 
@@ -128,7 +130,7 @@
       }}
     </td>
     <td><span class="is-hidden-tablet has-text-weight-bold">ID: </span>{{ charge.id }}</td>
-    <td><span class="is-hidden-tablet has-text-weight-bold">Fecha de carga: </span>{{ charge.date_of_charge | format_date }}</td>
+    <td><span class="is-hidden-tablet has-text-weight-bold">Fecha de carga: </span>{{ charge.date_of_charge | format_date('%d/%m/%Y') }}</td>
     <td><span class="is-hidden-tablet has-text-weight-bold">Monto: </span>{{ charge.amount }}</td>
     <td><span class="is-hidden-tablet has-text-weight-bold">Método de Pago: </span>{{ charge.payment_method.value }}</td>
     <td><span class="is-hidden-tablet has-text-weight-bold">Empleado: </span>{{ charge.employee.name + " " + charge.employee.lastname }}</td>

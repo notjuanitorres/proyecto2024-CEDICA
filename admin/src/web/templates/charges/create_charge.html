@@ -79,7 +79,7 @@
                 <div class="field">
                     <label class="label">{{ form.observations.label }}</label>
                     <div class="control">
-                        {{ form.observations(class="textarea", placeholder="Ingrese observaciones sobre el cobro", data_validate="required letters") }}
+                        {{ form.observations(class="textarea", placeholder="Ingrese observaciones sobre el cobro", data_validate="no") }}
                     </div>
                     {% if form.observations.errors %}
                         <p class="help is-danger">{{ form.observations.errors[0] }}</p>

@@ -1,24 +1,40 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Error!</title>
-    {% block head %}
-        <link
-                rel="stylesheet"
-                href="{{ url_for('static', filename='css/error.css') }}"
-        />
+{% extends "base.html" %}
+
+{% block html_class %}{% endblock %}
+{% block head %}
+    {{ super() }}
+    {% block extra_styles %}
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/home.css') }}"
+    />
+  
     {% endblock %}
-</head>
-<body>
-<div class="error-container">
-    <div class="error-code">{{ error.code }}</div>
-    <div class="error-message">{{ error.name }}</div>
-    <div class="error-details">{{ error.description }}</div>
-    <div class="link-container">
-        <a href="{{ url_for('index_bp.home') }}" class="more-link">Ir a la página principal</a>
-    </div>
-</div>
-</body>
-</html>
+{% endblock %}
+
+{% block content %}
+  <section class="hero  is-fullheight is-flex is-align-items-center is-justify-content-center">
+      <div class="hero-body">
+          <div class="container px-2">
+              <div class="columns is-centered">
+                  <div class="column is-12 has-text-centered">
+                      {% block error_block %}
+                        <h1 class="title is-large-text gradient-text">{% block error_type %}{% endblock %}</h1>
+                      {% endblock %}   
+                      {% block error_content %}{% endblock %}
+                      <div class="mt-4">
+                      {% block cta_button %}
+                          <a href="{{ url_for('index_bp.home') }}" class="button bg-gradient is-info is-fullwidth">
+                              <span class="icon">
+                                  <i class="fas fa-home is-size"></i>
+                              </span>
+                              <span>Volver al Inicio</span>
+                          </a>
+                      {% endblock %}
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </section>
+{% endblock %}
