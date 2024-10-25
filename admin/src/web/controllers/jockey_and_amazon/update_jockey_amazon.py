@@ -24,7 +24,7 @@ from src.core.module.employee import (
 from src.core.module.jockey_amazon import (
     GeneralInformationForm,
     HealthInformationForm,
-    # FamilyInformationForm,
+    FamilyInformationForm,
     SchoolInformationForm,
     WorkAssignmentForm,
     JockeyAmazonMapper as Mapper,
@@ -166,6 +166,7 @@ def edit_jockey(
     Returns:
         A rendered template with the edit forms if validation fails, or a redirect to the jockey's detail page if successful.
     """
+    current_tab = None
     jockey = Mapper.from_entity(jockeys.get_by_id(jockey_id))
     if not jockey:
         flash("No se ha encontrado al Jockey/Amazona solicitado", "warning")
@@ -174,49 +175,59 @@ def edit_jockey(
     if jockey.get("is_deleted"):
         flash("No se puede editar un Jockey/Amazona archivado", "warning")
         return redirect(url_for("jockey_amazon_bp.show_jockey", jockey_id=jockey_id))
-
+    jockey_current_dni = jockey.get("general_information").get("dni")
     general_form = GeneralInformationForm(
-        data=jockey.get("general_information"), current_dni=jockey.get("general_information").get("dni")
+        data=jockey.get("general_information"), current_dni=jockey_current_dni
     )
     health_form = HealthInformationForm(data=jockey.get("health_information"))
     education_form = SchoolInformationForm(data=jockey.get("school_information"))
-    # family_form = FamilyInformationForm(data=jockey.get("family_information"))
+    family_form = FamilyInformationForm(data=jockey.get("family_information"))
     assignment_form = WorkAssignmentForm(data=jockey.get("organization_work"))
-
     if request.method == "POST":
         if "general_submit" in request.form and general_form.validate():
             update = GeneralInformationForm.general_info_to_flat(general_form)
+            current_tab = "general_information"
             if jockeys.update(jockey_id, update):
                 flash("Información general actualizada con éxito", "success")
 
         elif "health_submit" in request.form and health_form.validate():
             update = HealthInformationForm.health_info_to_flat(health_form)
+            current_tab = "health_information"
             if jockeys.update(jockey_id, update):
                 flash("Información de salud actualizada con éxito", "success")
 
         elif "school_submit" in request.form and education_form.validate():
             update = SchoolInformationForm.school_info_to_flat(education_form)
+            current_tab = "school_information"
             if jockeys.update_school_information(jockey_id, update):
                 flash("Información escolar actualizada con éxito", "success")
 
         elif "assignment_submit" in request.form and assignment_form.validate():
             print(assignment_form.data)
             update = WorkAssignmentForm.work_assignment_to_flat(assignment_form)
+            current_tab = "work_assignment_information"
             if jockeys.update_assignments(jockey_id, update):
                 flash("Información de asignaciones de trabajo actualizada con éxito", "success")
 
-        # elif family_form.submit.data and family_form.validate():
-    #            # return update_jockey(forms=update_forms, jockey_id=jockey_id)
+        elif "family_submit" in request.form and family_form.validate():
+            update = FamilyInformationForm.family_info_to_flat(family_form)
+            current_tab = "family_information"
+            if jockeys.update_family_information(jockey_id, update):
+                flash("Información de asignaciones de trabajo actualizada con éxito", "success")
+
 
     return render_template(
         "./jockey_amazon/update_jockey_amazon.html",
         general_form=general_form,
         health_form=health_form,
         education_form=education_form,
-        # family_form=family_form,
+        family_form=family_form,
         assignments_form=assignment_form,
         jockey=jockey,
         EducationLevelEnum=EducationLevelEnum,
+        open_tab=current_tab,
+        family_members_number=len(jockey.get("family_information").get("family_members")),
+        is_edit=True
     )
 
 

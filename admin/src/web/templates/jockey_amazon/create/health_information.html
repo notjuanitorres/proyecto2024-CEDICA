@@ -13,10 +13,10 @@
 {% endblock %}
 
 {% block prev_button %}
-  <a class="button is-primary is-medium is-outlined is-fullwidth">
+  <button class="button is-primary is-medium is-outlined is-fullwidth" disabled>
     <span class="icon mr-1"><i class="fa-solid fa-arrow-left"></i></span>
     Volver
-  </a>
+  </button>
 {% endblock %}
 
 {% block next_button %}
@@ -27,38 +27,6 @@
 {% endblock %}
 
 {% block extra_scripts %}
-    {{ super() }}
-    <script>
-      document.addEventListener('DOMContentLoaded', () => {
-        // Funcionalidad para mostrar/ocultar detalles de la discapacidad
-        const hasDisabilityCheckbox = document.querySelector('input[name="has_disability"]');
-        const disabilityDetails = document.getElementById('disability-details');
-
-        function toggleDisabilityDetails() {
-            if (hasDisabilityCheckbox.checked) {
-                disabilityDetails.style.display = 'block';
-            } else {
-                disabilityDetails.style.display = 'none';
-            }
-        }
-
-        hasDisabilityCheckbox.addEventListener('change', toggleDisabilityDetails);
-        toggleDisabilityDetails();  // Initial check
-      });
-      // Funcionalidad para mostrar/ocultar detalles de la curatela
-      const hasCuratorshipCheckbox = document.querySelector('input[name="has_curatorship"]');
-      const curatorshipDetails = document.getElementById('curatorship-details');
-
-      function toggleCuratorshipDetails() {
-          if (hasCuratorshipCheckbox.checked) {
-              curatorshipDetails.style.display = 'block';
-          } else {
-              curatorshipDetails.style.display = 'none';
-          }
-      }
-
-      hasCuratorshipCheckbox.addEventListener('change', toggleCuratorshipDetails);
-      toggleCuratorshipDetails();  // Initial check
-
-    </script>
+{{ super() }}
+<script src="{{ url_for('static', filename="js/jockey_amazon/health-form.js")}}"></script>
 {% endblock %}

@@ -173,6 +173,7 @@ class FamilyMemberForm(FlaskForm):
     """
     class Meta:
         csrf = False
+    id = HiddenField("ID")
     is_optional = HiddenField("Es opcional", default=False)
     relationship = StringField(
         "Relación",
@@ -272,6 +273,24 @@ class FamilyMemberForm(FlaskForm):
             Length(max=100, message="La ocupación no puede superar los 100 caracteres")
         ]
     )
+    def to_dict(self):
+        return {
+            'relationship': self.relationship.data,
+            'first_name': self.first_name.data,
+            'last_name': self.last_name.data,
+            'dni': self.dni.data,
+            'street': self.street.data,
+            'number': self.number.data,
+            'department': self.department.data,
+            'locality': self.locality.data,
+            'province': self.province.data,
+            'phone_country_code': self.phone_country_code.data,
+            'phone_area_code': self.phone_area_code.data,
+            'phone_number': self.phone_number.data,
+            'email': self.email.data,
+            'education_level': self.education_level.data,
+            'occupation': self.occupation.data
+        }
 
 
 class WorkAssignmentsForm(FlaskForm):

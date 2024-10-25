@@ -15,7 +15,7 @@
                 <div class="field">
                     <label class="label">{{ form.amount.label }}</label>
                     <div class="control">
-                        {{ form.amount(class="input", placeholder="Ingrese el monto") }}
+                        {{ form.amount(class="input", placeholder="Ingrese el monto", data_validate="required decimal") }}
                     </div>
                     {% if form.amount.errors %}
                         <p class="help is-danger">{{ form.amount.errors[0] }}</p>
@@ -25,7 +25,7 @@
                 <div class="field">
                     <label class="label">{{ form.date.label }}</label>
                     <div class="control">
-                        {{ form.date(class="input", placeholder="Ingrese la fecha del pago") }}
+                        {{ form.date(class="input", placeholder="Ingrese la fecha del pago", data_validate="required past-date") }}
                     </div>
                     {% if form.date.errors %}
                         <p class="help is-danger">{{ form.date.errors[0] }}</p>
@@ -39,7 +39,7 @@
                             <input id="tipo-pago" class="input" type="text" value="{{ form.payment_type.data }}" readonly disabled>
                         {% else %}
                             <div class="select">
-                                {{ form.payment_type(id="tipo-pago") }}
+                                {{ form.payment_type(id="tipo-pago", data_validate="required") }}
                             </div>
                         {% endif %}
                     </div>
@@ -53,12 +53,12 @@
                                readonly disabled>
                     </div>
                 </div>
-            {% endif %}
+                {% endif %}
 
                 <div class="field">
                     <label class="label">{{ form.description.label }}</label>
                     <div class="control">
-                        {{ form.description(class="input", type="text", placeholder="Ingrese la descripción") }}
+                        {{ form.description(class="input", type="text", placeholder="Ingrese la descripción", data_validate="required letters") }}
                     </div>
                     {% if form.description.errors %}
                         <p class="help is-danger">{{ form.description.errors[0] }}</p>
@@ -78,4 +78,9 @@
         </div>
     </section>
 
+{% endblock %}
+
+{% block extra_scripts %}
+    {{ super() }}
+    <script src="{{ url_for('static', filename='js/form_validator.js') }}"></script>
 {% endblock %}

@@ -18,9 +18,9 @@ from typing import Dict, List, Optional
 
 from flask_sqlalchemy.pagination import Pagination
 
-from src.core.module.jockey_amazon.data import DAYS_MAPPING
-from src.core.module.jockey_amazon.models import JockeyAmazon, JockeyAmazonFile
 from src.core.database import db
+from src.core.module.jockey_amazon.data import DAYS_MAPPING, EducationLevelEnum
+from src.core.module.jockey_amazon.models import JockeyAmazon, JockeyAmazonFile, FamilyMember
 from src.core.module.common.repositories import apply_filters, apply_multiple_search_criteria
 from src.core.module.employee.data import JobPositionEnum as Jobs
 
@@ -222,24 +222,73 @@ class AbstractJockeyAmazonRepository(ABC):
 
     @abstractmethod
     def is_dni_used(self, dni: str) -> bool:
+        """
+        Check if a given DNI (national identification number) is already used by another jockey.
+
+        Args:
+            dni (str): The DNI of the jockey.
+
+        Returns:
+            bool: True if the DNI is already used, False otherwise.
+        """
         raise NotImplementedError
 
     @abstractmethod
     def assign_employee(
         self, jockey_id: int, employee_id: int, employee_job_position: str
     ) -> bool:
+        """
+        Assign an employee to a jockey with a specific job position.
+
+        Args:
+            jockey_id (int): The ID of the jockey to assign the employee to.
+            employee_id (int): The ID of the employee to be assigned.
+            employee_job_position (str): The job position of the employee being assigned.
+
+        Returns:
+            bool: True if the employee was successfully assigned, False otherwise.
+        """
         raise NotImplementedError
 
     @abstractmethod
     def unassign_employee(self, jockey_id: int, link_to: str) -> bool:
+        """
+        Unassign an employee from a jockey by a specific link or relationship.
+
+        Args:
+            jockey_id (int): The ID of the jockey from whom the employee is being unassigned.
+            link_to (str): The relationship or job position to unassign.
+
+        Returns:
+            bool: True if the employee was successfully unassigned, False otherwise.
+        """
         raise NotImplementedError
 
     @abstractmethod
     def assign_horse(self, jockey_id: int, horse_id: int) -> bool:
+        """
+        Assign a horse to a jockey.
+
+        Args:
+            jockey_id (int): The ID of the jockey to whom the horse is assigned.
+            horse_id (int): The ID of the horse to be assigned to the jockey.
+
+        Returns:
+            bool: True if the horse was successfully assigned, False otherwise.
+        """
         raise NotImplementedError
 
     @abstractmethod
     def unassign_horse(self, jockey_id: int) -> bool:
+        """
+        Unassign the current horse from a jockey.
+
+        Args:
+            jockey_id (int): The ID of the jockey from whom the horse is being unassigned.
+
+        Returns:
+            bool: True if the horse was successfully unassigned, False otherwise.
+        """
         raise NotImplementedError
 
     @abstractmethod
@@ -627,6 +676,40 @@ class JockeyAmazonRepository(AbstractJockeyAmazonRepository):
         self.save()
 
         return True
+
+    def update_family_information(self, jockey_id: int, data: Dict) -> bool:
+        jockey = self.get_by_id(jockey_id)
+        if not jockey:
+            return False
+        jockey.has_family_assignment = data.get('has_family_assignment', jockey.has_family_assignment)
+        jockey.family_assignment_type = data.get('family_assignment_type', jockey.family_assignment_type)
+        jockey.has_pension = data.get('has_pension', jockey.has_pension)
+        jockey.pension_type = data.get('pension_type', jockey.pension_type)
+        jockey.pension_details = data.get('pension_details', jockey.pension_details)
+        updated_members = [member_data for member_data in data.get("family_members") if member_data.get('id')]
+        for member_data in updated_members:
+            print(member_data.get("education_level"))
+            existing_member = FamilyMember.query.get(member_data.get("id"))
+            if existing_member:
+                print(existing_member.education_level.name)
+                print(member_data.get("education_level"))
+                existing_member.relationship = member_data.get('relationship', existing_member.relationship)
+                existing_member.first_name = member_data.get('first_name', existing_member.first_name)
+                existing_member.last_name = member_data.get('last_name', existing_member.last_name)
+                existing_member.street = member_data.get('street', existing_member.street)
+                existing_member.number = member_data.get('number', existing_member.number)
+                existing_member.department = member_data.get('department', existing_member.department)
+                existing_member.locality = member_data.get('locality', existing_member.locality)
+                existing_member.province = member_data.get('province', existing_member.province)
+                existing_member.phone_country_code = member_data.get('phone_country_code', existing_member.phone_country_code)
+                existing_member.phone_area_code = member_data.get('phone_area_code', existing_member.phone_area_code)
+                existing_member.phone_number = member_data.get('phone_number', existing_member.phone_number)
+                existing_member.email = member_data.get('email', existing_member.email)
+                existing_member.education_level = EducationLevelEnum[member_data.get('education_level', existing_member.education_level.name)]
+                existing_member.occupation = member_data.get('occupation', existing_member.occupation)
+                self.db.session.add(existing_member)
+                self.save()
+                return True
 
     def update_assignments(self, jockey_id: int, data: Dict) -> bool:
         """

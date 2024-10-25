@@ -58,7 +58,7 @@
                     </a>
                 </li>
                 <li>
-                    <a href="{{ url_for("jockey_amazon_bp.edit_documents", jockey_id=jockey.id) }}">
+                    <a href="{{ url_for("jockey_amazon_bp.edit_documents", jockey_id=jockey.id ) }}">
                           <span class="icon is-small">
                               <i class="far fa-file-alt" aria-hidden="true"></i>
                           </span>
@@ -72,14 +72,17 @@
     <section id="general-information" class="mt-5">
         <div class="card">
             <header class="card-header py-3">
-                <h2 class="card-header-title is-size-5">Información General</h2>
+                <h2 class="card-header-title is-size-5">
+                    <p class="icon mr-2"><i class="fa-regular fa-clipboard is-size-4"></i></p>
+                    Información General
+                </h2>
                 <button class="card-header-icon" aria-label="more options">
                 <span class="icon">
                     <i class="fas fa-angle-down" aria-hidden="true"></i>
                 </span>
                 </button>
             </header>
-            <div class="card-content" style="display: none;">
+            <div class="card-content" {% if not open_tab == "general_information" %} style="display: none;" {% endif %} >
                 <div class="content">
                     <form method="POST">
                         {% include './jockey_amazon/forms/general_form.html' %}
@@ -94,14 +97,17 @@
     <section id="health-information" class="mt-5">
         <div class="card">
             <header class="card-header py-3">
-                <h2 class="card-header-title is-size-5">Información de Salud</h2>
+                <h2 class="card-header-title is-size-5">
+                    <p class="icon mr-2"><i class="fa-solid fa-notes-medical"></i></p>
+                    Información de Salud
+                </h2>
                 <button class="card-header-icon" aria-label="more options">
                 <span class="icon">
                     <i class="fas fa-angle-down" aria-hidden="true"></i>
                 </span>
                 </button>
             </header>
-            <div class="card-content" style="display: none;">
+            <div class="card-content" {% if not open_tab == "health_information" %} style="display: none;" {% endif %} >
                 <div class="content">
                     <form method="POST">
                         {% include './jockey_amazon/forms/health_form.html' %}
@@ -116,17 +122,22 @@
     <section id="family-information" class="mt-5">
         <div class="card">
             <header class="card-header py-3">
-                <h2 class="card-header-title is-size-5">Información Familiar</h2>
+                <h2 class="card-header-title is-size-5">
+                    <p class="icon mr-2"><i class="fa-solid fa-people-roof"></i></p>
+                    Información Familiar
+                </h2>
                 <button class="card-header-icon" aria-label="more options">
                 <span class="icon">
                     <i class="fas fa-angle-down" aria-hidden="true"></i>
                 </span>
                 </button>
             </header>
-            <div class="card-content" style="display: none;">
+            <div
+                class="card-content" {% if not open_tab == "family_information" %} style="display: none;" {% endif %}>
                 <div class="content">
                     <form method="POST">
-
+                        {% include './jockey_amazon/forms/family_form.html' %}
+                        <div class="mt-5">{{ family_form.submit(class="button is-primary is-fullwidth")}}</div>
                     </form>
                 </div>
             </div>
@@ -136,14 +147,17 @@
     <section id="school-information" class="mt-5">
         <div class="card">
             <header class="card-header py-3">
-                <h2 class="card-header-title is-size-5">Información Escolar</h2>
+                <h2 class="card-header-title is-size-5">
+                    <p class="icon mr-2"><i class="fa-solid fa-graduation-cap"></i></p>
+                    Información Escolar
+                </h2>
                 <button class="card-header-icon" aria-label="more options">
                 <span class="icon">
                     <i class="fas fa-angle-down" aria-hidden="true"></i>
                 </span>
                 </button>
             </header>
-            <div class="card-content" style="display: none;">
+            <div class="card-content" {% if not open_tab == "school_information" %} style="display: none;" {% endif %} >
                 <div class="content">
                     <form method="POST">
                         {% include './jockey_amazon/forms/educational_form.html' %}
@@ -157,14 +171,17 @@
     <section id="work-assignments" class="mt-5">
         <div class="card">
             <header class="card-header py-3">
-                <h2 class="card-header-title is-size-5">Asignaciones de Trabajo</h2>
+                <h2 class="card-header-title is-size-5">
+                    <p class="icon mr-2"><i class="fa-solid fa-briefcase"></i></p>
+                    Asignaciones de Trabajo
+                </h2>
                 <button class="card-header-icon" aria-label="more options">
                 <span class="icon">
                     <i class="fas fa-angle-down" aria-hidden="true"></i>
                 </span>
                 </button>
             </header>
-            <div class="card-content" style="display: none;">
+            <div class="card-content" {% if not open_tab == "work_assignment_information" %} style="display: none;" {% endif %} >
                 <div class="content">
                     <form method="POST">
                         {% include './jockey_amazon/forms/work_assignments_form.html' %}
@@ -181,5 +198,32 @@
 {% block extra_scripts %}
 {{ super() }}
 <script src="{{ url_for('static', filename='js/toggle-search-bar.js') }}"></script>
+<script src="{{ url_for('static', filename='js/jockey_amazon/family-form.js')}}"></script>
+<script src="{{ url_for('static', filename='js/jockey_amazon/health-form.js')}}"></script>
+<script src="{{ url_for('static', filename='js/jockey_amazon/work-assignment-form.js')}}"></script>
 <script src="{{ url_for('static', filename='js/form_validator.js') }}"></script>
+
+
+<script>
+    // Toggle functionality for various form sections
+    function setupToggle(checkboxSelector, detailsSelector) {
+        const checkbox = document.querySelector(checkboxSelector);
+        const details = document.getElementById(detailsSelector);
+
+        function toggleDetails() {
+            details.style.display = checkbox.checked ? 'block' : 'none';
+        }
+        if (checkbox) {
+            checkbox.addEventListener('change', toggleDetails);
+            toggleDetails(); // Initial check
+        }
+    }
+
+    setupToggle('input[name="has_scholarship"]', 'scholarship-details');
+    setupToggle('input[name="has_disability"]', 'disability-details');
+    setupToggle('input[name="has_family_assignment"]', 'family-assignment-details');
+    setupToggle('input[name="has_curatorship"]', 'curatorship-details');
+    setupToggle('input[name="has_pension"]', 'pension-details');
+
+</script>
 {% endblock %}
