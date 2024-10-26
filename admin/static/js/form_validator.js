@@ -21,16 +21,16 @@ const VALIDATION_PATTERNS = {
         message: 'El número debe tener entre 6 y 15 dígitos'
     },
     extended_phone: {
-        pattern: /^[0-9\-\+\s\(\)]+$/,
-        message: 'Ingrese un número de teléfono válido'
+        pattern: /^[0-9\-\+\s\(\)]{8,20}$/,
+        message: 'El número debe tener entre 8 y 20 dígitos'
     },
     decimal: {
         pattern: /^\d*\.?\d+$/,
         message: 'Ingrese un número decimal válido'
     },
     dni: {
-        pattern: /^\d{7,8}$/,
-        message: 'El DNI debe tener 7 u 8 dígitos'
+        pattern: /^\d{8}$/,
+        message: 'El DNI debe tener 8 dígitos'
     },
     country_code: {
         pattern: /^\d{1,3}$/,
@@ -41,8 +41,8 @@ const VALIDATION_PATTERNS = {
         message: 'El código de área debe tener entre 1 y 4 dígitos'
     },
     phone_number: {
-        pattern: /^\d{6,}$/,
-        message: 'El número de teléfono debe tener al menos 6 dígitos'
+        pattern: /^\d{6,15}$/,
+        message: "El número de teléfono debe tener entre 6 y 15 dígitos"
     },
     date: {
         pattern: /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/(19|20)\d{2}$/,

@@ -149,7 +149,7 @@ class IsValidDniNumber(object):
             message (str, optional): Custom error message. If not provided, a default message is used.
         """
         if not message:
-            message = "Debe ser un DNI válido"
+            message = "El DNI debe tener 8 dígitos"
         self.message = message
 
     def __call__(self, form, field):
@@ -169,8 +169,8 @@ class IsValidDniNumber(object):
 
         # Patrón que acepta:
         # - Números (0-9)
-        # - Longitud de 7 u 8 dígitos
-        patron = r'^\d{7,8}$'
+        # - Longitud de 8 dígitos
+        patron = r'^\d{8}$'
 
         if not re.match(patron, value):
             raise ValidationError(self.message)

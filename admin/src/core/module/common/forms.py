@@ -123,7 +123,8 @@ class EmergencyContactForm(FlaskForm):
     )
     emergency_contact_phone = TelField(
         "Telefono contacto de emergencia",
-        validators=[DataRequired(message="Debe proporcionar un número de teléfono")],
+        validators=[DataRequired(message="Debe proporcionar un número de teléfono"),
+                    Length(min=8, max=20, message="El número de teléfono debe tener entre 8 y 20 caracteres"),],
     )
 
 

@@ -7,9 +7,9 @@ from wtforms import (
     SelectMultipleField,
     widgets,
 )
-from wtforms.validators import DataRequired, Length, Optional
+from wtforms.validators import DataRequired, Length, Optional, Email
 
-from src.core.module.common import IsNumber
+from src.core.module.common.validators import IsValidDniNumber
 from src.core.module.jockey_amazon.models import (
     WorkProposalEnum,
     WorkConditionEnum,
@@ -201,7 +201,7 @@ class FamilyMemberForm(FlaskForm):
         validators=[
             DataRequired(message="El DNI es obligatorio"),
             Length(min=8, max=8, message="El DNI debe tener 8 caracteres"),
-            IsNumber("Debe ser un número de 8 digitos!")
+            IsValidDniNumber()
         ]
     )
     street = StringField(
@@ -241,23 +241,24 @@ class FamilyMemberForm(FlaskForm):
 
     phone_country_code = StringField(
         "Código de País", validators=[DataRequired(message="El código de país es obligatorio"),
-                                      Length(max=5, message="El código de país no puede superar los 5 caracteres")]
+                                      Length(max=3, message="El código de país no puede superar los 3 caracteres")]
     )
     phone_area_code = StringField(
         "Código de Área", validators=[DataRequired(message="El código de área es obligatorio"),
-                                      Length(max=5, message="El código de área no puede superar los 5 caracteres")]
+                                      Length(max=4, message="El código de área no puede superar los 4 caracteres")]
     )
     phone_number = StringField(
         "Número de Teléfono",
         validators=[
             DataRequired(message="El número de teléfono es obligatorio"),
-            Length(max=15, message="El número de teléfono no puede superar los 15 caracteres")
+            Length(min=6, max=15, message="El número de teléfono debe tener entre 6 y 15 caracteres")
         ]
     )
     email = StringField(
         "Correo Electrónico",
         validators=[
             DataRequired(message="El correo electrónico es obligatorio"),
+            Email(message="Email inválido"),
             Length(max=100, message="El correo electrónico no puede superar los 100 caracteres")
         ]
     )
