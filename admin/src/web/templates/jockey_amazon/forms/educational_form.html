@@ -32,7 +32,7 @@
           <div class="control">
               {{ education_form.school_institution.number(class="input",
                placeholder="Ingrese el número de la institución escolar",
-                data_validate="required extended_phone") }}
+                data_validate="required numbers") }}
           </div>
           {% if education_form.school_institution.number.errors %}
               <p class="help is-danger">{{ education_form.school_institution.number.errors[0] }}</p>

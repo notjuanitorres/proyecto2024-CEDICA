@@ -22,6 +22,8 @@ from wtforms.fields import (
     MultipleFileField,
     HiddenField,
 )
+
+from src.core.module.common.validators import IsValidDniNumber
 from src.core.module.common import IsValidName
 from src.core.module.common.forms import (
     filetypes_message,
@@ -218,7 +220,7 @@ class EmployeeCreateForm(EmployeeManagementForm):
         validators=[
             DataRequired(message="Debe ingresar un DNI"),
             Length(min=8, max=8, message="Debe ser un número de 8 digitos!"),
-            IsNumber(message="Debe ser un número de 8 digitos!"),
+            IsValidDniNumber(),
             dni_existence,
         ],
     )
