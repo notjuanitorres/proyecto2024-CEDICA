@@ -34,7 +34,7 @@ class User(db.Model):
     updated_at = db.Column(
         db.DateTime, default=datetime.now, onupdate=datetime.now)
     role = db.relationship("Role", backref="users")
-    publications = db.relationship("Publication", backref="author")
+    publications = db.relationship("Publication", back_populates="author")
     is_deleted = db.Column(db.Boolean, nullable=False, default=False)
 
     def __repr__(self):

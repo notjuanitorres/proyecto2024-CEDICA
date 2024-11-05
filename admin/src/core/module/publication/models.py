@@ -1,5 +1,4 @@
 from datetime import datetime
-from sqlalchemy.orm import relationship
 from src.core.database import db
 from enum import Enum as pyEnum
 

@@ -1,0 +1,164 @@
+{% extends "base_list.html" %}
+
+{% block title %}Publicaciones - CEDICA{% endblock %}
+
+{% block breadcrumb_items %}
+  <li>
+    <a href="">
+      <span class="icon is-small">
+        <i class="fa-solid fa-newspaper" aria-hidden="true"></i>
+      </span>
+      <span>Publicaciones</span>
+    </a>
+  </li>
+{% endblock %}
+
+{% block inner_title %}
+    <h2 class="title is-size-3 has-text-centered">
+        Publicaciones
+    </h2>
+{% endblock %}
+
+{% block tabs %}
+<div class="tabs is-medium is-toggle is-toggle-rounded is-centered">
+  <ul>
+    <li class="is-active">
+      <a href="{{ url_for('publications_bp.get_publications')}}">
+        <span class="icon is-small"><i class="fa-solid fa-newspaper"></i></span>
+        <span>Todas</span>
+      </a>
+    </li>
+    <li>
+      <a href="{{ url_for('publications_bp.get_publications')}}">
+        <span class="icon is-small"><i class="fa-solid fa-box-archive"></i></span>
+        <span>Archivo</span>
+      </a>
+    </li>
+  </ul>
+</div>
+{% endblock %}
+
+{% block create_button %}
+  <div class="columns is-mobile is-marginless">
+  {% if "publicaciones_new" in permissions or is_admin %}
+    <div class="column is-full">
+      <a class="button is-primary is-fullwidth" href="{{ url_for('publications_bp.create_publication')}}">
+        Nueva publicación
+        <i class="fas fa-plus ml-2 is-size-5"></i>
+      </a>
+    </div>
+  {% endif %}
+  </div>
+{% endblock %}
+
+{% block form_action %}{{ url_for("publications_bp.get_publications") }}{% endblock %}
+{% block clear_url %}{{ url_for("publications_bp.get_publications") }}{% endblock %}
+
+{% block aditional_filters %}
+    <div class="columns is-1">
+      <div class="field column">
+          <label class="label"> {{ search_form.filter_type.label }} </label>
+          <div class="control">
+            <div class="select is-fullwidth">
+              {{ search_form.filter_type() }}
+            </div>
+          </div>
+      </div>
+      <div class="field column">
+        <label class="label"> {{ search_form.start_date.label }} </label>
+        <div class="control">
+                {{ search_form.start_date(class="input", type="date") }}
+        </div>
+        {% if search_form.start_date.errors %}
+            <p class="help is-danger">{{ search_form.start_date.errors[0] }}</p>
+        {% endif %}
+      </div>
+      <div class="field column">
+        <label class="label"> {{ search_form.end_date.label }} </label>
+        <div class="control">
+          {{ search_form.end_date(class="input", type="date") }}
+        </div>
+        {% if search_form.end_date.errors %}
+            <p class="help is-danger">{{ search_form.end_date.errors[0] }}</p>
+        {% endif %}
+      </div>
+    </div>
+{% endblock %}
+
+{% block table_header %}
+  <th>ID</th>
+  <th>Fecha de publicación</th>
+  <th>Título</th>
+  <th>Resumen</th>
+  <th>Estado</th>
+  <th>Tipo</th>
+{% endblock %}
+
+{% block top_pagination %}
+  {{ render_pagination(publications, 'publications_bp.get_publications') }}
+{% endblock %}
+
+{% block table_body %}
+  {% for publication in publications %}
+  <tr class="">
+    <td class="is-hidden-mobile">
+      {{
+        render_actions_menu(
+        field="publication_id",
+        value=publication.id,
+        to_left=true,
+        endpoints={
+          'show':'publications_bp.show_publication',
+          'edit': 'publications_bp.edit_publication',
+          'archive':'publications_bp.archive_publication'
+        },
+        permission_to_show="publicaciones_show",
+        permission_to_edit="publicaciones_update",
+        permission_to_delete="publicaciones_destroy",
+        user_permissions=permissions,
+        is_admin=is_admin
+        )
+      }}
+    </td>
+    <td><span class="is-hidden-tablet has-text-weight-bold">ID: </span>{{ publication.id }}</td>
+    <td><span class="is-hidden-tablet has-text-weight-bold">Fecha de publicación: </span>{{ publication.publish_date | format_date('%d/%m/%Y') }}</td>
+    <td><span class="is-hidden-tablet has-text-weight-bold">Título: </span>{{ publication.title }}</td>
+    <td><span class="is-hidden-tablet has-text-weight-bold">Resumen: </span>{{ publication.summary }}</td>
+    <td><span class="is-hidden-tablet has-text-weight-bold">Estado: </span>{{ publication.status.value }}</td>
+    <td><span class="is-hidden-tablet has-text-weight-bold">Tipo: </span>{{ publication.type.value }}</td>
+    <td class="is-hidden-tablet is-flex">
+      <a href="{{ url_for('publications_bp.show_publication', publication_id=publication.id)}}" class="button is-flex-grow-1">
+        <span class="is-bold">
+            Ver publicación
+            <i class="fa-regular fa-eye ml-2"></i>
+        </span>
+      </a>
+    </td>
+  </tr>
+  {% endfor %}
+{% endblock %}
+
+{% block table_footer %}
+  <th>ID</th>
+  <th>Fecha de publicación</th>
+  <th>Título</th>
+  <th>Resumen</th>
+  <th>Estado</th>
+  <th>Tipo</th>
+{% endblock %}
+
+{% block bottom_pagination %}
+  {{ render_pagination(publications, 'publications_bp.get_publications') }}
+{% endblock %}
+
+{% block delete_modal %}
+  {{
+    render_delete_modal(
+      endpoint=url_for("publications_bp.archive_publication"),
+      title="Archivar",
+      msg="¿Está seguro de que desea archivar esta publicación?",
+      msg_sub="",
+      delete_text="Archivar"
+    )
+  }}
+{% endblock %}
