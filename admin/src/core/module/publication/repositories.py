@@ -275,13 +275,14 @@ class PublicationRepository(AbstractPublicationRepository):
         Returns:
             bool: True if archived successfully, False otherwise.
         """
-        publication = Publication.query.get(publication_id)
-        if not publication or publication.status == EstadoPublicacionEnum.ARCHIVED:
-            return False
-        publication.status = EstadoPublicacionEnum.ARCHIVED
-        publication.update_date = datetime.now()
-        self.save()
-        return True
+        # publication = Publication.query.get(publication_id)
+        # if not publication or publication.status == EstadoPublicacionEnum.ARCHIVED:
+        #     return False
+        # publication.status = EstadoPublicacionEnum.ARCHIVED
+        # publication.update_date = datetime.now()
+        # self.save()
+        # return True
+        raise NotImplementedError("Method not implemented")
 
     def save(self):
         """

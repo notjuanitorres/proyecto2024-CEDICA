@@ -1,7 +1,8 @@
 from flask import Blueprint, request, render_template, flash, redirect, url_for
 from dependency_injector.wiring import inject, Provide
 
-from core.module.publication.mappers import PublicationMapper
+from src.core.module.publication.mappers import PublicationMapper
+from src.core.module.user import AbstractUserRepository
 from src.core.module.publication.forms import PublicationSearchForm, PublicationCreateForm, PublicationEditForm
 from src.core.module.publication import PublicationRepository, AbstractPublicationRepository
 from src.web.helpers.auth import check_user_permissions
@@ -31,13 +32,12 @@ def get_publications(
     form = PublicationSearchForm(request.args)
     search_query: dict = {}
     order_by = []
-
     if form.submit_search.data and form.validate():
         search_query = {"text": form.search_text.data, "field": form.search_by.data, "filters": {}}
 
         if form.start_date.data and form.end_date.data:
             search_query["filters"]["start_date"] = form.start_date.data
-            search_query["filters"]["finish_date"] = form.end_date.data
+            search_query["filters"]["end_date"] = form.end_date.data
 
         if form.filter_type.data:
             search_query["filters"]["type"] = form.filter_type.data
@@ -66,7 +66,7 @@ def archive_publication(
     Route to archive a publication.
 
     Args:
-        publication_repository (AbstractPublicationsRepository): The publications repository.
+        publication_repository (AbstractPublicationsRepository): The publication repository.
 
     Returns:
         Response: Redirect to the publication details.
@@ -90,7 +90,7 @@ def recover_publication(
     Route to recover a publication.
 
     Args:
-        publications (AbstractPublicationsRepository): The publications repository.
+        publications (AbstractPublicationsRepository): The publication repository.
 
     Returns:
         Response: Redirect to the publication details.
@@ -109,14 +109,16 @@ def recover_publication(
 @inject
 def show_publication(
     publication_id: int,
-    publication_repository: AbstractPublicationRepository = Provide[Container.publication_repository]
+    publication_repository: AbstractPublicationRepository = Provide[Container.publication_repository],
+    user_repository: AbstractUserRepository = Provide[Container.user_repository],
 ):
     """
     Route to show details of a specific publication.
 
     Args:
         publication_id (int): The ID of the publication.
-        publication_repository (AbstractPublicationsRepository): The publications repository.
+        publication_repository (AbstractPublicationsRepository): The publication repository.
+        user_repository (AbstractUserRepository): The user repository.
 
     Returns:
         Response: The rendered template for the publication details if the publication exists,
@@ -127,7 +129,8 @@ def show_publication(
         flash(f"La publicación con ID = {publication_id} no existe", "danger")
         return get_publications()
 
-    return render_template('./publications/publication.html', publication=publication)
+    author = user_repository.get_user(publication.get("author_id"))
+    return render_template('./publication/publication.html', publication=publication, author=author)
 
 
 @publications_bp.route("/crear", methods=["GET", "POST"])
@@ -144,7 +147,7 @@ def create_publication():
     if request.method == "POST":
         return add_publication(create_form=create_form)
 
-    return render_template("./publications/create_publication.html", form=create_form)
+    return render_template("./publication/create_publication.html", form=create_form)
 
 
 @inject
@@ -157,14 +160,14 @@ def add_publication(
 
     Args:
         create_form (PublicationCreateForm): The form for creating a publication.
-        publication_repository (AbstractPublicationsRepository): The publications repository.
+        publication_repository (AbstractPublicationsRepository): The publication repository.
 
     Returns:
         Response: The rendered template for creating a publication if the form wasn't valid
          or redirect to publication details.
     """
     if not create_form.validate_on_submit():
-        return render_template("./publications/create_publication.html", form=create_form)
+        return render_template("./publication/create_publication.html", form=create_form)
 
     publication = publication_repository.add_publication(PublicationMapper.to_entity(create_form.data))
 
@@ -184,7 +187,7 @@ def edit_publication(
 
     Args:
         publication_id (int): The ID of the publication.
-        publication_repository (AbstractPublicationsRepository): The publications repository.
+        publication_repository (AbstractPublicationsRepository): The publication repository.
 
     Returns:
         Response: The rendered template for editing a publication if the publication exists,
@@ -205,7 +208,7 @@ def edit_publication(
     if request.method in ["POST", "PUT"]:
         return update_publication(publication_id=publication_id, edit_form=edit_form)
 
-    return render_template("./publications/edit_publication.html", form=edit_form, publication=publication)
+    return render_template("./publication/edit_publication.html", form=edit_form, publication=publication)
 
 
 @inject
@@ -220,14 +223,14 @@ def update_publication(
     Args:
         publication_id (int): The ID of the publication.
         edit_form (PublicationEditForm): The form for editing a publication.
-        publication_repository (AbstractPublicationsRepository): The publications repository.
+        publication_repository (AbstractPublicationsRepository): The publication repository.
 
     Returns:
         Response: The rendered template for editing a publication if the form wasn't valid
          or redirect to publication details.
     """
     if not edit_form.validate_on_submit():
-        return render_template("./publications/edit_publication.html", form=edit_form)
+        return render_template("./publication/edit_publication.html", form=edit_form)
 
     publication_repository.update_publication(
         publication_id=publication_id,
@@ -248,7 +251,7 @@ def delete_publication(
     Route to delete a publication.
 
     Args:
-        publication_repository (AbstractPublicationsRepository): The publications repository.
+        publication_repository (AbstractPublicationsRepository): The publication repository.
 
     Returns:
         Response: Redirect to the list of publications.
