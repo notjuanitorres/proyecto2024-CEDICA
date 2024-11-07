@@ -18,21 +18,27 @@ publications_bp = Blueprint(
 @inject
 def get_publications(
     publication_repository: PublicationRepository = Provide[Container.publication_repository],
+    deleted: bool = False
 ):
     """
     Route to get a paginated list of publications.
 
     Args:
         publication_repository (publicationRepository): The publication repository.
+        deleted (bool): Flag to indicate if the list of publications to retrieve are logically deleted.
 
     Returns:
         Response: The rendered template for the list of publications (str).
     """
+
+    if request.args.get("deleted") is not None:
+        deleted = request.args.get("deleted") == "True"
+
     form = PublicationSearchForm(request.args)
     search_query: dict = {}
     order_by = []
     if form.submit_search.data and form.validate():
-        search_query = {"text": form.search_text.data, "field": form.search_by.data, "filters": {}}
+        search_query = {"text": form.search_text.data, "field": form.search_by.data, "filters": {"is_deleted": deleted}}
 
         if form.start_date.data and form.end_date.data:
             search_query["filters"]["start_date"] = form.start_date.data
@@ -52,17 +58,18 @@ def get_publications(
 
     publications = publication_repository.get_page(page, per_page, search_query, order_by)
 
-    return render_template("./publication/publications.html", search_form=form, publications=publications)
+    return render_template("./publication/publications.html",
+                           search_form=form, publications=publications, are_deleted=deleted)
 
 
 @publications_bp.route("/archivar/", methods=["POST"])
 @check_user_permissions(permissions_required=["publicaciones_destroy"])
 @inject
-def archive_publication(
+def logical_delete_publication(
         publication_repository: AbstractPublicationRepository = Provide[Container.publication_repository],
 ):
     """
-    Route to archive a publication.
+    Route to logically delete a publication.
 
     Args:
         publication_repository (AbstractPublicationsRepository): The publication repository.
@@ -71,11 +78,17 @@ def archive_publication(
         Response: Redirect to the publication details.
     """
     publication_id = request.form["item_id"]
-    archived = publication_repository.archive_publication(int(publication_id))
-    if not archived:
-        flash("La publicación no existe o ya ha sido archivada", "warning")
+    try:
+        publication_id = int(publication_id)
+    except ValueError:
+        flash("La publicación solicitada no existe", "danger")
+        return redirect(url_for("publications_bp.get_publications"))
+
+    deleted = publication_repository.logical_delete_publication(publication_id)
+    if not deleted:
+        flash("La publicación no existe o ya ha sido eliminada", "warning")
     else:
-        flash("La publicación ha sido archivada correctamente", "success")
+        flash("La publicación ha sido eliminada correctamente", "success")
     return redirect(url_for("publications_bp.show_publication", publication_id=publication_id))
 
 
@@ -95,7 +108,13 @@ def recover_publication(
         Response: Redirect to the publication details.
     """
     publication_id = request.form["publication_id"]
-    recovered = publications.recover_publication(int(publication_id))
+    try:
+        publication_id = int(publication_id)
+    except ValueError:
+        flash("La publicación solicitada no existe", "danger")
+        return redirect(url_for("publications_bp.get_publications"))
+
+    recovered = publications.recover_publication(publication_id)
     if not recovered:
         flash("La publicación no existe o no puede ser recuperada", "warning")
     else:
@@ -200,8 +219,8 @@ def edit_publication(
         flash(f"Su búsqueda no devolvió una publicación existente", "danger")
         return redirect(url_for("publications_bp.get_publications"))
 
-    if publication.get("is_archived"):
-        flash("No se puede editar una publicación archivada", "danger")
+    if publication.get("is_deleted"):
+        flash("No se puede editar una publicación eliminada", "danger")
         return redirect(url_for("publications_bp.show_publication", publication_id=publication_id))
 
     edit_form = PublicationEditForm(data=publication)
@@ -266,8 +285,8 @@ def delete_publication(
 
     deleted = publication_repository.delete_publication(publication_id)
     if not deleted:
-        flash("La publicación no ha podido ser eliminada, inténtelo nuevamente", "danger")
+        flash("La publicación no ha podido ser eliminada permanentemente, inténtelo nuevamente", "danger")
     else:
-        flash("La publicación ha sido eliminada correctamente", "success")
+        flash("La publicación ha sido eliminada permanentemente de manera correcta", "success")
 
     return redirect(url_for("publications_bp.get_publications"))

@@ -29,6 +29,7 @@ class PublicationMapper:
             "author_id": publication.author_id,
             "status": publication.status.value,
             "type": publication.type.value,
+            "is_deleted": publication.is_deleted,
         }
 
     @classmethod

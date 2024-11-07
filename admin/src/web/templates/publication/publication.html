@@ -1,6 +1,5 @@
 {% extends "base_show.html" %}
 
-{% from "employee/macros/parse_categories.html" import render_category %}
 {% block title %}Publicación {{ publication.title }} - CEDICA{% endblock %}
 {% set tag_status = "" %}
 
@@ -36,9 +35,9 @@ Publicación: {{ publication.title }}
 {% endblock %}
 
 {% block banner %}
-    {% if publication.is_archived %}
+    {% if publication.is_deleted %}
         <div class="is-flex is-fullwidth is-justify-content-center has-background-danger p-4">
-            <h2 class="title">Publicación archivada</h2>
+            <h2 class="title">Publicación eliminada</h2>
         </div>
     {% endif %}
 {% endblock %}
@@ -83,7 +82,7 @@ Publicación: {{ publication.title }}
     {% else %}
         {% if "publicaciones_destroy" in permissions or is_admin %}
             <button class="card-footer-item has-text-danger modal-trigger" data-id="{{ publication.id }}" data-target="publication-delete-modal">
-                Archivar
+                Eliminar
             </button>
         {% endif %}
         {% if "publicaciones_update" in permissions or is_admin %}
@@ -198,17 +197,17 @@ Publicación: {{ publication.title }}
             field="publication",
             title="Eliminar",
             msg="¿Está seguro de que desea eliminar esta publicación?",
-            msg_sub="Luego de confirmar, no se podrán revertir los cambios.",
-            related_entities_text="Todos los archivos asociados a esta publicación serán eliminados."
+            msg_sub="Luego de confirmar, no se podrán revertir los cambios."
         )}}
     {% else %}
         {{
             render_delete_modal(
-            url_for("publications_bp.archive_publication", publication_id=publication.id),
+            url_for("publications_bp.logical_delete_publication", publication_id=publication.id),
             field="publication",
-            title="Archivar",
-            msg="¿Está seguro de que desea archivar la publicación?",
-            delete_text="Archivar"
+            title="Eliminar",
+            msg="¿Está seguro de que desea eliminar la publicación?",
+            delete_text="Eliminar",
+            msg_sub="Luego de confirmar, la publicación será ocultada si estaba publicada y además su estado será 'archivado'."
         )}}
     {% endif %}
 {% endblock %}

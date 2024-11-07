@@ -92,28 +92,28 @@ class AbstractPublicationRepository:
         pass
 
     @abstractmethod
-    def publish_publication(self, publication_id: int) -> bool:
+    def logical_delete_publication(self, publication_id: int) -> bool:
         """
-        Publish a draft publication.
+        Logically delete a publication.
 
         Args:
-            publication_id (int): The ID of the publication to publish.
+            publication_id (int): The ID of the publication to logically delete.
 
         Returns:
-            bool: True if published successfully, False otherwise.
+            bool: True if deleted successfully, False otherwise.
         """
         pass
 
     @abstractmethod
-    def archive_publication(self, publication_id: int) -> bool:
+    def recover_publication(self, publication_id: int) -> bool:
         """
-        Archive a publication.
+        Recover a logically deleted publication.
 
         Args:
-            publication_id (int): The ID of the publication to archive.
+            publication_id (int): The ID of the publication to recover.
 
         Returns:
-            bool: True if archived successfully, False otherwise.
+            bool: True if recovered successfully, False otherwise.
         """
         pass
 
@@ -246,43 +246,43 @@ class PublicationRepository(AbstractPublicationRepository):
         self.save()
         return True
 
-    def publish_publication(self, publication_id: int) -> bool:
+    def logical_delete_publication(self, publication_id: int) -> bool:
         """
-        Publish a draft publication.
+        Logically delete a publication.
 
         Args:
-            publication_id (int): The ID of the publication to publish.
+            publication_id (int): The ID of the publication to logically delete.
 
         Returns:
-            bool: True if published successfully, False otherwise.
+            bool: True if deleted successfully, False otherwise.
         """
         publication = Publication.query.get(publication_id)
-        if not publication or publication.status != EstadoPublicacionEnum.DRAFT:
+        if not publication or publication.is_deleted:
             return False
-        publication.status = EstadoPublicacionEnum.PUBLISHED
-        publication.publish_date = datetime.now()
+        publication.is_deleted = True
+        publication.status = EstadoPublicacionEnum.ARCHIVED
         publication.update_date = datetime.now()
         self.save()
         return True
 
-    def archive_publication(self, publication_id: int) -> bool:
+    def recover_publication(self, publication_id: int) -> bool:
         """
-        Archive a publication.
+        Recover a logically deleted publication.
 
         Args:
-            publication_id (int): The ID of the publication to archive.
+            publication_id (int): The ID of the publication to recover.
 
         Returns:
-            bool: True if archived successfully, False otherwise.
+            bool: True if recovered successfully, False otherwise.
         """
-        # publication = Publication.query.get(publication_id)
-        # if not publication or publication.status == EstadoPublicacionEnum.ARCHIVED:
-        #     return False
-        # publication.status = EstadoPublicacionEnum.ARCHIVED
-        # publication.update_date = datetime.now()
-        # self.save()
-        # return True
-        raise NotImplementedError("Method not implemented")
+        publication = Publication.query.get(publication_id)
+        if not publication or not publication.is_deleted:
+            return False
+        publication.is_deleted = False
+        publication.status = EstadoPublicacionEnum.DRAFT
+        publication.update_date = datetime.now()
+        self.save()
+        return True
 
     def save(self):
         """

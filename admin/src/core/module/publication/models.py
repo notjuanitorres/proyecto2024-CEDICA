@@ -61,6 +61,7 @@ class Publication(db.Model):
     author_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     status = db.Column(db.Enum(EstadoPublicacionEnum), nullable=False)
     type = db.Column(db.Enum(TipoPublicacionEnum), nullable=False)
+    is_deleted = db.Column(db.Boolean, nullable=False, default=False)
 
     # Relaciones
     author = db.relationship("User", back_populates="publications")

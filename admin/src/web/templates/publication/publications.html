@@ -22,16 +22,16 @@
 {% block tabs %}
 <div class="tabs is-medium is-toggle is-toggle-rounded is-centered">
   <ul>
-    <li class="is-active">
+    <li {% if not are_deleted %}class="is-active" {% endif %}>
       <a href="{{ url_for('publications_bp.get_publications')}}">
         <span class="icon is-small"><i class="fa-solid fa-newspaper"></i></span>
         <span>Todas</span>
       </a>
     </li>
-    <li>
-      <a href="{{ url_for('publications_bp.get_publications')}}">
+    <li{% if are_deleted %} class="is-active" {% endif %}>
+      <a href="{{ url_for('publications_bp.get_publications', deleted=True)}}">
         <span class="icon is-small"><i class="fa-solid fa-box-archive"></i></span>
-        <span>Archivo</span>
+        <span>Eliminadas</span>
       </a>
     </li>
   </ul>
@@ -51,12 +51,13 @@
   </div>
 {% endblock %}
 
-{% block form_action %}{{ url_for("publications_bp.get_publications") }}{% endblock %}
-{% block clear_url %}{{ url_for("publications_bp.get_publications") }}{% endblock %}
+{% block form_action %}{{ url_for("publications_bp.get_publications", deleted=are_deleted) }}{% endblock %}
+{% block clear_url %}{{ url_for('publications_bp.get_publications', deleted=are_deleted) }}{% endblock %}
 
 {% block aditional_filters %}
     <div class="columns is-1">
       <div class="field column">
+          <input type="hidden" name="deleted" value="{{ "True" if are_deleted else "False" }}">
           <label class="label"> {{ search_form.filter_type.label }} </label>
           <div class="control">
             <div class="select is-fullwidth">
@@ -113,7 +114,7 @@
                             <!-- Content preview -->
                             <p>{{ post.content[:150] + '...' if post.content|length > 150 else post.content }}</p>
                             {# TODO: add safe filter when rich text editor capabilites are implemented#}
-                            
+
                             <!-- Tags -->
                             <div class="tags">
                                 <span class="tag is-info">{{ post.type.value }}</span>
@@ -153,6 +154,7 @@
                                         Leer más
                                     </a>
                                 </p>
+                                {% if not are_deleted %}
                                 {% if "publicaciones_update" in permissions or is_admin %}
                                 <p class="control">
                                     <a href="{{ url_for('publications_bp.edit_publication', publication_id=post.id) }}"
@@ -160,6 +162,7 @@
                                         Editar
                                     </a>
                                 </p>
+                                {% endif %}
                                 {% endif %}
                             </div>
                         </div>
