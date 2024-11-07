@@ -1,4 +1,4 @@
-from flask import Blueprint, request, render_template, flash, redirect, url_for
+from flask import Blueprint, request, render_template, flash, redirect, url_for, session
 from dependency_injector.wiring import inject, Provide
 
 from src.core.module.publication.mappers import PublicationMapper
@@ -7,7 +7,6 @@ from src.core.module.publication.forms import PublicationSearchForm, Publication
 from src.core.module.publication import PublicationRepository, AbstractPublicationRepository
 from src.web.helpers.auth import check_user_permissions
 from src.core.container import Container
-
 
 publications_bp = Blueprint(
     "publications_bp", __name__, template_folder="../templates/publication", url_prefix="/publicaciones"
@@ -169,7 +168,9 @@ def add_publication(
     if not create_form.validate_on_submit():
         return render_template("./publication/create_publication.html", form=create_form)
 
-    publication = publication_repository.add_publication(PublicationMapper.to_entity(create_form.data))
+    data = PublicationMapper.from_create_form(create_form.data)
+    data["author_id"] = session.get("user")
+    publication = publication_repository.add_publication(PublicationMapper.to_entity(data))
 
     flash("Publicación creada con éxito!", "success")
     return redirect(url_for("publications_bp.show_publication", publication_id=publication["id"]))
@@ -234,7 +235,7 @@ def update_publication(
 
     publication_repository.update_publication(
         publication_id=publication_id,
-        data=PublicationMapper.from_form(edit_form.data),
+        data=PublicationMapper.from_edit_form(edit_form.data),
     )
 
     flash("Publicación actualizada con éxito", "success")

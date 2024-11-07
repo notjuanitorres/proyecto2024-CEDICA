@@ -53,9 +53,9 @@ class PublicationMapper:
         )
 
     @classmethod
-    def from_form(cls, data: Dict) -> Dict:
+    def from_create_form(cls, data: Dict) -> Dict:
         """
-        Convert form data to a dictionary suitable for creating or updating a Publication entity.
+        Convert form data to a dictionary suitable for creating a Publication entity.
 
         Args:
             data (Dict): The form data.
@@ -68,7 +68,26 @@ class PublicationMapper:
             "summary": data.get("summary"),
             "content": data.get("content"),
             "status": data.get("status"),
-            "author_id": data.get("author_id"),
+            "author_id": None,  # Author ID is not provided in the form, but it should be given in the controller.
+            "type": data.get("type"),
+        }
+
+    @classmethod
+    def from_edit_form(cls, data: Dict) -> Dict:
+        """
+        Convert form data to a dictionary suitable for updating a Publication entity.
+
+        Args:
+            data (Dict): The form data.
+
+        Returns:
+            Dict: A dictionary representation of the form data.
+        """
+        return {
+            "title": data.get("title"),
+            "summary": data.get("summary"),
+            "content": data.get("content"),
+            "status": data.get("status"),
             "type": data.get("type"),
         }
 
