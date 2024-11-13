@@ -33,7 +33,7 @@ class User(db.Model):
         db.DateTime, default=datetime.now, onupdate=datetime.now)
     role = db.relationship("Role", backref="users")
     is_deleted = db.Column(db.Boolean, nullable=False, default=False)
-
+    google_id = db.Column(db.String(30), nullable=True)
     def __repr__(self):
         """
         Return a string representation of the User object.

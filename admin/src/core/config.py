@@ -1,4 +1,5 @@
 import os
+import secrets
 from os import environ
 from dotenv import load_dotenv
 
@@ -16,13 +17,13 @@ class Config(object):
         SESSION_TYPE: str
         SEED_ON_STARTUP: bool
     """
-
-    SECRET_KEY = "mysecretkey"
+    SECRET_KEY = os.environ.get("FLASK_SECRET_KEY") or secrets.token_hex(20)
     TESTING = False
     DEBUG = False
     SESSION_TYPE = "filesystem"
     SEED_ON_STARTUP = False
-
+    GOOGLE_OAUTH_CLIENT_ID = environ.get("GOOGLE_OAUTH_CLIENT_ID")
+    GOOGLE_OAUTH_CLIENT_SECRET = environ.get("GOOGLE_OAUTH_CLIENT_SECRET")
 
 class ProductionConfig(Config):
     """PRODUCTION CONFIGURATION
@@ -66,7 +67,8 @@ class DevelopmentConfig(Config):
     MINIO_SECRET_KEY = os.getenv("MINIO_SECRET_KEY_DEVELOPMENT")
     MINIO_SECURE = False
     SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URI_DEVELOPMENT")
-
+    OAUTHLIB_RELAX_TOKEN_SCOPE="1"
+    OAUTHLIB_INSECURE_TRANSPORT="1"
 
 class TestingConfig(Config):
     """TESTING CONFIGURATION"""
