@@ -11,6 +11,7 @@ from src.web.controllers import (
 )
 from src.web.controllers.jockey_and_amazon import update_jockey_amazon, create_jockey_amazon
 from src.core.module.user import validators
+from src.core.module.employee import EmployeeRepository
 from .container import Container
 
 
@@ -56,6 +57,7 @@ def init_wiring():
             validators,
             payment,
             auth_helper,
+            EmployeeRepository
         ]
     )
     container.init_resources()
