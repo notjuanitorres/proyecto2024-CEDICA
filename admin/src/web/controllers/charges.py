@@ -348,57 +348,6 @@ def recover_charge(
     return redirect(url_for("charges_bp.show_charge", charge_id=charge_id))
 
 
-@charges_bp.route("/cambiar-empleado/<int:charge_id>", methods=["GET", "POST"])
-@check_user_permissions(permissions_required=["cobros_update"])
-@inject
-def change_employee(
-        charge_id: int,
-        charges_repository: ACR = Provide[Container.charges_repository],
-        employee_repository: AbstractEmployeeRepository = Provide[Container.employee_repository],
-):
-    """
-    Change the employee associated with a charge.
-
-    Args:
-        charge_id (int): The ID of the charge.
-        charges_repository (ACR): The repository for charge data.
-        employee_repository (AbstractEmployeeRepository): The repository for employee data.
-
-    Returns:
-        A rendered template displaying the employee change form,
-         or a redirect to the charge list page if the charge does not exist.
-    """
-    page = request.args.get("page", type=int, default=1)
-
-    search_employee = EmployeeMiniSearchForm(request.args)
-    select_employee = EmployeeSelectForm()
-
-    charge = charges_repository.get_by_id(charge_id)
-    if not charge:
-        flash(f"El cobro con ID = {charge_id} no existe", "danger")
-        return redirect(url_for("charges_bp.get_charges"))
-
-    employees = []
-    if request.method == "GET":
-        if search_employee.validate():
-            employees = employee_repository.get_active_employees(
-                [], page=page, search=search_employee.search_text.data
-            )
-        else:
-            employees = employee_repository.get_active_employees([], page=page)
-
-    if request.method == "POST":
-        return add_charge_employee(charge, search_employee, select_employee, employees)
-
-    return render_template(
-        "./charges/update_employee.html",
-        charge=charge,
-        employees=employees,
-        search_form=search_employee,
-        select_form=select_employee,
-    )
-
-
 @charges_bp.route("/asignar-empleado/", methods=["GET", "POST"])
 @check_user_permissions(permissions_required=["cobros_update"])
 @inject
@@ -607,46 +556,6 @@ def add_charge_employee(
             "danger",
         )
     return redirect(url_for("charges_bp.show_charge", charge_id=charge_id))
-
-
-@charges_bp.route("/cambiar-jya/<int:charge_id>", methods=["GET", "POST"])
-@check_user_permissions(permissions_required=["cobros_update"])
-@inject
-def change_jya(
-        charge_id: int,
-        charges_repository: ACR = Provide[Container.charges_repository],
-):
-    """
-    Change the jockey or amazon associated with a charge.
-
-    Args:
-        charge_id (int): The ID of the charge to update.
-        charges_repository (ACR): The repository for charge data.
-
-    Returns:
-        A rendered template displaying the update jockey/amazon form if validation fails,
-        or a redirect to the charge detail page if successful.
-    """
-    charge = charges_repository.get_by_id(charge_id)
-    if not charge:
-        flash(f"El cobro con ID = {charge_id} no existe", "danger")
-        return redirect(url_for("charges_bp.get_charges"))
-
-    search_jya = JockeyAmazonMiniSearchForm(request.args)
-    select_jya = JockeyAmazonSelectForm()
-
-    jyas_list = search_jyas(search_jya)
-
-    if request.method == "POST":
-        return add_charge_jya(charge, search_jya, select_jya, jyas_list)
-
-    return render_template(
-        "./charges/update_jya.html",
-        charge=charge,
-        jyas=jyas_list,
-        search_form=search_jya,
-        select_form=select_jya,
-    )
 
 
 @inject

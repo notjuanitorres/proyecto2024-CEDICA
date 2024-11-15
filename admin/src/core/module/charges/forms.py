@@ -26,8 +26,8 @@ class ChargeSearchForm(FlaskForm):
 
     search_by = SelectField(
         choices=[
-            ("name", "Nombre"),
-            ("lastname", "Apellido"),
+            ("name", "Nombre de empleado"),
+            ("lastname", "Apellido de empleado"),
         ],
         validate_choice=True,
     )
