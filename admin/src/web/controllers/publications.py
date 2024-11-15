@@ -7,6 +7,7 @@ from src.core.module.publication.forms import PublicationSearchForm, Publication
 from src.core.module.publication import PublicationRepository, AbstractPublicationRepository
 from src.web.helpers.auth import check_user_permissions
 from src.core.container import Container
+import nh3
 
 publications_bp = Blueprint(
     "publications_bp", __name__, template_folder="../templates/publication", url_prefix="/publicaciones"
@@ -226,14 +227,14 @@ def edit_publication(
     edit_form = PublicationEditForm(data=publication)
 
     if request.method in ["POST", "PUT"]:
-        return update_publication(publication_id=publication_id, edit_form=edit_form)
+        return update_publication(publication=publication, edit_form=edit_form)
 
     return render_template("./publication/edit_publication.html", form=edit_form, publication=publication)
 
 
 @inject
 def update_publication(
-    publication_id: int,
+    publication,
     edit_form: PublicationEditForm,
     publication_repository: AbstractPublicationRepository = Provide[Container.publication_repository]
 ):
@@ -241,7 +242,7 @@ def update_publication(
     Helper function to update a publication's details.
 
     Args:
-        publication_id (int): The ID of the publication.
+        publication: The ID of the publication.
         edit_form (PublicationEditForm): The form for editing a publication.
         publication_repository (AbstractPublicationsRepository): The publication repository.
 
@@ -250,15 +251,17 @@ def update_publication(
          or redirect to publication details.
     """
     if not edit_form.validate_on_submit():
-        return render_template("./publication/edit_publication.html", form=edit_form)
+        return render_template("./publication/edit_publication.html", form=edit_form, publication=publication)
 
+    if edit_form.data.get("content"):
+        edit_form.data["content"] = nh3.clean(edit_form.data["content"])
     publication_repository.update_publication(
-        publication_id=publication_id,
+        publication_id=publication["id"],
         data=PublicationMapper.from_edit_form(edit_form.data),
     )
 
     flash("Publicación actualizada con éxito", "success")
-    return redirect(url_for("publications_bp.show_publication", publication_id=publication_id))
+    return redirect(url_for("publications_bp.show_publication", publication_id=publication["id"]))
 
 
 @publications_bp.route("/delete/", methods=["POST"])

@@ -125,8 +125,7 @@ Publicación: {{ publication.title }}
         </header>
         <div class="card-content">
             <div class="content">
-                {{ publication.content}}
-                {# TODO: add safe filter when rich text editor capabilites are implemented#}
+                {{ publication.content | safe }}
             </div>
         </div>
     </div>

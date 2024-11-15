@@ -74,8 +74,13 @@
             <div class="field">
                 <label class="label">{{ form.content.label }}</label>
                 <div class="control">
+	                {{ ckeditor.load() }}
+                    {{ ckeditor.config(name='content') }}
                     {{ form.content(class="textarea", placeholder="Escriba el contenido de la publicación",
-                     rows="10", data_validate="required") }}
+                     rows="10") }}
+                    <style>
+                        .cke_notifications_area { display: none; }
+                    </style>
                 </div>
                 {% if form.content.errors %}
                     <p class="help is-danger">{{ form.content.errors[0] }}</p>

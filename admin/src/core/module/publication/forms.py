@@ -2,6 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import SelectField, StringField, SubmitField, DateField, TextAreaField
 from wtforms.validators import Length, DataRequired, Optional
 from src.core.module.publication.models import EstadoPublicacionEnum, TipoPublicacionEnum
+from flask_ckeditor import CKEditorField
 
 
 class PublicationSearchForm(FlaskForm):
@@ -126,7 +127,7 @@ class PublicationManagementForm(FlaskForm):
             Length(max=255, message="El resumen no puede superar los 255 caracteres")
         ]
     )
-    content = TextAreaField(
+    content = CKEditorField(
         "Contenido",
         validators=[
             DataRequired(message="El contenido es obligatorio.")

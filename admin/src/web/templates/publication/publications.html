@@ -112,9 +112,7 @@
                             {% endif %}
 
                             <!-- Content preview -->
-                            <p>{{ post.content[:150] + '...' if post.content|length > 150 else post.content }}</p>
-                            {# TODO: add safe filter when rich text editor capabilites are implemented#}
-
+                            <p>{{ post.content[:150] | safe + '...'  if post.content|length > 150 else post.content | safe}}</p>
                             <!-- Tags -->
                             <div class="tags">
                                 <span class="tag is-info">{{ post.type.value }}</span>
