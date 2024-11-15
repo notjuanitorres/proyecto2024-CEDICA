@@ -104,49 +104,6 @@ class EmploymentInformationForm(FlaskForm):
     is_active = BooleanField("Activo en la organización", default=True)
 
 
-class EmployeeDocumentsForm(FlaskForm):
-    """Form for managing employee related documents such as DNI, title, and curriculum vitae."""
-
-    dni = MultipleFileField(
-        validators=[
-            FileSize(
-                max_size=max_file_size(size_in_mb=5),
-                message="El archivo es demasiado grande",
-            ),
-            FileAllowed(
-                allowed_filetypes,
-                message=filetypes_message,
-            ),
-            FilesNumber(min=0, max=2, message="Puede subir hasta 2 archivos"),
-        ]
-    )
-    title = MultipleFileField(
-        validators=[
-            FileSize(
-                max_size=max_file_size(size_in_mb=5),
-                message="El archivo es demasiado grande",
-            ),
-            FileAllowed(
-                allowed_filetypes,
-                message=filetypes_message,
-            ),
-            FilesNumber(min=0, max=5, message="Puede subir hasta 5 archivos"),
-        ]
-    )
-    curriculum_vitae = FileField(
-        validators=[
-            FileSize(
-                max_size=max_file_size(size_in_mb=5),
-                message="El archivo es demasiado grande",
-            ),
-            FileAllowed(
-                upload_set=allowed_filetypes,
-                message=filetypes_message,
-            ),
-        ]
-    )
-
-
 class EmployeeAddDocumentsForm(BaseManageDocumentsForm):
     """Form to tag documents when adding additional files for an employee.
 
@@ -154,7 +111,7 @@ class EmployeeAddDocumentsForm(BaseManageDocumentsForm):
         tag (SelectField): The tag to assign to the uploaded file.
     """
     tag = SelectField(
-        "Tag",
+        "Etiqueta",
         choices=[(e.name, e.value) for e in FileTagEnum],
         validators=[
             DataRequired(

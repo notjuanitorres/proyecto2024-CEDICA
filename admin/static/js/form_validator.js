@@ -52,9 +52,13 @@ const VALIDATION_PATTERNS = {
         pattern: /^.{0,100}$/,
         message: 'El titulo no puede exceder los 100 caracteres'
     },
+    // url: {
+    //      pattern: /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/,
+    //      message: 'Ingrese una URL válida'
+    // },
     url: {
-         pattern: /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/,
-         message: 'Ingrese una URL válida'
+    pattern: /^([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/,
+    message: 'Ingrese una URL válida'
     },
     no:{
         pattern: /^.*$/,
