@@ -2,9 +2,9 @@
 </script>
 <template>
   <main>
-    <div class="about has-navbar-fixed-top">
-      <h1 class="title">Sobre Nosotros</h1>
-    </div>
+    <section class="about has-navbar-fixed-top">
+      <h1 class="title">Noticias</h1>
+    </section>
   </main>
 </template>
 
@@ -14,7 +14,6 @@
     min-height: 100vh;
     display: flex;
     align-items: center;
-    justify-content: center;
   }
 }
 </style>
