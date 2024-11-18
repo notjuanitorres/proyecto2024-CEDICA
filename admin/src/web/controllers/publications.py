@@ -41,8 +41,9 @@ def get_publications(
     if form.submit_search.data and form.validate():
         search_query = {"text": form.search_text.data, "field": form.search_by.data, "filters": {"is_deleted": deleted}}
 
-        if form.start_date.data and form.end_date.data:
+        if form.start_date.data:
             search_query["filters"]["start_date"] = form.start_date.data
+        if form.end_date.data:
             search_query["filters"]["end_date"] = form.end_date.data
 
         if form.filter_type.data:

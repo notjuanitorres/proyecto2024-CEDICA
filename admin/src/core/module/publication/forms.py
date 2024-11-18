@@ -80,18 +80,8 @@ class PublicationSearchForm(FlaskForm):
         """
 
         # Don't validate dates if no search is submitted
-        if not self.start_date.data and not self.end_date.data:
+        if not self.start_date.data or not self.end_date.data:
             return True
-
-        # Ensure that if one date is selected the other is too
-        if self.start_date.data and not self.end_date.data:
-            self.end_date.errors = []
-            self.end_date.errors.append('Se deben seleccionar ambas fechas.')
-            return False
-        if not self.start_date.data and self.end_date.data:
-            self.start_date.errors = []
-            self.start_date.errors.append('Se deben seleccionar ambas fechas.')
-            return False
 
         # Ensure end date >= start date
         if self.start_date.data > self.end_date.data:

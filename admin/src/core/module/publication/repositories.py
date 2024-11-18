@@ -172,12 +172,14 @@ class PublicationRepository(AbstractPublicationRepository):
 
         # Handle date range filters
         if search_query and "filters" in search_query and search_query["filters"]:
-            if "start_date" in search_query["filters"] and "end_date" in search_query["filters"]:
+            if "start_date" in search_query["filters"]:
                 query = (query
-                         .filter(Publication.publish_date
-                                 .between(search_query["filters"]["start_date"],
-                                          search_query["filters"]["end_date"])))
+                         .filter(Publication.publish_date > search_query["filters"]["start_date"]))
                 search_query["filters"].pop("start_date")
+
+            if "end_date" in search_query["filters"]:
+                query = (query
+                         .filter(Publication.publish_date < search_query["filters"]["end_date"]))
                 search_query["filters"].pop("end_date")
 
         query = apply_filters(Publication, query, search_query, order_by)
