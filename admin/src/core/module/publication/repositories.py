@@ -4,8 +4,9 @@ from datetime import datetime
 
 from src.core.database import db as database
 from src.core.module.publication.models import Publication, EstadoPublicacionEnum
-from src.core.module.common.repositories import apply_filters
+from src.core.module.common.repositories import apply_filters, apply_search_criteria
 from .mappers import PublicationMapper as Mapper
+from ..user.models import User
 
 
 class AbstractPublicationRepository:
@@ -181,6 +182,14 @@ class PublicationRepository(AbstractPublicationRepository):
                 query = (query
                          .filter(Publication.publish_date < search_query["filters"]["end_date"]))
                 search_query["filters"].pop("end_date")
+
+        # since name and lastname aren't in the Charge model, we need to apply the filters separately
+        if search_query and "text" in search_query and "field" in search_query and search_query["field"] == "alias":
+            user_query = apply_search_criteria(User, User.query, search_query).all()
+            user_ids = [user.id for user in user_query]
+            query = query.filter(Publication.author_id.in_(user_ids))
+            search_query.pop("text")
+            search_query.pop("field")
 
         query = apply_filters(Publication, query, search_query, order_by)
 

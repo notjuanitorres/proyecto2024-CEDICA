@@ -28,6 +28,7 @@ class PublicationSearchForm(FlaskForm):
     search_by = SelectField(
         choices=[
             ("title", "Título"),
+            ("alias", "Autor"),
         ],
         validate_choice=True,
     )

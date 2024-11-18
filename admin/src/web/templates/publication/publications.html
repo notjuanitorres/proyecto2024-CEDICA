@@ -102,71 +102,80 @@
 	<section class="section">
     <div class="container">
         {% for post in publications %}
-                <div class="card mb-5">
-                    <div class="card-content">
-                        <!-- Title section -->
-                        <div class="content">
-                            <h4 class="title is-4 has-text">{{ post.title }}</h4>
-                            {% if post.summary %}
+            <div class="card mb-5">
+                <div class="card-content">
+                   <!-- Author Section -->
+                    <div class="is-flex is-align-items-center mb-4">
+                        <span class="icon has-text-info mr-2">
+                            <i class="fas fa-user"></i>
+                        </span>
+                        <p class="title is-5 mb-0 mr-2">Autor:</p>
+                        <p class="subtitle is-6 has-text-weight-semibold">{{ post.author.alias }}</p>
+                    </div>
+
+                    <!-- Title section -->
+                    <div class="content">
+                        <h4 class="title is-4 has-text">{{ post.title }}</h4>
+                        {% if post.summary %}
                             <p class="subtitle is-6 is-italic">{{ post.summary }}</p>
+                        {% endif %}
+
+                        <!-- Content preview -->
+                        <p>{{ post.content[:150] | safe + '...' if post.content|length > 150 else post.content | safe }}</p>
+
+                        <!-- Tags -->
+                        <div class="tags">
+                            <span class="tag is-info">{{ post.type.value }}</span>
+                            {% if post.status.value == "Archivado" %}
+                                {% set tag_status = "danger" %}
+                            {% elif post.status.value == "Borrador" %}
+                                {% set tag_status = "warning" %}
+                            {% else %}
+                                {% set tag_status = "success" %}
                             {% endif %}
-
-                            <!-- Content preview -->
-                            <p>{{ post.content[:150] | safe + '...'  if post.content|length > 150 else post.content | safe}}</p>
-                            <!-- Tags -->
-                            <div class="tags">
-                                <span class="tag is-info">{{ post.type.value }}</span>
-                                {% if post.status.value == "Archivado" %}
-                                    {% set tag_status = "danger" %}
-                                {% elif post.status.value == "Borrador" %}
-                                    {% set tag_status = "warning" %}
-                                {% else %}
-                                    {% set tag_status = "success" %}
-                                {% endif %}
-                                <span class="tag is-{{ tag_status }}">{{ post.status.value }}</span>
-                            </div>
+                            <span class="tag is-{{ tag_status }}">{{ post.status.value }}</span>
                         </div>
+                    </div>
 
-                        <!-- Publication date with icon -->
-                        <div class="mb-3">
-                            <span class="icon-text">
-                                <span class="icon">
-                                    <i class="fas fa-calendar"></i>
-                                </span>
-                                <span>Publicado el: {{ post.publish_date | format_date }}</span>
+                    <!-- Publication date with icon -->
+                    <div class="mb-3">
+                        <span class="icon-text">
+                            <span class="icon">
+                                <i class="fas fa-calendar"></i>
                             </span>
-                        </div>
+                            <span>Publicado el: {{ post.publish_date | format_date }}</span>
+                        </span>
+                    </div>
 
-                        <!-- Creation and modification dates -->
-                        <div class="is-size-7 has-text-grey">
-                            <p>Creado el: {{ post.create_date | format_date }}</p>
-                            <p>Modificado por última vez: {{ post.update_date | format_date }}</p>
-                        </div>
+                    <!-- Creation and modification dates -->
+                    <div class="is-size-7 has-text-grey">
+                        <p>Creado el: {{ post.create_date | format_date }}</p>
+                        <p>Modificado por última vez: {{ post.update_date | format_date }}</p>
+                    </div>
 
-                        <!-- Buttons -->
-                        <div class="mt-4" style="display: flex; justify-content: space-between;">
-                            <div class="field is-grouped is-grouped-multiline">
-                                <p class="control">
-                                    <a href="{{ url_for('publications_bp.show_publication', publication_id=post.id) }}"
-                                       class="button is-primary is-rounded">
-                                        Leer más
-                                    </a>
-                                </p>
-                                {% if not are_deleted %}
-                                {% if "publicaciones_update" in permissions or is_admin %}
-                                <p class="control">
-                                    <a href="{{ url_for('publications_bp.edit_publication', publication_id=post.id) }}"
-                                       class="button is-link is-rounded">
-                                        Editar
-                                    </a>
-                                </p>
-                                {% endif %}
-                                {% endif %}
-                            </div>
+                    <!-- Buttons -->
+                    <div class="mt-4" style="display: flex; justify-content: space-between;">
+                        <div class="field is-grouped is-grouped-multiline">
+                            <p class="control">
+                                <a href="{{ url_for('publications_bp.show_publication', publication_id=post.id) }}"
+                                   class="button is-primary is-rounded">
+                                    Leer más
+                                </a>
+                            </p>
+                            {% if not are_deleted %}
+                            {% if "publicaciones_update" in permissions or is_admin %}
+                            <p class="control">
+                                <a href="{{ url_for('publications_bp.edit_publication', publication_id=post.id) }}"
+                                   class="button is-link is-rounded">
+                                    Editar
+                                </a>
+                            </p>
+                            {% endif %}
+                            {% endif %}
                         </div>
-
                     </div>
                 </div>
+            </div>
         {% endfor %}
     </div>
 </section>

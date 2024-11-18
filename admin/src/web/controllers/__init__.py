@@ -7,6 +7,7 @@ from .payment import payment_bp
 from .charges import charges_bp
 from .jockey_amazon import jockey_amazon_bp
 from .publications import publications_bp
+from .api import api_bp
 
 __all__ = [
     "index_bp",
@@ -18,4 +19,5 @@ __all__ = [
     "publications_bp",
     "charges_bp",
     "jockey_amazon_bp",
+    "api_bp",
 ]

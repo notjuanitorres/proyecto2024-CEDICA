@@ -8,6 +8,27 @@ class PublicationMapper:
     """
 
     @classmethod
+    def to_api(cls, publication: Publication) -> Dict:
+        """
+        Convert a Publication entity to a dictionary suitable for an API response.
+
+        Args:
+            publication (Publication): The Publication entity to convert.
+
+        Returns:
+            Dict: A dictionary representation of the Publication entity.
+        """
+        return {
+            "title": publication.title,
+            "summary": publication.summary,
+            "content": publication.content[:150] + '...' if len(publication.content) > 150 else publication.content,
+            "published_at": publication.publish_date.isoformat(),
+            "updated_at": publication.update_date.isoformat(),
+            "author": publication.author.alias,
+            "status": publication.status.value,
+        }
+
+    @classmethod
     def from_entity(cls, publication: Publication) -> Dict:
         """
         Convert a Publication entity to a dictionary.
@@ -27,6 +48,7 @@ class PublicationMapper:
             "summary": publication.summary,
             "content": publication.content,
             "author_id": publication.author_id,
+            "author": publication.author,
             "status": publication.status.value,
             "type": publication.type.value,
             "is_deleted": publication.is_deleted,
