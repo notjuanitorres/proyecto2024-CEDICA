@@ -12,10 +12,12 @@ from src.web.handlers import error
 from src.web.helpers.auth import is_authenticated, inject_session_data
 from src.web.helpers.filters import register_filters
 from flask_ckeditor import CKEditor
+from flask_cors import CORS
 
 ckeditor = CKEditor()
 csrf = CSRFProtect()
 session = Session()
+cors = CORS()
 
 
 def create_app(env="development", static_folder="../../static"):
@@ -32,7 +34,6 @@ def create_app(env="development", static_folder="../../static"):
     app = Flask(__name__, static_folder=static_folder)
 
     app.config.from_object(config[env])
-    app.config['CKEDITOR_PKG_TYPE'] = 'basic'
 
     session.init_app(app)
     database.init_app(app)
@@ -40,7 +41,7 @@ def create_app(env="development", static_folder="../../static"):
     bcrypt.init_app(app)
     csrf.init_app(app)
     ckeditor.init_app(app)
-
+    cors.init_app(app, resources={r"/api/*": {"origins": app.config.get("CORS_ORIGINS")}})
     register_blueprints(app)
     register_commands(app)
     register_filters(app)

@@ -21,7 +21,7 @@ class PublicationMapper:
         return {
             "title": publication.title,
             "summary": publication.summary,
-            "content": publication.content[:150] + '...' if len(publication.content) > 150 else publication.content,
+            # "content": publication.content[:150] + '...' if len(publication.content) > 150 else publication.content,
             "published_at": publication.publish_date.isoformat(),
             "updated_at": publication.update_date.isoformat(),
             "author": publication.author.alias,

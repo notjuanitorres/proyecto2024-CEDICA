@@ -27,6 +27,7 @@ python-ulid = "^2.7.0"
 faker = "^30.8.1"
 flask-ckeditor = "^1.0.0"
 nh3 = "^0.2.18"
+flask-cors = "^5.0.0"
 
 
 [tool.poetry.group.dev.dependencies]

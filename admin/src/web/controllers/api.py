@@ -50,7 +50,7 @@ def get_publications_api(
         except ValueError:
             return jsonify({"error": "Invalid format for published_to"}), 400
 
-    publications = publication_repository.get_page(page, per_page, search_query)
+    publications = publication_repository.get_page(page, per_page, search_query, order_by=[("publish_date", "desc")])
 
     response_data = {
         "data": [
@@ -84,7 +84,7 @@ def show_publication(
     try:
         publication_id = int(publication_id)
     except ValueError:
-        return jsonify({"error": "Parece que no existe la publicación buscada"}), 400
+        return jsonify({"error": "Parámetros inválidos o faltantes en la solicitud."}), 400
 
     publication = publication_repository.get_by_id(publication_id)
     if (not publication
