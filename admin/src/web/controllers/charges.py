@@ -64,12 +64,14 @@ def search_charges(search: ChargeSearchForm,
 
 @inject
 def search_jyas(search: JockeyAmazonMiniSearchForm,
+                select_form: JockeyAmazonSelectForm,
                 jya_repository: AbstractJockeyAmazonRepository = Provide[Container.jockey_amazon_repository]):
     """
     Search for jockeys or amazons based on the provided search form.
 
     Args:
         search (JockeyAmazonMiniSearchForm): The form containing search criteria.
+        select_form (JockeyAmazonSelectForm): The form for selecting a jockey or amazon.
         jya_repository (AbstractJockeyAmazonRepository): The repository for jockey and amazon data.
 
     Returns:
@@ -82,6 +84,10 @@ def search_jyas(search: JockeyAmazonMiniSearchForm,
         if search.validate():
             jyas = jya_repository.get_active_jockeys(page=page, search=search.search_text.data)
         else:
+            jyas = jya_repository.get_active_jockeys(page=page)
+
+    if request.method == "POST":
+        if not (select_form.submit_jya.data and select_form.validate()):
             jyas = jya_repository.get_active_jockeys(page=page)
 
     return jyas
@@ -376,7 +382,6 @@ def link_employee(
 
     employees = []
     if request.method == "GET":
-        print(search_employee.data)
         if search_employee.validate():
             employees = employee_repository.get_active_employees(
                 [], page=page, search=search_employee.search_text.data
@@ -385,6 +390,9 @@ def link_employee(
             employees = employee_repository.get_active_employees([], page=page)
 
     if request.method == "POST":
+        if not (select_employee.submit_employee.data and select_employee.validate()):
+            flash("No se ha seleccionado un empleado", "danger")
+            employees = employee_repository.get_active_employees([], page=page)
         return link_charge_employee(charge, search_employee, select_employee, employees)
 
     return render_template(
@@ -454,7 +462,7 @@ def link_jya(
     search_jya = JockeyAmazonMiniSearchForm(request.args)
     select_jya = JockeyAmazonSelectForm()
 
-    jyas = search_jyas(search_jya)
+    jyas = search_jyas(search_jya, select_jya)
 
     if request.method == "POST":
         return link_charge_jya(charge, search_jya, select_jya, jyas)
@@ -491,6 +499,7 @@ def link_charge_jya(
          or a redirect to the charge detail page if successful.
     """
     if not (select_form.submit_jya.data and select_form.validate()):
+        flash("No se ha seleccionado un Jinete o amazona", "danger")
         return render_template(
             "./charges/create_jya.html",
             charge=charge,
@@ -619,8 +628,9 @@ def choose_debtor(
     """
     search_jya = JockeyAmazonMiniSearchForm(request.args)
     select_jya = JockeyAmazonSelectForm()
+    select_jya.submit_jya.label.text = "Cambiar estado"
 
-    jyas = search_jyas(search_jya)
+    jyas = search_jyas(search_jya, select_jya)
 
     if request.method == "POST":
         return toggle_debtor_status(search_jya, select_jya, jyas)
@@ -656,6 +666,7 @@ def toggle_debtor_status(
         or a redirect to the charge detail page if successful.
     """
     if not (select_form.submit_jya.data and select_form.validate()):
+        flash("No se ha seleccionado un Jinete o amazona", "danger")
         return render_template(
             "./charges/choose_debtor.html",
             jyas=jyas,
