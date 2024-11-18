@@ -1,0 +1,56 @@
+.bg-watercolor-stain {
+  position: relative;
+  background:
+    radial-gradient(ellipse at 25% 15%, rgba(255, 255, 255, 0.95) 0%, transparent 40%),
+    radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.9) 0%, transparent 35%),
+    /* Orange watercolor spots */
+      radial-gradient(circle at 85% 20%, hsl(33deg 82% 71%) 0%, transparent 70%),
+    radial-gradient(ellipse at 15% 30%, hsl(32deg 82% 78%) 0%, transparent 65%),
+    /* Blue watercolor spots */
+      radial-gradient(ellipse at 75% 75%, hsl(190deg 33% 63%) 0%, transparent 75%),
+    radial-gradient(circle at 25% 80%, hsl(191deg 31% 71%) 0%, transparent 70%),
+    /* Base gradient */
+      linear-gradient(165deg, hsl(32, 77%, 71%) 0%, hsl(0deg 0% 95%) 55%, hsl(191, 38%, 58%) 100%);
+  background-blend-mode: soft-light;
+}
+
+.bg-watercolor-stain::after,
+.bg-watercolor-blueish-stain::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.12;
+  filter: contrast(150%) brightness(110%);
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.2' numOctaves='5' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%' height='100%' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  mix-blend-mode: overlay;
+  pointer-events: none;
+}
+
+.shape-divider-bottom,
+.shape-divider-top {
+  overflow: hidden;
+  position: relative;
+}
+
+@media (min-width: 2100px) {
+  .shape-divider-top::before,
+  .shape-divider-bottom::before {
+    background-size: 241% calc(2vw + 233px);
+  }
+}
+
+.shape-divider-top::before {
+  content: '';
+  font-family: 'shape divider from ShapeDividers.com';
+  position: absolute;
+  z-index: 3;
+  pointer-events: none;
+  background-repeat: no-repeat;
+  bottom: -0.1vw;
+  left: -0.1vw;
+  right: -0.1vw;
+  top: -0.1vw;
+  background-size: 241% 233px;
+  background-position: 23% 100%;
+  background-image: url('data:image/svg+xml;charset=utf8, <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 35.28 2.17" preserveAspectRatio="none"><path d="M35.28 1.16c-3.17-.8-7.3.4-10.04.56-2.76.17-9.25-1.47-12.68-1.3-3.42.16-4.64.84-7.04.86C3.12 1.31 0 .4 0 .4v1.77h35.28z" fill="%23ffffff"/></svg>');
+}
