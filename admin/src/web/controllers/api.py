@@ -6,6 +6,7 @@ from dependency_injector.wiring import inject, Provide
 from src.core.container import Container
 from src.core.module.publication import AbstractPublicationRepository
 from src.core.module.publication.mappers import PublicationMapper
+from src.core.module.publication.models import EstadoPublicacionEnum
 
 api_bp = Blueprint("api_bp", __name__, url_prefix="/api")
 
@@ -62,3 +63,34 @@ def get_publications_api(
     }
 
     return jsonify(response_data), 200
+
+
+@api_bp.route("/articles/<int:publication_id>", methods=["GET"])
+@inject
+def show_publication(
+    publication_id: int,
+    publication_repository: AbstractPublicationRepository = Provide[Container.publication_repository],
+):
+    """
+    Route to show details of a specific publication.
+
+    Args:
+        publication_id (int): The ID of the publication.
+        publication_repository (AbstractPublicationsRepository): The publication repository.
+
+    Returns:
+        Response: JSON response with the publication details.
+    """
+    try:
+        publication_id = int(publication_id)
+    except ValueError:
+        return jsonify({"error": "Parece que no existe la publicación buscada"}), 400
+
+    publication = publication_repository.get_by_id(publication_id)
+    if (not publication
+            or publication["is_deleted"]
+            or not publication["status"] == EstadoPublicacionEnum.PUBLISHED.value):
+        return jsonify({"error": "Publicación no encontrada"}), 404
+
+    publication["author"] = publication["author"].alias
+    return jsonify(publication), 200

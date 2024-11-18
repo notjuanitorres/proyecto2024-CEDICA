@@ -2,7 +2,6 @@ from flask import Blueprint, request, render_template, flash, redirect, url_for,
 from dependency_injector.wiring import inject, Provide
 
 from src.core.module.publication.mappers import PublicationMapper
-from src.core.module.user import AbstractUserRepository
 from src.core.module.publication.forms import PublicationSearchForm, PublicationCreateForm, PublicationEditForm
 from src.core.module.publication import PublicationRepository, AbstractPublicationRepository
 from src.web.helpers.auth import check_user_permissions
@@ -130,7 +129,6 @@ def recover_publication(
 def show_publication(
     publication_id: int,
     publication_repository: AbstractPublicationRepository = Provide[Container.publication_repository],
-    user_repository: AbstractUserRepository = Provide[Container.user_repository],
 ):
     """
     Route to show details of a specific publication.
@@ -138,7 +136,6 @@ def show_publication(
     Args:
         publication_id (int): The ID of the publication.
         publication_repository (AbstractPublicationsRepository): The publication repository.
-        user_repository (AbstractUserRepository): The user repository.
 
     Returns:
         Response: The rendered template for the publication details if the publication exists,
@@ -149,8 +146,8 @@ def show_publication(
         flash(f"La publicación con ID = {publication_id} no existe", "danger")
         return get_publications()
 
-    author = user_repository.get_user(publication.get("author_id"))
-    return render_template('./publication/publication.html', publication=publication, author=author)
+    return render_template('./publication/publication.html',
+                           publication=publication, author=publication["author"])
 
 
 @publications_bp.route("/crear", methods=["GET", "POST"])

@@ -25,6 +25,7 @@ class PublicationMapper:
             "published_at": publication.publish_date.isoformat(),
             "updated_at": publication.update_date.isoformat(),
             "author": publication.author.alias,
+            "author_id": publication.author_id,
             "status": publication.status.value,
         }
 
