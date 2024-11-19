@@ -27,6 +27,7 @@ class PublicationMapper:
             "author": publication.author.alias,
             "author_id": publication.author_id,
             "status": publication.status.value,
+            "id": publication.id,
         }
 
     @classmethod

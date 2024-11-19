@@ -50,6 +50,7 @@ def get_publications_api(
         except ValueError:
             return jsonify({"error": "Invalid format for published_to"}), 400
 
+    search_query["filters"]["status"] = EstadoPublicacionEnum.PUBLISHED.name
     publications = publication_repository.get_page(page, per_page, search_query, order_by=[("publish_date", "desc")])
 
     response_data = {

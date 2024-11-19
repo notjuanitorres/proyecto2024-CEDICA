@@ -126,6 +126,17 @@
                   Publicado el {{ formatDate(article.published_at) }}
                 </time>
               </div>
+              <div class="card-footer">
+                <router-link
+                  :to="`/noticia/${article.id}`"
+                  class="card-footer-item button is-primary is-light"
+                >
+                  <span class="icon">
+                    <i class="fas fa-book-open"></i>
+                  </span>
+                  <span>Leer artículo</span>
+                </router-link>
+              </div>
             </div>
           </div>
         </div>
