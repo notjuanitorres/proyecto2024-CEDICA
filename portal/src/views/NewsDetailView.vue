@@ -6,29 +6,32 @@ const route = useRoute();
 </script>
 
 <template>
-  <main>
-    <section class="news-section has-navbar-fixed-top">
-      <div class="container px-4 py-6">
-        <h1 class="title is-1 mb-6">Noticia</h1>
-        <NewsDetail :id="route.params.id" />
+  <main class="news-page">
+    <section class="section">
+      <div class="container">
+        <h1 class="title has-text-centered mb-6">Detalles de la Noticia</h1>
+        <div class="columns is-centered">
+          <div class="column is-8">
+            <NewsDetail :id="route.params.id" />
+          </div>
+        </div>
       </div>
     </section>
   </main>
 </template>
 
 <style scoped>
-.news-section {
+.news-page {
   min-height: 100vh;
   padding-top: 2rem;
 }
 
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
+.section {
+  padding: 2rem 1.5rem;
 }
 
 @media (min-width: 1024px) {
-  .news-section {
+  .section {
     padding-top: 3rem;
   }
 }

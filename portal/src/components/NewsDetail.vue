@@ -1,28 +1,41 @@
 <template>
-  <div>
-    <div v-if="loading">Cargando...</div>
-    <div v-else-if="error">Error: {{ error }}</div>
+  <article class="news-article box">
+    <div v-if="loading" class="has-text-centered">
+      <p>Cargando...</p>
+    </div>
+    <div v-else-if="error" class="has-text-danger has-text-centered">
+      <p>Error: {{ error }}</p>
+    </div>
     <div v-else>
-      <h2 class="title">{{ article.title }}</h2>
-      <p class="subtitle has-text-grey">
-        Publicado el {{ formatDate(article.publish_date) }}
-      </p>
+      <!-- Breadcrumb -->
+      <nav class="breadcrumb mb-4" aria-label="breadcrumbs">
+        <ul>
+          <li>
+            <router-link to="/">Inicio</router-link>
+          </li>
+          <li>
+            <router-link to="/noticias">Noticias</router-link>
+          </li>
+          <li class="is-active">
+            <a href="#" aria-current="page">{{ article.title }}</a>
+          </li>
+        </ul>
+      </nav>
+      <button class="button is-link is-light mb-4" @click="$router.back()">
+        ← Volver
+      </button>
+      <header>
+        <h2 class="title is-3 has-text-black">{{ article.title }}</h2>
+        <p class="subtitle is-6 has-text-grey">
+          Publicado el {{ formatDate(article.publish_date) }} por {{ article.author }}
+        </p>
+      </header>
       <div class="content">
         <p v-html="article.content"></p>
       </div>
     </div>
-  </div>
+  </article>
 </template>
-
-<style scoped>
-.title {
-  margin-bottom: 1rem;
-}
-
-.subtitle {
-  margin-bottom: 2rem;
-}
-</style>
 
 <script setup>
 import { onMounted, defineProps } from 'vue';
@@ -61,3 +74,20 @@ onMounted(() => {
   fetchArticle();
 });
 </script>
+
+<style scoped>
+.news-article {
+  padding: 1.5rem;
+  background-color: #fff;
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+}
+
+.title {
+  margin-bottom: 0.5rem;
+}
+
+.subtitle {
+  margin-bottom: 1.5rem;
+}
+</style>
