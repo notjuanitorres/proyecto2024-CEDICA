@@ -29,6 +29,13 @@ const router = createRouter({
     props: true
   }
   ],
+  scrollBehavior(to, from, savedPosition) {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve({ top: 0, behavior: 'smooth' })
+      }, 100)  // Small delay to ensure content is loaded
+    })
+  }
 })
 
 export default router

@@ -1,5 +1,16 @@
 <template>
   <div class="container">
+    <!-- Breadcrumb -->
+      <nav class="breadcrumb mb-4" aria-label="breadcrumbs">
+        <ul>
+          <li>
+            <router-link to="/">Inicio</router-link>
+          </li>
+          <li class="is-active">
+            <a href="#">Noticias</a>
+          </li>
+        </ul>
+      </nav>
     <!-- Header and Search Section -->
     <div class="section pt-4 pb-5">
       <!-- Filters -->
