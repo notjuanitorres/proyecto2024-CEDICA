@@ -5,6 +5,7 @@ from faker import Faker
 from src.core.module.publication.models import Publication, EstadoPublicacionEnum, TipoPublicacionEnum
 from src.core.module.charges.models import Charge, PaymentMethodEnum
 from src.core.database import db
+from src.core.module.contact.models import Message, MessageStateEnum
 from src.core.module.user.models import User
 from src.core.module.auth.models import Role, Permission, RolePermission
 from src.core.module.auth.data import PermissionEnum, RoleEnum
@@ -45,6 +46,7 @@ class SeedEntity(Enum):
     PAYMENTS = "payments"
     CHARGES = "charges"
     PUBLICATIONS = "publications"
+    MESSAGES = "messages"
 
 
 seeding_config = {
@@ -55,6 +57,7 @@ seeding_config = {
         SeedEntity.PAYMENTS: 15,
         SeedEntity.CHARGES: 15,
         SeedEntity.PUBLICATIONS: 15,
+        SeedEntity.MESSAGES: 15,
     },
     "chances": {
         # 0, 25, 50, 75, 100
@@ -95,6 +98,7 @@ def seed_all(app):
         seed_payments(seeding_config["counts"][SeedEntity.PAYMENTS])
         seed_charges(seeding_config["counts"][SeedEntity.CHARGES])
         seed_publications(seeding_config["counts"][SeedEntity.PUBLICATIONS])
+        seed_messages(seeding_config["counts"][SeedEntity.MESSAGES])
 
 
 def seed_accounts():
@@ -564,4 +568,28 @@ def seed_publications(num_entries=15):
         )
     db.session.bulk_save_objects(publications)
     print("Commiting publications")
+    db.session.commit()
+
+def seed_messages(num_entries=5):
+    """Seed the database with messages"""
+
+    print("Seeding messages")
+    messages = []
+    creating_archived_chances = seeding_config.get("chances").get("creating_archived")
+    for _ in range(num_entries):
+        messages.append(
+            Message(
+                name=fake.first_name(),
+                email=fake.email(),
+                message=fake.text(),
+                is_deleted=fake.boolean(chance_of_getting_true=creating_archived_chances),
+                inserted_at=fake.date_time_this_year(),
+                updated_at=fake.date_time_this_year(),
+                status=fake.random_element(
+                    elements=[e.name for e in MessageStateEnum]
+                ),
+            )
+        )
+    db.session.bulk_save_objects(messages)
+    print("Commiting messages")
     db.session.commit()

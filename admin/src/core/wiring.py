@@ -9,6 +9,7 @@ from src.web.controllers import (
     charges,
     jockey_amazon,
     publications,
+    contact,
     api,
 )
 from src.web.controllers.jockey_and_amazon import update_jockey_amazon, create_jockey_amazon
@@ -40,6 +41,7 @@ def init_wiring():
         - payment
         - auth_helper
         - publications
+        - contact
         - api
 
     Returns:
@@ -61,6 +63,7 @@ def init_wiring():
             payment,
             auth_helper,
             publications,
+            contact,
             api,
         ]
     )

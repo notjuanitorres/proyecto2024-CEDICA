@@ -2,8 +2,10 @@ import os
 import requests
 from flask import Blueprint, request, jsonify
 from dotenv import load_dotenv
-from src.core.module.contact import ContactMessageForm
+from src.core.module.contact.mappers import ContactMapper
+from src.core.module.contact.repositories import ContactRepository
 from flask_wtf.csrf import CSRFProtect
+from src.core.module.contact.models import MessageStateEnum
 
 
 load_dotenv()
@@ -44,10 +46,21 @@ def contact():
         email = data.get("email")
         message = data.get("message")
 
-        print(f"Received message from {name} ({email}): {message}")
+        data = {
+            "name": name,
+            "email": email,
+            "message": message,
+            "status": MessageStateEnum.PENDING,
+        }
+
+        new_message = ContactRepository().add_message(ContactMapper.to_entity(data))
+        print(new_message)
+
+        #print(f"Received message from {name} ({email}): {message}")
 
         return jsonify({"message": "Message sent successfully"}), 200
 
     except Exception as e:
         print(f"Error processing contact form: {str(e)}")
         return jsonify({"message": "Internal server error"}), 500
+

@@ -17,12 +17,12 @@ class Message(db.Model):
 
     """
 
-    __tablename__ = 'users'
+    __tablename__ = 'messages'
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
     email = db.Column(db.String(100), nullable=False)
-    message = db.column(db.Text, nullable=False)
+    message = db.Column(db.Text, nullable=False)
     status = db.Column(db.Enum(MessageStateEnum), nullable=False)
     inserted_at = db.Column(db.DateTime, default=datetime.now)
     updated_at = db.Column(
