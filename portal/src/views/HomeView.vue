@@ -11,7 +11,10 @@
         <HomeHero></HomeHero>
         <NewsWidget></NewsWidget>
         <AboutWidget></AboutWidget>
-        <ContactForm></ContactForm>
+        <h1 class="title has-text-centered">Contactanos</h1>
+        <section id="contact-us" class="container section is-medium has-background-white">
+            <ContactForm></ContactForm>
+        </section>
         <FooterWidget></FooterWidget>
     </main>
 </template>
