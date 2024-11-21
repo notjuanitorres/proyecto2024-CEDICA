@@ -1,6 +1,7 @@
 from src.core.database import db
 from datetime import datetime
 
+
 class User(db.Model):
     """
     Represents a user in the system.
@@ -16,6 +17,7 @@ class User(db.Model):
         inserted_at (datetime): The timestamp when the user was created.
         updated_at (datetime): The timestamp when the user was last updated.
         role (Role): The role assigned to the user.
+        publications (list): The list of publications created by the user.
         is_deleted (bool): Indicates whether the user is deleted.
     """
 
@@ -32,6 +34,7 @@ class User(db.Model):
     updated_at = db.Column(
         db.DateTime, default=datetime.now, onupdate=datetime.now)
     role = db.relationship("Role", backref="users")
+    publications = db.relationship("Publication", back_populates="author")
     is_deleted = db.Column(db.Boolean, nullable=False, default=False)
 
     def __repr__(self):
