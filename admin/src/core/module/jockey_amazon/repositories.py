@@ -15,12 +15,13 @@ Classes:
 
 from abc import ABC, abstractmethod
 from typing import Dict, List, Optional
+from sqlalchemy import func
 
 from flask_sqlalchemy.pagination import Pagination
 
 from src.core.database import db
 from src.core.module.jockey_amazon.data import EducationLevelEnum
-from src.core.module.jockey_amazon.models import JockeyAmazon, JockeyAmazonFile, FamilyMember
+from src.core.module.jockey_amazon.models import JockeyAmazon, JockeyAmazonFile, FamilyMember, WorkAssignment
 from src.core.module.common.repositories import apply_filters, apply_multiple_search_criteria
 from src.core.module.employee.data import JobPositionEnum as Jobs
 
@@ -337,6 +338,55 @@ class AbstractJockeyAmazonRepository(ABC):
         """
         raise NotImplementedError
 
+    @abstractmethod
+    def total_jya(self) -> int:
+        """
+        Get the total number of JockeyAmazon entities.
+
+        Returns:
+            int: The total number of JockeyAmazon entities.
+        """
+        pass
+
+    @abstractmethod
+    def proposals_data(self) -> list:
+        """
+        Get the data for proposals.
+
+        Returns:
+            list: A list of tuples containing the proposal name and the count.
+        """
+        pass
+
+    @abstractmethod
+    def certified_jya(self) -> int:
+        """
+        Get the number of certified JockeyAmazon entities.
+
+        Returns:
+            int: The number of certified JockeyAmazon entities.
+        """
+        pass
+
+    @abstractmethod
+    def disability_types_data(self) -> list:
+        """
+        Get the data for disability types.
+
+        Returns:
+            list: A list of tuples containing the disability type and the count.
+        """
+        pass
+
+    @abstractmethod
+    def disability_data(self) -> list:
+        """
+        Get the data for disabilities.
+
+        Returns:
+            list: A list of tuples containing the disability category and the count.
+        """
+        pass
 
 class JockeyAmazonRepository(AbstractJockeyAmazonRepository):
     """
@@ -861,3 +911,51 @@ class JockeyAmazonRepository(AbstractJockeyAmazonRepository):
                 JockeyAmazon, query, search_query={"text": search, "fields": search_fields}
             )
         return query.paginate(page=page, per_page=per_page, error_out=False)
+
+    def total_jya(self) -> int:
+        """
+        Get the total number of JockeyAmazon entities.
+
+        Returns:
+            int: The total number of JockeyAmazon entities.
+        """
+        return JockeyAmazon.query.count()
+
+    def proposals_data(self) -> list:
+        """
+        Get the data for proposals.
+
+        Returns:
+            list: A list of tuples containing the proposal name and the count.
+        """
+        return (
+                db.session.query(WorkAssignment.proposal, func.count(WorkAssignment.jockey_amazon_id))
+                .group_by(WorkAssignment.proposal)
+                .all()
+            )
+    def certified_jya(self) -> int:
+        """
+        Get the number of certified JockeyAmazon entities.
+
+        Returns:
+            int: The number of certified JockeyAmazon entities.
+        """
+        return JockeyAmazon.query.filter(JockeyAmazon.has_disability).with_entities(func.count(JockeyAmazon.id)).scalar() or 0
+
+    def disability_types_data(self) -> list:
+        """
+        Get the data for disability types.
+
+        Returns:
+            list: A list of tuples containing the disability type and the count.
+        """
+        return JockeyAmazon.query.filter(JockeyAmazon.has_disability).with_entities(JockeyAmazon.disability_type, func.count(JockeyAmazon.id)).group_by(JockeyAmazon.disability_type).all()
+
+    def disability_data(self) -> list:
+        """
+        Get the data for disabilities.
+
+        Returns:
+            list: A list of tuples containing the disability category and the count.
+        """
+        return JockeyAmazon.query.filter(JockeyAmazon.has_disability).with_entities(JockeyAmazon.disability_diagnosis, func.count(JockeyAmazon.id)).group_by(JockeyAmazon.disability_diagnosis).all()
