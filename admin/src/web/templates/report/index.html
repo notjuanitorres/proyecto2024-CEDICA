@@ -1,0 +1,239 @@
+{% extends "layout.html" %}
+{% block title %} Reportes {% endblock %}
+{% block main_content %}
+    <section class="section">
+        <div class="container">
+            <h1 class="title">Reportes</h1>
+            <!-- KPIs -->
+            <div class="columns is-multiline">
+                <div class="column is-one-half">
+                    <div class="box has-text-centered">
+                        <span class="icon is-large">
+                            <i class="fas fa-users fa-2x"></i>
+                        </span>
+                        <p class="title is-4">{{ total_jya }}</p>
+                        <p class="subtitle is-6">Total de Jinetes y Amazonas</p>
+                    </div>
+                </div>
+                <div class="column is-one-half">
+                    <div class="box has-text-centered">
+                        <span class="icon is-large">
+                            <i class="fas fa-dollar-sign fa-2x"></i>
+                        </span>
+                        <p class="title is-4">${{ current_month_income }}</p>
+                        <p class="subtitle is-6">Ganancias del ultimo mes</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gráficos -->
+            <div class="columns is-multiline">
+                <div class="column is-half">
+                    <div class="box">
+                        <h2 class="title is-5">Propuestas Elegidas</h2>
+                        <canvas id="proposalsChart"></canvas>
+                    </div>
+                </div>
+                <div class="column is-half">
+                    <div class="box">
+                        <h2 class="title is-5">Pacientes con certificado</h2>
+                        <canvas id="certifiedJyaChart"></canvas>
+                    </div>
+                </div>
+                <div class="column is-one-third">
+                    <div class="box">
+                        <h2 class="title is-5">Tipos de Discapacidad</h2>
+                        <canvas id="disabilityTypesChart"></canvas>
+                    </div>
+                </div>
+                <div class="column is-two-third">
+                    <div class="box">
+                        <h2 class="title is-5">Diagnostico de Discapacidad</h2>
+                        <canvas id="disabilityDiagnosisChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sección de Cobros -->
+            <section>
+                <h2 class="title is-5">Últimos Cobros</h2>
+                <div class="table-container">
+                    <table class="table is-striped is-fullwidth">
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Monto</th>
+                                <th>Nombre del Jinete/Amazona</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for charge in payments_data %}
+                                <tr>
+                                    <td>{{ charge.date_of_charge }}</td>
+                                    <td>${{ charge.amount }}</td>
+                                    <td>{{ charge.jya.last_name }} {{ charge.jya.first_name }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </section>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- Lo hice asi porque para los graficos necesito los datos pasados al template -->
+<script>
+    // Gráfico de Propuestas Elegidas
+const proposalsChart = new Chart(document.getElementById('proposalsChart'), {
+    type: 'pie',
+    data: {
+        labels: [{% for item in proposals_data %}{% if not loop.first %},{% endif %}"{{ item[0].value }}"{% endfor %}],
+        datasets: [{
+            data: [{% for item in proposals_data %}{% if not loop.first %},{% endif %}{{ item[1] }}{% endfor %}],
+            backgroundColor: ['#80B4BF', '#F2BC79', '#585859']
+        }]
+    },
+    options: {
+        plugins: {
+            legend: {
+                labels: {
+                    font: {
+                        size: 24 // Increase legend font size
+                    }
+                }
+            },
+            tooltip: {
+                bodyFont: {
+                    size: 20 // Increase tooltip font size
+                },
+                titleFont: {
+                    size: 24 // Increase tooltip title font size
+                }
+            }
+        }
+    }
+});
+
+// Gráfico de Clientes Certificados
+const certifiedJyaChart = new Chart(document.getElementById('certifiedJyaChart'), {
+    type: 'pie',
+    data: {
+        labels: ['Certificados', 'No Certificados'],
+        datasets: [{
+            data: [{{ certified_jya }}, {{ uncertified_jya }}],
+            backgroundColor: ['#80B4BF', '#F2BC79', '#585859']
+        }]
+    },
+    options: {
+        plugins: {
+            legend: {
+                labels: {
+                    font: {
+                        size: 24
+                    }
+                }
+            },
+            tooltip: {
+                bodyFont: {
+                    size: 20
+                },
+                titleFont: {
+                    size: 24
+                }
+            }
+        }
+    }
+});
+
+// Gráfico de Tipos de Discapacidad
+const disabilityTypesChart = new Chart(document.getElementById('disabilityTypesChart'), {
+    type: 'pie',
+    data: {
+        labels: [{% for item in disability_types_data %}{% if not loop.first %},{% endif %}"{{ item[0].value }}"{% endfor %}],
+        datasets: [{
+            data: [{% for item in disability_types_data %}{% if not loop.first %},{% endif %}{{ item[1] }}{% endfor %}],
+            backgroundColor: ['#80B4BF', '#F2BC79', '#585859']
+        }]
+    },
+    options: {
+        plugins: {
+            legend: {
+                labels: {
+                    font: {
+                        size: 24
+                    }
+                }
+            },
+            tooltip: {
+                bodyFont: {
+                    size: 20
+                },
+                titleFont: {
+                    size: 24
+                }
+            }
+        }
+    }
+});
+
+// Gráfico de Diagnósticos de Discapacidad
+const disabilityDiagnosisChart = new Chart(document.getElementById('disabilityDiagnosisChart'), {
+    type: 'bar',
+    options: {
+        indexAxis: 'y',
+        scales: {
+            y: {
+                ticks: {
+                    font: {
+                        size: 20 // Increase font size for y-axis labels
+                    }
+                }
+            },
+            x: {
+                ticks: {
+                    font: {
+                        size: 20 // Increase font size for x-axis labels
+                    }
+                }
+            }
+        },
+        plugins: {
+            legend: {
+                labels: {
+                    font: {
+                        size: 20 // Increase font size for legend
+                    }
+                }
+            },
+            tooltip: {
+                bodyFont: {
+                    size: 20 // Tooltip font size
+                },
+                titleFont: {
+                    size: 20 // Tooltip title font size
+                }
+            }
+        }
+    },
+    data: {
+        labels: [
+            {% for item in disability_data %}
+                "{{ item[0].value }}"{{ "," if not loop.last }}
+            {% endfor %}
+        ],
+        datasets: [{
+            label: "Diagnostico de discapacidad",
+            data: [
+                {% for item in disability_data %}
+                    {{ item[1] }}{{ "," if not loop.last }}
+                {% endfor %}
+            ],
+            backgroundColor: ['#80B4BF', '#F2BC79', '#585859']
+        }],
+    }
+});
+</script>
+{% endblock %}
