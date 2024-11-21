@@ -51,8 +51,8 @@ class PublicationMapper:
             "content": publication.content,
             "author_id": publication.author_id,
             "author": publication.author,
-            "status": publication.status.value,
-            "type": publication.type.value,
+            "status": publication.status,
+            "type": publication.type,
             "is_deleted": publication.is_deleted,
         }
 

@@ -24,14 +24,14 @@
 
 {% block card_title %}
 Publicación: {{ publication.title }}
-{% if publication.status == "Archivado" %}
+{% if publication.status.value == "Archivado" %}
     {% set tag_status = "danger" %}
-{% elif publication.status == "Borrador" %}
+{% elif publication.status.value == "Borrador" %}
     {% set tag_status = "warning" %}
 {% else %}
     {% set tag_status = "success" %}
 {% endif %}
-    <p class="tag is-{{ tag_status }} is-medium ml-2">{{ publication.status }}</p>
+    <p class="tag is-{{ tag_status }} is-medium ml-2">{{ publication.status.value }}</p>
 {% endblock %}
 
 {% block banner %}
@@ -54,8 +54,8 @@ Publicación: {{ publication.title }}
         </h3>
         <ul>
             <li><strong>Título: </strong>{{ publication.title }}</li>
-            <li><strong>Tipo: </strong>{{ publication.type }}</li>
-            <li><strong>Estado: </strong>{{ publication.status }}</li>
+            <li><strong>Tipo: </strong>{{ publication.type.value }}</li>
+            <li><strong>Estado: </strong>{{ publication.status.value }}</li>
             <li><strong>Fecha de publicación: </strong>{{ publication.publish_date | format_date }}</li>
             <li><strong>Creado: </strong>{{ publication.create_date | format_date }}</li>
             <li><strong>Última modificación: </strong>{{ publication.update_date | format_date }}</li>

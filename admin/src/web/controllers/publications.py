@@ -222,6 +222,8 @@ def edit_publication(
         flash("No se puede editar una publicación eliminada", "danger")
         return redirect(url_for("publications_bp.show_publication", publication_id=publication_id))
 
+    publication["status"] = publication["status"].name
+    publication["type"] = publication["type"].name
     edit_form = PublicationEditForm(data=publication)
 
     if request.method in ["POST", "PUT"]:
