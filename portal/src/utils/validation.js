@@ -4,7 +4,8 @@ export const contactSchema = yup.object({
   name: yup.string()
     .required('El nombre es obligatorio')
     .min(2, 'El nombre debe tener al menos 2 caracteres')
-    .max(50, 'El nombre debe tener menos de 50 caracteres'),
+    .max(50, 'El nombre debe tener menos de 50 caracteres')
+    .matches(/^[A-Za-zÁÉÍÓÚáéíóúÑñ'\s]+$/, 'El nombre no debe contener números ni caracteres especiales'),
   email: yup.string()
     .required('El correo electrónico es obligatorio')
     .email('Debe ser un correo electrónico válido'),
