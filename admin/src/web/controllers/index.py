@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, redirect, request, flash, url_for, session, Response
-import requests
+#import requests
 from src.core.module.auth import AbstractAuthServices
 from src.core.container import Container
 from dependency_injector.wiring import inject, Provide

@@ -6,6 +6,7 @@ from .equestrian import equestrian_bp
 from .payment import payment_bp
 from .charges import charges_bp
 from .jockey_amazon import jockey_amazon_bp
+from .report import report_bp
 
 __all__ = [
     "index_bp",
@@ -16,4 +17,5 @@ __all__ = [
     "payment_bp"
     "charges_bp",
     "jockey_amazon_bp",
+    "report_bp",
 ]
