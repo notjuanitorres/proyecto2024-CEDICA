@@ -1,133 +1,243 @@
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import { useContactStore } from '@/stores/contact'
 import { contactSchema } from '@/utils/validation'
+import { debounce } from 'lodash-es'
 
+const siteKey = import.meta.env.VITE_CAPTCHA_SITE_KEY
 const contactStore = useContactStore()
-const submitStatus = ref({ type: null, message: '' })
+
 const formData = reactive({
   name: '',
   email: '',
-  message: '',
-})
-const errors = reactive({
-  name: '',
-  email: '',
-  message: '',
+  message: ''
 })
 
-const resetErrors = () => {
-  errors.name = ''
-  errors.email = ''
-  errors.message = ''
-}
-const resetForm = () => {
-  formData.name = ''
-  formData.email = ''
-  formData.message = ''
-}
-const setErrors = (err) => {
-    if (err.name === 'ValidationError' && err.inner) {
-      err.inner.forEach((error) => {
-        errors[error.path] = error.message
-      })
-    } else {
-      submitStatus.value = {
-        type: 'error',
-        message:
-          contactStore.error ||
-          'No hemos podido enviar el mensaje. Intente nuevamente en unos momentos',
-      }
-    }
+const validationState = reactive({
+  name: { valid: false, error: '' },
+  email: { valid: false, error: '' },
+  message: { valid: false, error: '' },
+  recaptcha: { valid: false, error: '' }
+})
+
+const submitStatus = ref({ type: null, message: '' })
+
+const isFormValid = computed(() => {
+  console.log(Object.values(validationState))
+  return Object.values(validationState).every(field => field.valid)
+})
+
+const validateField = debounce(async (field) => {
+  try {
+    await contactSchema.validateAt(field, formData)
+    validationState[field] = { valid: true, error: ''}
+  } catch (err) {
+    validationState[field] = { valid: false, error: err.message}
+  }
+}, 500) 
+
+const validateName = () => validateField('name')
+const validateEmail = () => validateField('email')
+const validateMessage = () => validateField('message')
+
+const validateRecaptcha = () => {
+  const recaptchaResponse = window.grecaptcha.getResponse()
+  
+  if (recaptchaResponse) {
+    validationState.recaptcha = { valid: true, error: ''}
+  } else {
+    validationState.recaptcha = { valid: false, error: ''}
+  }
 }
 
 const handleSubmit = async () => {
-  resetErrors();
-  contactStore.loading = true;
-  try {
-    await contactSchema.validate(formData, { abortEarly: false })
-    const success = await contactStore.submitContact({ ...formData })
-    if (success) {
-      submitStatus.value = { type: 'success', message: 'Mensaje enviado! Pronto le responderemos' }
-      resetForm()
+  submitStatus.value = { type: null, message: '' }
+
+  await Promise.all([
+    validateField('name'),
+    validateField('email'),
+    validateField('message')
+  ])
+
+  validateRecaptcha()
+
+  if (isFormValid.value) {
+    try {
+      contactStore.loading = true
+      const recaptchaToken = window.grecaptcha.getResponse()
+      
+      const success = await contactStore.submitContact({
+        ...formData,
+        recaptchaToken
+      })
+
+      if (success) {
+        resetForm()
+        submitStatus.value = { 
+          type: 'success', 
+          message: 'Mensaje enviado! Pronto le responderemos' 
+        }
+      }
+    } catch (error) {
+      console.log(error)
+      submitStatus.value = {
+        type: 'error',
+        message: 'No hemos podido enviar el mensaje. Intente nuevamente en unos momentos'
+      }
+    } finally {
+      contactStore.loading = false
     }
-  } catch (err) {
-    setErrors(err)
-  } finally {
-    contactStore.loading = false // End loading
   }
 }
+
+const resetForm = () => {
+  Object.keys(formData).forEach(key => {
+    formData[key] = ''
+    validationState[key] = { valid: false, error: ''}
+  })
+  
+  window.grecaptcha.reset()
+}
+
+const loadRecaptchaScript = () => {
+  return new Promise((resolve, reject) => {
+    const script = document.createElement('script')
+    script.src = 'https://www.google.com/recaptcha/api.js'
+    script.async = true
+    script.defer = true
+    script.onload = resolve
+    script.onerror = reject
+    document.head.appendChild(script)
+  })
+}
+
+window.onRecaptchaSuccess = () => {
+  validateRecaptcha()
+}
+
+window.onRecaptchaExpired = () => {
+  validationState.recaptcha = { valid: false, error: 'reCAPTCHA has expired' }
+}
+
+onMounted(async () => {
+  try {
+    await loadRecaptchaScript()
+  } catch (error) {
+    console.error('Failed to load reCAPTCHA:', error)
+  }
+})
 </script>
 
 <template>
-  <div class="container">
-    <form @submit.prevent="handleSubmit" class="box">
-      <h3 class="subtitle">Dejanos tu mensaje</h3>
-      <div class="field">
-        <label class="label">Nombre</label>
-        <div class="control">
-          <input
-            v-model="formData.name"
-            type="text"
-            class="input"
-            :class="{ 'is-danger': errors.name }"
-            placeholder="Nombre Completo"
-          />
-        </div>
-        <p v-if="errors.name" class="help is-danger">
-          {{ errors.name }}
-        </p>
-      </div>
+  <div class="section">
+    <div class="container">
+      <form @submit.prevent="handleSubmit" class="box">
+        <h2 class="title is-4 mb-5">Contáctanos</h2>
 
-      <div class="field">
-        <label class="label">Email</label>
-        <div class="control">
-          <input
-            v-model="formData.email"
-            type="email"
-            class="input"
-            :class="{ 'is-danger': errors.email }"
-            placeholder="ingrese@email.com"
-          />
-        </div>
-        <p v-if="errors.email" class="help is-danger">
-          {{ errors.email }}
-        </p>
-      </div>
-
-      <div class="field">
-        <label class="label">Mensaje</label>
-        <div class="control">
-          <textarea
-            v-model="formData.message"
-            class="textarea"
-            :class="{ 'is-danger': errors.message }"
-            placeholder="Escriba su mensaje para nosotros!"
-          ></textarea>
-        </div>
-        <p v-if="errors.message" class="help is-danger">
-          {{ errors.message }}
-        </p>
-      </div>
-
-      <div class="field">
-        <div class="control">
-          <button
-            type="submit"
-            class="button is-info is-outlined has-text-dark is-fullwidth"
-            :class="{ 'is-loading': contactStore.loading }"
+        <div class="field">
+          <label class="label">Nombre</label>
+          <div class="control">
+            <input 
+              v-model="formData.name" 
+              @input="validateName"
+              type="text"
+              class="input"
+              :class="{
+                'is-success': validationState.name.valid,
+                'is-danger': !validationState.name.valid && validationState.name.error
+              }"
+              placeholder="Tu nombre completo"
+            />
+          </div>
+          <p 
+            v-if="!validationState.name.valid && validationState.name.error" 
+            class="help is-danger"
           >
-            Enviar Mensaje
-          </button>
+            {{ validationState.name.error }}
+          </p>
         </div>
-      </div>
 
-      <div v-if="submitStatus.type === 'success'" class="notification is-success">
-        {{ submitStatus.message }}
-      </div>
-      <div v-if="submitStatus.type === 'error'" class="notification is-danger">
-        {{ submitStatus.message }}
-      </div>
-    </form>
+        <div class="field">
+          <label class="label">Email</label>
+          <div class="control">
+            <input 
+              v-model="formData.email" 
+              @input="validateEmail"
+              type="email"
+              class="input"
+              :class="{
+                'is-success': validationState.email.valid,
+                'is-danger': !validationState.email.valid && validationState.email.error
+              }"
+              placeholder="tu@email.com"
+            />
+          </div>
+          <p 
+            v-if="!validationState.email.valid && validationState.email.error" 
+            class="help is-danger"
+          >
+            {{ validationState.email.error }}
+          </p>
+        </div>
+
+        <div class="field">
+          <label class="label">Mensaje</label>
+          <div class="control">
+            <textarea 
+              v-model="formData.message" 
+              @input="validateMessage"
+              class="textarea"
+              :class="{
+                'is-success': validationState.message.valid,
+                'is-danger': !validationState.message.valid && validationState.message.error
+              }"
+              placeholder="Escribe tu mensaje"
+            ></textarea>
+          </div>
+          <p 
+            v-if="!validationState.message.valid && validationState.message.error" 
+            class="help is-danger"
+          >
+            {{ validationState.message.error }}
+          </p>
+        </div>
+
+        <div 
+          class="g-recaptcha" 
+          :data-sitekey="siteKey"
+          data-callback="onRecaptchaSuccess"
+          data-expired-callback="onRecaptchaExpired"
+        ></div>
+        <p 
+          v-if="validationState.recaptcha.error" 
+          class="help is-danger"
+        >
+          {{ validationState.recaptcha.error }}
+        </p>
+
+        <div class="field">
+          <div class="control">
+            <button 
+              type="submit" 
+              class="button is-primary is-fullwidth mt-2 is-info is-outlined has-text-dark"
+              :class="{ 
+                'is-loading': contactStore.loading,
+                'is-disabled': !isFormValid 
+              }"
+              :disabled="!isFormValid"
+            >
+              Enviar Mensaje
+            </button>
+          </div>
+        </div>
+
+        <div v-if="submitStatus.type === 'success'" class="notification is-success mt-4">
+          {{ submitStatus.message }}
+        </div>
+        <div v-if="submitStatus.type === 'error'" class="notification is-danger mt-4">
+          {{ submitStatus.message }}
+        </div>
+      </form>
+    </div>
   </div>
 </template>
