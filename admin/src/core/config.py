@@ -22,7 +22,7 @@ class Config(object):
     SESSION_TYPE = "filesystem"
     SEED_ON_STARTUP = False
     CKEDITOR_PKG_TYPE = "basic"
-    CORS_ORIGINS = ["http://localhost:5173"]
+    CORS_ORIGINS = ["http://localhost*"]
 
 
 class ProductionConfig(Config):
@@ -49,7 +49,7 @@ class ProductionConfig(Config):
         "pool_pre_ping": True,
     }
     SEED_ON_STARTUP = True
-    CORS_ORIGINS = Config.CORS_ORIGINS + ["https://admin-grupo19.proyecto2024.linti.unlp.edu.ar:5173"]
+    CORS_ORIGINS = Config.CORS_ORIGINS + ["https://admin-grupo19.proyecto2024.linti.unlp.edu.ar*"]
 
 
 class DevelopmentConfig(Config):

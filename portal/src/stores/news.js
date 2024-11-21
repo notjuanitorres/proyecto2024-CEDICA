@@ -22,7 +22,7 @@ export const useNewsStore = defineStore('news', {
         if (params.page) queryParams.append('page', params.page);
         if (params.per_page) queryParams.append('per_page', params.per_page);
 
-        const response = await fetch(`http://localhost:5000/api/articles?${queryParams.toString()}`);
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/articles?${queryParams.toString()}`);
 
         if (!response.ok) {
           throw new Error('Failed to fetch news');
