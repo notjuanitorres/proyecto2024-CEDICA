@@ -23,7 +23,6 @@ const validationState = reactive({
 const submitStatus = ref({ type: null, message: '' })
 
 const isFormValid = computed(() => {
-  console.log(Object.values(validationState))
   return Object.values(validationState).every(field => field.valid)
 })
 
