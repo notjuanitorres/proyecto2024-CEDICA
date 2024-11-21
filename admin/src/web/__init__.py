@@ -11,9 +11,14 @@ from src.web.routes import register_blueprints
 from src.web.handlers import error
 from src.web.helpers.auth import is_authenticated, inject_session_data
 from src.web.helpers.filters import register_filters
+from flask_ckeditor import CKEditor
+from flask_cors import CORS
+from src.web.controllers import contact_bp
 
+ckeditor = CKEditor()
 csrf = CSRFProtect()
 session = Session()
+cors = CORS()
 
 
 def create_app(env="development", static_folder="../../static"):
@@ -36,7 +41,8 @@ def create_app(env="development", static_folder="../../static"):
     storage.init_app(app)
     bcrypt.init_app(app)
     csrf.init_app(app)
-
+    ckeditor.init_app(app)
+    cors.init_app(app, resources={r"*": {"origins": "*"}})
     register_blueprints(app)
     register_commands(app)
     register_filters(app)
@@ -49,5 +55,8 @@ def create_app(env="development", static_folder="../../static"):
         from src.core.database import reset
         reset(app)
         seed_all(app)
+
+    csrf.exempt(contact_bp)
+
 
     return app

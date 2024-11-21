@@ -10,6 +10,7 @@ from .module.equestrian import EquestrianRepository
 from .module.common import StorageServices
 from .module.jockey_amazon import JockeyAmazonRepository
 from .module.charges import ChargeRepository
+from .module.publication import PublicationRepository
 
 
 class Container(containers.DeclarativeContainer):
@@ -29,6 +30,7 @@ class Container(containers.DeclarativeContainer):
     equestrian_repository = providers.Factory(EquestrianRepository)
     jockey_amazon_repository = providers.Factory(JockeyAmazonRepository)
     charges_repository = providers.Factory(ChargeRepository)
+    publication_repository = providers.Factory(PublicationRepository)
 
     # Services
     storage_services = providers.Factory(StorageServices)

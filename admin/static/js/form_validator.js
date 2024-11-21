@@ -109,18 +109,26 @@ class FormValidator {
             errorMessage = 'Este campo es requerido';
         }
 
-        // Check minimum length
-        const minLength = input.dataset.minLength;
-        if (minLength && value.length < parseInt(minLength)) {
-            isValid = false;
-            errorMessage = `Mínimo ${minLength} caracteres`;
+        // Check for maxLength in validations
+        const maxLengthValidation = validations.find(v => v.startsWith('maxLength='));
+        if (maxLengthValidation) {
+            // Extract the maximum length value
+            const maxLength = parseInt(maxLengthValidation.split('=')[1], 10);
+            if (value.length > maxLength) {
+                isValid = false;
+                errorMessage = `Máximo ${maxLength} caracteres`;
+            }
         }
 
-        // Check maximum length
-        const maxLength = input.dataset.maxLength;
-        if (maxLength && value.length > parseInt(maxLength)) {
-            isValid = false;
-            errorMessage = `Máximo ${maxLength} caracteres`;
+        // Check for maxLength in validations
+        const minLengthValidation = validations.find(v => v.startsWith('minLength='));
+        if (minLengthValidation) {
+            // Extract the minimum length value
+            const minLength = parseInt(minLengthValidation.split('=')[1], 10);
+            if (value.length < minLength) {
+                isValid = false;
+                errorMessage = `Mínimo ${minLength} caracteres`;
+            }
         }
 
         // Check patterns

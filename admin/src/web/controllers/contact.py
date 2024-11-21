@@ -3,10 +3,13 @@ import requests
 from flask import Blueprint, request, jsonify
 from dotenv import load_dotenv
 from src.core.module.contact import ContactMessageForm
+from flask_wtf.csrf import CSRFProtect
+
 
 load_dotenv()
-RECAPTCHA_SECRET_KEY = os.getenv("RECAPTCHA_SECRET_KEY")
+CAPTCHA_SECRET_KEY = os.getenv("CAPTCHA_SECRET_KEY")
 
+csrf = CSRFProtect()
 
 contact_bp = Blueprint("contact_bp", __name__, url_prefix="/api/contact")
 
@@ -14,7 +17,7 @@ contact_bp = Blueprint("contact_bp", __name__, url_prefix="/api/contact")
 def verify_recaptcha(recaptcha_response):
     """Verify reCAPTCHA response with Google's API"""
     verify_url = "https://www.google.com/recaptcha/api/siteverify"
-    payload = {"secret": RECAPTCHA_SECRET_KEY, "response": recaptcha_response}
+    payload = {"secret": CAPTCHA_SECRET_KEY, "response": recaptcha_response}
 
     response = requests.post(verify_url, data=payload, timeout=10)
     result = response.json()
@@ -23,6 +26,8 @@ def verify_recaptcha(recaptcha_response):
 
 
 @contact_bp.route("/message", methods=["POST"])
+@csrf.exempt
+
 def contact():
     print(request.get_json())
     try:

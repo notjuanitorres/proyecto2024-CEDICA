@@ -61,21 +61,23 @@
                             {{ search_form.search_by() }}
                         </div>
                     </div>
+                    <br>
+                    <div class="field">
+                        <p class="control has-icons-left">
+                          {{ search_form.search_text(class="input", placeholder="Buscar", id="filtrar") }}
+                          <span class="icon is-left">
+                            <i class="fas fa-search" aria-hidden="true"></i>
+                          </span>
+                        </p>
+                        {% if search_form.search_text.errors %}
+                        <p class="help is-danger">{{ search_form.search_text.errors[0] }}</p>
+                        {% endif %}
+                    </div>
                   </div>
                   <div class="mb-3">
                     {% block aditional_filters %}{% endblock %}
                   </div>
-                  <div class="field">
-                    <p class="control has-icons-left">
-                      {{ search_form.search_text(class="input", placeholder="Buscar", id="filtrar") }}
-                      <span class="icon is-left">
-                        <i class="fas fa-search" aria-hidden="true"></i>
-                      </span>
-                    </p>
-                    {% if search_form.search_text.errors %}
-                    <p class="help is-danger">{{ search_form.search_text.errors[0] }}</p>
-                    {% endif %}
-                  </div>
+
                   <div class="columns is-mobile is-1" >
                     <div class="field column is-half">
                       <label class="label">Ordenar por</label>
@@ -116,6 +118,7 @@
         <div class="container p-5">
           {% block top_pagination %}{% endblock %}
         </div>
+      {% block override_table %}
         <thead class="is-centered">
           <tr class="has-text-centered">
             <td></td>
@@ -133,6 +136,8 @@
             <td></td>
           </tr>
         </tfoot>
+      {% endblock %}
+
       </table>
       <div class="container p-5">
         {% block bottom_pagination %}{% endblock %}

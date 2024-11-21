@@ -22,7 +22,20 @@ const router = createRouter({
       name: 'news',
       component: () => import('../views/NewsView.vue'),
     },
+    {
+    path: '/noticia/:id',
+    name: 'news-detail',
+    component: () => import('../views/NewsDetailView.vue'),
+    props: true
+  }
   ],
+  scrollBehavior(to, from, savedPosition) {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve({ top: 0, behavior: 'smooth' })
+      }, 100)  // Small delay to ensure content is loaded
+    })
+  }
 })
 
 export default router
