@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 from src.core.module.contact.mappers import ContactMapper
 from src.core.module.contact.repositories import ContactRepository
 from flask_wtf.csrf import CSRFProtect
+from src.core.module.contact import ContactMessageForm
 from src.core.module.contact.models import MessageStateEnum
 
 
@@ -29,7 +30,6 @@ def verify_recaptcha(recaptcha_response):
 
 @contact_bp.route("/message", methods=["POST"])
 @csrf.exempt
-
 def contact():
     print(request.get_json())
     try:
@@ -41,7 +41,10 @@ def contact():
         if not verify_recaptcha(recaptcha_response):
             return jsonify({"message": "Invalid reCAPTCHA"}), 411
         
-        # TODO: Validate with WTForms
+        message_form = ContactMessageForm(data=data)
+        if not message_form.validate_on_submit():
+            return jsonify({"errors": message_form.errors}), 201
+        print(message_form.data)
         name = data.get("name")
         email = data.get("email")
         message = data.get("message")
