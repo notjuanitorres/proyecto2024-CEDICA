@@ -196,6 +196,7 @@ class ContactRepository(AbstractContactRepository):
             return False
         message.is_deleted = True
         self.save()
+        return True
 
     def recover(self, message_id: int) -> bool:
         """
