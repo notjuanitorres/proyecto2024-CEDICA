@@ -61,11 +61,11 @@
                         <a href="{{ url_for('publications_bp.get_publications') }}" class="navbar-item" aria-label="Publicaciones"> Publicaciones </a>
                     {% endif %}
                     <hr class="is-hidden-desktop" /> 
-                    {% if not is_admin%}
                     <a href="{{url_for('auth_bp.view_profile', user_id=user_id)}}" class="dropdown-item is-hidden-desktop" role="menuitem"> Perfil </a>
-                    <a href="{{url_for('auth_bp.edit_profile', user_id=user_id)}}" class="dropdown-item is-hidden-desktop" role="menuitem"> Configuración </a>
-                    <hr class="dropdown-divider"/>
+                    {% if not is_admin%}
+                        <a href="{{url_for('auth_bp.edit_profile', user_id=user_id)}}" class="dropdown-item is-hidden-desktop" role="menuitem"> Configuración </a>
                     {% endif %}
+                    <hr class="dropdown-divider"/>
                     <form action="{{ url_for('auth_bp.logout') }}" method="POST" class="is-hidden-desktop navbar-item">
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                         <button type="submit" class="button is-danger is-small is-outlined">
@@ -104,11 +104,11 @@
                         </div>
                         <div class="dropdown-menu" id="dropdown-menu" role="menu">
                             <div class="dropdown-content">
-                                {% if not is_admin%}
                                 <a href="{{url_for('auth_bp.view_profile', user_id=user_id)}}" class="dropdown-item" role="menuitem"> Perfil </a>
+                                {% if not is_admin%}
                                 <a href="{{url_for('auth_bp.edit_profile', user_id=user_id)}}" class="dropdown-item" role="menuitem"> Configuración </a>
-                                <hr class="dropdown-divider"/>
                                 {% endif %}
+                                <hr class="dropdown-divider"/>
                                 <form action="{{ url_for('auth_bp.logout') }}" method="POST" style="display: flex; justify-content: center;">
                                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                     <button type="submit" class="button is-danger is-small is-outlined" role="menuitem">

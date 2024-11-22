@@ -178,6 +178,11 @@ def edit_profile(
     """
     user_id = session.get("user")
     user = user_repository.get_user(user_id)
+
+    if user["system_admin"]:
+        flash("No puedes editar el perfil de un administrador del sistema")
+        return redirect(url_for("index_bp.home"))
+
     form = UserProfileForm(data=user)
 
     if request.method == "POST":
@@ -196,7 +201,6 @@ def edit_profile(
 
                 profile_image_url = response["path"]
 
-            # update_data = {"email": form.email.data, "alias": form.alias.data, "profile_image_url": profile_image_url}
             update_data = {"alias": form.alias.data, "profile_image_url": profile_image_url}
 
             if form.new_password.data:

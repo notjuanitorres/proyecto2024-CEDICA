@@ -92,8 +92,15 @@
                                         {% endif %}
                                     </div>
                                     <div class="field">
-                                        <div class="control">
-                                            <button class="button is-link" type="submit">Guardar cambios</button>
+                                        <div class="control is-flex is-justify-content-space-between">
+                                            <button class="button is-flex is-link" type="submit">Guardar cambios</button>
+                                            <div class="is-flex is-justify-content-space-between">
+                                                {% if request.referrer %}
+                                                    <a href="{{ request.referrer }}" class="button is-link">Volver</a>
+                                                {% else %}
+                                                    <a href="{{ url_for('index_bp.home') }}" class="button is-link">Volver</a>
+                                                {% endif %}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

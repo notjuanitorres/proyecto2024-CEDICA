@@ -35,9 +35,18 @@
                     <p><strong>Alias:</strong> {{ user.alias }}</p>
                     <p><strong>Usuario desde:</strong> {{ user.inserted_at.strftime('%B %d, %Y') }}</p>
                 </div>
+                {% if not user.system_admin %}
                 <div class="box">
-                    <a href="{{ url_for('auth_bp.edit_profile') }}" class="button is-link">Editar Perfil</a>
+                    <div class="is-flex is-justify-content-space-between">
+                        <a href="{{ url_for('auth_bp.edit_profile') }}" class="button is-link">Editar Perfil</a>
+                        {% if request.referrer %}
+                            <a href="{{ request.referrer }}" class="button is-link">Volver</a>
+                        {% else %}
+                            <a href="{{ url_for('index_bp.home') }}" class="button is-link">Volver</a>
+                        {% endif %}
+                    </div>
                 </div>
+                {% endif %}
             </div>
         </div>
     </div>
