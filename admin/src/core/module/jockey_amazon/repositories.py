@@ -388,6 +388,7 @@ class AbstractJockeyAmazonRepository(ABC):
         """
         pass
 
+
 class JockeyAmazonRepository(AbstractJockeyAmazonRepository):
     """
     Concrete implementation of AbstractJockeyAmazonRepository for managing `JockeyAmazon` entities.
@@ -750,11 +751,13 @@ class JockeyAmazonRepository(AbstractJockeyAmazonRepository):
                 existing_member.department = member_data.get('department', existing_member.department)
                 existing_member.locality = member_data.get('locality', existing_member.locality)
                 existing_member.province = member_data.get('province', existing_member.province)
-                existing_member.phone_country_code = member_data.get('phone_country_code', existing_member.phone_country_code)
+                existing_member.phone_country_code = member_data.get('phone_country_code',
+                                                                     existing_member.phone_country_code)
                 existing_member.phone_area_code = member_data.get('phone_area_code', existing_member.phone_area_code)
                 existing_member.phone_number = member_data.get('phone_number', existing_member.phone_number)
                 existing_member.email = member_data.get('email', existing_member.email)
-                existing_member.education_level = EducationLevelEnum[member_data.get('education_level', existing_member.education_level.name)]
+                existing_member.education_level = EducationLevelEnum[
+                    member_data.get('education_level', existing_member.education_level.name)]
                 existing_member.occupation = member_data.get('occupation', existing_member.occupation)
                 self.db.session.add(existing_member)
                 self.save()
@@ -776,6 +779,7 @@ class JockeyAmazonRepository(AbstractJockeyAmazonRepository):
             return False
         assignment = jockey.work_assignment
 
+        assignment_data = {}
         if assignment and data:
             assignment_data = data.get("work_assignments", {})
             for key, value in assignment_data.items():
@@ -933,6 +937,7 @@ class JockeyAmazonRepository(AbstractJockeyAmazonRepository):
                 .group_by(WorkAssignment.proposal)
                 .all()
             )
+
     def certified_jya(self) -> int:
         """
         Get the number of certified JockeyAmazon entities.
@@ -940,7 +945,9 @@ class JockeyAmazonRepository(AbstractJockeyAmazonRepository):
         Returns:
             int: The number of certified JockeyAmazon entities.
         """
-        return JockeyAmazon.query.filter(JockeyAmazon.has_disability).with_entities(func.count(JockeyAmazon.id)).scalar() or 0
+        return (JockeyAmazon.query
+                .filter(JockeyAmazon.has_disability)
+                .with_entities(func.count(JockeyAmazon.id)).scalar() or 0)
 
     def disability_types_data(self) -> list:
         """
@@ -949,7 +956,10 @@ class JockeyAmazonRepository(AbstractJockeyAmazonRepository):
         Returns:
             list: A list of tuples containing the disability type and the count.
         """
-        return JockeyAmazon.query.filter(JockeyAmazon.has_disability).with_entities(JockeyAmazon.disability_type, func.count(JockeyAmazon.id)).group_by(JockeyAmazon.disability_type).all()
+        return (JockeyAmazon.query
+                .filter(JockeyAmazon.has_disability)
+                .with_entities(JockeyAmazon.disability_type, func.count(JockeyAmazon.id))
+                .group_by(JockeyAmazon.disability_type).all())
 
     def disability_data(self) -> list:
         """
@@ -958,4 +968,7 @@ class JockeyAmazonRepository(AbstractJockeyAmazonRepository):
         Returns:
             list: A list of tuples containing the disability category and the count.
         """
-        return JockeyAmazon.query.filter(JockeyAmazon.has_disability).with_entities(JockeyAmazon.disability_diagnosis, func.count(JockeyAmazon.id)).group_by(JockeyAmazon.disability_diagnosis).all()
+        return (JockeyAmazon.query
+                .filter(JockeyAmazon.has_disability)
+                .with_entities(JockeyAmazon.disability_diagnosis, func.count(JockeyAmazon.id))
+                .group_by(JockeyAmazon.disability_diagnosis).all())

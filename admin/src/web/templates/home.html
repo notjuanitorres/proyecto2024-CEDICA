@@ -60,6 +60,11 @@
                     Cobros 
                 </a>
                 {% endif %}
+                {% if "report_index" in permissions or is_admin %}
+                    <a href="{{ url_for('report_bp.index') }}" class="button" aria-label="Reportes">
+                        Reportes
+                    </a>
+                {% endif %}
 
             </div>
             

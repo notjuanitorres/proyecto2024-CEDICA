@@ -11,6 +11,7 @@ report_bp = Blueprint(
     "report_bp", __name__, template_folder="../templates/report", url_prefix="/reportes"
 )
 
+
 @report_bp.route("/", methods=["GET"])
 @check_user_permissions(['report_index'])
 @inject
@@ -39,7 +40,7 @@ def index(
     payments_data = charge_repository.last_payments_data()
     # Pasar los datos al template
     return render_template('report/index.html', 
-                           total_jya = total_jya , 
+                           total_jya=total_jya,
                            current_month_income=current_month_income,
                            proposals_data=proposals_data,
                            payments_data=payments_data,
@@ -47,6 +48,7 @@ def index(
                            disability_types_data=disability_types_data,
                            disability_data=disability_data,
                            uncertified_jya=uncertified_jya)
+
 
 @report_bp.route("/ranking_propuestas", methods=["GET"])
 @check_user_permissions(['report_show'])
@@ -57,6 +59,7 @@ def ranking_propuestas(
     # Lógica para generar el reporte de ranking de propuestas de trabajo más solicitadas
     return render_template("report/ranking_propuestas.html")
 
+
 @report_bp.route("/personas_adeudan", methods=["GET"])
 @check_user_permissions(['report_show'])
 @inject
@@ -65,6 +68,7 @@ def personas_adeudan(
 ):
     # Lógica para generar el reporte de personas que adeudan pagos
     return render_template("report/personas_adeudan.html")
+
 
 @report_bp.route("/historico_cobros", methods=["GET"])
 @check_user_permissions(['report_show'])
