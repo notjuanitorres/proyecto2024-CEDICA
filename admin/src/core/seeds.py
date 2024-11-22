@@ -1,6 +1,8 @@
 import random
 from enum import Enum
 from faker import Faker
+
+from src.core.module.publication.models import Publication, EstadoPublicacionEnum, TipoPublicacionEnum
 from src.core.module.charges.models import Charge, PaymentMethodEnum
 from src.core.database import db
 from src.core.module.user.models import User
@@ -34,14 +36,16 @@ from src.core.module.jockey_amazon.data import (
     EducationLevelEnum,
 )
 
+
 class SeedEntity(Enum):
-    """Represents the standarized entities names to be seeded
-    """
+    """Represents the standarized entities names to be seeded"""
     HORSES = "horses"
     JOCKEYS = "jockeys"
     EMPLOYEES = "employees"
     PAYMENTS = "payments"
     CHARGES = "charges"
+    PUBLICATIONS = "publications"
+
 
 seeding_config = {
     "counts": {
@@ -50,6 +54,7 @@ seeding_config = {
         SeedEntity.EMPLOYEES: 31,
         SeedEntity.PAYMENTS: 15,
         SeedEntity.CHARGES: 15,
+        SeedEntity.PUBLICATIONS: 15,
     },
     "chances": {
         # 0, 25, 50, 75, 100
@@ -63,6 +68,7 @@ generated_dnis = set()
 
 
 def generate_unique_dni():
+    """Generates a unique DNI between 10 and 99 million."""
     while True:
         dni = str(random.randint(10000000, 99999999))
         if dni not in generated_dnis:
@@ -88,7 +94,7 @@ def seed_all(app):
         seed_jockeys_amazons(seeding_config["counts"][SeedEntity.JOCKEYS])
         seed_payments(seeding_config["counts"][SeedEntity.PAYMENTS])
         seed_charges(seeding_config["counts"][SeedEntity.CHARGES])
-        db.session.commit()
+        seed_publications(seeding_config["counts"][SeedEntity.PUBLICATIONS])
 
 
 def seed_accounts():
@@ -160,6 +166,12 @@ def seed_role_permissions():
         # Técnica - Ecuestre
         RolePermission(role_id=1, permission_id=21),  # ECUSTRE_INDEX
         RolePermission(role_id=1, permission_id=25),  # ECUSTRE_SHOW
+
+        # Administración - Publicaciones
+        *[RolePermission(role_id=4, permission_id=i) for i in range(26, 31)],
+
+        # Editor - Publicaciones
+        *[RolePermission(role_id=5, permission_id=i) for i in range(26, 31)],
     ]
 
     db.session.add_all(role_permissions)
@@ -196,6 +208,7 @@ def seed_users():
             ("tecnica@gmail.com", "Tecnica", "Tecnica123", 1, False),
             ("ecuestre@gmail.com", "Ecuestre", "Ecuestre123", 2, False),
             ("voluntariado@gmail.com", "Voluntario/a", "Voluntariado123", 3, False),
+            ("editor@gmail.com", "Editor", "Editor123", 5, False),
             (
                 "administracion@gmail.com",
                 "Administrador",
@@ -495,7 +508,7 @@ def seed_payments(num_entries=5):
     Returns:
         None
     """
-
+    print("Seeding payments")
     payments = []
     creating_archived_chances = seeding_config.get("chances").get("creating_archived")
     for _ in range(num_entries):
@@ -517,4 +530,38 @@ def seed_payments(num_entries=5):
         )
 
     db.session.bulk_save_objects(payments)
+    print("Commiting payments")
+    db.session.commit()
+
+
+def seed_publications(num_entries=15):
+    """Seed the database with publications"""
+
+    print("Seeding publications")
+    publications = []
+    creating_archived_chances = seeding_config.get("chances").get("creating_archived")
+    for _ in range(num_entries):
+        publications.append(
+            Publication(
+                title=fake.sentence(),
+                content=fake.text(),
+                summary=fake.sentence(),
+
+                publish_date=fake.date_between(start_date="-1y", end_date="today"),
+                create_date=fake.date_between(start_date="-1y", end_date="today"),
+                update_date=fake.date_between(start_date="-1y", end_date="today"),
+
+                type=fake.random_element(
+                    elements=[e.name for e in TipoPublicacionEnum]
+                ),
+                status=fake.random_element(
+                    elements=[e.name for e in EstadoPublicacionEnum]
+                ),
+                author_id=fake.random_element(
+                    elements=[4, 5, 6]
+                ),
+            )
+        )
+    db.session.bulk_save_objects(publications)
+    print("Commiting publications")
     db.session.commit()

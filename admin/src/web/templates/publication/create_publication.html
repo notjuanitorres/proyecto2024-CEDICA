@@ -1,0 +1,119 @@
+{% extends "layout.html" %}
+{% from "macros/flash_message.html" import render_flash_messages %}
+
+{% block title %}Publicaciones - Crear publicación{% endblock %}
+
+{% block main_content %}
+    <nav class="breadcrumb" aria-label="breadcrumbs">
+        <ul>
+            <li>
+                <a href="{{ url_for('index_bp.home') }}">
+                    <span class="icon is-small">
+                      <i class="fas fa-home" aria-hidden="true"></i>
+                    </span>
+                    <span>Inicio</span>
+                </a>
+            </li>
+            <li>
+                <a href="{{ url_for('publications_bp.get_publications')}}">
+                    <span class="icon is-small">
+                        <i class="fas fa-newspaper" aria-hidden="true"></i>
+                    </span>
+                    <span>Publicaciones</span>
+                </a>
+            </li>
+            <li>
+                <a href="">
+                <span class="icon is-small">
+                    <i class="fas fa-add" aria-hidden="true"></i>
+                </span>
+                <span>Agregar publicación</span>
+            </a>
+            </li>
+        </ul>
+    </nav>
+
+    {{ render_flash_messages(messages) }}
+
+    <div class="container">
+        <h4 class="title is-fullwidth has-text-centered">Crear publicación</h4>
+
+        <section class="section pt-4">
+        <form method="POST" class="">
+            {{ form.hidden_tag() }}
+            <div class="field">
+                <label class="label">{{ form.title.label }}</label>
+                <div class="control">
+                    {{ form.title(class="input", placeholder="Ingrese el título de la publicación",
+                     data_validate="required maxLength=255") }}
+                </div>
+                {% if form.title.errors %}
+                    <p class="help is-danger">{{ form.title.errors[0] }}</p>
+                {% endif %}
+            </div>
+
+            <div class="field">
+                <label class="label">{{ form.summary.label }}</label>
+                <div class="control">
+                    {{ form.summary(class="textarea", placeholder="Ingrese un resumen breve de la publicación",
+                            rows="2", data_validate="required maxLength=255") }}
+                </div>
+                {% if form.summary.errors %}
+                    <p class="help is-danger">{{ form.summary.errors[0] }}</p>
+                {% endif %}
+            </div>
+
+            <div class="field">
+                <label class="label">{{ form.content.label }}</label>
+                <div class="control">
+                    {{ ckeditor.load() }}
+                    {{ ckeditor.config(name='content') }}
+                    {{ form.content(class="textarea", placeholder="Escriba el contenido de la publicación",
+                     rows="10") }}
+                    <style>
+                        .cke_notifications_area { display: none; }
+                    </style>
+                </div>
+                {% if form.content.errors %}
+                    <p class="help is-danger">{{ form.content.errors[0] }}</p>
+                {% endif %}
+            </div>
+
+            <div class="field">
+                <label class="label">{{ form.type.label }}</label>
+                <div class="control">
+                    <div class="select">
+                        {{ form.type(data_validate="required") }}
+                    </div>
+                </div>
+                {% if form.type.errors %}
+                    <p class="help is-danger">{{ form.type.errors[0] }}</p>
+                {% endif %}
+            </div>
+
+            <div class="field">
+                <label class="label">{{ form.status.label }}</label>
+                <div class="control">
+                    <div class="select">
+                        {{ form.status(data_validate="required") }}
+                    </div>
+                </div>
+                {% if form.status.errors %}
+                    <p class="help is-danger">{{ form.status.errors[0] }}</p>
+                {% endif %}
+            </div>
+
+            <div class="field">
+                <div class="control">
+                    <button class="button is-primary" type="submit">Guardar cambios</button>
+                </div>
+            </div>
+        </form>
+        </section>
+    </div>
+{% endblock %}
+
+{% block extra_scripts %}
+    {{ super() }}
+    <script src="{{ url_for('static', filename='js/form_validator.js') }}"></script>
+{% endblock %}

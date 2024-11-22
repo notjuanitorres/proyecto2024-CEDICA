@@ -1,9 +1,11 @@
+{% from "macros/image_from_minio.html" import profile_image %}
+
 <nav class="navbar is-fixed-top pt-2" role="navigation" aria-label="main navigation">
     <div class="navbar-brand">
         <a class="navbar-item" href="{{ url_for("index_bp.home") }}">
             <figure class="level">
                 <img
-                src="{{ url_for('static', filename="assets/cedica_isologotipo.png")}}"
+                src="{{ url_for('static', filename='assets/cedica_isologotipo.png')}}"
                 alt="CEDICA isologotipo"
                 class="level-item"
                 />
@@ -54,9 +56,16 @@
                             <a href="{{ url_for('charges_bp.get_charges') }}" class="navbar-item" aria-label="Cobros"> Cobros </a>
                         {% endif %}
                     {% endif %}
+                    {% if "publicaciones_index" in permissions or is_admin%}
+                        <hr class="navbar-divider" aria-hidden="true"/>
+                        <a href="{{ url_for('publications_bp.get_publications') }}" class="navbar-item" aria-label="Publicaciones"> Publicaciones </a>
+                    {% endif %}
                     <hr class="is-hidden-desktop" /> 
-                    <a href="#" class="navbar-item is-hidden-desktop"> Perfil </a>
-                    <a class="navbar-item is-hidden-desktop"> Configuración </a>
+                    <a href="{{url_for('auth_bp.view_profile', user_id=user_id)}}" class="dropdown-item is-hidden-desktop" role="menuitem"> Perfil </a>
+                    {% if not is_admin%}
+                        <a href="{{url_for('auth_bp.edit_profile', user_id=user_id)}}" class="dropdown-item is-hidden-desktop" role="menuitem"> Configuración </a>
+                    {% endif %}
+                    <hr class="dropdown-divider"/>
                     <form action="{{ url_for('auth_bp.logout') }}" method="POST" class="is-hidden-desktop navbar-item">
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                         <button type="submit" class="button is-danger is-small is-outlined">
@@ -88,17 +97,17 @@
                         <div class="dropdown-trigger">
                             <button class="button is-ghost" aria-label="Opciones de usuario" aria-haspopup="true"
                                 aria-controls="dropdown-menu">
-                                <svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-                                    <path
-                                        d="M35.75,28c2.28,0,4.14,1.79,4.25,4.04v.21v.75c0,3.76-1.94,6.57-4.92,8.38C32.15,43.16,28.21,44,24,44s-8.15-.84-11.08-2.62c-2.89-1.76-4.8-4.46-4.92-8.06v-.75v-.21c0-2.28,1.79-4.14,4.04-4.25h23.5zM24,4c5.52,0,10,4.48,10,10s-4.48,10-10,10-10-4.48-10-10S18.48,4,24,4z"
-                                        fill="currentColor" />
-                                </svg>
+                                <figure class="image">
+                                    {{ profile_image(user_id) }}
+                                </figure>
                             </button>
                         </div>
                         <div class="dropdown-menu" id="dropdown-menu" role="menu">
                             <div class="dropdown-content">
-                                <a href="#" class="dropdown-item" role="menuitem"> Perfil </a>
-                                <a class="dropdown-item" role="menuitem"> Configuración </a>
+                                <a href="{{url_for('auth_bp.view_profile', user_id=user_id)}}" class="dropdown-item" role="menuitem"> Perfil </a>
+                                {% if not is_admin%}
+                                <a href="{{url_for('auth_bp.edit_profile', user_id=user_id)}}" class="dropdown-item" role="menuitem"> Configuración </a>
+                                {% endif %}
                                 <hr class="dropdown-divider"/>
                                 <form action="{{ url_for('auth_bp.logout') }}" method="POST" style="display: flex; justify-content: center;">
                                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">

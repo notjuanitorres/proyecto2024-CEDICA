@@ -22,7 +22,7 @@ class HorseAddDocumentsForm(BaseManageDocumentsForm):
         tag (SelectField): The tag representing the document.
     """
     tag = SelectField(
-        "Tag",
+        "Etiqueta",
         choices=[(e.name, e.value) for e in FileTagEnum],
         validators=[
             DataRequired(

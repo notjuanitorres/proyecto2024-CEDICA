@@ -1,4 +1,4 @@
-from wtforms.validators import ValidationError
+from wtforms.validators import ValidationError, Regexp
 import re
 
 
@@ -174,3 +174,123 @@ class IsValidDniNumber(object):
 
         if not re.match(patron, value):
             raise ValidationError(self.message)
+
+
+class IsValidUrlHost(object):
+    """
+    Validator to check if the field's value is a valid URL host.
+
+    Args:
+        message (str, optional): Custom error message. If not provided, a default message is used.
+    """
+
+    def __init__(self, message=None) -> None:
+        """
+        Initializes the validator.
+
+        Args:
+            message (str, optional): Custom error message. If not provided, a default message is used.
+        """
+        if not message:
+            message = "Ingrese una URL válida"
+        self.message = message
+
+    def __call__(self, form, field):
+        """Validates that the field's data is a valid URL.
+
+        Args:
+            form (Form): The form containing the field.
+            field (Field): The field to validate.
+
+        Raises:
+            ValidationError: If the field's data is not a valid URL.
+        """
+        if not field.data:
+            raise ValidationError("El campo no puede estar vacío")
+
+        value = str(field.data).strip()
+
+        # Patrón que acepta:
+        # - Protocolo http o https
+        # - Dominio
+        # - Ruta
+        # - Parámetros de consulta
+        # - Fragmento
+        patron = r''
+
+        if not re.match(patron, value):
+            raise ValidationError(self.message)
+
+
+class URLWithoutProtocol(Regexp):
+    """
+    Regex-based URL validation that disregards the protocol.
+
+    :param require_tld:
+        If true, the domain-name portion of the URL must contain a .tld
+        suffix. Set to false to allow domains like `localhost`.
+    :param message:
+        Error message to raise in case of a validation error.
+    """
+
+    def __init__(self, require_tld=True, message=None):
+        regex = (
+            r"^(?P<host>[^\/\?:]+)"
+            r"(?P<port>:[0-9]+)?"
+            r"(?P<path>\/.*?)?"
+            r"(?P<query>\?.*)?$"
+        )
+        super().__init__(regex, re.IGNORECASE, message)
+        self.validate_hostname = HostnameValidation(
+            require_tld=require_tld
+        )
+
+    def __call__(self, form, field):
+        message = self.message
+        if message is None:
+            message = field.gettext("Invalid URL.")
+
+        match = super().__call__(form, field, message)
+        if not self.validate_hostname(match.group("host")):
+            raise ValidationError(message)
+
+
+class HostnameValidation:
+    """
+    Helper class for checking hostnames for validation.
+
+    This is not a validator in and of itself, and as such is not exported.
+    """
+
+    hostname_part = re.compile(r"^(xn-|[a-z0-9_]+)(-[a-z0-9_-]+)*$", re.IGNORECASE)
+    tld_part = re.compile(r"^([a-z]{2,20}|xn--([a-z0-9]+-)*[a-z0-9]+)$", re.IGNORECASE)
+
+    def __init__(self, require_tld=True):
+        self.require_tld = require_tld
+
+    def __call__(self, hostname):
+        # Encode out IDNA hostnames. This makes further validation easier.
+        try:
+            hostname = hostname.encode("idna")
+        except UnicodeError:
+            pass
+
+        # Turn back into a string in Python 3x
+        if not isinstance(hostname, str):
+            hostname = hostname.decode("ascii")
+
+        if len(hostname) > 253:
+            return False
+
+        # Check that all labels in the hostname are valid
+        parts = hostname.split(".")
+        for part in parts:
+            if not part or len(part) > 63:
+                return False
+            if not self.hostname_part.match(part):
+                return False
+
+        if self.require_tld and (len(parts) < 2 or not self.tld_part.match(parts[-1])):
+            return False
+
+        return True

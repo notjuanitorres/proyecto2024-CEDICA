@@ -65,21 +65,22 @@
                     </div>
 
                     {% block url_field %}
-
-                    <div id="url-field" class="column is-half">
-                        <div class="field">
-                            <label class="label">{{ form.url.label }}</label>
-                            <div class="control">
-                                {{ form.url(class="input",
-                                 placeholder="Ingrese la url del documento",
-                                 data_validate="required url") }}
+                        <div id="url-field" class="column is-half">
+                            <div class="field">
+                                <label class="label">URL</label>
+                                <div class="control is-flex">
+                                    <div class="select">
+                                        {{ form.url_protocol(class="input") }}
+                                    </div>
+                                    <div class="control" style="flex-grow: 1; margin-left: 8px;">
+                                        {{ form.url_host(class="input", placeholder="ejemplo.com", data_validate="required url") }}
+                                    </div>
+                                </div>
+                                {% if form.url_host.errors %}
+                                <p class="help is-danger">{{ form.url_host.errors[0] }}</p>
+                                {% endif %}
                             </div>
-                            {% if form.url.errors %}
-                            <p class="help is-danger">{{ form.url.errors[0] }}</p>
-                            {% endif %}
                         </div>
-                    </div>
-
                     {% endblock %}
 
                     {% block file_field %}

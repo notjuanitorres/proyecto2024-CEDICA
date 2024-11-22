@@ -1,4 +1,5 @@
 {% extends "layout.html" %}
+{% from "macros/image_from_minio.html" import profile_image %}
 
 {% block title %} Usuarios - Editar usuario {% endblock %}
 
@@ -6,9 +7,37 @@
     <section class="section">
         <div class="container">
             <h1 class="title">Editar usuario</h1>
-            <form method="POST" id="edit-user-form">
+            <form method="POST" enctype="multipart/form-data" id="edit-user-form">
                 {{ form.hidden_tag() }}
-                
+                <div class="is-flex-direction-row is-flex is-justify-content-space-around ">
+
+                    <div class="field is-touchable">
+                        <label class="label file-label is-small">{{ form.profile_image.label }}
+                        <div class="control file is-boxed"">
+                            {{ form.profile_image(class="file-input", type="file",  onchange="previewImage(event)") }}
+                            <span class="file-cta">
+                                <span class="file-icon">
+                                  <i class="fas fa-upload"></i>
+                                </span>
+                                <span class="file-label"> Subir...</span>
+                        </div>
+                        </label>
+                        {% if form.profile_image.errors %}
+                            <p class="help is-danger">{{ form.profile_image.errors[0] }}</p>
+                        {% endif %}
+                    </div>
+                    <div class="field">
+                        <label class="label">Vista previa</label>
+                        <div class="control ">
+                            <div class="control">
+                           
+                            <figure class="image is-128x128 ">
+                                {{ profile_image(user.id, id="profile-image") }}
+                            </figure>
+                            </div>
+                        </div>
+                    </div>
+            </div>
                 <div class="field">
                     <label class="label">{{ form.email.label }}</label>
                     <div class="control">
@@ -57,7 +86,8 @@
 {% endblock %}
 
 {% block extra_scripts %}
-    {{ super() }}
+   {{ super() }}
+    <script src="{{ url_for('static', filename='js/preview-image.js') }}"></script>
     <script src="{{ url_for('static', filename='js/form_validator.js') }}"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
