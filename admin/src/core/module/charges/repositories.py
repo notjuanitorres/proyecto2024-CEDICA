@@ -118,7 +118,6 @@ class AbstractChargeRepository:
         """
         raise NotImplementedError
 
-
     @abstractmethod
     def current_month_income(self) -> float:
         """
@@ -329,15 +328,12 @@ class ChargeRepository(AbstractChargeRepository):
         Returns:
             float: The total income for the current month.
         """
-        return (
-        Charge.query
-        .filter(
+        return (Charge.query.filter(
             func.extract('year', Charge.date_of_charge) == date.today().year,
             func.extract('month', Charge.date_of_charge) == date.today().month
         )
-        .with_entities(func.sum(Charge.amount))
-        .scalar() or 0.0
-    )
+                .with_entities(func.sum(Charge.amount)).scalar() or 0.0)
+
     def last_payments_data(self, limit: int = 10) -> List[Charge]:
         """
         Get the most recent payments.
@@ -349,6 +345,5 @@ class ChargeRepository(AbstractChargeRepository):
             List[Charge]: A list of the most recent payments.
         """
         return Charge.query.order_by(Charge.date_of_charge.desc()).limit(limit).all()
-    
 
-    
+

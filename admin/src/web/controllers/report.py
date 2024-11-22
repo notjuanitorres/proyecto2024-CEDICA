@@ -11,6 +11,7 @@ report_bp = Blueprint(
     "report_bp", __name__, template_folder="../templates/report", url_prefix="/reportes"
 )
 
+
 @report_bp.route("/", methods=["GET"])
 @check_user_permissions(['report_index'])
 @inject
@@ -36,7 +37,7 @@ def index(
 
     # Pasar los datos al template
     return render_template('report/index.html', 
-                           total_jya = total_jya , 
+                           total_jya=total_jya,
                            current_month_income=current_month_income,
                            proposals_data=proposals_data,
                            certified_jya=certified_jya,
@@ -44,7 +45,12 @@ def index(
                            disability_data=disability_data,
                            uncertified_jya=uncertified_jya)
 
+<<<<<<< HEAD
 @report_bp.route("/ranking_propousals", methods=["GET"])
+=======
+
+@report_bp.route("/ranking_propuestas", methods=["GET"])
+>>>>>>> f32b6baa3455bdf66ea862e9c40acc82ce03f4cb
 @check_user_permissions(['report_show'])
 @inject
 def reports_proposals(
@@ -62,6 +68,7 @@ def reports_proposals(
                             total_jya = total_jya,
                             current_month_income=current_month_income
                             )
+
 
 @report_bp.route("/personas_adeudan", methods=["GET"])
 @check_user_permissions(['report_show'])
@@ -81,6 +88,7 @@ def reports_debtors(
                            total_jya = total_jya,
                              current_month_income=current_month_income)
 
+
 @report_bp.route("/historico_cobros", methods=["GET"])
 @check_user_permissions(['report_show'])
 @inject
@@ -88,6 +96,7 @@ def reports_charges(
     charge_repository: AbstractChargeRepository = Provide[Container.charges_repository],
     jockey_amazon_repository: AbstractJockeyAmazonRepository = Provide[Container.jockey_amazon_repository],
 ):
+<<<<<<< HEAD
     # 1. KPIs
     total_jya = jockey_amazon_repository.total_jya()
     current_month_income = charge_repository.current_month_income()
@@ -96,3 +105,7 @@ def reports_charges(
                            payments_data=payments_data,   
                            total_jya = total_jya,
                              current_month_income=current_month_income )
+=======
+    # Lógica para generar el reporte histórico de cobros en un rango de fechas asociado a una persona
+    return render_template("report/historico_cobros.html")
+>>>>>>> f32b6baa3455bdf66ea862e9c40acc82ce03f4cb
