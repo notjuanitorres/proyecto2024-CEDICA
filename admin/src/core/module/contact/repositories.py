@@ -151,7 +151,8 @@ class ContactRepository(AbstractContactRepository):
         search_query["filters"] = filters
 
         query = apply_filters(Message, query, search_query, order_by)
-
+        if not order_by:
+            query = query.order_by(Message.inserted_at.desc()) 
         return query.paginate(
             page=page, per_page=per_page, error_out=False, max_per_page=max_per_page
         )

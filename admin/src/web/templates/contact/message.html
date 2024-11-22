@@ -32,6 +32,16 @@ Mensaje de {{ message.name }}
 {% endif %}
 {% endblock %}
 
+
+{% block banner %}
+    {% if message.is_deleted %}
+        <div class="is-flex is full-width is-justify-content-center has-background-danger p-4">
+            <h2 class="title">Mensaje Eliminado</h2>
+        </div>
+    {% endif %}
+{% endblock %}
+
+
 {% block card_content %}
 <ul>
     <li><strong>ID:</strong> {{ message.id }}</li>
@@ -42,7 +52,6 @@ Mensaje de {{ message.name }}
     <li><strong>Mensaje:</strong> {{ message.message }}</li>
 </ul>
 
-<!-- Form for updating status -->
 <div class="mt-4">
     <form class="is-flex is-align-items-center mb-4" action="{{ url_for('contact_bp.update_message_status') }}" method="POST">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
@@ -65,7 +74,6 @@ Mensaje de {{ message.name }}
     </form>
 </div>
 
-<!-- Form for updating comment -->
 <div>
     <form class="is-flex is-flex-direction-column" action="{{ url_for('contact_bp.update_message_comment') }}" method="POST">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
@@ -96,7 +104,34 @@ Mensaje de {{ message.name }}
         </form>
     {% else %}
         <button class="card-footer-item has-text-danger modal-trigger" data-id="{{ message.id }}" data-target="message-delete-modal">
-            Archivar
+            Eliminar
         </button>
+    {% endif %}
+{% endblock %}
+
+{% block modal %}
+    {% if message.is_deleted %}
+        {{ 
+            render_delete_modal(
+                field="message",
+                endpoint=url_for("contact_bp.delete_message", message_id=message.id),
+                title="Eliminar para siemre",
+                msg="¿Está seguro de que desea eliminar este mensaje?",
+                msg_sub="Luego de confirmar, no se podrán revertir los cambios",
+                related_entities_text="Todos los archivos e información relacionada con este mensaje será eliminada."
+            ) 
+        }}
+    {% else %}
+        {{ 
+            render_delete_modal(
+                field="message",
+                endpoint=url_for("contact_bp.logical_delete_message", message_id=message.id),
+                title="Eliminar",
+                msg="¿Está seguro de que desea eliminar este mensaje?",
+                msg_sub="",
+                delete_text="Eliminar",
+                related_entities_text="El mensaje será movido al estado archivado y no estará disponible para operaciones activas."
+            ) 
+        }}
     {% endif %}
 {% endblock %}

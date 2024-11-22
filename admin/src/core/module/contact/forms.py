@@ -62,8 +62,8 @@ class ContactSearchForm(FlaskForm):
 
     order_by = SelectField(
         choices=[
-            ("id", "ID"),
             ("inserted_at", "Fecha de recepcion"),
+            ("id", "ID"),
         ],
         validate_choice=True,
     )
