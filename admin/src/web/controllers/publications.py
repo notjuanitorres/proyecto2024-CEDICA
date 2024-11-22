@@ -194,6 +194,30 @@ def add_publication(
     return redirect(url_for("publications_bp.show_publication", publication_id=publication["id"]))
 
 
+@publications_bp.route("/publicar-despublicar/<int:publication_id>", methods=["GET"])
+@inject
+def toggle_publication_status(
+    publication_id: int,
+    publication_repository: AbstractPublicationRepository = Provide[Container.publication_repository]
+):
+    publication = publication_repository.get_by_id(publication_id)
+    if not publication:
+        flash(f"Hubo un error al cambiar el estado de esta publicación", "danger")
+        return redirect(url_for("publications_bp.get_publications"))
+
+    if publication.get("is_deleted"):
+        flash("No se puede modificar una publicación eliminada", "danger")
+        return redirect(url_for("publications_bp.show_publication", publication_id=publication_id))
+
+    success = publication_repository.toggle_publication_status(publication_id)
+    if not success:
+        flash("Hubo un error al cambiar el estado de esta publicación", "danger")
+    else:
+        flash("Publicación actualizada con éxito", "success")
+
+    return redirect(url_for("publications_bp.show_publication", publication_id=publication_id))
+
+
 @publications_bp.route("/editar/<int:publication_id>", methods=["GET", "POST", "PUT"])
 @check_user_permissions(permissions_required=["publicaciones_update"])
 @inject

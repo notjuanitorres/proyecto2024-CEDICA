@@ -12,13 +12,14 @@ from abc import abstractmethod
 from sqlalchemy import or_
 from flask_sqlalchemy import SQLAlchemy
 from flask_sqlalchemy.pagination import Pagination
-
+from dependency_injector.wiring import Provide, inject
 from src.core.database import db as database
 from src.core.module.common.repositories import (
     apply_filters,
     apply_multiple_search_criteria,
     apply_filter_criteria
 )
+from src.core.module.common import AbstractStorageServices
 from src.core.module.charges.models import Charge
 from src.core.module.payment.models import Payment
 from src.core.module.equestrian.models import HorseTrainers
@@ -354,10 +355,11 @@ class EmployeeRepository(AbstractEmployeeRepository):
     providing actual database operations using SQLAlchemy.
     """
 
-    def __init__(self):
+    def __init__(self, storage_services: AbstractStorageServices):
         """Initialize the repository with database connection."""
         super().__init__()
         self.db: SQLAlchemy = database
+        self.storage_services = storage_services
 
     def __get_by_id(self, employee_id: int) -> Employee:
         """Internal method to retrieve an employee by ID."""
@@ -477,8 +479,7 @@ class EmployeeRepository(AbstractEmployeeRepository):
         files = EmployeeFile.query.filter_by(employee_id=employee_id)
         minio_path_files = [f.path for f in files if not f.is_link]
         if minio_path_files:
-            from src.core.container import Container  # can't import outside due to circular import
-            success = Container().storage_services().delete_batch(minio_path_files)
+            success = self.storage_services.delete_batch(minio_path_files)
 
             if not success:
                 return False

@@ -66,15 +66,6 @@
             <div class="field is-grouped">
               <div class="control">
                 <button
-                  class="button is-primary"
-                  @click="handleSearch"
-                  :class="{ 'is-loading': loading }"
-                >
-                  Buscar
-                </button>
-              </div>
-              <div class="control">
-                <button
                   class="button is-light"
                   @click="resetFilters"
                 >

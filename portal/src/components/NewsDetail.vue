@@ -40,7 +40,7 @@
 <script setup>
 import { onMounted, defineProps } from 'vue';
 import { useRouter } from 'vue-router';
-import { useArticleStore } from '../stores/singleNews';
+import { useNewsStore } from '../stores/news.js';
 import { storeToRefs } from 'pinia';
 
 const props = defineProps({
@@ -51,7 +51,7 @@ const props = defineProps({
 });
 
 const router = useRouter();
-const store = useArticleStore();
+const store = useNewsStore();
 const { article, loading, error } = storeToRefs(store);
 
 const fetchArticle = async () => {

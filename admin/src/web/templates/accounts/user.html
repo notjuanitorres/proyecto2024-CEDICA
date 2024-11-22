@@ -1,5 +1,6 @@
 {% extends "base_show.html" %}
-
+{% from "macros/image_from_minio.html" import profile_image %}
+{% from "macros/flash_message.html" import render_flash_messages %}
 {% block title %}Usuario {{ user.alias }} - CEDICA{% endblock %}
 
 {% block breadcrumb_items %}
@@ -42,6 +43,11 @@ Usuario: {{ user.alias }}
 {% endblock %}
 
 {% block card_content %}
+<div class="is-flex is-justify-content-center">
+        <figure class="image is-128x128 is-flex is-align-items-center">
+            {{ profile_image(user.id, id="profile-image") }}
+        </figure>
+</div>
     <ul>
         <li><strong>ID: </strong> {{ user.id }}</li>
         <li><strong>Correo: </strong>{{ user.email }}</li>

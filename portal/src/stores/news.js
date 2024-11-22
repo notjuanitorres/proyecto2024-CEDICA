@@ -5,7 +5,8 @@ export const useNewsStore = defineStore('news', {
     news: [],
     loading: false,
     error: null,
-    totalItems: 0
+    totalItems: 0,
+    article: {},
   }),
 
   actions: {
@@ -22,18 +23,43 @@ export const useNewsStore = defineStore('news', {
         if (params.page) queryParams.append('page', params.page);
         if (params.per_page) queryParams.append('per_page', params.per_page);
 
-        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/articles?${queryParams.toString()}`);
+        const url = `${import.meta.env.VITE_API_BASE_URL}/articles?${queryParams.toString()}`;
+
+        const response = await fetch(url);
 
         if (!response.ok) {
           throw new Error('Failed to fetch news');
         }
 
         const data = await response.json();
-        this.news = data.data;
 
+        this.news = data.data;
         this.totalItems = data.total;
-      } catch {
+
+      } catch (error) {
         this.error = 'Error al obtener las noticias';
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    async fetchArticle(id) {
+      this.loading = true;
+      this.error = null;
+      this.article = {};
+
+      try {
+        const url = `${import.meta.env.VITE_API_BASE_URL}/articles/${id}`;
+
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error('No se pudo cargar el artículo');
+        }
+
+        this.article = await response.json();
+      } catch (error) {
+        this.error = error.message;
+        throw error;
       } finally {
         this.loading = false;
       }

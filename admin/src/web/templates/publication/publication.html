@@ -24,14 +24,6 @@
 
 {% block card_title %}
 Publicación: {{ publication.title }}
-{% if publication.status.value == "Archivado" %}
-    {% set tag_status = "danger" %}
-{% elif publication.status.value == "Borrador" %}
-    {% set tag_status = "warning" %}
-{% else %}
-    {% set tag_status = "success" %}
-{% endif %}
-    <p class="tag is-{{ tag_status }} is-medium ml-2">{{ publication.status.value }}</p>
 {% endblock %}
 
 {% block banner %}
@@ -55,7 +47,14 @@ Publicación: {{ publication.title }}
         <ul>
             <li><strong>Título: </strong>{{ publication.title }}</li>
             <li><strong>Tipo: </strong>{{ publication.type.value }}</li>
-            <li><strong>Estado: </strong>{{ publication.status.value }}</li>
+            {% if publication.status.value == "Archivado" %}
+                {% set tag_status = "danger" %}
+            {% elif publication.status.value == "Borrador" %}
+                {% set tag_status = "warning" %}
+            {% else %}
+                {% set tag_status = "success" %}
+            {% endif %}
+            <li><strong>Estado: </strong><span class="tag is-{{ tag_status }} is-medium ml-2">{{ publication.status.value }}</span></li>
             <li><strong>Fecha de publicación: </strong>{{ publication.publish_date | format_date }}</li>
             <li><strong>Creado: </strong>{{ publication.create_date | format_date }}</li>
             <li><strong>Última modificación: </strong>{{ publication.update_date | format_date }}</li>
@@ -89,6 +88,17 @@ Publicación: {{ publication.title }}
             <a href="{{ url_for('publications_bp.edit_publication', publication_id=publication.id) }}" class="card-footer-item">
                 Editar
             </a>
+            {% if publication.status.value == "Publicado" %}
+                <a href="{{ url_for('publications_bp.toggle_publication_status', publication_id=publication.id)}}"
+                   class="card-footer-item has-text-warning">
+                    Despublicar
+                </a>
+            {% else %}
+                <a href="{{ url_for('publications_bp.toggle_publication_status', publication_id=publication.id)}}"
+                   class="card-footer-item has-text-warning">
+                    Publicar
+                </a>
+            {% endif %}
         {% endif %}
     {% endif %}
 {% endblock %}
@@ -206,7 +216,7 @@ Publicación: {{ publication.title }}
             title="Eliminar",
             msg="¿Está seguro de que desea eliminar la publicación?",
             delete_text="Eliminar",
-            msg_sub="Luego de confirmar, la publicación será ocultada si estaba publicada y además su estado será 'archivado'."
+            msg_sub="Si elimina la publicación, esta sera archivada y dejará de ser visible para los usuarios. ¿Desea continuar?"
         )}}
     {% endif %}
 {% endblock %}

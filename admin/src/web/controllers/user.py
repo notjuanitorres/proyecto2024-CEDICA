@@ -8,7 +8,9 @@ from src.core.module.user import (
     UserMapper,
 )
 from src.core.module.employee import AbstractEmployeeRepository
+from src.core.module.common import AbstractStorageServices
 from src.core.container import Container
+from src.web.helpers.auth import can_edit
 
 
 users_bp = Blueprint(
@@ -198,7 +200,6 @@ def edit_user(
          or a redirect to the user list page if the user does not exist or is a system administrator.
     """
     user = user_repository.get_user(user_id)
-
     if not user or user.get("is_deleted"):
         flash("El usuario no existe o esta archivado", "warning")
         return redirect(url_for("users_bp.get_users"))
@@ -210,9 +211,9 @@ def edit_user(
     edit_form = UserEditForm(data=user, current_email=user["email"])
 
     if request.method in ["POST", "PUT"]:
+        edit_form.profile_image.data = request.files["profile_image"]
         return update_user(user_id=user_id, edit_form=edit_form)
-
-    return render_template("./accounts/edit_user.html", form=edit_form)
+    return render_template("./accounts/edit_user.html", form=edit_form, user=user)
 
 
 @inject
@@ -220,6 +221,7 @@ def update_user(
     user_id: int,
     edit_form: UserEditForm,
     user_repository: AbstractUserRepository = Provide[Container.user_repository],
+    storage_service: AbstractStorageServices = Provide[Container.storage_services]
 ):
     """
     Update an existing user's information.
@@ -233,9 +235,23 @@ def update_user(
         A rendered template displaying the user edit form if validation fails,
          or a redirect to the user detail page if successful.
     """
+    user = user_repository.get_user(user_id)
+    if not user:
+        flash("El usuario no existe", "warning")
+        return redirect(url_for("users_bp.get_users"))
     if not edit_form.validate_on_submit():
-        return render_template("./accounts/edit_user.html", form=edit_form)
+        return render_template("./accounts/edit_user.html", form=edit_form, user=user)
 
+    profile_image_url = None
+    if edit_form.profile_image.data:
+        file = edit_form.profile_image.data
+        old = user_repository.get_profile_image_url(user_id)
+        if old:
+            storage_service.delete_file(old)
+        profile_image_url = storage_service.upload_file(file, path=user_repository.storage_path)["path"]
+        if not profile_image_url:
+            flash("No se pudo actualizar la foto de perfil", "danger")
+        
     user_repository.update(
         user_id=user_id,
         data={
@@ -243,6 +259,7 @@ def update_user(
             "alias": edit_form.alias.data,
             "system_admin": edit_form.system_admin.data,
             "role_id": edit_form.role_id.data,
+            "profile_image_url": profile_image_url
         },
     )
 

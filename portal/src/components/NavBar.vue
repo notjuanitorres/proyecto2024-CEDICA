@@ -1,6 +1,6 @@
 <script setup>
     import { RouterLink } from 'vue-router'
-    
+
     document.addEventListener('DOMContentLoaded', () => {
         const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
         $navbarBurgers.forEach( el => {
@@ -33,7 +33,7 @@
 
         <div id="navbar" class="navbar-menu">
             <div class="navbar-end">
-                <RouterLink to="/nosotros" class="navbar-item">Sobre Nosotros</RouterLink>
+                <RouterLink to="/#about-us" class="navbar-item">Sobre Nosotros</RouterLink>
                 <RouterLink to="/noticias" class="navbar-item">Noticias</RouterLink>
                 <RouterLink to="/#contact-us" class="navbar-item">Contacto</RouterLink>
             </div>
