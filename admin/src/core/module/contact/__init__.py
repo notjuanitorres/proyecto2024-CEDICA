@@ -1,5 +1,10 @@
-from .forms import ContactMessageForm
+from .forms import ContactMessageForm, ContactSearchForm
+from .repositories import ContactRepository, AbstractContactRepository
+
 
 __all__ = [
-    "ContactMessageForm"
+    "ContactSearchForm",
+    "ContactMessageForm",
+    "ContactRepository",
+    "AbstractContactRepository"
 ]

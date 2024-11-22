@@ -13,7 +13,7 @@ from src.web.helpers.auth import is_authenticated, inject_session_data
 from src.web.helpers.filters import register_filters
 from flask_ckeditor import CKEditor
 from flask_cors import CORS
-from src.web.controllers import contact_bp
+from src.web.controllers.api import contact_api_bp
 
 ckeditor = CKEditor()
 csrf = CSRFProtect()
@@ -56,7 +56,7 @@ def create_app(env="development", static_folder="../../static"):
         reset(app)
         seed_all(app)
 
-    csrf.exempt(contact_bp)
+    csrf.exempt(contact_api_bp)
 
 
     return app

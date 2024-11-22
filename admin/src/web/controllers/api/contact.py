@@ -39,21 +39,17 @@ def contact():
         if not verify_recaptcha(recaptcha_response):
             return jsonify({"message": "Invalid reCAPTCHA"}), 411
         
+        data = {
+            "name": data.get("name"),
+            "email": data.get("email"),
+            "message": data.get("message"),
+        }
+
         message_form = ContactMessageForm(data=data)
         if not message_form.validate_on_submit():
             return jsonify({"errors": message_form.errors}), 201
-        print(message_form.data)
-        name = data.get("name")
-        email = data.get("email")
-        message = data.get("message")
 
-        data = {
-            "name": name,
-            "email": email,
-            "message": message,
-            "status": MessageStateEnum.PENDING,
-        }
-
+        data["status"] = MessageStateEnum.PENDING
         new_message = ContactRepository().add_message(ContactMapper.to_entity(data))
         print(new_message)
 

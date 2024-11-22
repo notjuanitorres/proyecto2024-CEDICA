@@ -176,6 +176,11 @@ def seed_role_permissions():
 
         # Editor - Publicaciones
         *[RolePermission(role_id=5, permission_id=i) for i in range(26, 31)],
+
+        # Administración - Mensajes
+        *[RolePermission(role_id=4, permission_id=i) for i in range(31, 36)],
+
+
     ]
 
     db.session.add_all(role_permissions)

@@ -6,7 +6,7 @@ from enum import Enum as pyEnum
 class MessageStateEnum(pyEnum):
     PENDING = "Pendiente"
     RESOLVED = "Resuelto"
-    ARCHIVED = "Archivado"
+    DELETED = "Eliminado"
 
 
 class Message(db.Model):

@@ -1,0 +1,132 @@
+{% extends "base_list.html" %}
+
+{% block title %}Mensajes - CEDICA{% endblock %}
+
+{% block breadcrumb_items %}
+  <li>
+    <a href="">
+      <span class="icon is-small">
+        <i class="fa-solid fa-envelope" aria-hidden="true"></i>
+      </span>
+      <span>Mensajes</span>
+    </a>
+  </li>
+{% endblock %}
+
+{% block tabs %}
+<div class="tabs is-medium is-toggle is-toggle-rounded is-centered">
+  <ul>
+    <li class="is-active">
+      <a href="{{ url_for("contact_bp.get_messages")}}">
+        <span class="icon is-small"><i class="fa-solid fa-envelope"></i></span>
+        <span>Todos</span>
+      </a>
+    </li>
+    <li>
+      <a href="">
+        <span class="icon is-small"><i class="fa-solid fa-box-archive"></i></span>
+        <span>Papelera</span>
+      </a>
+    </li>
+  </ul>
+</div>
+{% endblock %}
+
+{% block inner_title %}
+    <h2 class="title is-size-3 has-text-centered">
+        Mensajes
+    </h2>
+{% endblock %}
+
+{% block form_action %}{{ url_for("contact_bp.get_messages") }}{% endblock %}
+{% block clear_url %}{{ url_for("contact_bp.get_messages") }}{% endblock %}
+
+{% block aditional_filters %}
+<div class="field pb-3">
+  <label class="label">Estado</label>
+  <div class="control">
+      <div class="select is-fullwidth">
+          {{ search_form.filter_status() }}
+      </div>
+  </div>
+</div>
+<div class="is-flex is-flex-direction-row is-flex-wrap-wrap is-gap-1">
+  <div class="field is-flex-grow-1">
+      <label class="label" for="fecha-inicio">{{ search_form.start_date.label }}</label>
+      <div class="control">
+          {{ search_form.start_date(class="input", id='fecha-inicio') }}
+      </div>
+  </div>
+  <div class="field is-flex-grow-1">
+      <label class="label">{{ search_form.end_date.label }}</label>
+      <div class="control">
+          {{ search_form.end_date(class="input", id='end_date') }}
+      </div>
+  </div>  
+</div>
+{% endblock %}
+
+
+{% block table_header %}
+  <th>ID</th>
+  <th>Email</th>
+  <th>Nombre</th>
+  <th>Estado</th>
+  <th>Recibido</th>
+{% endblock %}
+
+{% block top_pagination %}
+  {{ render_pagination(messages, 'contact_bp.get_messages') }}
+{% endblock %}
+
+{% block table_body %}
+  {% for message in messages %}
+  <tr class="">
+    <td class="is-hidden-mobile">
+      {{
+        render_actions_menu(
+        field="message_id",
+        value=message.id,
+        to_left=true,
+        endpoints={
+          'show':'contact_bp.get_messages',
+        },
+        permission_to_show="mensaje_show",
+        user_permissions=permissions,
+        is_admin=is_admin
+        )
+      }}
+    </td>
+    <td><span class="is-hidden-tablet has-text-weight-bold">ID: </span>{{ message.id }}</td>
+    <td><span class="is-hidden-tablet has-text-weight-bold">Email: </span>{{ message.email }}</td>
+    <td><span class="is-hidden-tablet has-text-weight-bold">Nombre: </span>{{ message.name }}</td>
+    <td>
+      <span class="is-hidden-tablet has-text-weight-bold">
+        Estado: 
+      </span>
+      {% if message.status.value == "Pendiente" %}
+        <span class="tag is-warning">{{ message.status.value }}</span>
+      {% elif message.status.value == "Resuelto" %}
+        <span class="tag is-success">{{ message.status.value }}</span>
+      {% else %}
+        <span class="tag is-info">{{ message.status.value }}</span>
+      {% endif %}
+    </td>
+    <td><span class="is-hidden-tablet has-text-weight-bold">Recibido: </span>{{ message.inserted_at | format_date('%d/%m/%Y') }}</td>
+
+  </tr>
+  {% endfor %}
+{% endblock %}
+
+{% block table_footer %}
+  <th>ID</th>
+  <th>Email</th>
+  <th>Nombre</th>
+  <th>Estado</th>
+  <th>Recibido</th>
+{% endblock %}
+
+{% block bottom_pagination %}
+  {{ render_pagination(messages, 'contact_bp.get_messages') }}
+{% endblock %}
+
