@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from typing import List, Dict
+from typing import List, Dict, Optional
 from datetime import datetime
 
 from src.core.database import db as database
@@ -142,8 +142,13 @@ class ContactRepository(AbstractContactRepository):
         query = Message.query
 
         # Handle date range and state filters
-        if search_query and "filters" in search_query and search_query["filters"]:
-            pass
+        if search_query and "filters" in search_query:
+            filters = search_query["filters"]
+
+        if "status" in filters and not filters["status"]:
+                del filters["status"]
+
+        search_query["filters"] = filters
 
         query = apply_filters(Message, query, search_query, order_by)
 
@@ -163,7 +168,7 @@ class ContactRepository(AbstractContactRepository):
         """
         return Message.query.get(message_id)
 
-    def get_by_id(self, message_id: int) -> Dict | None:
+    def get_by_id(self, message_id: int) -> Optional[Message]:
         """
         Retrieve a message by its ID.
 
@@ -174,4 +179,55 @@ class ContactRepository(AbstractContactRepository):
             Dict | None: The message data as a dictionary, or None if not found.
         """
         message = self.db.session.query(Message).filter(Message.id == message_id).first()
-        return Mapper.from_entity(message) if message else None
+        return message
+    
+    def logical_delete_message(self, message_id: int) -> bool:
+        """
+        Logically delete a message.
+
+        Args:
+            message_id (int): The ID of the message to logically delete.
+
+        Returns:
+            bool: True if deleted successfully, False otherwise.
+        """
+        message = self.get_by_id(message_id)
+        if not message or message.is_deleted:
+            return False
+        message.is_deleted = True
+        self.save()
+
+    def recover(self, message_id: int) -> bool:
+        """
+        Recover an archived `Message` entity by setting its `is_deleted` flag to False.
+
+        Args:
+            message_id (int): The ID of the message to recover.
+
+        Returns:
+            bool: True if the message was successfully recovered, False otherwise.
+        """
+        message = self.get_by_id(message_id)
+        if not message or not message.is_deleted:
+            return False
+        message.is_deleted = False
+        self.save()
+        return True
+    
+
+    def delete(self, message_id: int) -> bool:
+        """
+        Permanently delete a `Message` entity.
+
+        Args:
+            message_id (int): The ID of the message to delete.
+
+        Returns:
+            bool: True if the message was successfully deleted, False otherwise.
+        """
+        message = Message.query.filter_by(id=message_id)
+        if not message:
+            return False
+        message.delete()
+        self.save()
+        return True

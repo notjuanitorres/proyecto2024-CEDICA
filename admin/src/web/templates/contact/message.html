@@ -11,7 +11,7 @@
             <span>Mensajes</span>
         </a>
     </li>
-    <li>
+    <li> 
         <a href="">
             <span class="icon is-small">
                 <i class="fa-solid fa-envelope-open-text" aria-hidden="true"></i>
@@ -20,6 +20,7 @@
         </a>
     </li>
 {% endblock %}
+
 {% block card_title %}
 Mensaje de {{ message.name }}
 {% if message.status.value == "Pendiente" %}
@@ -31,20 +32,61 @@ Mensaje de {{ message.name }}
 {% endif %}
 {% endblock %}
 
+{% block banner %}
+    {% if message.is_deleted %}
+        <div class="is-flex is-fullwidth is-justify-content-center has-background-danger p-4">
+            <h2 class="title">Mensaje eliminado</h2>
+        </div>
+    {% endif %}
+{% endblock %}
+
 {% block card_content %}
-        <ul>
-            <li><strong>ID:</strong> {{ message.id }}</li>
-            <li><strong>Nombre:</strong> {{ message.name }}</li>
-            <li><strong>Email:</strong> {{ message.email }}</li>
-            <li><strong>Estado:</strong> {{ message.status.value }}</li>
-            <li><strong>Recibido: </strong>{{ message.inserted_at.strftime('%d-%m-%Y %H:%M')}}</li>
-            <li><strong>Mensaje:</strong> {{ message.message }}</li>
-        </ul>
+<ul>
+    <li><strong>ID:</strong> {{ message.id }}</li>
+    <li><strong>Nombre:</strong> {{ message.name }}</li>
+    <li><strong>Email:</strong> {{ message.email }}</li>
+    <li><strong>Estado:</strong> {{ message.status.value }}</li>
+    <li><strong>Recibido:</strong> {{ message.inserted_at.strftime('%d-%m-%Y %H:%M')}}</li>
+    <li><strong>Mensaje:</strong> {{ message.message }}</li>
+</ul>
 {% endblock %}
 
 {% block card_actions %}
-<button class="card-footer-item has-text-danger modal-trigger" data-id="{{ message.id }}" data-target="user-delete-modal">
-    Eliminar
-</button>
-<a href="{{ url_for('contact_bp.show_message', message_id=message.id) }}" class="card-footer-item has-text-warning">Responder</a>
+    {% if message.is_deleted %}
+        <button class="card-footer-item has-text-danger modal-trigger" data-id="{{ message.id }}" data-target="message-delete-modal">
+            Eliminar para siempre
+        </button>
+        <form class="card-footer-item" action="{{ url_for('contact_bp.recover_message') }}" method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="message_id" value="{{ message.id }}">
+            <button type="submit" class="has-text-primary">Recuperar</button>
+        </form>
+    {% else %}
+        <button class="card-footer-item has-text-danger modal-trigger" data-id="{{ message.id }}" data-target="message-delete-modal">
+            Archivar
+        </button>
+        <a href="{{ url_for('contact_bp.show_message', message_id=message.id) }}" class="card-footer-item has-text-warning">Responder</a>
+    {% endif %}
+{% endblock %}
+
+{% block modal %}
+    {% if message.is_deleted %}
+        {{ render_delete_modal(
+          field="message",
+          endpoint=url_for("contact_bp.delete_message", message_id=message.id),
+          title="Eliminar para siempre",
+          msg="¿Está seguro de que desea eliminar este mensaje?",
+          msg_sub="Luego de confirmar, no se podrán revertir los cambios.",
+          related_entities_text="Cualquier información asociada a este mensaje también será eliminada."
+        ) }}
+    {% else %}
+        {{ render_delete_modal(
+          field="message",
+          endpoint=url_for("contact_bp.logical_delete_message", message_id=message.id),
+          title="Archivar",
+          msg="¿Está seguro de que desea archivar este mensaje?",
+          msg_sub="Esto moverá el mensaje a la Papelera, donde podrá recuperarlo más tarde.",
+          delete_text="Archivar"
+        ) }}
+    {% endif %}
 {% endblock %}

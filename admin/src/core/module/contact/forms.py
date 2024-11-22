@@ -60,14 +60,10 @@ class ContactSearchForm(FlaskForm):
         validate_choice=True,
     )
 
-    start_date = DateField("Fecha de inicio", format='%Y-%m-%d')
-    end_date = DateField("Fecha de fin", format='%Y-%m-%d')
-
     order_by = SelectField(
         choices=[
             ("id", "ID"),
-            ("title", "Título"),
-            ("create_date", "Fecha de recepcion"),
+            ("inserted_at", "Fecha de recepcion"),
         ],
         validate_choice=True,
     )

@@ -44,9 +44,9 @@ def contact():
             "message": data.get("message"),
         }
 
-        message_form = ContactMessageForm(data=data)
-        if not message_form.validate_on_submit():
-            return jsonify({"errors": message_form.errors}), 201
+        #message_form = ContactMessageForm(data=data)
+        #if not message_form.validate_on_submit():
+              #return jsonify({"errors": message_form.errors}), 201
 
         data["status"] = MessageStateEnum.PENDING
         new_message = ContactRepository().add_message(ContactMapper.to_entity(data))

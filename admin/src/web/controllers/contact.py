@@ -22,28 +22,15 @@ def get_messages(
     Returns:
         Response: The rendered template for the list of messages (str).
     """
-    form = ContactSearchForm(request.args)
-    search_query: dict = {}
-    order_by = []
-    if form.submit_search.data and form.validate():
-        search_query = {"text": form.search_text.data, "field": form.search_by.data}
+    search_form = ContactSearchForm(request.args)
 
-        if form.start_date.data:
-            search_query["filters"]["start_date"] = form.start_date.data
-        if form.end_date.data:
-            search_query["filters"]["end_date"] = form.end_date.data
-        if form.filter_status.data:
-            search_query["filters"]["status"] = form.filter_status.data
-        if form.order_by.data and form.order.data:
-            order_by = [(form.order_by.data, form.order.data)]
+    paginated_messages = search_messages(search=search_form, need_archive=False)
 
-    page = request.args.get("page", 1, type=int)
-    per_page = request.args.get("per_page", 10, type=int)
-
-    messages = contact_repository.get_page(page, per_page, search_query, order_by)
-
-    return render_template("./contact/messages.html",
-                           search_form=form, messages=messages)
+    return render_template(
+        "./contact/list/messages.html",
+        messages=paginated_messages,
+        search_form=search_form,
+    )
 
 
 @contact_bp.route("/<int:message_id>")
@@ -69,3 +56,123 @@ def show_message(message_id: int,
 
     return render_template('./contact/message.html', message=message)
 
+@contact_bp.route("/archivados", methods=["GET"])
+@check_user_permissions(permissions_required=["mensaje_index"])
+def get_deleted_messages():
+    """
+    Retrieve and display a paginated list of archived messages.
+
+    Returns:
+        rendered template: The messages_archived.html template with:
+            - paginated archived messages list
+            - message information
+            - search form
+    """
+    search_form = ContactSearchForm(request.args)
+    paginated_messages = search_messages(search=search_form, need_archive=True)
+    return render_template(
+        "./contact/list/deleted_messages.html",
+        messages=paginated_messages,
+        search_form=search_form,
+    )
+
+@inject
+def search_messages(
+        search: ContactSearchForm,
+        need_archive: bool,
+        messages: AbstractContactRepository = Provide[Container.contact_repository],
+):
+    page = request.args.get("page", type=int, default=1)
+    per_page = request.args.get("per_page", type=int, default=10)
+    order_by = []
+    search_query = {
+        "filters": {
+            "is_deleted": need_archive,
+        }
+    }
+    if search.submit_search.data:
+        order_by = [(search.order_by.data, search.order.data)]
+        search_query["text"] = search.search_text.data
+        search_query["field"] = search.search_by.data
+        if search.filter_status.data:
+            search_query["filters"]["status"] = search.filter_status.data
+
+    paginated_messages = messages.get_page(
+        page=page,
+        per_page=per_page,
+        order_by=order_by,
+        search_query=search_query,
+    )
+    return paginated_messages
+
+@contact_bp.route("/archivar/", methods=["POST"])
+@check_user_permissions(permissions_required=["mensaje_destroy"])
+@inject
+def logical_delete_message(
+    contact_repository: AbstractContactRepository = Provide[Container.contact_repository]
+):
+    """
+    Archive a message.
+
+    Args:
+        contact_repository (AbstractContactRepository): The repository for contact data.
+
+    Returns:
+        A redirect to the message's detail page with a flash message indicating success or failure.
+    """
+    message_id = request.form["message_id"]
+    archived = contact_repository.logical_delete_message(message_id)
+
+    if not archived:
+        flash("El mensaje no existe o no ha podido ser archivado, intentelo nuevamente", "warning")
+    else:
+        flash("El mensaje ha sido archivado correctamente", "success")
+    return redirect(url_for("contact_bp.show_message", message_id=message_id))
+
+@contact_bp.route("/recuperar/", methods=["POST"])
+@check_user_permissions(permissions_required=["mensaje_destroy"])
+@inject
+def recover_message(
+    contact_repository: AbstractContactRepository = Provide[Container.contact_repository]
+):
+    """
+    Recover an archived message.
+
+    Args:
+        contact_repository (AbstractContactRepository): The repository for contact data.
+
+    Returns:
+        A redirect to the message's detail page with a flash message indicating success or failure.
+    """
+    message_id = request.form["message_id"]
+    recovered = contact_repository.recover(message_id)
+
+    if not recovered:
+        flash("El mensaje no existe o no ha podido ser recuperado, intentelo nuevamente", "warning")
+    else:
+        flash("El mensaje ha sido recuperado correctamente", "success")
+    return redirect(url_for("contact_bp.show_message", message_id=message_id))
+
+@contact_bp.route("/delete/", methods=["POST"])
+@check_user_permissions(permissions_required=["mensaje_destroy"])
+@inject
+def delete_message(
+    contact_repository: AbstractContactRepository = Provide[Container.contact_repository]
+):
+    """
+    Delete a message.
+
+    Args:
+        contact_repository (AbstractContactRepository): The repository for contact data.
+
+    Returns:
+        A redirect to the list of messages with a flash message indicating success or failure.
+    """
+    message_id = request.form["message_id"]
+    deleted = contact_repository.delete(message_id)
+
+    if not deleted:
+        flash("El mensaje no ha podido ser eliminado, intentelo nuevamente", "danger")
+    else:
+        flash("El mensaje ha sido eliminado correctamente", "success")
+    return redirect(url_for("contact_bp.get_messages"))

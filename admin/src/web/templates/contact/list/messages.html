@@ -23,7 +23,7 @@
       </a>
     </li>
     <li>
-      <a href="">
+      <a href="{{ url_for("contact_bp.get_deleted_messages")}}">
         <span class="icon is-small"><i class="fa-solid fa-box-archive"></i></span>
         <span>Papelera</span>
       </a>
@@ -50,22 +50,7 @@
       </div>
   </div>
 </div>
-<div class="is-flex is-flex-direction-row is-flex-wrap-wrap is-gap-1">
-  <div class="field is-flex-grow-1">
-      <label class="label" for="fecha-inicio">{{ search_form.start_date.label }}</label>
-      <div class="control">
-          {{ search_form.start_date(class="input", id='fecha-inicio') }}
-      </div>
-  </div>
-  <div class="field is-flex-grow-1">
-      <label class="label">{{ search_form.end_date.label }}</label>
-      <div class="control">
-          {{ search_form.end_date(class="input", id='end_date') }}
-      </div>
-  </div>  
-</div>
 {% endblock %}
-
 
 {% block table_header %}
   <th>ID</th>
@@ -89,9 +74,11 @@
         value=message.id,
         to_left=true,
         endpoints={
-          'show':'contact_bp.show_message',
+          'show': 'contact_bp.show_message',
+          'archive': 'contact_bp.logical_delete_message'
         },
         permission_to_show="mensaje_show",
+        permission_to_delete="mensaje_destroy",
         user_permissions=permissions,
         is_admin=is_admin
         )
@@ -101,9 +88,7 @@
     <td><span class="is-hidden-tablet has-text-weight-bold">Email: </span>{{ message.email }}</td>
     <td><span class="is-hidden-tablet has-text-weight-bold">Nombre: </span>{{ message.name }}</td>
     <td>
-      <span class="is-hidden-tablet has-text-weight-bold">
-        Estado: 
-      </span>
+      <span class="is-hidden-tablet has-text-weight-bold">Estado: </span>
       {% if message.status.value == "Pendiente" %}
         <span class="tag is-warning">{{ message.status.value }}</span>
       {% elif message.status.value == "Resuelto" %}
@@ -113,7 +98,6 @@
       {% endif %}
     </td>
     <td><span class="is-hidden-tablet has-text-weight-bold">Recibido: </span>{{ message.inserted_at | format_date('%d/%m/%Y') }}</td>
-
   </tr>
   {% endfor %}
 {% endblock %}
@@ -130,3 +114,14 @@
   {{ render_pagination(messages, 'contact_bp.get_messages') }}
 {% endblock %}
 
+{% block delete_modal %}
+  {{
+    render_delete_modal(
+      endpoint=url_for("contact_bp.logical_delete_message"),
+      title="Archivar",
+      msg="¿Está seguro de que desea archivar este mensaje?",
+      msg_sub="Esta acción no puede deshacerse.",
+      delete_text="Archivar"
+    )
+  }}
+{% endblock %}

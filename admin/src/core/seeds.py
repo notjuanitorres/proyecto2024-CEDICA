@@ -593,6 +593,7 @@ def seed_messages(num_entries=5):
                 status=fake.random_element(
                     elements=[e.name for e in MessageStateEnum]
                 ),
+                comment=fake.text(),
             )
         )
     db.session.bulk_save_objects(messages)
