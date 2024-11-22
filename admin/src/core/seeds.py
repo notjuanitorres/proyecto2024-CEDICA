@@ -160,6 +160,12 @@ def seed_role_permissions():
         # Técnica - Ecuestre
         RolePermission(role_id=1, permission_id=21),  # ECUSTRE_INDEX
         RolePermission(role_id=1, permission_id=25),  # ECUSTRE_SHOW
+        # Administración - Reportes
+        RolePermission(role_id=4, permission_id=26),
+        RolePermission(role_id=4, permission_id=27),
+        # Técnica - Reportes
+        RolePermission(role_id=1, permission_id=26),
+        RolePermission(role_id=1, permission_id=27),
     ]
 
     db.session.add_all(role_permissions)

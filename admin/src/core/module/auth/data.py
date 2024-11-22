@@ -47,6 +47,8 @@ class PermissionEnum(pyEnum):
         ECUSTRE_UPDATE (str): Permission to update equestrian activities.
         ECUSTRE_DESTROY (str): Permission to destroy equestrian activities.
         ECUSTRE_SHOW (str): Permission to show equestrian activity details.
+        REPORT_INDEX (str): Permission to index reports.
+        REPORT_SHOW (str): Permission to show report details
     """
     EQUIPO_INDEX = "equipo_index"
     EQUIPO_NEW = "equipo_new"
@@ -73,3 +75,5 @@ class PermissionEnum(pyEnum):
     ECUSTRE_UPDATE = "ecuestre_update"
     ECUSTRE_DESTROY = "ecuestre_destroy"
     ECUSTRE_SHOW = "ecuestre_show"
+    REPORT_INDEX = "report_index"
+    REPORT_SHOW = "report_show"

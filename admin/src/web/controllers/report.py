@@ -12,7 +12,7 @@ report_bp = Blueprint(
 )
 
 @report_bp.route("/", methods=["GET"])
-@check_user_permissions(['index'])
+@check_user_permissions(['report_index'])
 @inject
 def index(
     charge_repository: AbstractChargeRepository = Provide[Container.charges_repository],
@@ -37,7 +37,6 @@ def index(
 
     # 4. Sección de Cobros
     payments_data = charge_repository.last_payments_data()
-    print(disability_data)
     # Pasar los datos al template
     return render_template('report/index.html', 
                            total_jya = total_jya , 
@@ -48,8 +47,9 @@ def index(
                            disability_types_data=disability_types_data,
                            disability_data=disability_data,
                            uncertified_jya=uncertified_jya)
+
 @report_bp.route("/ranking_propuestas", methods=["GET"])
-@check_user_permissions(['show'])
+@check_user_permissions(['report_show'])
 @inject
 def ranking_propuestas(
     payment_repository: AbstractPaymentRepository = Provide[Container.payment_repository],
@@ -58,7 +58,7 @@ def ranking_propuestas(
     return render_template("report/ranking_propuestas.html")
 
 @report_bp.route("/personas_adeudan", methods=["GET"])
-@check_user_permissions(['show'])
+@check_user_permissions(['report_show'])
 @inject
 def personas_adeudan(
     charge_repository: AbstractChargeRepository = Provide[Container.charges_repository],
@@ -67,7 +67,7 @@ def personas_adeudan(
     return render_template("report/personas_adeudan.html")
 
 @report_bp.route("/historico_cobros", methods=["GET"])
-@check_user_permissions(['show'])
+@check_user_permissions(['report_show'])
 @inject
 def historico_cobros(
     charge_repository: AbstractChargeRepository = Provide[Container.charges_repository],
