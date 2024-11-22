@@ -29,10 +29,11 @@ class FileMapper:
         """
         file_dict = {
             "title": file["title"],
-            "url": file["path"] if file["is_link"] else None,
             "upload_type": "url" if file["is_link"] else "file",
             "tag": file["tag"],
         }
+        if file["is_link"]:
+            file_dict["url_protocol"], file_dict["url_host"] = file["path"].split("://")
 
         return file_dict
 
@@ -63,6 +64,6 @@ class FileMapper:
         }
 
         if data.get("upload_type") == "url":
-            temp["path"] = data.get("url")
+            temp["path"] = data.get("url_protocol") + data.get("url_host")
 
         return temp

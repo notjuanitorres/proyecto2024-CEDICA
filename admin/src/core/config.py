@@ -22,8 +22,12 @@ class Config(object):
     DEBUG = False
     SESSION_TYPE = "filesystem"
     SEED_ON_STARTUP = False
+    CKEDITOR_PKG_TYPE = "basic"
+    CORS_ORIGINS = ["http://localhost*"]
+
     GOOGLE_OAUTH_CLIENT_ID = environ.get("GOOGLE_OAUTH_CLIENT_ID")
     GOOGLE_OAUTH_CLIENT_SECRET = environ.get("GOOGLE_OAUTH_CLIENT_SECRET")
+
 
 class ProductionConfig(Config):
     """PRODUCTION CONFIGURATION
@@ -49,6 +53,9 @@ class ProductionConfig(Config):
         "pool_pre_ping": True,
     }
     SEED_ON_STARTUP = True
+    CORS_ORIGINS = (Config.CORS_ORIGINS
+                    + ["https://admin-grupo19.proyecto2024.linti.unlp.edu.ar*"]
+                    + ["https://grupo19.proyecto2024.linti.unlp.edu.ar*"])
 
 
 class DevelopmentConfig(Config):
@@ -69,6 +76,7 @@ class DevelopmentConfig(Config):
     SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URI_DEVELOPMENT")
     OAUTHLIB_RELAX_TOKEN_SCOPE="1"
     OAUTHLIB_INSECURE_TRANSPORT="1"
+
 
 class TestingConfig(Config):
     """TESTING CONFIGURATION"""

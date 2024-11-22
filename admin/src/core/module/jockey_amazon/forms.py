@@ -544,6 +544,6 @@ class JockeyAmazonMiniSearchForm(FlaskForm):
         submit_search (SubmitField): Button to submit the search
     """
     search_text = StringField(
-        validators=[Length(message="Debe ingresar un texto entre 1 y 50 caracteres", min=1, max=50)]
+        validators=[Length(message="Debe ingresar un texto entre 0 y 50 caracteres", min=0, max=50)]
     )
     submit_search = SubmitField("Buscar")

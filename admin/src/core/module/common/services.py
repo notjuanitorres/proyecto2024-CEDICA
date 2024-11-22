@@ -11,7 +11,6 @@ from werkzeug.datastructures import FileStorage
 
 from flask import current_app
 
-# from typing import BinaryIO
 FileType = Dict[str, str | int]
 FilesType = List[FileType]
 
@@ -28,6 +27,7 @@ class AbstractStorageServices(object):
         presigned_download_url: Generates a presigned URL for downloading.
         presigned_upload_url: Generates a presigned URL for uploading.
         modify_file: Modifies an existing file in storage.
+        get_profile_image: Retrieves a profile image from storage.
     """
 
     @abstractmethod
@@ -126,6 +126,30 @@ class AbstractStorageServices(object):
 
         Returns:
             bool: True if successful, False otherwise.
+        """
+        raise NotImplementedError
+
+    @abstractmethod
+    def get_profile_image(self, filename: str) -> bytes:
+        """Retrieves a profile image from storage.
+
+        Args:
+            filename (str): The name of the file.
+
+        Returns:
+            bytes: The profile image data.
+        """
+        raise NotImplementedError
+
+    @abstractmethod
+    def get_profile_image_url(self, filename: str) -> str:
+        """Retrieves a profile image from storage.
+
+        Args:
+            filename (str): The name of the file.
+
+        Returns:
+            The file data.
         """
         raise NotImplementedError
 
@@ -233,6 +257,17 @@ class StorageServices(AbstractStorageServices):
             response.release_conn()
         return response.data
 
+
+    def get_profile_image(self, filename: str):
+        response: HTTPResponse
+        if filename == None:
+            filename='users/default_profile_image.png'
+        response = self.storage.get_object(
+            self.bucket_name,
+            filename,
+        )
+        return response.data
+    
     def presigned_download_url(self, filename: str) -> str:
         """Generates a presigned URL for downloading a file.
 

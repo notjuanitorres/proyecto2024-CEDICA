@@ -66,6 +66,7 @@ class UserMapper:
             "enabled": user.enabled,
             "system_admin": user.system_admin,
             "role_id": user.role_id,
+            "profile_image_id": user.profile_image_id,
             "inserted_at": user.inserted_at,
             "updated_at": user.updated_at,
             "assigned_to": user.employee.id if user.employee else None,

@@ -1,4 +1,5 @@
 {% extends 'update_relationship.html' %}
+{% from "macros/boolean_tag.html" import render_boolean_tag %}
 
 {% block title %} Cambiar estado {% endblock %}
 
@@ -49,7 +50,7 @@
                     <br />
                     Dni: {{ jya.dni }}
                       <br />
-                      Deudor: {{ jya.has_debts | natural_boolean }}
+                      Al día con los pagos: {{ render_boolean_tag(jya.has_debts, tag_size="medium") }}
                   </p>
                 </div>
               </div>

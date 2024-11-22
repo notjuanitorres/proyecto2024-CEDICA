@@ -1,0 +1,202 @@
+{% extends "base_list.html" %}
+
+{% block title %}Publicaciones - CEDICA{% endblock %}
+
+{% block breadcrumb_items %}
+  <li>
+    <a href="">
+      <span class="icon is-small">
+        <i class="fa-solid fa-newspaper" aria-hidden="true"></i>
+      </span>
+      <span>Publicaciones</span>
+    </a>
+  </li>
+{% endblock %}
+
+{% block inner_title %}
+    <h2 class="title is-size-3 has-text-centered">
+        Publicaciones
+    </h2>
+{% endblock %}
+
+{% block tabs %}
+<div class="tabs is-medium is-toggle is-toggle-rounded is-centered">
+  <ul>
+    <li {% if not are_deleted %}class="is-active" {% endif %}>
+      <a href="{{ url_for('publications_bp.get_publications')}}">
+        <span class="icon is-small"><i class="fa-solid fa-newspaper"></i></span>
+        <span>Todas</span>
+      </a>
+    </li>
+    <li{% if are_deleted %} class="is-active" {% endif %}>
+      <a href="{{ url_for('publications_bp.get_publications', deleted=True)}}">
+        <span class="icon is-small"><i class="fa-solid fa-box-archive"></i></span>
+        <span>Eliminadas</span>
+      </a>
+    </li>
+  </ul>
+</div>
+{% endblock %}
+
+{% block create_button %}
+  <div class="columns is-mobile is-marginless">
+  {% if "publicaciones_new" in permissions or is_admin %}
+    <div class="column is-full">
+      <a class="button is-primary is-fullwidth" href="{{ url_for('publications_bp.create_publication')}}">
+        Nueva publicación
+        <i class="fas fa-plus ml-2 is-size-5"></i>
+      </a>
+    </div>
+  {% endif %}
+  </div>
+{% endblock %}
+
+{% block form_action %}{{ url_for("publications_bp.get_publications", deleted=are_deleted) }}{% endblock %}
+{% block clear_url %}{{ url_for('publications_bp.get_publications', deleted=are_deleted) }}{% endblock %}
+
+{% block aditional_filters %}
+    <div class="columns is-1">
+      <div class="field column">
+          <input type="hidden" name="deleted" value="{{ "True" if are_deleted else "False" }}">
+          <label class="label"> {{ search_form.filter_type.label }} </label>
+          <div class="control">
+            <div class="select is-fullwidth">
+              {{ search_form.filter_type() }}
+            </div>
+          </div>
+      </div>
+      <div class="field column">
+        <label class="label"> {{ search_form.filter_status.label }} </label>
+        <div class="control">
+          <div class="select is-fullwidth">
+            {{ search_form.filter_status() }}
+          </div>
+        </div>
+      </div>
+      <div class="field column">
+        <label class="label"> {{ search_form.start_date.label }} </label>
+        <div class="control">
+                {{ search_form.start_date(class="input", type="date") }}
+        </div>
+        {% if search_form.start_date.errors %}
+            <p class="help is-danger">{{ search_form.start_date.errors[0] }}</p>
+        {% endif %}
+      </div>
+      <div class="field column">
+        <label class="label"> {{ search_form.end_date.label }} </label>
+        <div class="control">
+          {{ search_form.end_date(class="input", type="date") }}
+        </div>
+        {% if search_form.end_date.errors %}
+            <p class="help is-danger">{{ search_form.end_date.errors[0] }}</p>
+        {% endif %}
+      </div>
+    </div>
+{% endblock %}
+
+{% block top_pagination %}
+  {{ render_pagination(publications, 'publications_bp.get_publications') }}
+{% endblock %}
+
+{% block override_table %}
+	<section class="section">
+    <div class="container">
+        {% for post in publications %}
+            <div class="card mb-5">
+                <div class="card-content">
+                   <!-- Author Section -->
+                    <div class="is-flex is-align-items-center mb-4">
+                        <span class="icon has-text-info mr-2">
+                            <i class="fas fa-user"></i>
+                        </span>
+                        <p class="title is-5 mb-0 mr-2">Autor:</p>
+                        <p class="subtitle is-6 has-text-weight-semibold">{{ post.author.alias }}</p>
+                    </div>
+
+                    <!-- Title section -->
+                    <div class="content">
+                        <h4 class="title is-4 has-text">{{ post.title }}</h4>
+                        {% if post.summary %}
+                            <p class="subtitle is-6 is-italic">{{ post.summary }}</p>
+                        {% endif %}
+
+                        <!-- Content preview -->
+                        <p>{{ post.content[:150] | safe + '...' if post.content|length > 150 else post.content | safe }}</p>
+
+                        <!-- Tags -->
+                        <div class="tags">
+                            <span class="tag is-info">{{ post.type.value }}</span>
+                            {% if post.status.value == "Archivado" %}
+                                {% set tag_status = "danger" %}
+                            {% elif post.status.value == "Borrador" %}
+                                {% set tag_status = "warning" %}
+                            {% else %}
+                                {% set tag_status = "success" %}
+                            {% endif %}
+                            <span class="tag is-{{ tag_status }}">{{ post.status.value }}</span>
+                        </div>
+                    </div>
+
+                    <!-- Publication date with icon -->
+                    <div class="mb-3">
+                        <span class="icon-text">
+                            <span class="icon">
+                                <i class="fas fa-calendar"></i>
+                            </span>
+                            <span>Publicado el: {{ post.publish_date | format_date }}</span>
+                        </span>
+                    </div>
+
+                    <!-- Creation and modification dates -->
+                    <div class="is-size-7 has-text-grey">
+                        <p>Creado el: {{ post.create_date | format_date }}</p>
+                        <p>Modificado por última vez: {{ post.update_date | format_date }}</p>
+                    </div>
+
+                    <!-- Buttons -->
+                    <div class="mt-4" style="display: flex; justify-content: space-between;">
+                        <div class="field is-grouped is-grouped-multiline">
+                            <p class="control">
+                                <a href="{{ url_for('publications_bp.show_publication', publication_id=post.id) }}"
+                                   class="button is-primary is-rounded">
+                                    Ver publicación
+                                </a>
+                            </p>
+                            {% if not are_deleted %}
+                                {% if "publicaciones_update" in permissions or is_admin %}
+                                    <p class="control">
+                                        <a href="{{ url_for('publications_bp.edit_publication', publication_id=post.id) }}"
+                                           class="button is-link is-rounded">
+                                            Editar
+                                        </a>
+                                    </p>
+                                    {% if post.status.value == "Publicado" %}
+                                        <p class="control">
+                                            <a href="{{ url_for('publications_bp.toggle_publication_status', publication_id=post.id) }}"
+                                               class="button is-warning is-rounded">
+                                                Despublicar
+                                            </a>
+                                        </p>
+                                    {% else %}
+                                        <p class="control">
+                                            <a href="{{ url_for('publications_bp.toggle_publication_status', publication_id=post.id) }}"
+                                               class="button is-warning is-rounded">
+                                                Publicar
+                                            </a>
+                                        </p>
+                                    {% endif %}
+                                {% endif %}
+
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}
+
+{% block bottom_pagination %}
+  {{ render_pagination(publications, 'publications_bp.get_publications') }}
+{% endblock %}
