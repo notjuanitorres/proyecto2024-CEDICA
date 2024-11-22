@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% from "macros/flash_message.html" import render_flash_messages %}
+
+{% block title %}Registrarse - CEDICA{% endblock %}
+
+{% block head %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/accounts/auth.css') }}" />
+{% endblock %}
+
+{% block content %}
+
+<div class="container is-max-desktop full-height-container">
+    <h1 class="is-size-1">Registrarse</h1>
+
+    {{ render_flash_messages(messages) }}
+
+    <form action="{{ url_for('auth_bp.register_with_provider') }}" method="POST">
+        {{ form.hidden_tag() }}
+
+        <div class="field">
+            <label class="label">{{ form.email.label }}</label>
+            <div class="control has-icons-left">
+                {{ form.email(class="input", type="email", disabled=true, placeholder="Ingrese email") }}
+                <span class="icon is-small is-left">
+                    <i class="fas fa-envelope"></i>
+                </span>
+            </div>
+            {% if form.email.errors %}
+                <p class="help is-danger">{{ form.email.errors[0] }}</p>
+            {% endif %}
+        </div>
+
+        <div class="field">
+            <label class="label">{{ form.alias.label }}</label>
+            <div class="control has-icons-left">
+                {{ form.alias(class="input", placeholder="Ingrese su alias") }}
+                <span class="icon is-small is-left">
+                    <i class="fa-solid fa-address-card"></i>
+                </span>
+            </div>
+            {% if form.alias.errors %}
+                <p class="help is-danger">{{ form.alias.errors[0] }}</p>
+            {% endif %}
+
+        </div>
+
+        <div class="field">
+            <label class="label">{{ form.password.label }}</label>
+            <div class="control has-icons-left has-icons-right">
+                {{ form.password(class="input password", placeholder="Ingrese una contraseña") }}
+                <span class="icon is-small is-left">
+                    <i class="fas fa-lock"></i>
+                </span>
+                <span class="icon is-small is-right toggle-password">
+                    <i class="fa fa-eye"></i>
+                </span>
+            </div>
+            {% if form.password.errors %}
+                <p class="help is-danger">{{ form.password.errors[0] }}</p>
+            {% endif %}
+        </div>
+
+        <div class="field">
+            <label class="label">{{ form.confirm_password.label }}</label>
+            <div class="control has-icons-left has-icons-right">
+                {{ form.confirm_password(class="input password", placeholder="Repita la contraseña") }}
+                <span class="icon is-small is-left">
+                    <i class="fas fa-lock"></i>
+                </span>
+                <span class="icon is-small is-right toggle-password">
+                    <i class="fa fa-eye"></i>
+                </span>
+            </div>
+            {% if form.confirm_password.errors %}
+                <p class="help is-danger">{{ form.confirm_password.errors[0] }}</p>
+            {% endif %}
+        </div>
+
+        <div class="field is-flex-direction-row is-justify-content-space-between is-flex">
+            <p class="control">
+                <button class="button is-primary" type="submit" value="Login">
+                    Confirmar
+                </button>
+            </p>
+
+        </div>
+    </form>
+
+
+    <div class="buttons is-centered mt-5">
+        <p class="control">
+            <a href="/" class="button is-primary is-light">
+                <span class="icon">
+                    <i class="fas fa-arrow-left"></i>
+                </span>&nbsp;
+                Volver a la página principal
+            </a>
+        </p>
+    </div>
+</div>
+{% endblock %}
+{% block extra_scripts %}
+    {{ super() }}
+    <script src="{{ url_for('static', filename='js/toggle-password.js') }}"></script>
+{% endblock %}
