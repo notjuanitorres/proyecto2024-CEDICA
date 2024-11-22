@@ -44,3 +44,28 @@ def get_messages(
 
     return render_template("./contact/messages.html",
                            search_form=form, messages=messages)
+
+
+@contact_bp.route("/<int:message_id>")
+@check_user_permissions(permissions_required=["mensaje_show"])
+@inject
+def show_message(message_id: int,
+               contact_repository: AbstractContactRepository = Provide[Container.contact_repository]):
+    """
+    Route to show details of a specific message.
+
+    Args:
+        message_id (int): The ID of the message.
+        contact_repository (AbstractContactRepository): The contact repository.
+
+    Returns:
+        Response: The rendered template for the message details if the message exists,
+         otherwise redirect to the list of messages.
+    """
+    message = contact_repository.get_by_id(message_id)
+    if not message:
+        flash(f"El mensaje con ID = {message_id} no existe", "danger")
+        return get_messages()
+
+    return render_template('./contact/message.html', message=message)
+

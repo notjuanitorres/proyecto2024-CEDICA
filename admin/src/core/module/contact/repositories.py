@@ -41,7 +41,7 @@ class AbstractContactRepository:
 
         Args:
             message_id (int): The ID of the message to update.
-            data (Dict): The updated publication data.
+            data (Dict): The updated message data.
 
         Returns:
             bool: True if updated successfully, False otherwise.
@@ -49,12 +49,12 @@ class AbstractContactRepository:
         pass
 
     @abstractmethod
-    def delete_publication(self, publication_id: int) -> bool:
+    def delete_message(self, message_id: int) -> bool:
         """
-        Delete a publication.
+        Delete a message.
 
         Args:
-            publication_id (int): The ID of the publication to delete.
+            message_id (int): The ID of the message to delete.
 
         Returns:
             bool: True if deleted successfully, False otherwise.
@@ -104,13 +104,13 @@ class ContactRepository(AbstractContactRepository):
 
     def add_message(self, message: Message) -> Dict:
         """
-        Add a new publication to the repository.
+        Add a new message to the repository.
 
         Args:
-            publication (Publication): The publication to add.
+            message (message): The message to add.
 
         Returns:
-            Dict: The added publication as a dictionary.
+            Dict: The added message as a dictionary.
         """
         self.db.session.add(message)
         self.db.session.flush()
@@ -126,16 +126,16 @@ class ContactRepository(AbstractContactRepository):
             order_by: List = None,
     ):
         """
-        Retrieve a paginated list of publications.
+        Retrieve a paginated list of messages.
 
         Args:
             page (int): The page number to retrieve.
-            per_page (int): The number of publications per page.
-            search_query (Dict, optional): The search query to filter publications.
+            per_page (int): The number of messages per page.
+            search_query (Dict, optional): The search query to filter messages.
             order_by (List, optional): The order by criteria.
 
         Returns:
-            A paginated list of publications.
+            A paginated list of messages.
         """
         max_per_page = 100
 
@@ -153,25 +153,25 @@ class ContactRepository(AbstractContactRepository):
 
     def __get_by_id(self, message_id: int) -> Message:
         """
-        Internal method to retrieve a publication by its ID.
-
-        Args:
-            publication_id (int): The ID of the publication to retrieve.
-
-        Returns:
-            Publication: The publication entity.
-        """
-        return Message.query.get(message_id)
-
-    def get_by_id(self, message_id: int) -> Dict | None:
-        """
-        Retrieve a publication by its ID.
+        Internal method to retrieve a message by its ID.
 
         Args:
             message_id (int): The ID of the message to retrieve.
 
         Returns:
-            Dict | None: The publication data as a dictionary, or None if not found.
+            message: The message entity.
         """
-        message = self.db.session.query(Message).filter(message.id == message_id).first()
+        return Message.query.get(message_id)
+
+    def get_by_id(self, message_id: int) -> Dict | None:
+        """
+        Retrieve a message by its ID.
+
+        Args:
+            message_id (int): The ID of the message to retrieve.
+
+        Returns:
+            Dict | None: The message data as a dictionary, or None if not found.
+        """
+        message = self.db.session.query(Message).filter(Message.id == message_id).first()
         return Mapper.from_entity(message) if message else None
