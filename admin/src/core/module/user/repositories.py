@@ -5,7 +5,7 @@ from src.core.module.common.repositories import (
     apply_filters,
     apply_multiple_search_criteria,
 )
-from .models import User
+from .models import ProfilePhoto, User
 from .mappers import UserMapper
 from sqlalchemy import and_
 
@@ -18,6 +18,8 @@ class AbstractUserRepository:
     for adding, retrieving, updating, archiving, deleting, and recovering users,
     as well as toggling activation status and checking system administrator status.
     """
+    def __init__(self):
+        self.storage_path = "users/"
 
     @abstractmethod
     def add(self, user: User) -> User | None:
@@ -68,7 +70,16 @@ class AbstractUserRepository:
             A paginated list of active users.
         """
         pass
-
+    @abstractmethod
+    def get_profile_image_url(self, user_id: int) -> str | None:
+        """ 
+        Retrieve the profile image URL of a user.
+        Args:
+            user_id (int): The ID of the user.
+        Returns:
+            str | None: The profile image URL if exists, None otherwise.
+        """
+        pass
     @abstractmethod
     def get_user(self, user_id: int) -> Dict | None:
         """
@@ -200,6 +211,41 @@ class AbstractUserRepository:
         """
         pass
 
+    @abstractmethod
+    def change_profile_photo(self, user_id: int, profile_photo_id: int) -> bool:
+        """
+        Changes the profile photo of a user.
+        Args:
+            user_id (int): The ID of the user.
+            profile_photo_id (int): The ID of the profile photo.
+        Returns: 
+            bool: True if successful, False otherwise.
+        """
+        pass
+
+    @abstractmethod
+    def get_profile_photo_url(self, profile_photo_id: int) -> str:
+        """
+        Returns the URL of the profile photo based on the ID.
+
+        Args:
+            profile_photo_id (int): The ID of the profile photo.
+
+        Returns:
+            str: The URL of the profile photo.
+        """
+    @abstractmethod
+    def save_new_photo(self, profile_photo_url: str) -> int:
+        """
+        Saves a new profile photo and returns its ID.
+
+        Args:
+            profile_photo_url (str): The URL of the new profile photo.
+
+        Returns:
+            int: The ID of the newly created profile photo.
+        """
+        pass
 
 class UserRepository(AbstractUserRepository):
     """
@@ -214,6 +260,7 @@ class UserRepository(AbstractUserRepository):
         """
         Initialize the UserRepository.
         """
+        super().__init__()
         self.db = database
 
     def add(self, user: User):
@@ -310,9 +357,14 @@ class UserRepository(AbstractUserRepository):
         """
         user = self.get_by_id(user_id)
         if not user:
-            return None
+            return None     
         return UserMapper.from_entity(user)
-
+    def get_profile_image_url(self, user_id: int) -> str | None:
+        user = self.get_by_id(user_id)
+        if not user:
+            return None
+        return user.profile_image.url if user.profile_image else None
+    
     def get_by_email(self, email: str) -> User | None:
         """
         Retrieve a user by their email address.
@@ -339,6 +391,9 @@ class UserRepository(AbstractUserRepository):
         user = User.query.filter_by(id=user_id)
         if not user:
             return False
+        if data["profile_image_url"]!= None:
+            self.change_profile_photo(user_id, data["profile_image_url"]) 
+        data.pop("profile_image_url")
         user.update(data)
         self.save()
         return True
@@ -475,3 +530,32 @@ class UserRepository(AbstractUserRepository):
             return user.id
 
         return None
+    def get_profile_photo_url(self, profile_photo_id):
+        profile_photo = ProfilePhoto.query.get(profile_photo_id)
+        return profile_photo.url if profile_photo else None
+    
+
+    def change_profile_photo(self, user_id: int, profile_photo_url:str) -> bool:
+        try:
+            user = User.query.get(user_id)
+            if not user:
+                return False
+
+            if user.profile_image_id:
+                profile_photo = ProfilePhoto.query.get(user.profile_image_id)
+                if profile_photo:
+                    profile_photo.url = profile_photo_url
+            else:
+                user.profile_image_id = self.save_new_photo(profile_photo_url)
+            self.save()
+            return True
+        except Exception:
+            return False
+        
+
+    def save_new_photo(self, profile_photo_url: str) -> int:
+        new_profile_photo = ProfilePhoto(url=profile_photo_url)
+        self.db.session.add(new_profile_photo)
+        self.db.session.flush()
+        self.save()
+        return new_profile_photo.id
