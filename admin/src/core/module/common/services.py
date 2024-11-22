@@ -128,6 +128,7 @@ class AbstractStorageServices(object):
             bool: True if successful, False otherwise.
         """
         raise NotImplementedError
+
     @abstractmethod
     def get_profile_image(self, filename: str) -> bytes:
         """Retrieves a profile image from storage.

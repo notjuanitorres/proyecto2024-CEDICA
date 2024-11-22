@@ -186,14 +186,15 @@ def edit_profile(
                 old = user_repository.get_profile_image_url(user_id)
                 if old:
                     storage_service.delete_file(old)
-                profile_image_url = storage_service.upload_file(file, path=user_repository.storage_path)["path"]
 
-            update_data = {
-                "email": form.email.data,
-                "alias": form.alias.data,
-            }
+                response = storage_service.upload_file(file, path=user_repository.storage_path)
+                if response is None:
+                    flash("Error al subir la imagen", "danger")
+                    return redirect(url_for("auth_bp.view_profile"))
 
-            update_data["profile_image_url"] = profile_image_url
+                profile_image_url = response["path"]
+
+            update_data = {"email": form.email.data, "alias": form.alias.data, "profile_image_url": profile_image_url}
 
             if form.new_password.data:
                 update_data["password"]= bcrypt.generate_password_hash(form.new_password.data).decode('utf-8')
