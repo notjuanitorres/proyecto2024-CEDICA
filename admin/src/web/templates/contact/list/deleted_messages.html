@@ -76,8 +76,10 @@
         to_left=true,
         endpoints={
           'show':'contact_bp.show_message',
+          'delete':'contact_bp.delete_message'
         },
         permission_to_show="mensaje_show",
+        permission_to_delete="mensaje_destroy",
         user_permissions=permissions,
         is_admin=is_admin
         )
@@ -99,7 +101,18 @@
       {% endif %}
     </td>
     <td><span class="is-hidden-tablet has-text-weight-bold">Recibido: </span>{{ message.inserted_at | format_date('%d/%m/%Y') }}</td>
-
+    <td class="is-hidden-tablet is-flex">
+      <a href="{{ url_for('contact_bp.show_message', message_id=message.id)}}" class="button is-flex-grow-1 ">
+        <span class="is-bold">
+            Ver en detalle
+            <i class="fa-regular fa-eye ml-2"></i>
+        </span>
+      </a>
+      <form action="{{ url_for('contact_bp.delete_message') }}" method="post" style="display:inline;">
+        <input type="hidden" name="message_id" value="{{ message.id }}">
+        <button type="submit" class="button is-danger is-flex-grow-1">Eliminar</button>
+      </form>
+    </td>
   </tr>
   {% endfor %}
 {% endblock %}
@@ -114,4 +127,16 @@
 
 {% block bottom_pagination %}
   {{ render_pagination(messages, 'contact_bp.get_deleted_messages') }}
+{% endblock %}
+
+{% block delete_modal %}
+  {{
+    render_delete_modal(
+      endpoint=url_for("contact_bp.delete_message"),
+      title="Eliminar",
+      msg="¿Está seguro de que desea eliminar este mensaje para siempre?",
+      msg_sub="Esta acción no puede deshacerse.",
+      delete_text="Eliminar"
+    )
+  }}
 {% endblock %}

@@ -120,7 +120,7 @@ def logical_delete_message(
     Returns:
         A redirect to the message's detail page with a flash message indicating success or failure.
     """
-    message_id = request.form["message_id"]
+    message_id = request.form["item_id"]
     archived = contact_repository.logical_delete_message(message_id)
 
     if not archived:
@@ -168,7 +168,7 @@ def delete_message(
     Returns:
         A redirect to the list of messages with a flash message indicating success or failure.
     """
-    message_id = request.form["message_id"]
+    message_id = request.form["item_id"]
     deleted = contact_repository.delete(message_id)
 
     if not deleted:
