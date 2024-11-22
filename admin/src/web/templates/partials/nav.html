@@ -60,6 +60,9 @@
                         <hr class="navbar-divider" aria-hidden="true"/>
                         <a href="{{ url_for('publications_bp.get_publications') }}" class="navbar-item" aria-label="Publicaciones"> Publicaciones </a>
                     {% endif %}
+                    {% if "mensaje_index" in permissions or is_admin%}
+                    <a href="{{ url_for('contact_bp.get_messages') }}" class="navbar-item" aria-label="Mensajes"> Mensajes </a>
+                {% endif %}
                     <hr class="is-hidden-desktop" /> 
                     <a href="{{url_for('auth_bp.view_profile', user_id=user_id)}}" class="dropdown-item is-hidden-desktop" role="menuitem"> Perfil </a>
                     {% if not is_admin%}

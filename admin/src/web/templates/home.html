@@ -65,6 +65,11 @@
                     Publicaciones
                 </a>
                 {% endif %}
+                {% if "mensajes_index" in permissions or is_admin %}
+                <a href="{{ url_for('contact_bp.get_messages') }}" class="button" aria-label="Mensajes">
+                    Mensajes
+                </a>
+                {% endif %}
 
             </div>
             

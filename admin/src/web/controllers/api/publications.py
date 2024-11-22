@@ -8,10 +8,10 @@ from src.core.module.publication import AbstractPublicationRepository
 from src.core.module.publication.mappers import PublicationMapper
 from src.core.module.publication.models import EstadoPublicacionEnum
 
-api_bp = Blueprint("api_bp", __name__, url_prefix="/api")
+publications_api_bp = Blueprint("api_bp", __name__, url_prefix="/articles")
 
 
-@api_bp.route("/articles", methods=["GET"])
+@publications_api_bp.route("/", methods=["GET"])
 @inject
 def get_publications_api(
     publication_repository: AbstractPublicationRepository = Provide[Container.publication_repository],
@@ -66,7 +66,7 @@ def get_publications_api(
     return jsonify(response_data), 200
 
 
-@api_bp.route("/articles/<int:publication_id>", methods=["GET"])
+@publications_api_bp.route("/<int:publication_id>", methods=["GET"])
 @inject
 def show_publication(
     publication_id: int,

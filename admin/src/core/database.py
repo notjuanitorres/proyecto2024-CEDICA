@@ -72,6 +72,7 @@ def reset(app):
     from .module.employee.models import Employee
     from .module.payment.models import Payment
     from .module.jockey_amazon.models import JockeyAmazon, FamilyMember, WorkAssignment, SchoolInstitution
+    from .module.contact.models import Message
 
     with app.app_context():
         db.drop_all()
