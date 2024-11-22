@@ -387,7 +387,15 @@ class AbstractJockeyAmazonRepository(ABC):
             list: A list of tuples containing the disability category and the count.
         """
         pass
+    @abstractmethod
+    def debtors(self) -> list:
+        """
+        Get a list of debtors.
 
+        Returns:
+            list: A list of tuples containing the debtor name and the count.
+        """
+        pass
 class JockeyAmazonRepository(AbstractJockeyAmazonRepository):
     """
     Concrete implementation of AbstractJockeyAmazonRepository for managing `JockeyAmazon` entities.
@@ -929,10 +937,10 @@ class JockeyAmazonRepository(AbstractJockeyAmazonRepository):
             list: A list of tuples containing the proposal name and the count.
         """
         return (
-                db.session.query(WorkAssignment.proposal, func.count(WorkAssignment.jockey_amazon_id))
-                .group_by(WorkAssignment.proposal)
-                .all()
-            )
+            db.session.query(WorkAssignment.proposal, func.count(WorkAssignment.jockey_amazon_id) )
+            .group_by(WorkAssignment.proposal)
+            .all()
+        )
     def certified_jya(self) -> int:
         """
         Get the number of certified JockeyAmazon entities.
@@ -959,3 +967,12 @@ class JockeyAmazonRepository(AbstractJockeyAmazonRepository):
             list: A list of tuples containing the disability category and the count.
         """
         return JockeyAmazon.query.filter(JockeyAmazon.has_disability).with_entities(JockeyAmazon.disability_diagnosis, func.count(JockeyAmazon.id)).group_by(JockeyAmazon.disability_diagnosis).all()
+
+    def debtors(self):
+        """
+        Get a list of debtors.
+
+        Returns:
+            list: A list of tuples containing the debtor name and the count.
+        """
+        return JockeyAmazon.query.filter(JockeyAmazon.has_debts).with_entities(JockeyAmazon.first_name, JockeyAmazon.last_name, JockeyAmazon.id).all()

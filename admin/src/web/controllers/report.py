@@ -16,7 +16,6 @@ report_bp = Blueprint(
 @inject
 def index(
     charge_repository: AbstractChargeRepository = Provide[Container.charges_repository],
-    user_repository: AbstractUserRepository = Provide[Container.user_repository],
     jockey_amazon_repository: AbstractJockeyAmazonRepository = Provide[Container.jockey_amazon_repository],
 ):
     # 1. KPIs
@@ -35,42 +34,65 @@ def index(
     # Gráfico por Categoría de Cliente
     disability_data = jockey_amazon_repository.disability_data()
 
-    # 4. Sección de Cobros
-    payments_data = charge_repository.last_payments_data()
     # Pasar los datos al template
     return render_template('report/index.html', 
                            total_jya = total_jya , 
                            current_month_income=current_month_income,
                            proposals_data=proposals_data,
-                           payments_data=payments_data,
                            certified_jya=certified_jya,
                            disability_types_data=disability_types_data,
                            disability_data=disability_data,
                            uncertified_jya=uncertified_jya)
 
-@report_bp.route("/ranking_propuestas", methods=["GET"])
+@report_bp.route("/ranking_propousals", methods=["GET"])
 @check_user_permissions(['report_show'])
 @inject
-def ranking_propuestas(
-    payment_repository: AbstractPaymentRepository = Provide[Container.payment_repository],
+def reports_proposals(
+    charge_repository: AbstractChargeRepository = Provide[Container.charges_repository],
+    jockey_amazon_repository: AbstractJockeyAmazonRepository = Provide[Container.jockey_amazon_repository],
 ):
+    # 1. KPIs
+    total_jya = jockey_amazon_repository.total_jya()
+    current_month_income = charge_repository.current_month_income()
+    proposals_data = jockey_amazon_repository.proposals_data()
+    proposals_data = sorted(proposals_data, key=lambda x: x[1], reverse=True)
     # Lógica para generar el reporte de ranking de propuestas de trabajo más solicitadas
-    return render_template("report/ranking_propuestas.html")
+    return render_template("report/reports_proposals.html", 
+                            proposals_data=proposals_data,
+                            total_jya = total_jya,
+                            current_month_income=current_month_income
+                            )
 
 @report_bp.route("/personas_adeudan", methods=["GET"])
 @check_user_permissions(['report_show'])
 @inject
-def personas_adeudan(
+def reports_debtors(
     charge_repository: AbstractChargeRepository = Provide[Container.charges_repository],
+    jockey_amazon_repository: AbstractJockeyAmazonRepository = Provide[Container.jockey_amazon_repository],
 ):
+     # 1. KPIs
+    total_jya = jockey_amazon_repository.total_jya()
+    current_month_income = charge_repository.current_month_income()
+    #obtener los deudores
+    debtors = jockey_amazon_repository.debtors()
     # Lógica para generar el reporte de personas que adeudan pagos
-    return render_template("report/personas_adeudan.html")
+    return render_template("report/reports_debtors.html", 
+                           debtors=debtors,
+                           total_jya = total_jya,
+                             current_month_income=current_month_income)
 
 @report_bp.route("/historico_cobros", methods=["GET"])
 @check_user_permissions(['report_show'])
 @inject
-def historico_cobros(
+def reports_charges(
     charge_repository: AbstractChargeRepository = Provide[Container.charges_repository],
+    jockey_amazon_repository: AbstractJockeyAmazonRepository = Provide[Container.jockey_amazon_repository],
 ):
-    # Lógica para generar el reporte histórico de cobros en un rango de fechas asociado a una persona
-    return render_template("report/historico_cobros.html")
+    # 1. KPIs
+    total_jya = jockey_amazon_repository.total_jya()
+    current_month_income = charge_repository.current_month_income()
+    payments_data = charge_repository.last_payments_data()
+    return render_template("report/reports_charges.html", 
+                           payments_data=payments_data,   
+                           total_jya = total_jya,
+                             current_month_income=current_month_income )

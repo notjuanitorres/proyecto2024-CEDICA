@@ -1,53 +1,6 @@
-{% extends "layout.html" %}
+{% extends "base_reports.html" %}
 {% block title %} Reportes {% endblock %}
-{% block main_content %}
-<nav class="breadcrumb mb-2" aria-label="breadcrumbs">
-    <ul>
-      <li>
-        <a href="{{ url_for('index_bp.home')}}">
-          <span class="icon is-small">
-            <i class="fas fa-home" aria-hidden="true"></i>
-          </span>
-          <span>Inicio</span>
-        </a>
-      </li>
-      <li>
-        <a href="{{ url_for("employee_bp.get_employees") }}">
-      <span class="icon is-small">
-        <i class="fa-solid fa-chart-pie"></i>      
-      </span>
-            <span>Reportes</span>
-        </a>
-    </li>
-    </ul>
-  </nav>
-    <section class="section">
-        <div class="container">
-            <h2 class="title is-size-3 has-text-centered">
-                Reportes
-            </h2>
-            <!-- KPIs -->
-            <div class="columns is-multiline">
-                <div class="column is-one-half">
-                    <div class="box has-text-centered">
-                        <span class="icon is-large">
-                            <i class="fas fa-users fa-2x"></i>
-                        </span>
-                        <p class="title is-4">{{ total_jya }}</p>
-                        <p class="subtitle is-6">Total de Jinetes y Amazonas</p>
-                    </div>
-                </div>
-                <div class="column is-one-half">
-                    <div class="box has-text-centered">
-                        <span class="icon is-large">
-                            <i class="fas fa-dollar-sign fa-2x"></i>
-                        </span>
-                        <p class="title is-4">${{ current_month_income }}</p>
-                        <p class="subtitle is-6">Ganancias del ultimo mes</p>
-                    </div>
-                </div>
-            </div>
-
+    {% block report_content%}
             <!-- Gráficos -->
             <div class="columns is-multiline">
                 <div class="column is-half">
@@ -75,34 +28,7 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Sección de Cobros -->
-            <section>
-                <h2 class="title is-5">Últimos Cobros</h2>
-                <div class="table-container">
-                    <table class="table is-striped is-hoverable is-fullwidth">
-                        <thead>
-                            <tr>
-                                <th>Fecha</th>
-                                <th>Monto</th>
-                                <th>Nombre del Jinete/Amazona</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for charge in payments_data %}
-                                <tr>
-                                    <td>{{ charge.date_of_charge }}</td>
-                                    <td>${{ charge.amount }}</td>
-                                    <td>{{ charge.jya.last_name }} {{ charge.jya.first_name }}</td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-        </div>
-    </section>
-{% endblock %}
+{% endblock %}      
 
 {% block extra_scripts %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
