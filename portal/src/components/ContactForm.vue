@@ -131,7 +131,7 @@ onMounted(async () => {
   <div class="section">
     <div class="container">
       <form @submit.prevent="handleSubmit" class="box">
-        <h2 class="title is-4 mb-5">Contáctanos</h2>
+        <h2 class="title is-4 mb-5">Comunicate con nosotros</h2>
 
         <div class="field">
           <label class="label">Nombre</label>

@@ -35,7 +35,7 @@
             <div class="navbar-end">
                 <RouterLink to="/nosotros" class="navbar-item">Sobre Nosotros</RouterLink>
                 <RouterLink to="/noticias" class="navbar-item">Noticias</RouterLink>
-                <RouterLink to="/#contact" class="navbar-item">Contacto</RouterLink>
+                <RouterLink to="/#contact-us" class="navbar-item">Contacto</RouterLink>
             </div>
         </div>
     </nav>

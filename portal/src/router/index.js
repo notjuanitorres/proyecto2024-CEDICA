@@ -30,12 +30,21 @@ const router = createRouter({
   }
   ],
   scrollBehavior(to, from, savedPosition) {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({ top: 0, behavior: 'smooth' })
-      }, 100)  // Small delay to ensure content is loaded
-    })
-  }
-})
+    if (savedPosition) {
+      // Scroll to saved position (e.g., when using back/forward buttons)
+      return savedPosition;
+    } else if (to.hash) {
+      // Scroll to the element with the id matching the hash
+      return {
+        el: to.hash,
+        behavior: 'smooth',
+      };
+    } else {
+      // Default scroll to the top of the page
+      return { top: 0 };
+    }
+  },
+});
+
 
 export default router
