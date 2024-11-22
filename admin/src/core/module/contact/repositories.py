@@ -232,3 +232,8 @@ class ContactRepository(AbstractContactRepository):
         message.delete()
         self.save()
         return True
+    
+    def update_message(self, message_id: int, data: dict) -> bool:
+        message = Message.query.filter_by(id=message_id).update(data)
+        self.db.session.commit()
+        return bool(message)

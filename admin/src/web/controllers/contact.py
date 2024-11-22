@@ -3,6 +3,7 @@ from dependency_injector.wiring import inject, Provide
 from src.web.helpers.auth import check_user_permissions
 from src.core.container import Container
 from src.core.module.contact import AbstractContactRepository, ContactSearchForm
+from src.core.module.contact.models import MessageStateEnum
 
 contact_bp = Blueprint("contact_bp", __name__, url_prefix="/contact")
 
@@ -33,11 +34,13 @@ def get_messages(
     )
 
 
-@contact_bp.route("/<int:message_id>")
+@contact_bp.route("/message/<int:message_id>", methods=["GET"])
 @check_user_permissions(permissions_required=["mensaje_show"])
 @inject
-def show_message(message_id: int,
-               contact_repository: AbstractContactRepository = Provide[Container.contact_repository]):
+def show_message(
+    message_id: int,
+    contact_repository: AbstractContactRepository = Provide[Container.contact_repository]
+):
     """
     Route to show details of a specific message.
 
@@ -52,9 +55,9 @@ def show_message(message_id: int,
     message = contact_repository.get_by_id(message_id)
     if not message:
         flash(f"El mensaje con ID = {message_id} no existe", "danger")
-        return get_messages()
+        return redirect(url_for("contact_bp.get_messages"))
 
-    return render_template('./contact/message.html', message=message)
+    return render_template('./contact/message.html', message=message, message_statuses=MessageStateEnum)
 
 @contact_bp.route("/archivados", methods=["GET"])
 @check_user_permissions(permissions_required=["mensaje_index"])
@@ -176,3 +179,52 @@ def delete_message(
     else:
         flash("El mensaje ha sido eliminado correctamente", "success")
     return redirect(url_for("contact_bp.get_messages"))
+
+@contact_bp.route("/message/update_status", methods=["POST"])
+@check_user_permissions(permissions_required=["mensaje_update"])
+@inject
+def update_message_status(
+    contact_repository: AbstractContactRepository = Provide[Container.contact_repository]
+):
+    """
+    Update the status of a message.
+    """
+    message_id = request.form["message_id"]
+    new_status = request.form["status"]
+
+    updated = contact_repository.update_message(
+        message_id,
+        {"status": MessageStateEnum[new_status]},
+    )
+
+    if not updated:
+        flash("El mensaje no existe o no ha podido ser actualizado, intentelo nuevamente", "warning")
+    else:
+        flash("El estado del mensaje ha sido actualizado correctamente", "success")
+
+    return redirect(url_for("contact_bp.show_message", message_id=message_id))
+
+
+@contact_bp.route("/message/update_comment", methods=["POST"])
+@check_user_permissions(permissions_required=["mensaje_update"])
+@inject
+def update_message_comment(
+    contact_repository: AbstractContactRepository = Provide[Container.contact_repository]
+):
+    """
+    Update the comment of a message.
+    """
+    message_id = request.form["message_id"]
+    new_comment = request.form.get("comment", "").strip()
+
+    updated = contact_repository.update_message(
+        message_id,
+        {"comment": new_comment or ""},
+    )
+
+    if not updated:
+        flash("El mensaje no existe o no ha podido ser actualizado, intentelo nuevamente", "warning")
+    else:
+        flash("El comentario del mensaje ha sido actualizado correctamente", "success")
+
+    return redirect(url_for("contact_bp.show_message", message_id=message_id))

@@ -32,14 +32,6 @@ Mensaje de {{ message.name }}
 {% endif %}
 {% endblock %}
 
-{% block banner %}
-    {% if message.is_deleted %}
-        <div class="is-flex is-fullwidth is-justify-content-center has-background-danger p-4">
-            <h2 class="title">Mensaje eliminado</h2>
-        </div>
-    {% endif %}
-{% endblock %}
-
 {% block card_content %}
 <ul>
     <li><strong>ID:</strong> {{ message.id }}</li>
@@ -49,6 +41,47 @@ Mensaje de {{ message.name }}
     <li><strong>Recibido:</strong> {{ message.inserted_at.strftime('%d-%m-%Y %H:%M')}}</li>
     <li><strong>Mensaje:</strong> {{ message.message }}</li>
 </ul>
+
+<!-- Form for updating status -->
+<div class="mt-4">
+    <form class="is-flex is-align-items-center mb-4" action="{{ url_for('contact_bp.update_message_status') }}" method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="message_id" value="{{ message.id }}">
+
+        <!-- Status Field -->
+        <label class="label mr-2 mb-0">Actualizar Estado:</label>
+        <div class="control mr-2">
+            <div class="select is-small">
+                <select name="status">
+                    {% for status in message_statuses %}
+                        <option value="{{ status.name }}" {% if status == message.status %}selected{% endif %}>
+                            {{ status.value }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <button type="submit" class="button is-primary is-small">Actualizar</button>
+    </form>
+</div>
+
+<!-- Form for updating comment -->
+<div>
+    <form class="is-flex is-flex-direction-column" action="{{ url_for('contact_bp.update_message_comment') }}" method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="message_id" value="{{ message.id }}">
+
+        <!-- Comment Field -->
+        <div class="field">
+            <label class="label">Comentario:</label>
+            <div class="control">
+                <textarea class="textarea is-small" name="comment" placeholder="Agregue un comentario aquí">{{ message.comment }}</textarea>
+            </div>
+        </div>
+
+        <button type="submit" class="button is-info is-small mt-2">Actualizar Comentario</button>
+    </form>
+</div>
 {% endblock %}
 
 {% block card_actions %}
@@ -65,27 +98,5 @@ Mensaje de {{ message.name }}
         <button class="card-footer-item has-text-danger modal-trigger" data-id="{{ message.id }}" data-target="message-delete-modal">
             Archivar
         </button>
-    {% endif %}
-{% endblock %}
-
-{% block modal %}
-    {% if message.is_deleted %}
-        {{ render_delete_modal(
-          field="message",
-          endpoint=url_for("contact_bp.delete_message", message_id=message.id),
-          title="Eliminar para siempre",
-          msg="¿Está seguro de que desea eliminar este mensaje?",
-          msg_sub="Luego de confirmar, no se podrán revertir los cambios.",
-          related_entities_text="Cualquier información asociada a este mensaje también será eliminada."
-        ) }}
-    {% else %}
-        {{ render_delete_modal(
-          field="message",
-          endpoint=url_for("contact_bp.logical_delete_message", message_id=message.id),
-          title="Archivar",
-          msg="¿Está seguro de que desea archivar este mensaje?",
-          msg_sub="Esto moverá el mensaje a la Papelera, donde podrá recuperarlo más tarde.",
-          delete_text="Archivar"
-        ) }}
     {% endif %}
 {% endblock %}
