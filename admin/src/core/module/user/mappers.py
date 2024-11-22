@@ -17,7 +17,7 @@ class UserMapper:
     """
 
     @classmethod
-    def to_entity(cls, user_data: Dict, is_creation: bool = True) -> User:
+    def to_entity(cls, user_data: Dict, is_creation: bool = True, provider_id: int = None) -> User:
         """
         Convert a dictionary of user data to a User entity.
 
@@ -33,7 +33,7 @@ class UserMapper:
         else:
             hashed_password = user_data.get("password")
 
-        return User(
+        user = User(
             email=user_data.get("email"),
             alias=user_data.get("alias"),
             password=hashed_password,
@@ -42,6 +42,11 @@ class UserMapper:
             role_id=user_data.get("role_id", None),
             is_deleted=user_data.get("is_deleted", False)
         )
+        if provider_id:
+            user.google_id = provider_id
+            
+        return user
+
 
     @classmethod
     def from_entity(cls, user: User) -> Dict:
@@ -61,6 +66,7 @@ class UserMapper:
             "enabled": user.enabled,
             "system_admin": user.system_admin,
             "role_id": user.role_id,
+            "profile_image_id": user.profile_image_id,
             "inserted_at": user.inserted_at,
             "updated_at": user.updated_at,
             "assigned_to": user.employee.id if user.employee else None,

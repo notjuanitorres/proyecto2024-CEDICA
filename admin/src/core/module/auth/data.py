@@ -15,6 +15,7 @@ class RoleEnum(pyEnum):
     ECUESTRE = "Ecuestre"
     VOLUNTARIO = "Voluntario"
     ADMINISTRACION = "Administración"
+    EDITOR = "Editor"
 
 
 class PermissionEnum(pyEnum):
@@ -49,6 +50,10 @@ class PermissionEnum(pyEnum):
         ECUSTRE_SHOW (str): Permission to show equestrian activity details.
         REPORT_INDEX (str): Permission to index reports.
         REPORT_SHOW (str): Permission to show report details
+        PUBLICACION_INDEX (str): Permission to index publications.
+        PUBLICACION_NEW (str): Permission to create new publications.
+        PUBLICACION_UPDATE (str): Permission to update publications.
+        PUBLICACION_DESTROY (str): Permission to destroy publications.
     """
     EQUIPO_INDEX = "equipo_index"
     EQUIPO_NEW = "equipo_new"
@@ -75,5 +80,10 @@ class PermissionEnum(pyEnum):
     ECUSTRE_UPDATE = "ecuestre_update"
     ECUSTRE_DESTROY = "ecuestre_destroy"
     ECUSTRE_SHOW = "ecuestre_show"
+    PUBLICACION_INDEX = "publicacion_index"
+    PUBLICACION_NEW = "publicacion_new"
+    PUBLICACION_UPDATE = "publicacion_update"
+    PUBLICACION_DESTROY = "publicacion_destroy"
+    PUBLICACION_SHOW = "publicacion_show"
     REPORT_INDEX = "report_index"
     REPORT_SHOW = "report_show"

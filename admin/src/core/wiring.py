@@ -8,10 +8,13 @@ from src.web.controllers import (
     payment,
     charges,
     jockey_amazon,
-    report
+    report,
+    publications,
+    api,
 )
 from src.web.controllers.jockey_and_amazon import update_jockey_amazon, create_jockey_amazon
 from src.core.module.user import validators
+from src.core.module.employee import EmployeeRepository
 from .container import Container
 
 
@@ -39,6 +42,8 @@ def init_wiring():
         - payment
         - auth_helper
         - report
+        - publications
+        - api
 
     Returns:
         None
@@ -59,6 +64,9 @@ def init_wiring():
             payment,
             auth_helper,
             report,
+            EmployeeRepository,
+            publications,
+            api,
         ]
     )
     container.init_resources()

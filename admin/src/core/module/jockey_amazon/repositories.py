@@ -322,7 +322,7 @@ class AbstractJockeyAmazonRepository(ABC):
             self, page: int = 1, search: str = ""
     ) -> Pagination:
         """
-        Retrieve a paginated list of active jockeys filtered by an optional search term.
+        Retrieve a paginated list of not deleted jockeys filtered by an optional search term.
 
         Args:
             page (int, optional): The page number for pagination. Defaults to 1.
@@ -909,7 +909,7 @@ class JockeyAmazonRepository(AbstractJockeyAmazonRepository):
     def get_active_jockeys(
             self, page: int = 1, search: str = ""
     ) -> Pagination:
-        """Retrieve a paginated list of active jockeys filtered by search text."""
+        """Retrieve a paginated list of not deleted jockeys filtered by search text."""
 
         per_page = 7
         query = self.db.session.query(JockeyAmazon).filter_by(is_deleted=False)

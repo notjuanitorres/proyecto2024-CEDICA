@@ -1,9 +1,11 @@
-{% macro render_boolean_tag(boolean = "None") %}
+{% macro render_boolean_tag(boolean = "None", tag_size="small", invert_colors=False) %}
+{% set success_class = "success" if not invert_colors else "danger" %}
+{% set danger_class = "danger" if not invert_colors else "success" %}
 {% if boolean == "None" %}
-<span class="tag is-info is-small ml-2">Sin informacion</span>
+<span class="tag is-info is-{{ tag_size }} ml-2">Sin informacion</span>
 {% elif boolean %}
-<span class="tag is-success is-small ml-2">Si</span>
+<span class="tag is-{{ success_class }} is-{{ tag_size }} ml-2">Si</span>
 {% else %}
-<span class="tag is-danger is-small ml-2">No</span>
+<span class="tag is-{{ danger_class }} is-{{ tag_size }} ml-2">No</span>
 {% endif %}
 {% endmacro %}

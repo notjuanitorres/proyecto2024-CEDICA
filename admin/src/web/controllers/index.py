@@ -71,10 +71,12 @@ def download_url(storage_services=Provide[Container.storage_services],
         flash("No se pudo descargar el archivo", "danger")
         return redirect(return_url)
 
+    filename = path.split("/")[-1]
+    filename = filename[32:]
     return Response(
         response.iter_content(chunk_size=8192),
         headers={
-            'Content-Disposition': 'attachment; filename=' + path.split("/")[-1],
+            'Content-Disposition': 'attachment; filename=' + filename,
             'Content-Type': response.headers.get('Content-Type', 'application/octet-stream')
         }
     )

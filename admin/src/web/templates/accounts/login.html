@@ -48,14 +48,14 @@
         </div>
         <div class="field is-flex-direction-row is-justify-content-space-between is-flex">
             <p class="control">
+                <a href="{{ url_for("auth_bp.register") }}" class="button is-info">
+                    Registrarse
+                </a>
+            </p>
+            <p class="control">
                 <button class="button is-primary" type="submit" value="Login">
                     Iniciar sesión
                 </button>
-            </p>
-            <p class="control">
-                <a href="/auth/registrarse" class="button is-info">
-                    Registrarse
-                </a>
             </p>
         </div>
     </form>
@@ -63,7 +63,7 @@
 
     <div class="buttons is-centered mt-5">
         <p class="control">
-            <a href="/" class="button is-primary is-light">
+            <a href="/" class="button is-text">
                 <span class="icon">
                     <i class="fas fa-arrow-left"></i>
                 </span>&nbsp;
@@ -71,8 +71,11 @@
             </a>
         </p>
         <p class="control">
-            <a href="#" class="button is-text">
-                Olvidé mi contraseña
+            <a href="{{ url_for("auth_bp.google_login")}}" class="button is-light">
+                <span class="icon mr-1">
+                    <i class="fa-brands fa-google"></i>
+                </span>
+                Iniciar Sesion con Google
             </a>
         </p>
     </div>

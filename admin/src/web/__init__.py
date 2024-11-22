@@ -8,12 +8,15 @@ from src.core.commands import register_commands
 from src.core.bcrypt import bcrypt
 from src.core.wiring import init_wiring
 from src.web.routes import register_blueprints
-from src.web.handlers import error
-from src.web.helpers.auth import is_authenticated, inject_session_data
+from src.web.helpers.auth import inject_session_data
 from src.web.helpers.filters import register_filters
+from flask_ckeditor import CKEditor
+from flask_cors import CORS
 
+ckeditor = CKEditor()
 csrf = CSRFProtect()
 session = Session()
+cors = CORS()
 
 
 def create_app(env="development", static_folder="../../static"):
@@ -36,12 +39,12 @@ def create_app(env="development", static_folder="../../static"):
     storage.init_app(app)
     bcrypt.init_app(app)
     csrf.init_app(app)
-
+    ckeditor.init_app(app)
+    cors.init_app(app, resources={r"/api/*": {"origins": app.config.get("CORS_ORIGINS")}})
     register_blueprints(app)
     register_commands(app)
     register_filters(app)
     init_wiring()
-
     app.context_processor(inject_session_data)
 
     if app.config["SEED_ON_STARTUP"]:

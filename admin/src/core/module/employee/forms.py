@@ -352,6 +352,6 @@ class EmployeeMiniSearchForm(FlaskForm):
 
     search_text = StringField(
         "Miembro del equipo seleccionado",
-        validators=[Length(message="El texto de búsqueda debe tener entre 1 y 50 caracteres", min=1, max=50)],
+        validators=[Length(message="El texto de búsqueda debe tener entre 0 y 50 caracteres", min=0, max=50)],
     )
     submit_search = SubmitField("Buscar")
