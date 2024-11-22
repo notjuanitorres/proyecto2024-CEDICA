@@ -65,7 +65,6 @@ Mensaje de {{ message.name }}
         <button class="card-footer-item has-text-danger modal-trigger" data-id="{{ message.id }}" data-target="message-delete-modal">
             Archivar
         </button>
-        <a href="{{ url_for('contact_bp.show_message', message_id=message.id) }}" class="card-footer-item has-text-warning">Responder</a>
     {% endif %}
 {% endblock %}
 
