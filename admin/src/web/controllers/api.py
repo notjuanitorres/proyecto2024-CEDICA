@@ -88,10 +88,14 @@ def show_publication(
         return jsonify({"error": "Parámetros inválidos o faltantes en la solicitud."}), 400
 
     publication = publication_repository.get_by_id(publication_id)
+    publication["status"] = publication["status"].name
+    publication["type"] = publication["type"].name
+    publication["author"] = publication["author"].alias
+    print(publication)
     if (not publication
             or publication["is_deleted"]
-            or not publication["status"] == EstadoPublicacionEnum.PUBLISHED.value):
+            or not publication["status"] == EstadoPublicacionEnum.PUBLISHED.name):
+
         return jsonify({"error": "Publicación no encontrada"}), 404
 
-    publication["author"] = publication["author"].alias
     return jsonify(publication), 200
