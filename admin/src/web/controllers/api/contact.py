@@ -29,7 +29,6 @@ def verify_recaptcha(recaptcha_response):
 @contact_api_bp.route("/message", methods=["POST"])
 @csrf.exempt
 def contact():
-    print(request.get_json())
     try:
         data = request.get_json()
         recaptcha_response = data.get("recaptchaToken")

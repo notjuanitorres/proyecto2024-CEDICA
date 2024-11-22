@@ -13,6 +13,9 @@ class ContactMessageForm(FlaskForm):
     """
     Base form for submitting a contact message
     """
+    class Meta:
+        """Metaclass to disable CSRF protection."""
+        csrf = False
 
     email = StringField(
         "Correo",
@@ -33,7 +36,7 @@ class ContactMessageForm(FlaskForm):
         "Mensaje",
         validators=[
             DataRequired(message="Debe escribir un mensaje"),
-            Length(max=5000, message="El correo debe tener menos de 5000 caracteres"),
+            Length(max=500, min=10, message="El correo debe tener entre 10 y 500 caracteres"),
         ],
     )
 
