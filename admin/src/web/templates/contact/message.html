@@ -46,5 +46,5 @@ Mensaje de {{ message.name }}
 <button class="card-footer-item has-text-danger modal-trigger" data-id="{{ message.id }}" data-target="user-delete-modal">
     Eliminar
 </button>
-<a href="{{ url_for('message_bp.answer_message', message_id=message.id) }}" class="card-footer-item has-text-warning">Responder</a>
+<a href="{{ url_for('contact_bp.show_message', message_id=message.id) }}" class="card-footer-item has-text-warning">Responder</a>
 {% endblock %}
