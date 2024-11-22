@@ -22,6 +22,8 @@ from wtforms.fields import (
     MultipleFileField,
     HiddenField,
 )
+
+from src.core.module.common.validators import IsValidDniNumber
 from src.core.module.common import IsValidName
 from src.core.module.common.forms import (
     filetypes_message,
@@ -102,57 +104,6 @@ class EmploymentInformationForm(FlaskForm):
     is_active = BooleanField("Activo en la organización", default=True)
 
 
-def max_file_size(size_in_mb: int):
-    BYTES_PER_MB = 1024 * 1024
-
-    size_in_bytes = size_in_mb * BYTES_PER_MB
-
-    return size_in_bytes
-
-
-class EmployeeDocumentsForm(FlaskForm):
-    """Form for managing employee related documents such as DNI, title, and curriculum vitae."""
-
-    dni = MultipleFileField(
-        validators=[
-            FileSize(
-                max_size=max_file_size(size_in_mb=5),
-                message="El archivo es demasiado grande",
-            ),
-            FileAllowed(
-                allowed_filetypes,
-                message=filetypes_message,
-            ),
-            FilesNumber(min=0, max=2, message="Puede subir hasta 2 archivos"),
-        ]
-    )
-    title = MultipleFileField(
-        validators=[
-            FileSize(
-                max_size=max_file_size(size_in_mb=5),
-                message="El archivo es demasiado grande",
-            ),
-            FileAllowed(
-                allowed_filetypes,
-                message=filetypes_message,
-            ),
-            FilesNumber(min=0, max=5, message="Puede subir hasta 5 archivos"),
-        ]
-    )
-    curriculum_vitae = FileField(
-        validators=[
-            FileSize(
-                max_size=max_file_size(size_in_mb=5),
-                message="El archivo es demasiado grande",
-            ),
-            FileAllowed(
-                upload_set=allowed_filetypes,
-                message=filetypes_message,
-            ),
-        ]
-    )
-
-
 class EmployeeAddDocumentsForm(BaseManageDocumentsForm):
     """Form to tag documents when adding additional files for an employee.
 
@@ -160,7 +111,7 @@ class EmployeeAddDocumentsForm(BaseManageDocumentsForm):
         tag (SelectField): The tag to assign to the uploaded file.
     """
     tag = SelectField(
-        "Tag",
+        "Etiqueta",
         choices=[(e.name, e.value) for e in FileTagEnum],
         validators=[
             DataRequired(
@@ -226,7 +177,7 @@ class EmployeeCreateForm(EmployeeManagementForm):
         validators=[
             DataRequired(message="Debe ingresar un DNI"),
             Length(min=8, max=8, message="Debe ser un número de 8 digitos!"),
-            IsNumber(message="Debe ser un número de 8 digitos!"),
+            IsValidDniNumber(),
             dni_existence,
         ],
     )
@@ -401,6 +352,6 @@ class EmployeeMiniSearchForm(FlaskForm):
 
     search_text = StringField(
         "Miembro del equipo seleccionado",
-        validators=[Length(message="El texto de búsqueda debe tener entre 1 y 50 caracteres", min=1, max=50)],
+        validators=[Length(message="El texto de búsqueda debe tener entre 0 y 50 caracteres", min=0, max=50)],
     )
     submit_search = SubmitField("Buscar")

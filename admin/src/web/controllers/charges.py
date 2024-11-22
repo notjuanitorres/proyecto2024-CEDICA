@@ -64,12 +64,14 @@ def search_charges(search: ChargeSearchForm,
 
 @inject
 def search_jyas(search: JockeyAmazonMiniSearchForm,
+                select_form: JockeyAmazonSelectForm,
                 jya_repository: AbstractJockeyAmazonRepository = Provide[Container.jockey_amazon_repository]):
     """
     Search for jockeys or amazons based on the provided search form.
 
     Args:
         search (JockeyAmazonMiniSearchForm): The form containing search criteria.
+        select_form (JockeyAmazonSelectForm): The form for selecting a jockey or amazon.
         jya_repository (AbstractJockeyAmazonRepository): The repository for jockey and amazon data.
 
     Returns:
@@ -82,6 +84,10 @@ def search_jyas(search: JockeyAmazonMiniSearchForm,
         if search.validate():
             jyas = jya_repository.get_active_jockeys(page=page, search=search.search_text.data)
         else:
+            jyas = jya_repository.get_active_jockeys(page=page)
+
+    if request.method == "POST":
+        if not (select_form.submit_jya.data and select_form.validate()):
             jyas = jya_repository.get_active_jockeys(page=page)
 
     return jyas
@@ -348,57 +354,6 @@ def recover_charge(
     return redirect(url_for("charges_bp.show_charge", charge_id=charge_id))
 
 
-@charges_bp.route("/cambiar-empleado/<int:charge_id>", methods=["GET", "POST"])
-@check_user_permissions(permissions_required=["cobros_update"])
-@inject
-def change_employee(
-        charge_id: int,
-        charges_repository: ACR = Provide[Container.charges_repository],
-        employee_repository: AbstractEmployeeRepository = Provide[Container.employee_repository],
-):
-    """
-    Change the employee associated with a charge.
-
-    Args:
-        charge_id (int): The ID of the charge.
-        charges_repository (ACR): The repository for charge data.
-        employee_repository (AbstractEmployeeRepository): The repository for employee data.
-
-    Returns:
-        A rendered template displaying the employee change form,
-         or a redirect to the charge list page if the charge does not exist.
-    """
-    page = request.args.get("page", type=int, default=1)
-
-    search_employee = EmployeeMiniSearchForm(request.args)
-    select_employee = EmployeeSelectForm()
-
-    charge = charges_repository.get_by_id(charge_id)
-    if not charge:
-        flash(f"El cobro con ID = {charge_id} no existe", "danger")
-        return redirect(url_for("charges_bp.get_charges"))
-
-    employees = []
-    if request.method == "GET":
-        if search_employee.validate():
-            employees = employee_repository.get_active_employees(
-                [], page=page, search=search_employee.search_text.data
-            )
-        else:
-            employees = employee_repository.get_active_employees([], page=page)
-
-    if request.method == "POST":
-        return add_charge_employee(charge, search_employee, select_employee, employees)
-
-    return render_template(
-        "./charges/update_employee.html",
-        charge=charge,
-        employees=employees,
-        search_form=search_employee,
-        select_form=select_employee,
-    )
-
-
 @charges_bp.route("/asignar-empleado/", methods=["GET", "POST"])
 @check_user_permissions(permissions_required=["cobros_update"])
 @inject
@@ -427,7 +382,6 @@ def link_employee(
 
     employees = []
     if request.method == "GET":
-        print(search_employee.data)
         if search_employee.validate():
             employees = employee_repository.get_active_employees(
                 [], page=page, search=search_employee.search_text.data
@@ -436,6 +390,9 @@ def link_employee(
             employees = employee_repository.get_active_employees([], page=page)
 
     if request.method == "POST":
+        if not (select_employee.submit_employee.data and select_employee.validate()):
+            flash("No se ha seleccionado un empleado", "danger")
+            employees = employee_repository.get_active_employees([], page=page)
         return link_charge_employee(charge, search_employee, select_employee, employees)
 
     return render_template(
@@ -505,7 +462,7 @@ def link_jya(
     search_jya = JockeyAmazonMiniSearchForm(request.args)
     select_jya = JockeyAmazonSelectForm()
 
-    jyas = search_jyas(search_jya)
+    jyas = search_jyas(search_jya, select_jya)
 
     if request.method == "POST":
         return link_charge_jya(charge, search_jya, select_jya, jyas)
@@ -542,6 +499,7 @@ def link_charge_jya(
          or a redirect to the charge detail page if successful.
     """
     if not (select_form.submit_jya.data and select_form.validate()):
+        flash("No se ha seleccionado un Jinete o amazona", "danger")
         return render_template(
             "./charges/create_jya.html",
             charge=charge,
@@ -609,46 +567,6 @@ def add_charge_employee(
     return redirect(url_for("charges_bp.show_charge", charge_id=charge_id))
 
 
-@charges_bp.route("/cambiar-jya/<int:charge_id>", methods=["GET", "POST"])
-@check_user_permissions(permissions_required=["cobros_update"])
-@inject
-def change_jya(
-        charge_id: int,
-        charges_repository: ACR = Provide[Container.charges_repository],
-):
-    """
-    Change the jockey or amazon associated with a charge.
-
-    Args:
-        charge_id (int): The ID of the charge to update.
-        charges_repository (ACR): The repository for charge data.
-
-    Returns:
-        A rendered template displaying the update jockey/amazon form if validation fails,
-        or a redirect to the charge detail page if successful.
-    """
-    charge = charges_repository.get_by_id(charge_id)
-    if not charge:
-        flash(f"El cobro con ID = {charge_id} no existe", "danger")
-        return redirect(url_for("charges_bp.get_charges"))
-
-    search_jya = JockeyAmazonMiniSearchForm(request.args)
-    select_jya = JockeyAmazonSelectForm()
-
-    jyas_list = search_jyas(search_jya)
-
-    if request.method == "POST":
-        return add_charge_jya(charge, search_jya, select_jya, jyas_list)
-
-    return render_template(
-        "./charges/update_jya.html",
-        charge=charge,
-        jyas=jyas_list,
-        search_form=search_jya,
-        select_form=select_jya,
-    )
-
-
 @inject
 def add_charge_jya(
     charge,
@@ -710,8 +628,9 @@ def choose_debtor(
     """
     search_jya = JockeyAmazonMiniSearchForm(request.args)
     select_jya = JockeyAmazonSelectForm()
+    select_jya.submit_jya.label.text = "Cambiar estado"
 
-    jyas = search_jyas(search_jya)
+    jyas = search_jyas(search_jya, select_jya)
 
     if request.method == "POST":
         return toggle_debtor_status(search_jya, select_jya, jyas)
@@ -747,6 +666,7 @@ def toggle_debtor_status(
         or a redirect to the charge detail page if successful.
     """
     if not (select_form.submit_jya.data and select_form.validate()):
+        flash("No se ha seleccionado un Jinete o amazona", "danger")
         return render_template(
             "./charges/choose_debtor.html",
             jyas=jyas,

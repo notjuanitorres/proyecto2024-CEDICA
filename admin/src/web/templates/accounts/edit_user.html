@@ -51,7 +51,7 @@
                 <div class="field">
                     <label class="label">{{ form.alias.label }}</label>
                     <div class="control">
-                        {{ form.alias(class="input", placeholder="Ingrese el alias", data_validate="required alphanumeric") }}
+                        {{ form.alias(class="input", placeholder="Ingrese el alias", data_validate="required letters") }}
                     </div>
                     {% if form.alias.errors %}
                         <p class="help is-danger">{{ form.alias.errors[0] }}</p>

@@ -60,6 +60,11 @@
                     Cobros 
                 </a>
                 {% endif %}
+                {% if "publicaciones_index" in permissions or is_admin %}
+                <a href="{{ url_for('publications_bp.get_publications') }}" class="button" aria-label="Publicaciones">
+                    Publicaciones
+                </a>
+                {% endif %}
 
             </div>
             

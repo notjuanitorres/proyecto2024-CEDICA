@@ -7,7 +7,7 @@ from wtforms.fields import (
     StringField,
     TelField,
 )
-from .validators import IsNumber
+from .validators import IsNumber, URLWithoutProtocol
 
 
 def max_file_size(size_in_mb: int):
@@ -123,7 +123,8 @@ class EmergencyContactForm(FlaskForm):
     )
     emergency_contact_phone = TelField(
         "Telefono contacto de emergencia",
-        validators=[DataRequired(message="Debe proporcionar un número de teléfono")],
+        validators=[DataRequired(message="Debe proporcionar un número de teléfono"),
+                    Length(min=8, max=20, message="El número de teléfono debe tener entre 8 y 20 caracteres"),],
     )
 
 
@@ -173,13 +174,20 @@ class BaseManageDocumentsForm(FlaskForm):
         ]
     )
 
-    url = StringField(
+    url_protocol = SelectField(
+        "Protocolo",
+        choices=[("http://", "HTTP"), ("https://", "HTTPS")],
+        default="https://",
+        validate_choice=True
+    )
+
+    url_host = StringField(
         'Url',
         validators=[
             Optional(),
-            URL(message="Debe proporcionar una URL válida")
+            URLWithoutProtocol(message="Debe proporcionar una URL válida")
         ],
-        default="https://ejemplo.com"
+        default="ejemplo.com"
     )
 
     def validate(self, *args, is_file_already_uploaded: bool = False, **kwargs):
@@ -203,8 +211,8 @@ class BaseManageDocumentsForm(FlaskForm):
                 self.file.errors.append('Debe adjuntar un archivo cuando selecciona "Archivo"')
                 return False
         elif self.upload_type.data == 'url':
-            if not self.url.data:
-                self.url.errors.append('Debe proporcionar una URL cuando selecciona "URL"')
+            if not self.url_host.data:
+                self.url_host.errors.append('Debe proporcionar una URL cuando selecciona "URL"')
                 return False
 
         return True

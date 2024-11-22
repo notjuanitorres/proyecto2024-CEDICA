@@ -310,7 +310,7 @@ def recover_user(
     Returns:
         A redirect to the user detail page.
     """
-    user_id = request.form["item_id"]
+    user_id = request.form["user_id"]
     try:
         user_id = int(user_id)
     except ValueError:

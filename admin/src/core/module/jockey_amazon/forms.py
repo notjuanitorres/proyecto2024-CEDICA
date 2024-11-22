@@ -28,7 +28,7 @@ from src.core.module.common.forms import (
     DocumentsSearchForm,
     BaseManageDocumentsForm, CustomFloatField,
 )
-from src.core.module.common.validators import IsNumber
+from src.core.module.common.validators import IsNumber, IsValidDniNumber
 from src.core.module.jockey_amazon.data import (
     DisabilityDiagnosisEnum,
     DisabilityTypeEnum,
@@ -91,8 +91,8 @@ class GeneralInformationForm(FlaskForm):
         Length(max=100, message="El apellido no puede superar los 100 caracteres")
     ])
     dni = StringField("DNI", validators=[
-        DataRequired(message="El DNI es requerido"),
-        Length(min=8, max=8, message="El DNI debe tener exactamente 8 caracteres"),
+        Length(min=8, max=8, message="El DNI debe tener 8 dígitos"),
+        IsValidDniNumber(),
         dni_existence
     ])
     birth_date = DateField("Fecha de Nacimiento", validators=[
@@ -544,6 +544,6 @@ class JockeyAmazonMiniSearchForm(FlaskForm):
         submit_search (SubmitField): Button to submit the search
     """
     search_text = StringField(
-        validators=[Length(message="Debe ingresar un texto entre 1 y 50 caracteres", min=1, max=50)]
+        validators=[Length(message="Debe ingresar un texto entre 0 y 50 caracteres", min=0, max=50)]
     )
     submit_search = SubmitField("Buscar")
