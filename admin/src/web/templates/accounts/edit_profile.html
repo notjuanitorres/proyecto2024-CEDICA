@@ -42,8 +42,12 @@
                                     <div class="field">
                                         <label class="label">{{ form.email.label }}</label>
                                         <div class="control">
-                                            {{ form.email(class="input", type="email", placeholder="Ingrese el correo")
-                                            }}
+                                            {{ form.email(
+                                                class="input",
+                                                type="email",
+                                                readonly=true,
+                                                style="cursor: not-allowed;"
+                                            ) }}
                                         </div>
                                         {% if form.email.errors %}
                                         <p class="help is-danger">{{ form.email.errors[0] }}</p>
