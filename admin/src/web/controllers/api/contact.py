@@ -9,8 +9,8 @@ from src.core.module.contact.repositories import ContactRepository
 from src.core.module.contact.models import MessageStateEnum
 
 load_dotenv()
-CAPTCHA_SECRET_KEY = os.getenv("CAPTCHA_SECRET_KEY")
-
+CAPTCHA_SECRET_KEY = os.getenv("RECAPTCHA_CAPTCHA_SECRET_KEY")
+print(CAPTCHA_SECRET_KEY)
 csrf = CSRFProtect()
 
 contact_api_bp = Blueprint("contact_api_bp", __name__, url_prefix="/contact")
