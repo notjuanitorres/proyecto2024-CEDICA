@@ -23,7 +23,10 @@ export const useNewsStore = defineStore('news', {
         if (params.page) queryParams.append('page', params.page);
         if (params.per_page) queryParams.append('per_page', params.per_page);
 
-        const apiUrl = import.meta.env.VITE_API_BASE_URL || "https://admin-grupo19.proyecto2024.linti.unlp.edu.ar/api"
+        let apiUrl = import.meta.env.VITE_API_BASE_URL
+        if (apiUrl === undefined) {
+          apiUrl = "https://admin-grupo19.proyecto2024.linti.unlp.edu.ar/api"
+        }
         const url = `${apiUrl}/articles?${queryParams.toString()}`;
 
         const response = await fetch(url);
@@ -50,7 +53,10 @@ export const useNewsStore = defineStore('news', {
       this.article = {};
 
       try {
-        const apiUrl = import.meta.env.VITE_API_BASE_URL  || "https://admin-grupo19.proyecto2024.linti.unlp.edu.ar/api"
+        let apiUrl = import.meta.env.VITE_API_BASE_URL
+        if (apiUrl === undefined) {
+          apiUrl = "https://admin-grupo19.proyecto2024.linti.unlp.edu.ar/api"
+        }        
         const url = `${apiUrl}/articles/${id}`;
 
         const response = await fetch(url);
