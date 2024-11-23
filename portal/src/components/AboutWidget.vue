@@ -27,5 +27,4 @@
       </p>
     </div>
   </div>
-  <a href="/nosotros" class="button is-info is-fullwidth is-outlined has-text-dark">Ver mas</a>
 </template>
