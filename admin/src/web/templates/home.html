@@ -2,16 +2,15 @@
 
 {% from "macros/flash_message.html" import render_flash_messages %}
 
-
 {% block title %}Inicio - CEDICA{% endblock %}
 
 {% block head %}
     {{ super() }}
     {% block extra_styles %}
-    <link
-        rel="stylesheet"
-        href="{{ url_for('static', filename='css/home.css') }}"
-    />
+        <link
+                rel="stylesheet"
+                href="{{ url_for('static', filename='css/home.css') }}"
+        />
     {% endblock %}
 {% endblock %}
 
@@ -20,77 +19,75 @@
 {% endblock %}
 
 {% block content %}
-<main class="hero bg-gradient is-fullheight-with-navbar">
+    <main class="hero bg-gradient is-fullheight-with-navbar">
+        {{ render_flash_messages(messages) }}
 
-    {{ render_flash_messages(messages) }}
-
-    <section class="hero-body">
-        <article class="container box p-6 has-text-centered p-5 glass-bg">  
-            {% if is_authenticated %}
-            <h1 class="title is-size-2 mb-2">Bienvenido, {{ user_name }}</h1>
-            <h2 class="hero-subtitle is-size-5">¿En qué estás trabajando hoy?</h2>
-            <div class="buttons has-addons is-centered mt-4">
-                {% if "usuarios_index" in permissions or is_admin %}
-                <a href="{{ url_for('users_bp.get_users') }}" class="button" aria-label="Usuarios">
-                    Usuarios 
-                </a>
+        <section class="hero-body">
+            <article class="container box p-6 has-text-centered p-5 glass-bg">
+                {% if is_authenticated %}
+                    <h1 class="title is-size-2 mb-2">Bienvenido, {{ user_name }}</h1>
+                    <h2 class="hero-subtitle is-size-5">¿En qué estás trabajando hoy?</h2>
+                    <div class="buttons has-addons is-centered mt-4">
+                        {% if "usuarios_index" in permissions or is_admin %}
+                            <a href="{{ url_for('users_bp.get_users') }}" class="button" aria-label="Usuarios">
+                                Usuarios
+                            </a>
+                        {% endif %}
+                        {% if "equipo_index" in permissions or is_admin %}
+                            <a href="{{ url_for('employee_bp.get_employees') }}" class="button" aria-label="Equipo">
+                                Equipo
+                            </a>
+                        {% endif %}
+                        {% if "jya_index" in permissions or is_admin %}
+                            <a href="{{ url_for('jockey_amazon_bp.get_jockeys') }}" class="button" aria-label="Jinetes y Amazonas">
+                                Jinetes y Amazonas
+                            </a>
+                        {% endif %}
+                        {% if "ecuestre_index" in permissions or is_admin %}
+                            <a href="{{ url_for('equestrian_bp.get_horses') }}" class="button" aria-label="Ecuestres">
+                                Ecuestres
+                            </a>
+                        {% endif %}
+                        {% if "pagos_index" in permissions or is_admin %}
+                            <a href="/pago" class="button" aria-label="Pagos">
+                                Pagos
+                            </a>
+                        {% endif %}
+                        {% if "cobros_index" in permissions or is_admin %}
+                            <a href="{{ url_for('charges_bp.get_charges') }}" class="button" aria-label="Cobros">
+                                Cobros
+                            </a>
+                        {% endif %}
+                        {% if "publicaciones_index" in permissions or is_admin %}
+                            <a href="{{ url_for('publications_bp.get_publications') }}" class="button" aria-label="Publicaciones">
+                                Publicaciones
+                            </a>
+                        {% endif %}
+                        {% if "report_index" in permissions or is_admin %}
+                            <a href="{{ url_for('report_bp.index') }}" class="button" aria-label="Reportes">
+                                Reportes
+                            </a>
+                        {% endif %}
+                    </div>
+                {% else %}
+                    <figure class="image is-3by1 container" style="max-width: 600px; height:auto;">
+                        <img
+                                src="{{ url_for('static', filename="assets/logo_cedica.png") }}"
+                                alt="CEDICA isologotipo"
+                        />
+                    </figure>
+                    <div class="mt-5">
+                        <h1 class="title is-size-4">Administración CEDICA</h1>
+                        <p class="subtitle is-size-4 mt-2">Debes haber iniciado sesión para poder utilizar el sistema.</p>
+                    </div>
+                    <div class="block"></div>
+                    <div class="buttons are-medium level">
+                        <a href="{{ url_for("auth_bp.login") }}" class="button is-info level-item" aria-label="Iniciar Sesion">
+                            Iniciar Sesion
+                        </a>
+                    </div>
                 {% endif %}
-                {% if "equipo_index" in permissions or is_admin %}
-                <a href="{{ url_for('employee_bp.get_employees') }}" class="button" aria-label="Equipo"> 
-                    Equipo 
-                </a>
-                {% endif %}
-                {% if "jya_index" in permissions or is_admin %}
-                <a href="{{ url_for('jockey_amazon_bp.get_jockeys') }}" class="button" aria-label="Jinetes y Amazonas">
-                    Jinetes y Amazonas
-                </a>
-                {% endif %}
-                {% if "ecuestre_index" in permissions or is_admin %}
-                <a href="{{ url_for('equestrian_bp.get_horses') }}" class="button" aria-label="Ecuestres">
-                    Ecuestres 
-                </a>
-                {% endif %}
-                {% if "pagos_index" in permissions or is_admin %}
-                <a href="/pago" class="button" aria-label="Pagos">
-                    Pagos 
-                </a>
-                {% endif %}
-                {% if "cobros_index" in permissions or is_admin %}
-                <a href="{{ url_for('charges_bp.get_charges') }}" class="button" aria-label="Cobros"> 
-                    Cobros 
-                </a>
-                {% endif %}
-                {% if "publicaciones_index" in permissions or is_admin %}
-                <a href="{{ url_for('publications_bp.get_publications') }}" class="button" aria-label="Publicaciones">
-                    Publicaciones
-                </a>
-                {% if "report_index" in permissions or is_admin %}
-                    <a href="{{ url_for('report_bp.index') }}" class="button" aria-label="Reportes">
-                        Reportes
-                    </a>
-                {% endif %}
-
-            </div>
-            
-            {% else %}
-            <figure class="image is-3by1 container" style="max-width: 600px; height:auto;">
-                <img
-                src="{{ url_for('static', filename="assets/logo_cedica.png")}}"
-                alt="CEDICA isologotipo"
-                />
-            </figure>
-            <div class="mt-5">
-                <p class="title is-size-4">Administración CEDICA</h1>
-                <h1 class="subtitle is-size-4 mt-2">Debes haber iniciado sesión para poder utilizar el sistema.</p>
-            </div>
-            <div class="block"></div>
-            <div class="buttons are-medium level">
-                <a href="{{ url_for("auth_bp.login") }}" class="button is-info level-item" aria-label="Iniciar Sesion">
-                    Iniciar Sesion
-                </a>
-            </div>
-            {% endif %}
-        </article>            
-    </section>
-</main>
+            </article>
+        </section>
+    </main>
 {% endblock %}

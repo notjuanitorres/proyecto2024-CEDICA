@@ -166,18 +166,19 @@ def seed_role_permissions():
         # Técnica - Ecuestre
         RolePermission(role_id=1, permission_id=21),  # ECUSTRE_INDEX
         RolePermission(role_id=1, permission_id=25),  # ECUSTRE_SHOW
-        # Administración - Reportes
-        RolePermission(role_id=4, permission_id=32),
-        RolePermission(role_id=4, permission_id=33),
-        # Técnica - Reportes
-        RolePermission(role_id=1, permission_id=32),
-        RolePermission(role_id=1, permission_id=33),
 
         # Administración - Publicaciones
         *[RolePermission(role_id=4, permission_id=i) for i in range(26, 31)],
 
-        # Editor - Publicaciones
-        *[RolePermission(role_id=5, permission_id=i) for i in range(26, 31)],
+        # Editor - Publicaciones - Sin destroy
+        *[RolePermission(role_id=5, permission_id=i) for i in range(26, 30)],
+
+        # Administración - Reportes
+        RolePermission(role_id=4, permission_id=31),
+        RolePermission(role_id=4, permission_id=32),
+        # # Técnica - Reportes
+        RolePermission(role_id=1, permission_id=31),
+        RolePermission(role_id=1, permission_id=32),
     ]
 
     db.session.add_all(role_permissions)
