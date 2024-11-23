@@ -12,7 +12,10 @@ export const useContactStore = defineStore('contact', {
         this.loading = true;
         this.error = null;
         try {
-          const apiUrl = import.meta.env.VITE_API_BASE_URL || "https://admin-grupo19.proyecto2024.linti.unlp.edu.ar/api"
+          let apiUrl = import.meta.env.VITE_API_BASE_URL
+          if (apiUrl === undefined) {
+            apiUrl = "https://admin-grupo19.proyecto2024.linti.unlp.edu.ar/api"
+          }
           const response = await fetch(`${apiUrl}/contact/message`, {
             method: 'POST',
             headers: {
