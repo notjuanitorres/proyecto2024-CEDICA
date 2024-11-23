@@ -35,10 +35,11 @@ def get_publications(
         deleted = request.args.get("deleted") == "True"
 
     form = PublicationSearchForm(request.args)
-    search_query: dict = {}
+    search_query: dict = {"filters": {"is_deleted": deleted}}
     order_by = []
     if form.submit_search.data and form.validate():
-        search_query = {"text": form.search_text.data, "field": form.search_by.data, "filters": {"is_deleted": deleted}}
+        search_query["text"] = form.search_text.data
+        search_query["field"] = form.search_by.data
 
         if form.start_date.data:
             search_query["filters"]["start_date"] = form.start_date.data
@@ -57,6 +58,7 @@ def get_publications(
     page = request.args.get("page", 1, type=int)
     per_page = request.args.get("per_page", 10, type=int)
 
+    print(search_query)
     publications = publication_repository.get_page(page, per_page, search_query, order_by)
 
     return render_template("./publication/publications.html",
