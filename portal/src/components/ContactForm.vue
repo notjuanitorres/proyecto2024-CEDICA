@@ -4,7 +4,7 @@ import { useContactStore } from '@/stores/contact'
 import { contactSchema } from '@/utils/validation'
 import { debounce } from 'lodash-es'
 
-const siteKey = import.meta.env.VITE_CAPTCHA_SITE_KEY
+const siteKey = "6LdUfIUqAAAAAAc91MsZhitzI0rtLxN6WTgUyAj3"
 const contactStore = useContactStore()
 
 const formData = reactive({
