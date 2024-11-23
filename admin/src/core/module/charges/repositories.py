@@ -1,6 +1,7 @@
 from abc import abstractmethod
 from typing import List, Dict
-
+from datetime import date
+from sqlalchemy import func
 from src.core.module.employee.models import Employee
 from src.core.database import db as database
 from src.core.module.charges.models import Charge
@@ -116,6 +117,29 @@ class AbstractChargeRepository:
             bool: True if the charge was recovered successfully, False otherwise.
         """
         raise NotImplementedError
+
+    @abstractmethod
+    def current_month_income(self) -> float:
+        """
+        Get the total income for the current month.
+
+        Returns:
+            float: The total income for the current month.
+        """
+        pass
+
+    @abstractmethod
+    def last_payments_data(self, limit: int = 10) -> List[Charge]:
+        """
+        Get the most recent payments.
+
+        Args:
+            limit (int): The number of recent payments to retrieve. Defaults to 10.
+
+        Returns:
+            List[Charge]: A list of the most recent payments.
+        """
+        pass
 
 
 class ChargeRepository(AbstractChargeRepository):
@@ -296,3 +320,30 @@ class ChargeRepository(AbstractChargeRepository):
             None
         """
         self.db.session.commit()
+
+    def current_month_income(self) -> float:
+        """
+        Get the total income for the current month.
+
+        Returns:
+            float: The total income for the current month.
+        """
+        return (Charge.query.filter(
+            func.extract('year', Charge.date_of_charge) == date.today().year,
+            func.extract('month', Charge.date_of_charge) == date.today().month
+        )
+                .with_entities(func.sum(Charge.amount)).scalar() or 0.0)
+
+    def last_payments_data(self, limit: int = 10) -> List[Charge]:
+        """
+        Get the most recent payments.
+
+        Args:
+            limit (int): The number of recent payments to retrieve. Defaults to 10.
+
+        Returns:
+            List[Charge]: A list of the most recent payments.
+        """
+        return Charge.query.order_by(Charge.date_of_charge.desc()).limit(limit).all()
+
+

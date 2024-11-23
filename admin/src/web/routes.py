@@ -10,6 +10,7 @@ from src.web.controllers import (
     charges_bp,
     jockey_amazon_bp,
     publications_bp,
+    report_bp,
 )
 from src.web.controllers.api import api_bp
 
@@ -30,7 +31,7 @@ def register_blueprints(app):
     app.register_blueprint(jockey_amazon_bp)
     app.register_blueprint(charges_bp)
     app.register_blueprint(errors_bp)
+    app.register_blueprint(report_bp)
     app.register_blueprint(contact_bp)
     app.register_blueprint(publications_bp)
     app.register_blueprint(api_bp)
-

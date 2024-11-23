@@ -1,0 +1,44 @@
+{% extends "base_reports.html" %}
+{% block title %} Cobros {% endblock %}
+{% set active_tab="adeudan"%}
+{% block breadcrumb_items %}
+<li>
+    <a href="{{ url_for('report_bp.reports_debtors') }}">
+        <span class="icon is-small">
+            <i class="fa-solid fa-chart-simple"></i>
+        </span>
+        <span>Personas que Adeudan Pagos</span>
+    </a>
+</li>
+{% endblock %}
+{% block report_content %}
+<section>
+  <h2 class="title is-5">Personas que Adeudan Pagos</h2>
+  <div class="table-container">
+      <table class="table is-striped is-hoverable is-fullwidth">
+          <thead>
+              <tr>
+                  <th>Apellido</th>
+                  <th>Nombre</th>
+                  <th>Ver</th>
+              </tr>
+          </thead>
+          <tbody>
+              {% for debtor in debtors %}
+                  <tr>
+                      <td>{{ debtor.last_name }} </td>
+                      <td>{{ debtor.first_name }}</td>
+                        <td>
+                            <a href="{{ url_for('jockey_amazon_bp.show_jockey', jockey_id=debtor.id) }}" class="button is-small is-link">
+                                <span class="icon is-small">
+                                    <i class="fas fa-eye" aria-hidden="true"></i>
+                                </span>
+                            </a>
+                        </td>
+                  </tr>
+              {% endfor %}
+          </tbody>
+      </table>
+  </div>
+</section>
+{% endblock %}

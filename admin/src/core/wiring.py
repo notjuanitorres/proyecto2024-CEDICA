@@ -8,6 +8,7 @@ from src.web.controllers import (
     payment,
     charges,
     jockey_amazon,
+    report,
     publications,
     contact
 )
@@ -41,6 +42,7 @@ def init_wiring():
         - validators
         - payment
         - auth_helper
+        - report
         - publications
         - contact
         - api
@@ -63,6 +65,7 @@ def init_wiring():
             validators,
             payment,
             auth_helper,
+            report,
             EmployeeRepository,
             publications,
             contact,

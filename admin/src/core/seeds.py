@@ -174,12 +174,18 @@ def seed_role_permissions():
         # Administración - Publicaciones
         *[RolePermission(role_id=4, permission_id=i) for i in range(26, 31)],
 
-        # Editor - Publicaciones
-        *[RolePermission(role_id=5, permission_id=i) for i in range(26, 31)],
+        # Editor - Publicaciones - Sin destroy
+        *[RolePermission(role_id=5, permission_id=i) for i in range(26, 30)],
+
+        # Administración - Reportes
+        RolePermission(role_id=4, permission_id=31),
+        RolePermission(role_id=4, permission_id=32),
+        # # Técnica - Reportes
+        RolePermission(role_id=1, permission_id=31),
+        RolePermission(role_id=1, permission_id=32),
 
         # Administración - Mensajes
-        *[RolePermission(role_id=4, permission_id=i) for i in range(31, 36)],
-
+        *[RolePermission(role_id=4, permission_id=i) for i in range(33, 38)],
 
     ]
 
@@ -574,6 +580,7 @@ def seed_publications(num_entries=15):
     db.session.bulk_save_objects(publications)
     print("Commiting publications")
     db.session.commit()
+
 
 def seed_messages(num_entries=5):
     """Seed the database with messages"""

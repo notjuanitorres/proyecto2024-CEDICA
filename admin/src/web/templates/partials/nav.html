@@ -56,6 +56,9 @@
                             <a href="{{ url_for('charges_bp.get_charges') }}" class="navbar-item" aria-label="Cobros"> Cobros </a>
                         {% endif %}
                     {% endif %}
+                    {% if "reportes_index" in permissions or is_admin %}
+                        <a href="{{ url_for('report_bp.index') }}" class="navbar-item" aria-label="Equipo"> Reportes </a>
+                    {% endif %}
                     {% if "publicaciones_index" in permissions or is_admin%}
                         <hr class="navbar-divider" aria-hidden="true"/>
                         <a href="{{ url_for('publications_bp.get_publications') }}" class="navbar-item" aria-label="Publicaciones"> Publicaciones </a>
