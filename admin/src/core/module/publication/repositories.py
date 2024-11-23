@@ -118,6 +118,19 @@ class AbstractPublicationRepository:
         """
         pass
 
+    @abstractmethod
+    def toggle_publication_status(self, publication_id: int) -> bool:
+        """
+        Toggle the publication status between published and draft.
+
+        Args:
+            publication_id (int): The ID of the publication to toggle.
+
+        Returns:
+            bool: True if toggled successfully, False otherwise.
+        """
+        pass
+
 
 class PublicationRepository(AbstractPublicationRepository):
     """
@@ -292,6 +305,27 @@ class PublicationRepository(AbstractPublicationRepository):
         publication.is_deleted = False
         publication.status = EstadoPublicacionEnum.DRAFT
         publication.update_date = datetime.now()
+        self.save()
+        return True
+
+    def toggle_publication_status(self, publication_id: int) -> bool:
+        """
+        Toggle the publication status between published and draft.
+
+        Args:
+            publication_id (int): The ID of the publication to toggle.
+
+        Returns:
+            bool: True if toggled successfully, False otherwise.
+        """
+        publication = Publication.query.get(publication_id)
+        if not publication:
+            return False
+        publication.status = (
+            EstadoPublicacionEnum.PUBLISHED
+            if publication.status != EstadoPublicacionEnum.PUBLISHED
+            else EstadoPublicacionEnum.DRAFT
+        )
         self.save()
         return True
 

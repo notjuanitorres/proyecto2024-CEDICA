@@ -1,0 +1,243 @@
+{% extends "base_reports.html" %}
+{% block title %} Reportes {% endblock %}
+    {% block report_content%}
+            <!-- Gráficos -->
+            <div class="columns is-multiline">
+                <div class="column is-half">
+                    <div class="box">
+                        <h2 class="title is-5">Propuestas Elegidas</h2>
+                        <canvas id="proposalsChart"></canvas>
+                    </div>
+                </div>
+                <div class="column is-half">
+                    <div class="box">
+                        <h2 class="title is-5">Pacientes con certificado</h2>
+                        <canvas id="certifiedJyaChart"></canvas>
+                    </div>
+                </div>
+                <div class="column is-one-third">
+                    <div class="box">
+                        <h2 class="title is-5">Tipos de Discapacidad</h2>
+                        <canvas id="disabilityTypesChart"></canvas>
+                    </div>
+                </div>
+                <div class="column is-two-third">
+                    <div class="box">
+                        <h2 class="title is-5">Diagnostico de Discapacidad</h2>
+                        <canvas id="disabilityDiagnosisChart"></canvas>
+                    </div>
+                </div>
+            </div>
+{% endblock %}      
+
+{% block extra_scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- Lo hice asi porque para los graficos necesito los datos pasados al template -->
+<script>
+    // Gráfico de Propuestas Elegidas
+const proposalsChart = new Chart(document.getElementById('proposalsChart'), {
+    type: 'pie',
+    data: {
+        labels: [{% for item in proposals_data %}{% if not loop.first %},{% endif %}"{{ item[0].value }}"{% endfor %}],
+        datasets: [{
+            data: [{% for item in proposals_data %}{% if not loop.first %},{% endif %}{{ item[1] }}{% endfor %}],
+            backgroundColor: [
+                '#80B4BF', // Celeste
+                '#F2BC79', // Amarillo
+                '#585859', // Gris
+                '#FFC0CB', // Rosa
+                '#B19CD9', // Lila
+                '#98FB98', // Verde claro
+                '#FFD700', // Dorado
+                '#FA8072'  // Salmón
+            ]
+        }]
+    },
+    options: {
+        plugins: {
+            legend: {
+                labels: {
+                    font: {
+                        size: 24 // Aumentar tamaño del texto de la leyenda
+                    }
+                }
+            },
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        const dataset = context.dataset;
+                        const total = dataset.data.reduce((sum, value) => sum + value, 0); // Suma total
+                        const value = dataset.data[context.dataIndex];
+                        const percentage = ((value / total) * 100).toFixed(1); // Porcentaje con un decimal
+                        return `${context.label}: ${value} (${percentage}%)`;
+                    }
+                },
+                bodyFont: {
+                    size: 20 // Aumentar tamaño del texto en el tooltip
+                },
+                titleFont: {
+                    size: 24 // Aumentar tamaño del título en el tooltip
+                }
+            }
+        }
+    }
+});
+
+
+
+// Gráfico de Clientes Certificados
+const certifiedJyaChart = new Chart(document.getElementById('certifiedJyaChart'), {
+    type: 'pie',
+    data: {
+        labels: ['Certificados', 'No Certificados'],
+        datasets: [{
+            data: [{{ certified_jya }}, {{ uncertified_jya }}],
+            backgroundColor: ['#80B4BF', '#F2BC79', '#585859']
+        }]
+    },
+    options: {
+        plugins: {
+            legend: {
+                labels: {
+                    font: {
+                        size: 24
+                    }
+                }
+            },
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        const dataset = context.dataset;
+                        const total = dataset.data.reduce((sum, value) => sum + value, 0); // Suma total
+                        const value = dataset.data[context.dataIndex];
+                        const percentage = ((value / total) * 100).toFixed(1); // Porcentaje con un decimal
+                        return `${context.label}: ${value} (${percentage}%)`;
+                    }
+                },
+                bodyFont: {
+                    size: 20 // Aumentar tamaño del texto en el tooltip
+                },
+                titleFont: {
+                    size: 24 // Aumentar tamaño del título en el tooltip
+                }
+            }
+        }
+    }
+});
+
+// Gráfico de Tipos de Discapacidad
+const disabilityTypesChart = new Chart(document.getElementById('disabilityTypesChart'), {
+    type: 'pie',
+    data: {
+        labels: [{% for item in disability_types_data %}{% if not loop.first %},{% endif %}"{{ item[0].value }}"{% endfor %}],
+        datasets: [{
+            data: [{% for item in disability_types_data %}{% if not loop.first %},{% endif %}{{ item[1] }}{% endfor %}],
+            backgroundColor: [
+                '#80B4BF', // Celeste
+                '#F2BC79', // Amarillo
+                '#585859', // Gris
+                '#FFC0CB', // Rosa
+                '#B19CD9', // Lila
+                '#98FB98', // Verde claro
+                '#FFD700', // Dorado
+                '#FA8072'  // Salmón
+            ]
+        }]
+    },
+    options: {
+        plugins: {
+            legend: {
+                labels: {
+                    font: {
+                        size: 24
+                    }
+                }
+            },
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        const dataset = context.dataset;
+                        const total = dataset.data.reduce((sum, value) => sum + value, 0); // Suma total
+                        const value = dataset.data[context.dataIndex];
+                        const percentage = ((value / total) * 100).toFixed(1); // Porcentaje con un decimal
+                        return `${context.label}: ${value} (${percentage}%)`;
+                    }
+                },
+                bodyFont: {
+                    size: 20 // Aumentar tamaño del texto en el tooltip
+                },
+                titleFont: {
+                    size: 24 // Aumentar tamaño del título en el tooltip
+                }
+            }
+        }
+    }
+});
+
+// Gráfico de Diagnósticos de Discapacidad
+const disabilityDiagnosisChart = new Chart(document.getElementById('disabilityDiagnosisChart'), {
+    type: 'bar',
+    options: {
+        indexAxis: 'y',
+        scales: {
+            y: {
+                ticks: {
+                    font: {
+                        size: 20 // Increase font size for y-axis labels
+                    }
+                }
+            },
+            x: {
+                ticks: {
+                    font: {
+                        size: 20 // Increase font size for x-axis labels
+                    }
+                }
+            }
+        },
+        plugins: {
+            legend: {
+                labels: {
+                    font: {
+                        size: 20 // Increase font size for legend
+                    }
+                }
+            },
+            tooltip: {
+                bodyFont: {
+                    size: 20 // Tooltip font size
+                },
+                titleFont: {
+                    size: 20 // Tooltip title font size
+                }
+            }
+        }
+    },
+    data: {
+        labels: [
+            {% for item in disability_data %}
+                "{{ item[0].value }}"{{ "," if not loop.last }}
+            {% endfor %}
+        ],
+        datasets: [{
+            label: "Diagnostico de discapacidad",
+            data: [
+                {% for item in disability_data %}
+                    {{ item[1] }}{{ "," if not loop.last }}
+                {% endfor %}
+            ],
+            backgroundColor: [
+                '#80B4BF', // Celeste
+                '#F2BC79', // Amarillo
+                '#585859', // Gris
+                '#FFC0CB', // Rosa
+                '#B19CD9', // Lila
+                '#98FB98', // Verde claro
+                '#FFD700', // Dorado
+                '#FA8072'  // Salmón
+            ]
+        }],
+    }
+});
+</script>
+{% endblock %}

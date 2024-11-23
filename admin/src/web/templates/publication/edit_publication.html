@@ -103,7 +103,7 @@
                 <label class="label">{{ form.status.label }}</label>
                 <div class="control">
                     <div class="select">
-                        {{ form.status(data_validate="required") }}
+                        {{ form.status(data_validate="required", onchange="showPublicationStatusWarning(this.value)") }}
                     </div>
                 </div>
                 {% if form.status.errors %}
@@ -121,7 +121,36 @@
     </div>
 {% endblock %}
 
+{% include "publication/publication_status_warning.html" %}
+
 {% block extra_scripts %}
     {{ super() }}
     <script src="{{ url_for('static', filename='js/form_validator.js') }}"></script>
+    <script>
+        let previousStatus = document.querySelector('[name="status"]').value;
+
+            function showPublicationStatusWarning(newStatus) {
+                const modal = document.getElementById('publication-status-warning-modal');
+                const messageElement = modal.querySelector('.modal-card-body p');
+                console.log("Estado anterior: " + previousStatus + " - Nuevo estado: " + newStatus);
+                // Verificar cambios relevantes de estado
+                if (previousStatus === 'PUBLISHED' && newStatus !== 'PUBLISHED') {
+                    messageElement.textContent = "Al cambiar el estado de 'Publicado' a otro estado, la publicación dejará de ser visible para los usuarios.";
+                    modal.classList.add('is-active');
+                } else if ((previousStatus === 'ARCHIVED' || previousStatus === 'DRAFT') && newStatus === 'PUBLISHED') {
+                    messageElement.textContent = "Al cambiar el estado a 'Publicado', la publicación se volverá visible para los usuarios.";
+                    modal.classList.add('is-active');
+                }
+
+                // Actualizar el estado anterior para la próxima selección
+                previousStatus = newStatus;
+
+                // Manejo de botones en el modal
+                const closeButton = modal.querySelector('.delete');
+                const confirmButton = modal.querySelector('.button.is-success');
+
+                closeButton.onclick = () => modal.classList.remove('is-active');
+                confirmButton.onclick = () => modal.classList.remove('is-active');
+            }
+    </script>
 {% endblock %}

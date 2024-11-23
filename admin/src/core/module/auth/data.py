@@ -48,6 +48,8 @@ class PermissionEnum(pyEnum):
         ECUSTRE_UPDATE (str): Permission to update equestrian activities.
         ECUSTRE_DESTROY (str): Permission to destroy equestrian activities.
         ECUSTRE_SHOW (str): Permission to show equestrian activity details.
+        REPORT_INDEX (str): Permission to index reports.
+        REPORT_SHOW (str): Permission to show report details
         PUBLICACION_INDEX (str): Permission to index publications.
         PUBLICACION_NEW (str): Permission to create new publications.
         PUBLICACION_UPDATE (str): Permission to update publications.
@@ -58,28 +60,42 @@ class PermissionEnum(pyEnum):
     EQUIPO_UPDATE = "equipo_update"
     EQUIPO_DESTROY = "equipo_destroy"
     EQUIPO_SHOW = "equipo_show"
+
     PAGOS_INDEX = "pagos_index"
     PAGOS_NEW = "pagos_new"
     PAGOS_UPDATE = "pagos_update"
     PAGOS_DESTROY = "pagos_destroy"
     PAGOS_SHOW = "pagos_show"
+
     JYA_INDEX = "jya_index"
     JYA_NEW = "jya_new"
     JYA_UPDATE = "jya_update"
     JYA_DESTROY = "jya_destroy"
     JYA_SHOW = "jya_show"
+
     COBROS_INDEX = "cobros_index"
     COBROS_NEW = "cobros_new"
     COBROS_UPDATE = "cobros_update"
     COBROS_DESTROY = "cobros_destroy"
     COBROS_SHOW = "cobros_show"
+
     ECUSTRE_INDEX = "ecuestre_index"
     ECUSTRE_NEW = "ecuestre_new"
     ECUSTRE_UPDATE = "ecuestre_update"
     ECUSTRE_DESTROY = "ecuestre_destroy"
     ECUSTRE_SHOW = "ecuestre_show"
+
     PUBLICACION_INDEX = "publicacion_index"
     PUBLICACION_NEW = "publicacion_new"
     PUBLICACION_UPDATE = "publicacion_update"
-    PUBLICACION_DESTROY = "publicacion_destroy"
     PUBLICACION_SHOW = "publicacion_show"
+    PUBLICACION_DESTROY = "publicacion_destroy"
+
+    REPORT_INDEX = "report_index"
+    REPORT_SHOW = "report_show"
+
+    MENSAJE_INDEX = "mensaje_index"
+    MENSAJE_NEW = "mensaje_new"
+    MENSAJE_UPDATE = "mensaje_update"
+    MENSAJE_DESTROY = "mensaje_destroy"
+    MENSAJE_SHOW = "mensaje_show"

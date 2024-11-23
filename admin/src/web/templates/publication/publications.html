@@ -159,18 +159,34 @@
                             <p class="control">
                                 <a href="{{ url_for('publications_bp.show_publication', publication_id=post.id) }}"
                                    class="button is-primary is-rounded">
-                                    Leer más
+                                    Ver publicación
                                 </a>
                             </p>
                             {% if not are_deleted %}
-                            {% if "publicaciones_update" in permissions or is_admin %}
-                            <p class="control">
-                                <a href="{{ url_for('publications_bp.edit_publication', publication_id=post.id) }}"
-                                   class="button is-link is-rounded">
-                                    Editar
-                                </a>
-                            </p>
-                            {% endif %}
+                                {% if "publicaciones_update" in permissions or is_admin %}
+                                    <p class="control">
+                                        <a href="{{ url_for('publications_bp.edit_publication', publication_id=post.id) }}"
+                                           class="button is-link is-rounded">
+                                            Editar
+                                        </a>
+                                    </p>
+                                    {% if post.status.value == "Publicado" %}
+                                        <p class="control">
+                                            <a href="{{ url_for('publications_bp.toggle_publication_status', publication_id=post.id) }}"
+                                               class="button is-warning is-rounded">
+                                                Despublicar
+                                            </a>
+                                        </p>
+                                    {% else %}
+                                        <p class="control">
+                                            <a href="{{ url_for('publications_bp.toggle_publication_status', publication_id=post.id) }}"
+                                               class="button is-warning is-rounded">
+                                                Publicar
+                                            </a>
+                                        </p>
+                                    {% endif %}
+                                {% endif %}
+
                             {% endif %}
                         </div>
                     </div>

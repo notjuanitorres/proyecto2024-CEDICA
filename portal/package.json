@@ -13,10 +13,14 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "axios": "^1.7.7",
     "bulma": "^1.0.2",
+    "install": "^0.13.0",
+    "lodash-es": "^4.17.21",
     "pinia": "^2.2.6",
     "vue": "^3.5.12",
-    "vue-router": "^4.4.5"
+    "vue-router": "^4.4.5",
+    "yup": "^1.4.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.14.0",

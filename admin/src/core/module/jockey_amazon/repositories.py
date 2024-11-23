@@ -15,12 +15,13 @@ Classes:
 
 from abc import ABC, abstractmethod
 from typing import Dict, List, Optional
+from sqlalchemy import func
 
 from flask_sqlalchemy.pagination import Pagination
 
 from src.core.database import db
 from src.core.module.jockey_amazon.data import EducationLevelEnum
-from src.core.module.jockey_amazon.models import JockeyAmazon, JockeyAmazonFile, FamilyMember
+from src.core.module.jockey_amazon.models import JockeyAmazon, JockeyAmazonFile, FamilyMember, WorkAssignment
 from src.core.module.common.repositories import apply_filters, apply_multiple_search_criteria
 from src.core.module.employee.data import JobPositionEnum as Jobs
 
@@ -28,7 +29,7 @@ from src.core.module.employee.data import JobPositionEnum as Jobs
 class AbstractJockeyAmazonRepository(ABC):
     """
     A concrete repository class for managing `JockeyAmazon` entities and their related operations.
-    
+
     This class provides functionality to manage `JockeyAmazon` records, including adding, updating,
     retrieving, archiving, and deleting records. It also handles document management and specific
     assignment operations such as assigning employees and horses to jockeys.
@@ -44,7 +45,6 @@ class AbstractJockeyAmazonRepository(ABC):
     def add(self, jockey: JockeyAmazon) -> JockeyAmazon:
         """
         Add a new `JockeyAmazon` entity to the database.
-
         Args:
             jockey (JockeyAmazon): The jockey entity to be added.
 
@@ -55,12 +55,12 @@ class AbstractJockeyAmazonRepository(ABC):
 
     @abstractmethod
     def get_page(
-        self,
-        page: int,
-        per_page: int,
-        max_per_page: int,
-        search_query: Dict = None,
-        order_by: List = None,
+            self,
+            page: int,
+            per_page: int,
+            max_per_page: int,
+            search_query: Dict = None,
+            order_by: List = None,
     ):
         """
         Retrieve a paginated list of jockeys based on search criteria and sorting order.
@@ -181,17 +181,16 @@ class AbstractJockeyAmazonRepository(ABC):
 
     @abstractmethod
     def get_file_page(
-        self,
-        jockey_id: int,
-        page: int,
-        per_page: int,
-        max_per_page: int = 10,
-        search_query: Dict = None,
-        order_by: List = None,
+            self,
+            jockey_id: int,
+            page: int,
+            per_page: int,
+            max_per_page: int = 10,
+            search_query: Dict = None,
+            order_by: List = None,
     ):
         """
         Retrieve a paginated list of documents for a specific jockey.
-
         Args:
             jockey_id (int): The ID of the jockey.
             page (int): The current page number.
@@ -235,7 +234,7 @@ class AbstractJockeyAmazonRepository(ABC):
 
     @abstractmethod
     def assign_employee(
-        self, jockey_id: int, employee_id: int, employee_job_position: str
+            self, jockey_id: int, employee_id: int, employee_job_position: str
     ) -> bool:
         """
         Assign an employee to a jockey with a specific job position.
@@ -254,7 +253,6 @@ class AbstractJockeyAmazonRepository(ABC):
     def unassign_employee(self, jockey_id: int, link_to: str) -> bool:
         """
         Unassign an employee from a jockey by a specific link or relationship.
-
         Args:
             jockey_id (int): The ID of the jockey from whom the employee is being unassigned.
             link_to (str): The relationship or job position to unassign.
@@ -321,6 +319,7 @@ class AbstractJockeyAmazonRepository(ABC):
             self, page: int = 1, search: str = ""
     ) -> Pagination:
         """
+        Retrieve a paginated list of active jockeys filtered by an optional search term.
         Retrieve a paginated list of not deleted jockeys filtered by an optional search term.
 
         Args:
@@ -336,6 +335,66 @@ class AbstractJockeyAmazonRepository(ABC):
             NotImplementedError: If the method is not implemented in a derived class.
         """
         raise NotImplementedError
+
+    @abstractmethod
+    def total_jya(self) -> int:
+        """
+        Get the total number of JockeyAmazon entities.
+
+        Returns:
+            int: The total number of JockeyAmazon entities.
+        """
+        pass
+
+    @abstractmethod
+    def proposals_data(self) -> list:
+        """
+        Get the data for proposals.
+
+        Returns:
+            list: A list of tuples containing the proposal name and the count.
+        """
+        pass
+
+    @abstractmethod
+    def certified_jya(self) -> int:
+        """
+        Get the number of certified JockeyAmazon entities.
+
+        Returns:
+            int: The number of certified JockeyAmazon entities.
+        """
+        pass
+
+    @abstractmethod
+    def disability_types_data(self) -> list:
+        """
+        Get the data for disability types.
+
+        Returns:
+            list: A list of tuples containing the disability type and the count.
+        """
+        pass
+
+    @abstractmethod
+    def disability_data(self) -> list:
+        """
+        Get the data for disabilities.
+
+        Returns:
+            list: A list of tuples containing the disability category and the count.
+        """
+        pass
+
+    @abstractmethod
+    def debtors(self) -> list:
+        """
+        Get a list of debtors.
+
+        Returns:
+            list: A list of tuples containing the debtor name and the count.
+        """
+        pass
 
 
 class JockeyAmazonRepository(AbstractJockeyAmazonRepository):
@@ -380,12 +439,12 @@ class JockeyAmazonRepository(AbstractJockeyAmazonRepository):
         return jockey
 
     def get_page(
-        self,
-        page: int,
-        per_page: int,
-        max_per_page: int = 20,
-        search_query: Dict = None,
-        order_by: List = None,
+            self,
+            page: int,
+            per_page: int,
+            max_per_page: int = 20,
+            search_query: Dict = None,
+            order_by: List = None,
     ):
         """
         Retrieve a paginated list of `JockeyAmazon` entities based on search criteria and sorting order.
@@ -427,7 +486,6 @@ class JockeyAmazonRepository(AbstractJockeyAmazonRepository):
     def update(self, jockey_id: int, data: Dict) -> bool:
         """
         Update a `JockeyAmazon` entity with the provided data.
-
         Args:
             jockey_id (int): The ID of the jockey.
             data (Dict): The data to update the jockey with.
@@ -448,7 +506,6 @@ class JockeyAmazonRepository(AbstractJockeyAmazonRepository):
 
         Args:
             jockey_id (int): The ID of the jockey to archive.
-
         Returns:
             bool: True if the jockey was successfully archived, False otherwise.
         """
@@ -511,7 +568,6 @@ class JockeyAmazonRepository(AbstractJockeyAmazonRepository):
     def add_document(self, jockey_id: int, document: JockeyAmazonFile):
         """
         Add a document to a `JockeyAmazon` entity.
-
         Args:
             jockey_id (int): The ID of the jockey.
             document (JockeyAmazonFile): The document to add.
@@ -532,7 +588,6 @@ class JockeyAmazonRepository(AbstractJockeyAmazonRepository):
     def __get_query_document(self, jockey_id: int, document_id: int):
         """
         Retrieve a query for a specific document of a jockey.
-
         Args:
             jockey_id (int): The ID of the jockey.
             document_id (int): The ID of the document.
@@ -573,13 +628,13 @@ class JockeyAmazonRepository(AbstractJockeyAmazonRepository):
         self.save()
 
     def get_file_page(
-        self,
-        jockey_id: int,
-        page: int,
-        per_page: int,
-        max_per_page: int = 10,
-        search_query: Dict = None,
-        order_by: List = None,
+            self,
+            jockey_id: int,
+            page: int,
+            per_page: int,
+            max_per_page: int = 10,
+            search_query: Dict = None,
+            order_by: List = None,
     ):
         """
         Retrieve a paginated list of documents for a specific jockey.
@@ -616,7 +671,6 @@ class JockeyAmazonRepository(AbstractJockeyAmazonRepository):
             jockey_id (int): The ID of the jockey.
             document_id (int): The ID of the document to update.
             data (Dict): The data to update the document with.
-
         Returns:
             bool: True if the update was successful, False otherwise.
         """
@@ -700,11 +754,13 @@ class JockeyAmazonRepository(AbstractJockeyAmazonRepository):
                 existing_member.department = member_data.get('department', existing_member.department)
                 existing_member.locality = member_data.get('locality', existing_member.locality)
                 existing_member.province = member_data.get('province', existing_member.province)
-                existing_member.phone_country_code = member_data.get('phone_country_code', existing_member.phone_country_code)
+                existing_member.phone_country_code = (member_data
+                                                      .get('phone_country_code', existing_member.phone_country_code))
                 existing_member.phone_area_code = member_data.get('phone_area_code', existing_member.phone_area_code)
                 existing_member.phone_number = member_data.get('phone_number', existing_member.phone_number)
                 existing_member.email = member_data.get('email', existing_member.email)
-                existing_member.education_level = EducationLevelEnum[member_data.get('education_level', existing_member.education_level.name)]
+                existing_member.education_level \
+                    = EducationLevelEnum[member_data.get('education_level', existing_member.education_level.name)]
                 existing_member.occupation = member_data.get('occupation', existing_member.occupation)
                 self.db.session.add(existing_member)
                 self.save()
@@ -726,6 +782,7 @@ class JockeyAmazonRepository(AbstractJockeyAmazonRepository):
             return False
         assignment = jockey.work_assignment
 
+        assignment_data = {}
         if assignment and data:
             assignment_data = data.get("work_assignments", {})
             for key, value in assignment_data.items():
@@ -753,7 +810,7 @@ class JockeyAmazonRepository(AbstractJockeyAmazonRepository):
         return self.__get_by_dni(dni) is not None
 
     def assign_employee(
-        self, jockey_id: int, employee_id: int, employee_job_position: str
+            self, jockey_id: int, employee_id: int, employee_job_position: str
     ):
         """
         Assign an employee to a `JockeyAmazon` entity based on the job position.
@@ -805,7 +862,6 @@ class JockeyAmazonRepository(AbstractJockeyAmazonRepository):
         Args:
             jockey_id (int): The ID of the jockey.
             link_to (str): The type of assignment (e.g., job position or horse).
-
         Returns:
             bool: True if the employee was successfully unassigned, False otherwise.
         """
@@ -825,7 +881,7 @@ class JockeyAmazonRepository(AbstractJockeyAmazonRepository):
 
         self.save()
         return True
-    
+
     def unassign_horse(self, jockey_id: int) -> bool:
         """
         Unassign a horse from a `JockeyAmazon` entity.
@@ -851,6 +907,7 @@ class JockeyAmazonRepository(AbstractJockeyAmazonRepository):
     def get_active_jockeys(
             self, page: int = 1, search: str = ""
     ) -> Pagination:
+        """Retrieve a paginated list of active jockeys filtered by search text."""
         """Retrieve a paginated list of not deleted jockeys filtered by search text."""
 
         per_page = 7
@@ -861,3 +918,70 @@ class JockeyAmazonRepository(AbstractJockeyAmazonRepository):
                 JockeyAmazon, query, search_query={"text": search, "fields": search_fields}
             )
         return query.paginate(page=page, per_page=per_page, error_out=False)
+
+    def total_jya(self) -> int:
+        """
+        Get the total number of JockeyAmazon entities.
+
+        Returns:
+            int: The total number of JockeyAmazon entities.
+        """
+        return JockeyAmazon.query.count()
+
+    def proposals_data(self) -> list:
+        """
+        Get the data for proposals.
+
+        Returns:
+            list: A list of tuples containing the proposal name and the count.
+        """
+        return (
+            db.session.query(WorkAssignment.proposal, func.count(WorkAssignment.jockey_amazon_id))
+            .group_by(WorkAssignment.proposal)
+            .all()
+        )
+
+    def certified_jya(self) -> int:
+        """
+        Get the number of certified JockeyAmazon entities.
+
+        Returns:
+            int: The number of certified JockeyAmazon entities.
+        """
+        return (JockeyAmazon.query
+                .filter(JockeyAmazon.has_disability).with_entities(func.count(JockeyAmazon.id)).scalar() or 0)
+
+    def disability_types_data(self) -> list:
+        """
+        Get the data for disability types.
+
+        Returns:
+            list: A list of tuples containing the disability type and the count.
+        """
+        return (JockeyAmazon.query
+                .filter(JockeyAmazon.has_disability)
+                .with_entities(JockeyAmazon.disability_type, func.count(JockeyAmazon.id))
+                .group_by(JockeyAmazon.disability_type).all())
+
+    def disability_data(self) -> list:
+        """
+        Get the data for disabilities.
+
+        Returns:
+            list: A list of tuples containing the disability category and the count.
+        """
+        return (JockeyAmazon.query
+                .filter(JockeyAmazon.has_disability)
+                .with_entities(JockeyAmazon.disability_diagnosis, func.count(JockeyAmazon.id))
+                .group_by(JockeyAmazon.disability_diagnosis).all())
+
+    def debtors(self):
+        """
+        Get a list of debtors.
+
+        Returns:
+            list: A list of tuples containing the debtor name and the count.
+        """
+        return (JockeyAmazon.query
+                .filter(JockeyAmazon.has_debts)
+                .with_entities(JockeyAmazon.first_name, JockeyAmazon.last_name, JockeyAmazon.id).all())
