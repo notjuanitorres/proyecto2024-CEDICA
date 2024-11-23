@@ -1,0 +1,137 @@
+{% extends "base_show.html" %}
+
+{% block title %}Ver Mensaje - CEDICA{% endblock %}
+
+{% block breadcrumb_items %}
+    <li>
+        <a href="{{ url_for('contact_bp.get_messages' )}}">
+            <span class="icon is-small">
+                <i class="fas fa-envelope" aria-hidden="true"></i>
+            </span>
+            <span>Mensajes</span>
+        </a>
+    </li>
+    <li> 
+        <a href="">
+            <span class="icon is-small">
+                <i class="fa-solid fa-envelope-open-text" aria-hidden="true"></i>
+            </span>
+            <span>Mensaje </span>
+        </a>
+    </li>
+{% endblock %}
+
+{% block card_title %}
+Mensaje de {{ message.name }}
+{% if message.status.value == "Pendiente" %}
+<span class="tag is-warning ml-2 is-medium">{{ message.status.value }}</span>
+{% elif message.status.value == "Resuelto" %}
+<span class="tag is-success ml-2 is-medium">{{ message.status.value }}</span>
+{% else %}
+<span class="tag is-info ml-2 is-medium">{{ message.status.value }}</span>
+{% endif %}
+{% endblock %}
+
+
+{% block banner %}
+    {% if message.is_deleted %}
+        <div class="is-flex is full-width is-justify-content-center has-background-danger p-4">
+            <h2 class="title">Mensaje Eliminado</h2>
+        </div>
+    {% endif %}
+{% endblock %}
+
+
+{% block card_content %}
+<ul>
+    <li><strong>ID:</strong> {{ message.id }}</li>
+    <li><strong>Nombre:</strong> {{ message.name }}</li>
+    <li><strong>Email:</strong> {{ message.email }}</li>
+    <li><strong>Estado:</strong> {{ message.status.value }}</li>
+    <li><strong>Recibido:</strong> {{ message.inserted_at.strftime('%d-%m-%Y %H:%M')}}</li>
+    <li><strong>Mensaje:</strong> {{ message.message }}</li>
+</ul>
+
+<div class="mt-4">
+    <form class="is-flex is-align-items-center mb-4" action="{{ url_for('contact_bp.update_message_status') }}" method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="message_id" value="{{ message.id }}">
+
+        <!-- Status Field -->
+        <label class="label mr-2 mb-0">Actualizar Estado:</label>
+        <div class="control mr-2">
+            <div class="select is-small">
+                <select name="status">
+                    {% for status in message_statuses %}
+                        <option value="{{ status.name }}" {% if status == message.status %}selected{% endif %}>
+                            {{ status.value }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <button type="submit" class="button is-primary is-small">Actualizar</button>
+    </form>
+</div>
+
+<div>
+    <form class="is-flex is-flex-direction-column" action="{{ url_for('contact_bp.update_message_comment') }}" method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="message_id" value="{{ message.id }}">
+
+        <!-- Comment Field -->
+        <div class="field">
+            <label class="label">Comentario:</label>
+            <div class="control">
+                <textarea class="textarea is-small" name="comment" placeholder="Agregue un comentario aquí">{{ message.comment }}</textarea>
+            </div>
+        </div>
+
+        <button type="submit" class="button is-info is-small mt-2">Actualizar Comentario</button>
+    </form>
+</div>
+{% endblock %}
+
+{% block card_actions %}
+    {% if message.is_deleted %}
+        <button class="card-footer-item has-text-danger modal-trigger" data-id="{{ message.id }}" data-target="message-delete-modal">
+            Eliminar para siempre
+        </button>
+        <form class="card-footer-item" action="{{ url_for('contact_bp.recover_message') }}" method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="message_id" value="{{ message.id }}">
+            <button type="submit" class="has-text-primary">Recuperar</button>
+        </form>
+    {% else %}
+        <button class="card-footer-item has-text-danger modal-trigger" data-id="{{ message.id }}" data-target="message-delete-modal">
+            Eliminar
+        </button>
+    {% endif %}
+{% endblock %}
+
+{% block modal %}
+    {% if message.is_deleted %}
+        {{ 
+            render_delete_modal(
+                field="message",
+                endpoint=url_for("contact_bp.delete_message", message_id=message.id),
+                title="Eliminar para siemre",
+                msg="¿Está seguro de que desea eliminar este mensaje?",
+                msg_sub="Luego de confirmar, no se podrán revertir los cambios",
+                related_entities_text="Todos los archivos e información relacionada con este mensaje será eliminada."
+            ) 
+        }}
+    {% else %}
+        {{ 
+            render_delete_modal(
+                field="message",
+                endpoint=url_for("contact_bp.logical_delete_message", message_id=message.id),
+                title="Eliminar",
+                msg="¿Está seguro de que desea eliminar este mensaje?",
+                msg_sub="",
+                delete_text="Eliminar",
+                related_entities_text="El mensaje será movido al estado archivado y no estará disponible para operaciones activas."
+            ) 
+        }}
+    {% endif %}
+{% endblock %}

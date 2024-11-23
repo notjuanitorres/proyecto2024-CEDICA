@@ -18,10 +18,10 @@
         <div class="hero-foot is-centered" style="z-index: 10;">
             <nav class="tabs is-large is-fullwidth">
                 <div class="container">
-                    <a href="#conocenos" class="is-flex has-text-black is-size-4 is-flex-direction-column">
+                    <RouterLink to="/#about-us" class="navbar-item is-flex has-text-black is-size-4 is-flex-direction-column">
                         Conocenos
                         <span><i class="fa-solid fa-arrow-down"></i></span>
-                    </a>
+                    </RouterLink>
                 </div>
             </nav>
         </div>

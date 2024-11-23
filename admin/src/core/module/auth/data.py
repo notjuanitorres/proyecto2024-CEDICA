@@ -93,3 +93,9 @@ class PermissionEnum(pyEnum):
 
     REPORT_INDEX = "report_index"
     REPORT_SHOW = "report_show"
+
+    MENSAJE_INDEX = "mensaje_index"
+    MENSAJE_NEW = "mensaje_new"
+    MENSAJE_UPDATE = "mensaje_update"
+    MENSAJE_DESTROY = "mensaje_destroy"
+    MENSAJE_SHOW = "mensaje_show"

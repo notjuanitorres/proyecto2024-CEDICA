@@ -15,7 +15,7 @@ def index():
     Returns:
         str: Rendered HTML template for the home page.
     """
-    return render_template("index.html")
+    return render_template("home.html")
 
 
 @index_bp.route("/home")

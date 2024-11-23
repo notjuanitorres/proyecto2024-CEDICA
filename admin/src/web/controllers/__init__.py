@@ -8,7 +8,9 @@ from .charges import charges_bp
 from .jockey_amazon import jockey_amazon_bp
 from .report import report_bp
 from .publications import publications_bp
-from .api import api_bp
+from .contact import contact_bp
+from .api.contact import contact_api_bp
+from .api.publications import publications_api_bp
 
 __all__ = [
     "index_bp",
@@ -17,9 +19,13 @@ __all__ = [
     "employee_bp",
     "equestrian_bp",
     "payment_bp",
-    "publications_bp",
+    "charges_bp",
+    "jockey_amazon_bp",
     "charges_bp",
     "jockey_amazon_bp",
     "report_bp",
-    "api_bp",
+    "publications_bp",
+    "contact_bp",
+    "contact_api_bp",
+    "publications_api_bp",
 ]
