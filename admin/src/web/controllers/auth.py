@@ -1,4 +1,13 @@
-from flask import abort, Blueprint, render_template, request, url_for, session, redirect, flash
+from flask import (
+    abort,
+    Blueprint,
+    render_template,
+    request,
+    url_for,
+    session,
+    redirect,
+    flash,
+)
 from flask_dance.contrib.google import make_google_blueprint, google
 from dependency_injector.wiring import inject, Provide
 from src.core.bcrypt import bcrypt
@@ -7,16 +16,24 @@ from src.core.module.user.forms import UserProfileForm
 from src.core.module.user.repositories import AbstractUserRepository
 from src.core.container import Container
 from src.core.module.user.mappers import UserMapper
-from src.core.module.auth import AbstractAuthServices as AAS, UserLoginForm, UserRegisterForm
+from src.core.module.auth import (
+    AbstractAuthServices as AAS,
+    UserLoginForm,
+    UserRegisterForm,
+)
 from src.web.helpers.auth import is_authenticated, login_required
 
 auth_bp = Blueprint(
     "auth_bp", __name__, template_folder="../templates/accounts", url_prefix="/auth"
 )
 google_bp = make_google_blueprint(
-    scope=["openid", "profile", "email"],
+    scope=[
+        "openid",
+        "https://www.googleapis.com/auth/userinfo.email",
+        "https://www.googleapis.com/auth/userinfo.profile",
+    ],
     redirect_url="/auth/login/google/callback",  # Updated redirect URL
-    authorized_url="/autorizado"
+    authorized_url="/autorizado",
 )
 auth_bp.register_blueprint(google_bp, url_prefix="/login/google")
 
@@ -61,9 +78,9 @@ def google_callback():
 
 @inject
 def handle_google_login(
-        google_info: dict,
-        auth_services: AAS = Provide[Container.auth_services],
-        user_repository: AbstractUserRepository = Provide[Container.user_repository]
+    google_info: dict,
+    auth_services: AAS = Provide[Container.auth_services],
+    user_repository: AbstractUserRepository = Provide[Container.user_repository],
 ):
     """
     Handle Google OAuth login and registration flow
@@ -73,7 +90,7 @@ def handle_google_login(
         auth_services (AAS): The authentication services
         user_repository (UserRepository): The user repository services
     """
-    email = google_info.get('email')
+    email = google_info.get("email")
     if not email:
         flash("No se pudo obtener el email desde Google", "danger")
         return redirect(url_for("auth_bp.login"))
@@ -82,7 +99,7 @@ def handle_google_login(
 
     if not user_exists:
         # Store Google info in session and redirect to registration
-        session['provider_information'] = google_info
+        session["provider_information"] = google_info
         return redirect(url_for("auth_bp.register_with_provider"))
 
     user = user_repository.get_by_email(email)
@@ -106,19 +123,26 @@ def register_with_provider(user_repository: AAS = Provide[Container.user_reposit
     if not provider_data:
         abort(400)
 
-    registration_form = UserRegisterForm(data={
-        "email": provider_data.get("email"),
-        "alias": f"{provider_data.get("given_name")} {provider_data.get("family_name")}"
-    })
+    registration_form = UserRegisterForm(
+        data={
+            "email": provider_data.get("email"),
+            "alias": f"{provider_data.get("given_name")} {provider_data.get("family_name")}",
+        }
+    )
 
     if request.method == "POST":
         if not registration_form.validate_on_submit():
             return render_template("register_provider.html", form=registration_form)
         provider_id = provider_data.get("id")
-        user_repository.add(UserMapper.to_entity(registration_form.data, provider_id=provider_id))
-        del session['provider_information']
+        user_repository.add(
+            UserMapper.to_entity(registration_form.data, provider_id=provider_id)
+        )
+        del session["provider_information"]
         flash("Registro exitoso.", "success")
-        flash("Tienes que esperar a que el administrador del sistema te habilite el acceso para ingresar", "warning")
+        flash(
+            "Tienes que esperar a que el administrador del sistema te habilite el acceso para ingresar",
+            "warning",
+        )
         return redirect(url_for("index_bp.home"))
 
     return render_template("register_provider.html", form=registration_form)
@@ -126,9 +150,11 @@ def register_with_provider(user_repository: AAS = Provide[Container.user_reposit
 
 @auth_bp.route("/profile_photo/<int:user_id>", methods=["GET"])
 @inject
-def get_profile_photo(user_id: int,
-                      user_repository: AbstractUserRepository = Provide[Container.user_repository],
-                      storage_service: AbstractStorageServices = Provide[Container.storage_services]):
+def get_profile_photo(
+    user_id: int,
+    user_repository: AbstractUserRepository = Provide[Container.user_repository],
+    storage_service: AbstractStorageServices = Provide[Container.storage_services],
+):
     """
     Get the profile photo of a user.
     Args:
@@ -139,7 +165,9 @@ def get_profile_photo(user_id: int,
     Returns:
         Bytes: The profile photo.
     """
-    return storage_service.get_profile_image(user_repository.get_profile_image_url(user_id))
+    return storage_service.get_profile_image(
+        user_repository.get_profile_image_url(user_id)
+    )
 
 
 @auth_bp.route("/login", methods=["GET", "POST"])
@@ -166,7 +194,9 @@ def login():
 
 
 @inject
-def authenticate(login_form: UserLoginForm, auth_services: AAS = Provide[Container.auth_services]):
+def authenticate(
+    login_form: UserLoginForm, auth_services: AAS = Provide[Container.auth_services]
+):
     """
     Authenticate the user based on the login form data.
 
@@ -181,9 +211,7 @@ def authenticate(login_form: UserLoginForm, auth_services: AAS = Provide[Contain
     if not login_form.validate_on_submit():
         return render_template("./accounts/login.html", form=login_form)
 
-    user = auth_services.authenticate(
-        login_form.email.data, login_form.password.data
-    )
+    user = auth_services.authenticate(login_form.email.data, login_form.password.data)
 
     if not user:
         flash("Email o contraseña inválida", "danger")
@@ -240,7 +268,10 @@ def register():
 
 
 @inject
-def register_user(registration_form: UserRegisterForm, user_repository: AAS = Provide[Container.user_repository]):
+def register_user(
+    registration_form: UserRegisterForm,
+    user_repository: AAS = Provide[Container.user_repository],
+):
     """
     Register a new user based on the registration form data.
 
@@ -257,7 +288,10 @@ def register_user(registration_form: UserRegisterForm, user_repository: AAS = Pr
 
     user_repository.add(UserMapper.to_entity(registration_form.data))
     flash("Registro exitoso.", "success")
-    flash("Tienes que esperar a que el administrador del sistema te habilite el acceso para ingresar", "warning")
+    flash(
+        "Tienes que esperar a que el administrador del sistema te habilite el acceso para ingresar",
+        "warning",
+    )
     return redirect(url_for("index_bp.home"))
 
 
@@ -265,8 +299,8 @@ def register_user(registration_form: UserRegisterForm, user_repository: AAS = Pr
 @login_required
 @inject
 def edit_profile(
-        user_repository: AbstractUserRepository = Provide[Container.user_repository],
-        storage_service: AbstractStorageServices = Provide[Container.storage_services],
+    user_repository: AbstractUserRepository = Provide[Container.user_repository],
+    storage_service: AbstractStorageServices = Provide[Container.storage_services],
 ):
     """
     Display the profile edit form and handle profile update requests.
@@ -299,17 +333,24 @@ def edit_profile(
                 if old:
                     storage_service.delete_file(old)
 
-                response = storage_service.upload_file(file, path=user_repository.storage_path)
+                response = storage_service.upload_file(
+                    file, path=user_repository.storage_path
+                )
                 if response is None:
                     flash("Error al subir la imagen", "danger")
                     return redirect(url_for("auth_bp.view_profile"))
 
                 profile_image_url = response["path"]
 
-            update_data = {"alias": form.alias.data, "profile_image_url": profile_image_url}
+            update_data = {
+                "alias": form.alias.data,
+                "profile_image_url": profile_image_url,
+            }
 
             if form.new_password.data:
-                update_data["password"] = bcrypt.generate_password_hash(form.new_password.data).decode('utf-8')
+                update_data["password"] = bcrypt.generate_password_hash(
+                    form.new_password.data
+                ).decode("utf-8")
             user_repository.update(user_id=user_id, data=update_data)
 
             flash("Perfil actualizado correctamente", "success")
@@ -325,7 +366,7 @@ def edit_profile(
 @login_required
 @inject
 def view_profile(
-        user_repository: AbstractUserRepository = Provide[Container.user_repository],
+    user_repository: AbstractUserRepository = Provide[Container.user_repository],
 ):
     """
     Displays the user's profile.
