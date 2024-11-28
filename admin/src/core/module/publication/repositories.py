@@ -102,6 +102,9 @@ class AbstractPublicationRepository:
 
         Returns:
             bool: True if deleted successfully, False otherwise.
+
+        Raises:
+            ValueError: If the publication is already published.
         """
         pass
 
@@ -279,12 +282,18 @@ class PublicationRepository(AbstractPublicationRepository):
 
         Returns:
             bool: True if deleted successfully, False otherwise.
+
+        Raises:
+            ValueError: If the publication is already published.
         """
         publication = Publication.query.get(publication_id)
         if not publication or publication.is_deleted:
             return False
+
+        if publication.status == EstadoPublicacionEnum.PUBLISHED:
+            raise ValueError("Cannot logically delete a published publication")
+
         publication.is_deleted = True
-        publication.status = EstadoPublicacionEnum.ARCHIVED
         publication.update_date = datetime.now()
         self.save()
         return True
@@ -303,7 +312,6 @@ class PublicationRepository(AbstractPublicationRepository):
         if not publication or not publication.is_deleted:
             return False
         publication.is_deleted = False
-        publication.status = EstadoPublicacionEnum.DRAFT
         publication.update_date = datetime.now()
         self.save()
         return True

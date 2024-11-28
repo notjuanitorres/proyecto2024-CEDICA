@@ -54,7 +54,9 @@ Publicación: {{ publication.title }}
             {% else %}
                 {% set tag_status = "success" %}
             {% endif %}
-            <li><strong>Estado: </strong><span class="tag is-{{ tag_status }} is-medium ml-2">{{ publication.status.value }}</span></li>
+            {% if not publication.is_deleted %}
+                <li><strong>Estado: </strong><span class="tag is-{{ tag_status }} is-medium ml-2">{{ publication.status.value }}</span></li>
+            {% endif %}
             <li><strong>Fecha de publicación: </strong>{{ publication.publish_date | format_date }}</li>
             <li><strong>Creado: </strong>{{ publication.create_date | format_date }}</li>
             <li><strong>Última modificación: </strong>{{ publication.update_date | format_date }}</li>
@@ -79,7 +81,7 @@ Publicación: {{ publication.title }}
             </form>
         {% endif %}
     {% else %}
-        {% if "publicaciones_destroy" in permissions or is_admin %}
+        {% if (not publication.status.value == 'Publicado') and ("publicaciones_destroy" in permissions or is_admin) %}
             <button class="card-footer-item has-text-danger modal-trigger" data-id="{{ publication.id }}" data-target="publication-delete-modal">
                 Eliminar
             </button>
