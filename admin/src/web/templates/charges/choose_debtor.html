@@ -50,7 +50,7 @@
                     <br />
                     Dni: {{ jya.dni }}
                       <br />
-                      Al día con los pagos: {{ render_boolean_tag(jya.has_debts, tag_size="medium") }}
+                      Al día con los pagos: {{ render_boolean_tag(not jya.has_debts, tag_size="medium") }}
                   </p>
                 </div>
               </div>
