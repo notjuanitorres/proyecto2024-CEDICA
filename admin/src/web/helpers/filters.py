@@ -40,6 +40,7 @@ def render_role(role_id: int):
         2: "Ecuestre",
         3: "Voluntario",
         4: "Administración",
+        5: "Editor",
     }
     return roles.get(role_id, "No definido")
 
