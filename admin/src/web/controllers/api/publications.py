@@ -91,7 +91,7 @@ def show_publication(
     publication["status"] = publication["status"].name
     publication["type"] = publication["type"].name
     publication["author"] = publication["author"].alias
-    print(publication)
+
     if (not publication
             or publication["is_deleted"]
             or not publication["status"] == EstadoPublicacionEnum.PUBLISHED.name):

@@ -87,7 +87,13 @@ def logical_delete_publication(
         flash("La publicación solicitada no existe", "danger")
         return redirect(url_for("publications_bp.get_publications"))
 
-    deleted = publication_repository.logical_delete_publication(publication_id)
+    try:
+        deleted = publication_repository.logical_delete_publication(publication_id)
+    except ValueError:
+        flash("No se puede eliminar una publicación con estado 'publicada'."
+              " Debe ser despublicada primero.", "warning")
+        return redirect(url_for("publications_bp.show_publication", publication_id=publication_id))
+
     if not deleted:
         flash("La publicación no existe o ya ha sido eliminada", "warning")
     else:
