@@ -56,10 +56,13 @@ export const useNewsStore = defineStore('news', {
         let apiUrl = import.meta.env.VITE_API_BASE_URL
         if (apiUrl === undefined) {
           apiUrl = "https://admin-grupo19.proyecto2024.linti.unlp.edu.ar/api"
-        }        
+        }
         const url = `${apiUrl}/articles/${id}`;
 
         const response = await fetch(url);
+        if (response.status === 404) {
+            throw new Error('La noticia solicitada no existe');
+        }
         if (!response.ok) {
           throw new Error('No se pudo cargar el artículo');
         }
