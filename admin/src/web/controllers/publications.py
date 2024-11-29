@@ -58,7 +58,6 @@ def get_publications(
     page = request.args.get("page", 1, type=int)
     per_page = request.args.get("per_page", 10, type=int)
 
-    print(search_query)
     publications = publication_repository.get_page(page, per_page, search_query, order_by)
 
     return render_template("./publication/publications.html",

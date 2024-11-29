@@ -2,6 +2,7 @@ from abc import abstractmethod
 from typing import List, Dict
 from datetime import date
 from sqlalchemy import func
+from src.core.module.jockey_amazon.models import JockeyAmazon  
 from src.core.module.employee.models import Employee
 from src.core.database import db as database
 from src.core.module.charges.models import Charge
@@ -129,17 +130,31 @@ class AbstractChargeRepository:
         pass
 
     @abstractmethod
-    def last_payments_data(self, limit: int = 10) -> List[Charge]:
+    def last_payments_data(
+        self,
+        search_text = None,
+        start_date = None,
+        end_date = None,
+        amount = None,
+        payment_method = None,
+        limit: int = 10
+    ) -> List[Charge]:
         """
-        Get the most recent payments.
+        Get the most recent payments with optional filters.
 
         Args:
+            search_text (Optional[str]): The text to search for in jockey names.
+            start_date (Optional[date]): The start date for filtering payments.
+            end_date (Optional[date]): The end date for filtering payments.
+            amount (Optional[float]): The amount to filter payments.
+            payment_method (Optional[str]): The payment method to filter payments.
             limit (int): The number of recent payments to retrieve. Defaults to 10.
 
         Returns:
             List[Charge]: A list of the most recent payments.
         """
         pass
+
 
 
 class ChargeRepository(AbstractChargeRepository):
@@ -334,16 +349,45 @@ class ChargeRepository(AbstractChargeRepository):
         )
                 .with_entities(func.sum(Charge.amount)).scalar() or 0.0)
 
-    def last_payments_data(self, limit: int = 10) -> List[Charge]:
+    def last_payments_data(
+        self,
+        search_text = None,
+        start_date = None,
+        end_date = None,
+        amount = None,
+        payment_method = None,
+        limit = 10
+    ) -> List[Charge]:
         """
-        Get the most recent payments.
+        Get the most recent payments with optional filters.
 
         Args:
+            search_text: The text to search for in jockey names.
+            start_date: The start date for filtering payments.
+            end_date: The end date for filtering payments.
+            amount: The amount to filter payments.
+            payment_method: The payment method to filter payments.
             limit (int): The number of recent payments to retrieve. Defaults to 10.
 
         Returns:
             List[Charge]: A list of the most recent payments.
         """
-        return Charge.query.order_by(Charge.date_of_charge.desc()).limit(limit).all()
+        query = Charge.query
 
+        if search_text:
+            query = query.join(JockeyAmazon).filter(
+                (JockeyAmazon.first_name.ilike(f"%{search_text}%")) |
+                (JockeyAmazon.last_name.ilike(f"%{search_text}%"))
+            )
+
+        if start_date and end_date:
+            query = query.filter(Charge.date_of_charge.between(start_date, end_date))
+
+        if amount:
+            query = query.filter(Charge.amount == amount)
+
+        if payment_method:
+            query = query.filter(Charge.payment_method == payment_method)
+
+        return query.order_by(Charge.date_of_charge.desc()).limit(limit).all(), query.count()
 

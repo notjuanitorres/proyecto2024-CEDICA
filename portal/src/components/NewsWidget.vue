@@ -1,16 +1,17 @@
 <template>
   <div class="container">
-    <!-- Breadcrumb -->
-      <nav class="breadcrumb mb-4" aria-label="breadcrumbs">
-        <ul>
-          <li>
-            <router-link to="/">Inicio</router-link>
-          </li>
-          <li class="is-active">
-            <a href="#">Noticias</a>
-          </li>
-        </ul>
-      </nav>
+    <!-- Breadcrumb (unchanged) -->
+    <nav class="breadcrumb mb-4" aria-label="breadcrumbs">
+      <ul>
+        <li>
+          <router-link to="/">Inicio</router-link>
+        </li>
+        <li class="is-active">
+          <a href="#">Noticias</a>
+        </li>
+      </ul>
+    </nav>
+
     <!-- Header and Search Section -->
     <div class="section pt-4 pb-5">
       <!-- Filters -->
@@ -61,6 +62,24 @@
             </div>
           </div>
 
+          <!-- Per Page Selection - New Column -->
+          <div class="column is-4">
+            <div class="field">
+              <label class="label">Noticias por página</label>
+              <div class="control">
+                <div class="select is-fullwidth">
+                  <select v-model="perPage" @change="handlePerPageChange">
+                    <option :value="5">5</option>
+                    <option :value="10">10</option>
+                    <option :value="15">15</option>
+                    <option :value="20">20</option>
+                    <option :value="25">25</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <!-- Search Button -->
           <div class="column is-12">
             <div class="field is-grouped">
@@ -77,13 +96,13 @@
         </div>
       </div>
 
-      <!-- Loading State -->
+      <!-- Loading State (unchanged) -->
       <div v-if="loading" class="has-text-centered my-6">
         <div class="button is-loading is-white is-large"></div>
         <p class="subtitle mt-4">Cargando noticias...</p>
       </div>
 
-      <!-- Error State -->
+      <!-- Error State (unchanged) -->
       <div v-if="error" class="notification is-danger">
         <button class="delete" @click="error = null"></button>
         <p class="has-text-weight-semibold">{{ error }}</p>
@@ -92,7 +111,7 @@
         </button>
       </div>
 
-      <!-- Empty State -->
+      <!-- Empty State (unchanged) -->
       <div v-if="!loading && !error && !news.length" class="has-text-centered my-6">
         <div class="box p-6 has-background-light">
           <span class="icon is-large">
@@ -102,7 +121,7 @@
         </div>
       </div>
 
-      <!-- News List -->
+      <!-- News List (unchanged) -->
       <div v-if="news.length" class="columns is-multiline mt-4">
         <div v-for="article in news"
              :key="article.id"
@@ -144,7 +163,7 @@
         </div>
       </div>
 
-      <!-- Pagination -->
+      <!-- Pagination (unchanged) -->
       <nav class="pagination is-centered mt-6" role="navigation" aria-label="pagination">
         <button
           class="pagination-previous"
@@ -190,129 +209,136 @@ const store = useNewsStore();
 const { news, loading, error, totalItems } = storeToRefs(store);
 
 const currentPage = ref(1);
-const perPage = ref(10);
+const perPage = ref(10); // Default value set to 10
 
 const filters = ref({
-  author: '',
-  published_from: '',
-  published_to: '',
-  page: 1,
-  per_page: perPage.value
-});
-
-// Computed properties for pagination
-const totalPages = computed(() => Math.ceil(totalItems.value / perPage.value));
-
-// const shouldShowPagination = computed(() => totalPages.value > 1);
-
-const paginationItems = computed(() => {
-  if (totalPages.value <= 7) {
-    return Array.from({length: totalPages.value}, (_, i) => i + 1);
-  }
-
-  const items = [];
-  if (currentPage.value <= 3) {
-    // Show first 5 pages + ellipsis + last page
-    for (let i = 1; i <= 5; i++) items.push(i);
-    items.push('...');
-    items.push(totalPages.value);
-  } else if (currentPage.value >= totalPages.value - 2) {
-    // Show first page + ellipsis + last 5 pages
-    items.push(1);
-    items.push('...');
-    for (let i = totalPages.value - 4; i <= totalPages.value; i++) items.push(i);
-  } else {
-    // Show first page + ellipsis + current-1, current, current+1 + ellipsis + last page
-    items.push(1);
-    items.push('...');
-    for (let i = currentPage.value - 1; i <= currentPage.value + 1; i++) items.push(i);
-    items.push('...');
-    items.push(totalPages.value);
-  }
-  return items;
-});
-
-// Methods
-const fetchNews = async () => {
-  try {
-    await store.fetchNews({
-      ...filters.value,
-      page: currentPage.value,
-      per_page: perPage.value
-    });
-  } catch (e) {
-    console.error('Failed to fetch news:', e);
-  }
-};
-
-const handleSearch = () => {
-  currentPage.value = 1;
-  fetchNews();
-};
-
-const resetFilters = () => {
-  filters.value = {
     author: '',
     published_from: '',
     published_to: '',
     page: 1,
     per_page: perPage.value
-  };
-  currentPage.value = 1;
-  fetchNews();
+});
+
+// Computed properties for pagination
+const totalPages = computed(() => Math.ceil(totalItems.value / perPage.value));
+
+const paginationItems = computed(() => {
+    if (totalPages.value <= 7) {
+        return Array.from({ length: totalPages.value }, (_, i) => i + 1);
+    }
+
+    const items = [];
+    if (currentPage.value <= 3) {
+        // Show first 5 pages + ellipsis + last page
+        for (let i = 1; i <= 5; i++) items.push(i);
+        items.push('...');
+        items.push(totalPages.value);
+    } else if (currentPage.value >= totalPages.value - 2) {
+        // Show first page + ellipsis + last 5 pages
+        items.push(1);
+        items.push('...');
+        for (let i = totalPages.value - 4; i <= totalPages.value; i++) items.push(i);
+    } else {
+        // Show first page + ellipsis + current-1, current, current+1 + ellipsis + last page
+        items.push(1);
+        items.push('...');
+        for (let i = currentPage.value - 1; i <= currentPage.value + 1; i++) items.push(i);
+        items.push('...');
+        items.push(totalPages.value);
+    }
+    return items;
+});
+
+// Methods
+const fetchNews = async () => {
+    try {
+        // Update per_page in filters when fetching
+        filters.value.per_page = perPage.value;
+        await store.fetchNews({
+            ...filters.value,
+            page: currentPage.value,
+            per_page: perPage.value
+        });
+    } catch (e) {
+        console.error('Failed to fetch news:', e);
+    }
+};
+
+const handleSearch = () => {
+    currentPage.value = 1;
+    fetchNews();
+};
+
+const handlePerPageChange = () => {
+    // Reset to first page when changing per page
+    currentPage.value = 1;
+    fetchNews();
+};
+
+const resetFilters = () => {
+    filters.value = {
+        author: '',
+        published_from: '',
+        published_to: '',
+        page: 1,
+        per_page: 10
+    };
+    perPage.value = 10;
+    currentPage.value = 1;
+    fetchNews();
 };
 
 const changePage = (page) => {
-  currentPage.value = page;
-  fetchNews();
+    currentPage.value = page;
+    fetchNews();
 };
 
 const formatDate = (dateString) => {
-  return new Date(dateString).toLocaleDateString('es-ES', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  });
+    return new Date(dateString).toLocaleDateString('es-ES', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    });
 };
 
 // Watch for filter changes
 watch([() => filters.value.author, () => filters.value.published_from, () => filters.value.published_to],
-  () => {
-    // Debounce author search
-    if (debounceTimeout.value) clearTimeout(debounceTimeout.value);
-    debounceTimeout.value = setTimeout(() => {
-      handleSearch();
-    }, 300);
-  }
+    () => {
+        // Debounce author search
+        if (debounceTimeout.value) clearTimeout(debounceTimeout.value);
+        debounceTimeout.value = setTimeout(() => {
+            handleSearch();
+        }, 300);
+    }
 );
 
 const debounceTimeout = ref(null);
 
 onMounted(() => {
-  fetchNews();
+    fetchNews();
 });
 </script>
 
 <style scoped>
 .card {
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .pagination-link.is-current {
-  background-color: #485fc7;
-  border-color: #485fc7;
+    background-color: #485fc7;
+    border-color: #485fc7;
 }
 
 .media-content {
-  overflow: hidden;
+    overflow: hidden;
 }
 
 .content {
-  white-space: pre-line;
+    white-space: pre-line;
 }
 </style>
