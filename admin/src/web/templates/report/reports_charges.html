@@ -14,27 +14,120 @@
 {% block report_content %}
 <section>
   <h2 class="title is-5">Últimos Cobros</h2>
+  <!-- filter section-->
+  <div class="box">
+    <form method="GET" action="{{ url_for('report_bp.reports_charges') }}">
+        <div class="columns is-multiline">
+            <div class="column is-one-quarter">
+                <div class="field">
+                    <label class="label">{{ filter_form.search_text.label }}</label>
+                    <div class="control">
+                        {{ filter_form.search_text(class="input", placeholder="Nombre del jinete/amazona") }}
+                    </div>
+                    {% if filter_form.search_text.errors %}
+                        <p class="help is-danger">{{ filter_form.search_text.errors[0] }}</p>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="column is-one-quarter">
+                <div class="field">
+                    <label class="label">{{ filter_form.start_date.label }}</label>
+                    <div class="control">
+                        {{ filter_form.start_date(class="input") }}
+                    </div>
+                    {% if filter_form.start_date.errors %}
+                        <p class="help is-danger">{{ filter_form.start_date.errors[0] }}</p>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="column is-one-quarter">
+                <div class="field">
+                    <label class="label">{{ filter_form.end_date.label }}</label>
+                    <div class="control">
+                        {{ filter_form.end_date(class="input") }}
+                    </div>
+                    {% if filter_form.end_date.errors %}
+                        <p class="help is-danger">{{ filter_form.end_date.errors[0] }}</p>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="column is-one-quarter">
+                <div class="field">
+                    <label class="label">{{ filter_form.amount.label }}</label>
+                    <div class="control">
+                        {{ filter_form.amount(class="input", placeholder="Monto") }}
+                    </div>
+                    {% if filter_form.amount.errors %}
+                        <p class="help is-danger">{{ filter_form.amount.errors[0] }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="columns is-multiline">
+            <div class="column is-one-quarter">
+                <div class="field">
+                    <label class="label">{{ filter_form.payment_method.label }}</label>
+                    <div class="control">
+                        <div class="select is-fullwidth">
+                            {{ filter_form.payment_method() }}
+                        </div>
+                    </div>
+                    {% if filter_form.payment_method.errors %}
+                        <p class="help is-danger">{{ filter_form.payment_method.errors[0] }}</p>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="column is-one-quarter">
+                <div class="field">
+                    <label class="label">{{ filter_form.limit.label }}</label>
+                    <div class="control">
+                        <div class="select is-fullwidth">
+                            {{ filter_form.limit() }}
+                        </div>
+                    </div>
+                    {% if filter_form.limit.errors %}
+                        <p class="help is-danger">{{ filter_form.limit.errors[0] }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="field is-grouped">
+            <div class="control">
+                {{ filter_form.submit_search(class="button is-link") }}
+            </div>
+            <div class="control">
+                <a href="{{ url_for('report_bp.reports_charges') }}" class="button is-light">Limpiar</a>
+            </div>
+        </div>
+    </form>
+</div>
+    <!-- table section-->
+
   <div class="table-container">
       <table class="table is-striped is-hoverable is-fullwidth">
           <thead>
               <tr>
                   <th>Nombre del Jinete/Amazona</th>
                   <th>Fecha de cobro</th>
+                  <th>Monto</th>
+                  <th>Metodo de pago</th>
                   <th>Ver</th>
               </tr>
           </thead>
           <tbody>
               {% for charge in payments_data %}
                   <tr>
-                      <td>{{ charge.jya.last_name }} {{ charge.jya.first_name }}</td>
-                        <td>{{ charge.date_of_charge }}</td>
-                        <td>
-                            <a href="{{ url_for('charges_bp.show_charge', charge_id= charge.id)}}" class="button is-small is-link">
-                                <span class="icon is-small">
-                                    <i class="fas fa-eye fa-xs" aria-hidden="true"></i>
-                                </span>
-                            </a>
-                        </td>
+                    <td>{{ charge.jya.last_name }} {{ charge.jya.first_name }}</td>
+                    <td>{{ charge.date_of_charge }}</td>
+                    <td> ${{ charge.amount }}</td>
+                    <td> {{ charge.payment_method.value}}</td>
+                    <td>
+                        <a href="{{ url_for('charges_bp.show_charge', charge_id= charge.id)}}" class="button is-small is-link">
+                            <span class="icon is-small">
+                                <i class="fas fa-eye fa-xs" aria-hidden="true"></i>
+                            </span>
+                        </a>
+                    </td>
 
                   </tr>
               {% endfor %}

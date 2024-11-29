@@ -1,5 +1,6 @@
 {% extends "base_reports.html" %}
 {% block title %} Reportes {% endblock %}
+{% set active_tab="index"%}
     {% block report_content%}
             <!-- Gráficos -->
             <div class="columns is-multiline">
@@ -31,6 +32,7 @@
 {% endblock %}      
 
 {% block extra_scripts %}
+{{ super() }}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <!-- Lo hice asi porque para los graficos necesito los datos pasados al template -->
 <script>
