@@ -130,6 +130,12 @@ onMounted(async () => {
 <template>
   <div class="section">
     <div class="container">
+    <div v-if="submitStatus.type === 'success'" class="notification is-success">
+      {{ submitStatus.message }}
+    </div>
+    <div v-if="submitStatus.type === 'error'" class="notification is-danger mt-4">
+          {{ submitStatus.message }}
+    </div>
       <form @submit.prevent="handleSubmit" class="box">
         <h2 class="title is-4 mb-5">Comunicate con nosotros</h2>
 
@@ -194,7 +200,7 @@ onMounted(async () => {
             ></textarea>
           </div>
           <p 
-            v-if="!validationState.message.valid && validationState.message.error" 
+            v-if="!validationState.message.valid && validationState.message.error && !submitStatus.type" 
             class="help is-danger"
           >
             {{ validationState.message.error }}
@@ -228,13 +234,6 @@ onMounted(async () => {
               Enviar Mensaje
             </button>
           </div>
-        </div>
-
-        <div v-if="submitStatus.type === 'success'" class="notification is-success mt-4">
-          {{ submitStatus.message }}
-        </div>
-        <div v-if="submitStatus.type === 'error'" class="notification is-danger mt-4">
-          {{ submitStatus.message }}
         </div>
       </form>
     </div>
