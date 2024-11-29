@@ -1,12 +1,10 @@
 from flask import Blueprint, render_template, request
 from dependency_injector.wiring import inject, Provide
+from src.core.module.report.forms import ChargeSearchForm
 from src.core.container import Container
-from src.core.module.payment.repositories import AbstractPaymentRepository
 from src.core.module.charges.repositories import AbstractChargeRepository
-from src.core.module.user.repositories import AbstractUserRepository
 from src.core.module.jockey_amazon.repositories import AbstractJockeyAmazonRepository
 from src.web.helpers.auth import check_user_permissions
-
 report_bp = Blueprint(
     "report_bp", __name__, template_folder="../templates/report", url_prefix="/reportes"
 )
@@ -96,11 +94,36 @@ def reports_charges(
     # 1. KPIs
     total_jya = jockey_amazon_repository.total_jya()
     current_month_income = charge_repository.current_month_income()
-    payments_data = charge_repository.last_payments_data()
-    return render_template("report/reports_charges.html", 
-                           payments_data=payments_data,   
-                           total_jya = total_jya,
-                             current_month_income=current_month_income )
+    payments_data, cant = charge_repository.last_payments_data()
 
-    # Lógica para generar el reporte histórico de cobros en un rango de fechas asociado a una persona
-    return render_template("report/historico_cobros.html")
+    # Instantiate the form with request arguments
+    filter_form = ChargeSearchForm(request.args, max=cant)
+    
+    # Validate the form and apply filters
+    if filter_form.validate():
+        search_text = filter_form.search_text.data
+        start_date = filter_form.start_date.data
+        end_date = filter_form.end_date.data
+        amount = filter_form.amount.data
+        payment_method = filter_form.payment_method.data
+        if filter_form.limit.data!=None:
+            limit = int(filter_form.limit.data )
+        else:
+            limit=cant
+        payments_data, cant = charge_repository.last_payments_data(
+            search_text=search_text,
+            start_date=start_date,
+            end_date=end_date,
+            amount=amount,
+            payment_method=payment_method,
+            limit=limit
+        )
+    else:
+        payments_data, cant = charge_repository.last_payments_data()
+
+    return render_template("report/reports_charges.html", 
+                           payments_data=payments_data,
+                           filter_form=filter_form,  
+                           total_jya=total_jya,
+                           current_month_income=current_month_income,
+                           cant_charges=cant)
