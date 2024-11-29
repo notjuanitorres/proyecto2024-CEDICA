@@ -130,15 +130,13 @@ onMounted(async () => {
 <template>
   <div class="section">
     <div class="container">
-    <div v-if="submitStatus.type === 'success'" class="notification is-success">
-      {{ submitStatus.message }}
-    </div>
-    <div v-if="submitStatus.type === 'error'" class="notification is-danger mt-4">
-          {{ submitStatus.message }}
-    </div>
-      <form @submit.prevent="handleSubmit" class="box">
-        <h2 class="title is-4 mb-5">Comunicate con nosotros</h2>
+      <h2 class="title is-4 mb-5">Comunicate con nosotros</h2>
 
+      <div v-if="submitStatus.type === 'success'" class="notification is-success">
+        {{ submitStatus.message }}
+      </div>
+
+      <form @submit.prevent="handleSubmit" class="box">
         <div class="field">
           <label class="label">Nombre</label>
           <div class="control">
@@ -192,19 +190,10 @@ onMounted(async () => {
               v-model="formData.message" 
               @input="validateMessage"
               class="textarea"
-              :class="{
-                'is-success': validationState.message.valid,
-                'is-danger': !validationState.message.valid && validationState.message.error
-              }"
+              :class="{ 'is-success': validationState.message.valid }"
               placeholder="Escribe tu mensaje"
             ></textarea>
           </div>
-          <p 
-            v-if="!validationState.message.valid && validationState.message.error && !submitStatus.type" 
-            class="help is-danger"
-          >
-            {{ validationState.message.error }}
-          </p>
         </div>
 
         <div 
